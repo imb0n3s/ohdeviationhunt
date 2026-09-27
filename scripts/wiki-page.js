@@ -39,7 +39,9 @@ ${headers.map((h) => `! ${TH} | ${h}`).join("\n")}
 ${rows.map((r) => `|-\n| ${r.join(" || ")}`).join("\n")}
 |}`;
 }
-const cmd = (c) => `<code>${c}</code>`;
+const CODE = 'style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"';
+const cmd = (c) => `<span ${CODE}><nowiki>${c}</nowiki></span>`;
+const code = (c) => `<span ${CODE}>${c}</span>`;
 const hl = (t) => `<span style="color:#0ea5e9; font-weight:800;">${t}</span>`;
 const tierTag = (t) => `<span style="color:${TIERS[t].color}; font-weight:800;">${TIERS[t].label}</span>`;
 
@@ -78,7 +80,7 @@ out.push(box("Start", "How to Play", `
 # Watch a stream that has '''${BOT}''' in chat.
 # When the bot posts ''"⚠️ A wild … has breached containment!"'', type ${cmd("!secure")} within '''${cfg.SPAWN_WINDOW_SECONDS} seconds'''.
 # When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
-# Check your collection any time with ${cmd("!deviationbag")} or on your own page: <code>${URL}/u/''yourname''</code>
+# Check your collection any time with ${cmd("!deviationbag")} or on your own page: ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)}
 
 Your first ${cmd("!secure")} signs you up automatically — you start with '''${ECONOMY.starterUnits.standard} Securement Units''' and '''${ECONOMY.starterStarchrom} ${SC}'''. Every ${cmd("!secure")} uses one Securement Unit whether it catches or not, and you get one throw per breach.
 `));
@@ -156,7 +158,7 @@ ${Object.keys(TIERS).filter((k) => byTier[k]).map((k) => `\n<div style="margin-t
 
 out.push(box("Shiny", "Variations & Skins", `
 Variations and skins are Deviation Hunt's shinies. When one breaches, the spawn message says so:
-<code>⚠️ A wild Grumpy Bulb has breached containment! ✨ VARIATION: Violet Robe Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.</code>
+${code(`⚠️ A wild Grumpy Bulb has breached containment! ✨ VARIATION: Violet Robe Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`)}
 
 * Each variation and skin is its own entry in your Deviation Bag, and the first one of each earns the +${ECONOMY.newSpeciesBonus} new-entry bonus.
 * On your collection page and in the Twitch panel, caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.
@@ -186,14 +188,14 @@ ${table(["Slot", "What it can roll"], [
 out.push(box("Collection", "Deviation Bag & Twitch Panel", `
 Your collection is tied to your Twitch account, not to a channel — everything you catch on any stream lands in the same Deviation Bag, and a name change doesn't lose it.
 
-* '''Collection page:''' <code>${URL}/u/''yourname''</code> — every deviation grouped by Combat / Crafting / Territory, your best specimen's ratings and traits, and caught variations and skins highlighted. ${cmd("!deviationbag")} posts your link.
+* '''Collection page:''' ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)} — every deviation grouped by Combat / Crafting / Territory, your best specimen's ratings and traits, and caught variations and skins highlighted. ${cmd("!deviationbag")} posts your link.
 * '''Twitch panel:''' the ''Deviation Bag'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Deviation Bag''' once to let Twitch share your username with it. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
 * '''Leaderboard:''' [${URL}/top ${URL.replace(/^https?:\/\//, "")}/top] or ${cmd("!hunttop")}.
 `));
 
 out.push(box("Streamers", "Add Deviation Hunt to Your Channel", `
 # Go to [${URL} ${URL.replace(/^https?:\/\//, "")}] and click '''Add to my channel''' (sign in with Twitch). Or type ${cmd("!join")} in [https://www.twitch.tv/${BOT} ${BOT}'s chat].
-# If the bot says it needs permission, type <code>/mod ${BOT}</code> in your chat and try again.
+# If the bot says it needs permission, type ${cmd(`/mod ${BOT}`)} in your chat and try again.
 # That's it. Deviations breach about every '''${cfg.SPAWN_INTERVAL_MIN} minutes''' while you're '''live''' and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes. Change the timer with ${cmd("!hunt interval <minutes>")}.
 
 To remove it, type ${cmd("!hunt leave")} in your chat or ${cmd("!leave")} in ${BOT}'s chat.
