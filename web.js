@@ -81,10 +81,10 @@ function landing() {
 <form class="find" action="/u" method="get"><input name="login" placeholder="Twitch username" aria-label="Twitch username"><button>View</button></form>
 
 <h2>What it looks like</h2>
-<div class="card chat">${esc(botName)}: ⚠️ A wild [Rare] Lonewolf Whisper has breached containment! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it (or !secure advanced / elite for better odds).
+<div class="card chat">${esc(botName)}: ⚠️ A wild Lonewolf Whisper has breached containment! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.
 viewer42: !secure
 metabones: !secure elite
-${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones (Elite)! +40 Starchrom each. 📖 New entry for metabones (+100). It broke free from viewer42. | !dex to see your collection</div>
+${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones [Skill 4/5 · Activity 2/5]! +40 Starchrom each. 📖 New entry for metabones (+100). It broke free from viewer42. | !dex to see your collection</div>
 
 <h2>Viewer commands</h2>
 <div class="card">
@@ -92,7 +92,7 @@ ${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones (Elite)! +40 Starchr
 <p><kbd>!units</kbd> — your Starchrom and Units · <kbd>!shop</kbd> — prices · <kbd>!buy advanced 5</kbd> — buy Units</p>
 <p><kbd>!daily</kbd> — free supply drop (+${ECONOMY.daily.starchrom} Starchrom, ${ECONOMY.daily.units.standard} Standard Units) every ${ECONOMY.dailyCooldownHours}h</p>
 <p><kbd>!dex</kbd> — your Deviadex and collection link · <kbd>!dex name</kbd> — someone else's · <kbd>!scrap</kbd> — turn duplicates into Starchrom</p>
-<p><kbd>!traits</kbd> — your latest catch's Deviant Power, Mood and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
+<p><kbd>!traits</kbd> — your latest catch's Skill Rating, Activity Rating and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
 <p><kbd>!dev behemoth</kbd> — what a deviation does and where it drops · <kbd>!hunttop</kbd> — leaderboard · <kbd>!hunt</kbd> — help</p>
 </div>
 <h2>Streamer & mod commands</h2>
@@ -103,7 +103,7 @@ ${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones (Elite)! +40 Starchr
 <h2>How catching works</h2>
 <div class="card"><table><tr><th>Rarity</th><th>Spawn weight</th><th>Base catch</th><th>Reward</th></tr>
 ${Object.values(TIERS).map((t) => `<tr><td style="color:${t.color};font-weight:600">${t.label}</td><td>${t.weight}%</td><td>${Math.round(t.catch * 100)}%</td><td>${t.reward} Starchrom</td></tr>`).join("")}</table>
-<p>Units multiply your odds: ${Object.values(UNITS).map((u) => `${u.label} ${u.price} Starchrom (${u.mult >= 100 ? "never fails" : `×${u.mult}`})`).join(" · ")}. About 1 in ${Math.round(1 / VARIANT.variation.chance)} breaches is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b> (×${VARIANT.skin.rewardMult}). Every deviation you secure is its own specimen with <b>Deviant Power 1–5</b> and <b>Mood 1–5</b> (5 is rare; a perfect 5/5 gets a ⭐) and three traits rolled by the rules on the wiki's <a href="${esc(cfg.WIKI_BASE)}/Deviation_Trait_Page">Deviation Trait Page</a>: Slot 1 is a Global trait or that deviation's own trait, Slot 2 is a combat trait (deviation-specific ones only on their own deviation), Slot 3 is a fused trait. <kbd>!scrap</kbd> keeps your best Power+Mood specimen of each. First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. Missed throws still salvage ${ECONOMY.escapeSalvage} Starchrom.</p></div>`);
+<p>Units multiply your odds: ${Object.values(UNITS).map((u) => `${u.label} ${u.price} Starchrom (${u.mult >= 100 ? "never fails" : `×${u.mult}`})`).join(" · ")}. About 1 in ${Math.round(1 / VARIANT.variation.chance)} breaches is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b> (×${VARIANT.skin.rewardMult}). Every deviation you secure is its own specimen with <b>Skill Rating 1–5</b> and <b>Activity Rating 1–5</b> (5 is rare; a perfect 5/5 gets a ⭐) and three traits rolled by the rules on the wiki's <a href="${esc(cfg.WIKI_BASE)}/Deviation_Trait_Page">Deviation Trait Page</a>: Slot 1 is a Global trait or that deviation's own trait, Slot 2 is a combat trait (deviation-specific ones only on their own deviation), Slot 3 is a fused trait. <kbd>!scrap</kbd> keeps your best Skill + Activity specimen of each. First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. Missed throws still salvage ${ECONOMY.escapeSalvage} Starchrom.</p></div>`);
 }
 
 function collectionPage(p) {
@@ -130,7 +130,7 @@ function collectionPage(p) {
     const h = have.get(d.id);
     const vars = d.variants.length ? `<div class="vars">${d.variants.map((v) => `<span class="${h?.variants.has(v.name) ? "have" : ""}" title="${esc(v.kind)}">${esc(v.name)}</span>`).join("")}</div>` : "";
     const sp = best.get(d.id);
-    const spHtml = sp ? `<div class="sp"><div class="pm"><span title="Deviant Power">⚡ ${sp.power}/5</span><span title="Mood">☺ ${sp.mood}/5</span></div>
+    const spHtml = sp ? `<div class="sp"><div class="pm"><span title="Skill Rating (Deviant Power)">Skill ${sp.power}/5</span><span title="Activity Rating (Mood)">Activity ${sp.mood}/5</span></div>
 <ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant))}</li>`).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
     return `<div class="dev ${h ? "" : "missing"}">${h ? `<span class="c">×${h.count}</span>` : ""}<img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${tierTag(d.rarity)}${spHtml}${h ? vars : ""}</div>`;
   }).join("");
@@ -138,7 +138,7 @@ function collectionPage(p) {
 <h1>${esc(p.display)}'s Deviadex</h1>
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${fmt(c.total)}</b>secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
-<p>Each card shows your best specimen: ⚡ Deviant Power and ☺ Mood (1–5) and its three traits (hover a trait for what it does).</p>
+<p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its three traits (hover a trait for what it does).</p>
 <p>Units: ${Object.entries(UNITS).map(([k, u]) => `${esc(u.label)} ${units[k] || 0}`).join(" · ")}</p>
 <div class="grid">${cards}</div>`);
 }

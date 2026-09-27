@@ -60,7 +60,7 @@ function rollSpawn() {
 }
 
 // "P4·M2", with a star for a perfect 5/5
-const ratingTag = (sp) => `P${sp.power}·M${sp.mood}${sp.power === 5 && sp.mood === 5 ? "⭐" : ""}`;
+const ratingTag = (sp) => `Skill ${sp.power}/5 · Activity ${sp.mood}/5${sp.power === 5 && sp.mood === 5 ? " ⭐" : ""}`;
 
 function spawnName(s) { return s.variant ? `${s.dev.name} — ${s.variant.name}` : s.dev.name; }
 
@@ -78,9 +78,8 @@ function rewardFor(s) {
 }
 
 function spawnAnnouncement(s) {
-  const tier = TIERS[s.dev.rarity].label;
   const v = s.variant ? ` ✨ ${VARIANT[s.variant.kind].label.toUpperCase()}: ${s.variant.name}!` : "";
-  return `⚠️ A wild [${tier}] ${s.dev.name} has breached containment!${v} Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it (or !secure advanced / elite for better odds).`;
+  return `⚠️ A wild ${s.dev.name} has breached containment!${v} Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`;
 }
 
 // Per-channel spawn state lives in memory; the result goes to SQLite when it resolves
@@ -206,13 +205,13 @@ class Spawns {
     const list = (arr, max = 12) => arr.length > max ? `${arr.slice(0, max).join(", ")} +${arr.length - max} more` : arr.join(", ");
     let msg;
     if (caught.length) {
-      msg = `🔒 ${name} secured by ${list(caught)}! +${reward} ${SC} each.`;
+      msg = `🔒 ${name} secured by ${list(caught, 7)}! +${reward} ${SC} each.`;
       if (firsts.length) msg += ` 📖 New entry for ${list(firsts, 8)} (+${ECONOMY.newSpeciesBonus}).`;
       if (escaped.length) msg += ` It broke free from ${list(escaped, 8)}.`;
     } else {
       msg = `💥 ${name} broke free from everyone (${list(escaped)})! Better luck next breach.`;
     }
-    msg += caught.length ? ` | [P=Deviant Power, M=Mood] · !traits ${s.dev.id} for traits` : ` | !dex to see your collection`;
+    msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !dex to see your collection`;
     return this.send(bid, msg);
   }
 
@@ -301,7 +300,7 @@ function scrap(userId, login, display) {
     savePlayer(p);
   })();
   if (!n) return `@${display} no duplicates to scrap — you keep one of everything.`;
-  return `@${display} ♻️ scrapped ${n} duplicate${n > 1 ? "s" : ""} for ${fmt(gain)} ${SC} (kept your best Power+Mood of each). ${unitsText(p)}`;
+  return `@${display} ♻️ scrapped ${n} duplicate${n > 1 ? "s" : ""} for ${fmt(gain)} ${SC} (kept your best Skill + Activity Rating of each). ${unitsText(p)}`;
 }
 
 function info(query, baseUrl) {
@@ -311,7 +310,7 @@ function info(query, baseUrl) {
   const drops = d.drops.filter((x) => !/:\s*(N\/A|None|TBD)\s*$/i.test(x)).join("; ");
   const extra = d.variants.length ? ` ${d.variants.length} variants/skins to collect.` : "";
   const fn = d.fn ? ` ${d.fn.replace(/\.$/, "")}.` : "";
-  return `${d.name} [${tier}]${fn}${drops ? ` Drops: ${drops}.` : ""}${extra} ${cfg.WIKI_BASE}/Deviation_Main_Page`;
+  return `${d.name}${fn}${drops ? ` Drops: ${drops}.` : ""}${extra} ${cfg.WIKI_BASE}/Deviation_Main_Page`;
 }
 
 // !traits [deviation] — your best specimen of that deviation, or your latest catch
@@ -331,7 +330,7 @@ function specimenText(userId, login, display, query, baseUrl) {
   const count = db.q.specimensOf.all(userId, sp.deviation).length;
   const nm = `${dev?.name || sp.deviation}${sp.variant ? ` — ${sp.variant}` : ""}`;
   const label = query ? `best ${nm}${count > 1 ? ` (of ${count})` : ""}` : `latest: ${nm}`;
-  return `@${display} ${label} · Deviant Power ${sp.power}/5 · Mood ${sp.mood}/5 · Traits: ${traits.shortTraits(sp)} ${baseUrl}/u/${login}`;
+  return `@${display} ${label} · Skill Rating ${sp.power}/5 · Activity Rating ${sp.mood}/5 · Traits: ${traits.shortTraits(sp)} ${baseUrl}/u/${login}`;
 }
 
 function top(baseUrl) {
