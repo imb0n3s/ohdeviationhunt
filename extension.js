@@ -18,15 +18,22 @@ function b64urlDecode(s) { return Buffer.from(s.replace(/-/g, "+").replace(/_/g,
 
 // Minimal HS256 JWT verification (no dependencies)
 function verifyExtJwt(token) {
-  if (!cfg.EXT_SECRET) throw Object.assign(new Error("extension secret not configured"), { status: 503 });
+  if (!cfg.EXT_SECRETS.length) throw Object.assign(new Error("extension secret not configured"), { status: 503 });
   const [h, p, sig] = String(token || "").split(".");
   if (!h || !p || !sig) throw Object.assign(new Error("bad token"), { status: 401 });
   let header;
   try { header = JSON.parse(b64urlDecode(h).toString()); } catch { throw Object.assign(new Error("bad token"), { status: 401 }); }
   if (header.alg !== "HS256") throw Object.assign(new Error("bad alg"), { status: 401 });
-  const expect = crypto.createHmac("sha256", Buffer.from(cfg.EXT_SECRET, "base64")).update(`${h}.${p}`).digest();
   const got = b64urlDecode(sig);
-  if (got.length !== expect.length || !crypto.timingSafeEqual(got, expect)) throw Object.assign(new Error("bad signature"), { status: 401 });
+  const ok = cfg.EXT_SECRETS.some((secret) => {
+    const expect = crypto.createHmac("sha256", Buffer.from(secret, "base64")).update(`${h}.${p}`).digest();
+    return got.length === expect.length && crypto.timingSafeEqual(got, expect);
+  });
+  if (!ok) {
+    let info = "";
+    try { const pl = JSON.parse(b64urlDecode(p).toString()); info = ` (token role=${pl.role} channel=${pl.channel_id} exp_in=${Math.round(pl.exp - Date.now() / 1000)}s, header=${JSON.stringify(header)})`; } catch {}
+    throw Object.assign(new Error("bad signature" + info), { status: 401 });
+  }
   const payload = JSON.parse(b64urlDecode(p).toString());
   if (payload.exp && payload.exp * 1000 < Date.now()) throw Object.assign(new Error("expired"), { status: 401 });
   return payload; // { user_id?, opaque_user_id, channel_id, role, ... }
@@ -73,7 +80,7 @@ function bagFor(userId) {
 function mount(app) {
   // length only (never the value) so a bad paste is easy to spot: Twitch extension secrets are
   // 44 base64 characters that decode to 32 bytes
-  if (cfg.EXT_SECRET) console.log(`[ext] secret loaded: ${cfg.EXT_SECRET.length} chars, ${Buffer.from(cfg.EXT_SECRET, "base64").length} bytes`);
+  if (cfg.EXT_SECRETS.length) console.log(`[ext] ${cfg.EXT_SECRETS.length} secret(s) loaded: ${cfg.EXT_SECRETS.map((x) => `${x.length} chars/${Buffer.from(x, "base64").length} bytes`).join(", ")}`);
   else console.log("[ext] no EXT_SECRET set");
   // CORS: extension front ends are served from https://<client-id>.ext-twitch.tv
   app.use("/ext", (req, res, next) => {
