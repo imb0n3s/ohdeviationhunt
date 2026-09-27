@@ -213,9 +213,8 @@ class Spawns {
     if (caught.length) {
       msg = `🔒 ${name} secured by ${list(caught, 7)}! +${reward} ${SC} each.`;
       if (firsts.length) msg += ` 📖 New entry for ${list(firsts, 8)} (+${ECONOMY.newSpeciesBonus}).`;
-      if (escaped.length) msg += ` It broke free from ${list(escaped, 8)}.`;
     } else {
-      msg = `💥 ${name} broke free from everyone (${list(escaped)})! Better luck next breach.`;
+      msg = `💥 ${name} broke free! Better luck next breach.`;
     }
     msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !deviationbag to see your collection`;
     return this.send(bid, msg);
