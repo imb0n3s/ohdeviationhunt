@@ -1,0 +1,673 @@
+[
+ {
+  "id": "behemoth",
+  "name": "Behemoth",
+  "rarity": "legendary",
+  "img": "https://ohwikiguide.com/images/3/3d/Deviation_Behemoth.png",
+  "fn": "",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: None",
+   "Events: Rift Event"
+  ],
+  "variants": []
+ },
+ {
+  "id": "bravegeorge",
+  "name": "Brave George",
+  "rarity": "legendary",
+  "img": "https://ohwikiguide.com/images/c/c7/Deviation_Brave_George.png",
+  "fn": "A loyal companion for Metas",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: Forsaken Giant"
+  ],
+  "variants": []
+ },
+ {
+  "id": "butterflyemissary",
+  "name": "Butterfly Emissary",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/5/51/Butterfly_Emissary.png",
+  "fn": "Can participate in combat to mark enemy Weakspots, increasing the damage they receive.",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units, EX-1 Elite Drop",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Ancient Scroll",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/2/2b/Deviation_Butterflys_Emissary_-_Ancient_Scroll.png"
+   },
+   {
+    "name": "Glistening Blue",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/0/00/Deviation_Butterflys_Emissary_-_Glistening_Blue.png"
+   },
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/9/97/Deviation_Butterflys_Emissary_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Starry Night",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/5/5b/Deviation_Butterflys_Emissary_-_Starry_Night.png"
+   },
+   {
+    "name": "Ephemeral Dream",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/3/36/Deviation_Butterflys_Emissary_-_Ephemeral_Dream.png"
+   },
+   {
+    "name": "Before the Frost",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/Special:FilePath/Before_the_Frost_Butterfly_Emissary.png?width=600"
+   }
+  ]
+ },
+ {
+  "id": "bythewind",
+  "name": "By-the-Wind",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/2/2c/Deviation_By-the-Wind.png",
+  "fn": "Can participate in combat to continuously increase the character's action or create an anti-gravity tower",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Bursting Magma",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/3/3a/Deviation_By-the-Wind_-_Bursting_Magma.png"
+   },
+   {
+    "name": "Frigid Touch",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/7/7e/Deviation_By-the-Wind_-_Frigid_Touch.png"
+   },
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/2/2b/Deviation_By-the-Wind_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Lunar Oracle",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/8/8e/Deviation_By-the-Wind_-_Lunar_Oracle.png"
+   }
+  ]
+ },
+ {
+  "id": "drteddy",
+  "name": "Dr. Teddy",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/f/fa/Deviation_Dr_Teddy.png",
+  "fn": "Can participate in combat. Will heal or rescue fallen Metas.",
+  "drops": [
+   "Manibus: Securement Units, Psi",
+   "Way of Winter: Securement Units, Psi",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Aberrant Progeny",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/c/c4/Deviation_Dr_Teddy_-_Aberrant_Progeny.png"
+   },
+   {
+    "name": "Block",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/7/78/Deviation_Dr_Teddy_-_Block.png"
+   },
+   {
+    "name": "Christmas Spirit",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/1/1e/Deviation_Dr_Teddy_-_Christmas_Spirit.png"
+   },
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/6/6b/Deviation_Dr_Teddy_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Morning Grump",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/3/33/Deviation_Dr_Teddy_-_Morning_Grump.png"
+   }
+  ]
+ },
+ {
+  "id": "enchantingvoid",
+  "name": "Enchanting Void",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/1/18/Deviation_Enchanting_Void.png",
+  "fn": "Can participate in combat to increase its master's Melee DMG",
+  "drops": [
+   "Manibus: Theta",
+   "Way of Winter: Securement Unit",
+   "Monolith: None"
+  ],
+  "variants": [
+   {
+    "name": "Pharaoh",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/4/4a/Deviation_Enchanting_Void_-_Pharaoh.png"
+   },
+   {
+    "name": "Starfall Inversion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/f/f2/Deviation_Enchanting_Void_-_Starfall_Inversion.png"
+   },
+   {
+    "name": "Siamese",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/9/95/Deviation_Enchanting_Void_-_Siamese.png"
+   }
+  ]
+ },
+ {
+  "id": "festeringgel",
+  "name": "Festering Gel",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/8/89/Deviation_Festering_Gel.png",
+  "fn": "Can participate in combat to transform into Shelter and block enemy attacks.",
+  "drops": [
+   "Manibus: Securement Unit",
+   "Way of Winter: Securement Unit",
+   "Monolith: Ravenous Hunter"
+  ],
+  "variants": [
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/2/23/Deviation_Festering_Gel_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Lunar Oracle",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/1/16/Deviation_Festering_Gel_-_Lunar_Oracle.png"
+   },
+   {
+    "name": "Marine Star",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/e/ec/Deviation_Festering_Gel_-_Marine_Star.png"
+   },
+   {
+    "name": "Milk Sugar",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/e/ec/Deviation_Festering_Gel_-_Milk_Sugar.png"
+   },
+   {
+    "name": "Phase",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/5/51/Deviation_Festering_Gel_-_Phase.png"
+   },
+   {
+    "name": "Spring Rose",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/c/c8/Deviation_Festering_Gel_-_Spring_Rose.png"
+   },
+   {
+    "name": "Rainbow Pudding",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/b/b6/Deviation_Festering_Gel_-_Rainbow_Pudding.png"
+   }
+  ]
+ },
+ {
+  "id": "grumpybulb",
+  "name": "Grumpy Bulb",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/d/dc/Deviation_Grumpy_Bulb.png",
+  "fn": "Can participate in combat to disrupt enemy threat, making them attack each other",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Violet Robe",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/1/18/Deviation_Grumpy_Bulb_-_Violet_Robe.png"
+   },
+   {
+    "name": "Garlic Bird Dough",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/7/7a/Deviation_Grumpy_Bulb_-_Garlic_Bird_Dough.png"
+   }
+  ]
+ },
+ {
+  "id": "invinciblesun",
+  "name": "Invincible Sun",
+  "rarity": "rare",
+  "img": "https://ohwikiguide.com/images/5/5c/Deviation_Invincible_Sun.png",
+  "fn": "Can participate in combat to periodically release blazing energy rays, which attack all nearby enemies, inflicting continuous Burn DMG",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Delta",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/e/e8/Deviation_Invincible_Sun_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Malevolent Sun",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/6/63/Deviation_Invincible_Sun_-_Malevolent_Sun.png"
+   },
+   {
+    "name": "Starfall Inversion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/e/e1/Deviation_Invincible_Sun_-_Starfall_Inversion.png"
+   },
+   {
+    "name": "Inky Lotus",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/7/74/Deviation_Invincible_Sun_-_Inky_Lotus.png"
+   }
+  ]
+ },
+ {
+  "id": "lonewolfwhisper",
+  "name": "Lonewolf Whisper",
+  "rarity": "rare",
+  "img": "https://ohwikiguide.com/images/0/02/Deviation_Lonewolfs_Whisper.png",
+  "fn": "Can participate in combat. Will transform into a black wolf and attack enemies",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: Monolith of Thirst (Shadow Hound)"
+  ],
+  "variants": [
+   {
+    "name": "Bursting Magma",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/3/3d/Deviation_Lonewolfs_Whisper_-_Bursting_Magma.png"
+   },
+   {
+    "name": "Distant Tears",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/5/55/Deviation_Lonewolfs_Whisper_-_Distant_Tears.png"
+   },
+   {
+    "name": "Frigid Touch",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/e/ef/Deviation_Lonewolfs_Whisper_-_Frigid_Touch.png"
+   },
+   {
+    "name": "Lunar Oracle",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/5/5e/Deviation_Lonewolfs_Whisper_-_Lunar_Oracle.png"
+   },
+   {
+    "name": "Radiant Variant",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/3/36/Deviation_Lonewolfs_Whisper_-_Radiant_Variant.png"
+   },
+   {
+    "name": "Stellar Remnant",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/c/c5/Lonewolf_Whisper_Stellar_Remnant.png"
+   }
+  ]
+ },
+ {
+  "id": "minifeaster",
+  "name": "Mini Feaster",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/0/07/Deviation_Mini_Feaster.png",
+  "fn": "Can participate in combat, marking enemies or summoning tentacles to attack them.",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Star Devourer",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/5/50/Deviation_Mini_Feaster_-_Star_Devourer.png"
+   },
+   {
+    "name": "Starfall Inversion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/b/b6/Deviation_Mini_Feaster_-_Starfall_Inversion.png"
+   },
+   {
+    "name": "Stardust Lord",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/e/e3/Deviation_Mini_Feaster_-_Stardust_Lord.png"
+   }
+  ]
+ },
+ {
+  "id": "miniwonder",
+  "name": "Mini Wonder",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/8/82/Deviation_Mini_Wonder.png",
+  "fn": "Can participate in combat to absorb bullets flying towards its owner",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Bursting Magma",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/0/0d/Deviation_Mini_Wonder_-_Bursting_Magma.png"
+   },
+   {
+    "name": "Chaos",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/1/1f/Deviation_Mini_Wonder_-_Chaos.png"
+   },
+   {
+    "name": "Starfall Inversion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/d/df/Deviation_Mini_Wonder_-_Starfall_Inversion.png"
+   },
+   {
+    "name": "Silver River",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/a/ab/Silver_River.png"
+   }
+  ]
+ },
+ {
+  "id": "mrwish",
+  "name": "Mr. Wish",
+  "rarity": "rare",
+  "img": "https://ohwikiguide.com/images/0/07/Deviation_Mr_Wish.png",
+  "fn": "Can participate in combat to use guns to attack and apply The Bull's Eye on enemies",
+  "drops": [
+   "Manibus: Sigma (Side Boss)",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Chaos",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/2/2f/Deviation_Mr_Wish_-_Chaos.png"
+   },
+   {
+    "name": "Penguin Hope",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/0/07/Penguin_Hope.png"
+   },
+   {
+    "name": "Wish Chefosaurus Rex",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/3/3d/Deviation_Mr_Wish_-_Wish_Chefosaurus_Rex.png"
+   }
+  ]
+ },
+ {
+  "id": "polarjelly",
+  "name": "Polar Jelly",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/7/71/Deviation_Polar_Jelly.png",
+  "fn": "Can participate in combat to deal Ice DMG to a large area",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/6/65/Deviation_Polar_Jelly_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Radiant Variant",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/b/bd/Deviation_Polar_Jelly_-_Radiant_Variant.png"
+   },
+   {
+    "name": "Starfall Inversion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/7/72/Deviation_Polar_Jelly_-_Starfall_Inversion.png"
+   }
+  ]
+ },
+ {
+  "id": "pyrodino",
+  "name": "Pyro Dino",
+  "rarity": "epic",
+  "img": "https://ohwikiguide.com/images/6/6a/Deviation_Pyro_Dino.png",
+  "fn": "Can Participate in combat to breathe fire.",
+  "drops": [
+   "Manibus: Phi (Side Boss)",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Lunar Oracle",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/3/35/Deviation_Pyro_Dino_-_Lunar_Oracle.png"
+   },
+   {
+    "name": "Scorching Echo",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/2/2b/Deviation_Pyro_Dino_-_Scorching_Echo.png"
+   }
+  ]
+ },
+ {
+  "id": "shatteredmaiden",
+  "name": "Shattered Maiden",
+  "rarity": "epic",
+  "img": "https://ohwikiguide.com/images/9/93/Deviation_Shattered_Maiden.png",
+  "fn": "Can participate in combat, fearing and freezing enemies.",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Wandering Witch",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/8/80/Deviation_Shattered_Maiden_-_Wandering_Witch.png"
+   }
+  ]
+ },
+ {
+  "id": "snowsprite",
+  "name": "Snowsprite",
+  "rarity": "rare",
+  "img": "https://ohwikiguide.com/images/e/ed/Deviation_Snowsprite.png",
+  "fn": "Summons exploding crystals, +Frost DMG received by enemies",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Taurus",
+   "Monolith: None"
+  ],
+  "variants": [
+   {
+    "name": "Chaos",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/1/16/Deviation_Snowsprite_-_Chaos.png"
+   },
+   {
+    "name": "Lunar Oracle",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/a/aa/Deviation_Snowsprite_-_Lunar_Oracle.png"
+   },
+   {
+    "name": "Springs Return",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/0/04/Deviation_Snowsprite_-_Springs_Return.png"
+   }
+  ]
+ },
+ {
+  "id": "soulsummoner",
+  "name": "Soul Summoner",
+  "rarity": "legendary",
+  "img": "https://ohwikiguide.com/images/4/4a/Deviation_Soul_Summoner.png",
+  "fn": "Can participate in combat to weaken enemies with cursed arrows, increasing the Weapon DMG they receive...",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: EX1, Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": []
+ },
+ {
+  "id": "voodoodoll",
+  "name": "Voodoo Doll",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/f/fd/Voodoo_Doll.png",
+  "fn": "Can participate in combat, sharing the damage received by its master or possessing enemies so they share the damage its master receives instead.",
+  "drops": [
+   "Manibus: Sigma, Alpha, Psi",
+   "Sunbury Middle School Location: 5273, 7015 (on Roof of School)",
+   "Way of Winter: EX-1, Psi, Delta",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Fluffy Curse",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/b/b4/Deviation_Voodoo_Doll_-_Fluffy_Curse.png"
+   },
+   {
+    "name": "Starfall Inversion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/8/8f/Deviation_Voodoo_Doll_-_Starfall_Inversion.png"
+   },
+   {
+    "name": "Thorny Wedding",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/0/0b/Voodoo_Thorny_Wedding.png"
+   }
+  ]
+ },
+ {
+  "id": "whalepup",
+  "name": "Whalepup",
+  "rarity": "rare",
+  "img": "https://ohwikiguide.com/images/8/85/Deviation_Whalepup.png",
+  "fn": "Can participate in combat, transforming the battlefield into an underwater world that drowns enemies and increases the Weapon DMG they receive.",
+  "drops": [
+   "Manibus: Theta (Side Boss)",
+   "Way of Winter: Psi, Delta",
+   "Monolith: None"
+  ],
+  "variants": [
+   {
+    "name": "Abyssal Whale Dream",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/3/3b/Whale_Pup_Abyssal_Whale_Dream.png"
+   }
+  ]
+ },
+ {
+  "id": "zapamander",
+  "name": "Zapamander",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/2/25/Deviation_Zapamander.png",
+  "fn": "Can participate in combat to summon thunderclouds to strike enemies and enhance electrical damage",
+  "drops": [
+   "Manibus: Alpha (Side Boss)",
+   "Way of Winter: Securement Unit",
+   "Monolith: TBD"
+  ],
+  "variants": [
+   {
+    "name": "Gravity Abyss",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/Special:FilePath/Gravity_Abyss_Zapamander.png?width=600"
+   },
+   {
+    "name": "Pink Block",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/Special:FilePath/Pink_Block_Zapamander.png?width=600"
+   }
+  ]
+ },
+ {
+  "id": "zapcam",
+  "name": "ZapCam",
+  "rarity": "epic",
+  "img": "https://ohwikiguide.com/images/f/f6/Deviation_ZapCam.png",
+  "fn": "+Weapon DMG received by enemies",
+  "drops": [
+   "Manibus: TBD",
+   "Way of Winter: TBD",
+   "Monolith: TBD"
+  ],
+  "variants": [
+   {
+    "name": "Fools Memory",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/3/3b/Deviation_ZapCam_-_Fools_Memory.png"
+   },
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/0/0f/Deviation_ZapCam_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Lunar Oracle",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/4/41/Deviation_ZapCam_-_Lunar_Oracle.png"
+   },
+   {
+    "name": "Obituary Reporter",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/6/68/Deviation_ZapCam_-_Obituary_Reporter.png"
+   }
+  ]
+ },
+ {
+  "id": "zenopurifier",
+  "name": "Zeno-Purifier",
+  "rarity": "epic",
+  "img": "https://ohwikiguide.com/images/c/c9/Deviation_Zeno-Purifier.png",
+  "fn": "Attacks enemies, gives player melee teleport",
+  "drops": [
+   "Manibus: TBD",
+   "Way of Winter: TBD",
+   "Monolith: TBD"
+  ],
+  "variants": [
+   {
+    "name": "Chaos",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/b/b4/Deviation_Zeno-Purifier_-_Chaos.png"
+   },
+   {
+    "name": "Dusken of Evernight",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/f/f6/Deviation_Zeno-Purifier_-_Dusken_of_Evernight.png"
+   },
+   {
+    "name": "Lunar Oracle",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/9/9b/Deviation_Zeno-Purifier_-_Lunar_Oracle.png"
+   },
+   {
+    "name": "Tiger Slash",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/d/d2/Deviation_Zeno-Purifier_-_Tiger_Slash.png"
+   }
+  ]
+ }
+]

@@ -1,0 +1,58 @@
+// rarity.js — game balance in one place. Edit freely.
+//
+// Every combat deviation gets a rarity tier. Anything added to the wiki later that
+// isn't listed here becomes "uncommon" until you give it a tier.
+
+const TIERS = {
+  common:    { label: "Common",    weight: 40, catch: 0.70, reward: 10,  color: "#9fb0c0" },
+  uncommon:  { label: "Uncommon",  weight: 28, catch: 0.55, reward: 20,  color: "#4ade80" },
+  rare:      { label: "Rare",      weight: 18, catch: 0.40, reward: 40,  color: "#38bdf8" },
+  epic:      { label: "Epic",      weight: 10, catch: 0.25, reward: 80,  color: "#c084fc" },
+  legendary: { label: "Legendary", weight: 4,  catch: 0.12, reward: 200, color: "#fbbf24" },
+};
+
+const ASSIGN = {
+  common:    ["Butterfly Emissary", "By-the-Wind", "Dr. Teddy", "Grumpy Bulb", "Mini Feaster"],
+  uncommon:  ["Enchanting Void", "Festering Gel", "Mini Wonder", "Polar Jelly", "Voodoo Doll", "Zapamander"],
+  rare:      ["Invincible Sun", "Lonewolf Whisper", "Mr. Wish", "Snowsprite", "Whalepup"],
+  epic:      ["Pyro Dino", "Shattered Maiden", "ZapCam", "Zeno-Purifier"],
+  legendary: ["Behemoth", "Brave George", "Soul Summoner"],
+};
+
+// A spawn can be a Variation (from the wiki's Variations tab) or a Skin — the game's "shinies".
+const VARIANT = {
+  variation: { chance: 1 / 12, catchMult: 0.85, rewardMult: 2, label: "Variation" },
+  skin:      { chance: 1 / 40, catchMult: 0.75, rewardMult: 4, label: "Skin" },
+};
+
+// Securement Units = the "balls". price in Starchrom, mult = catch chance multiplier.
+const UNITS = {
+  standard: { label: "Standard Unit", price: 20,   mult: 1.0,  aliases: ["std", "s", "basic", "normal"] },
+  advanced: { label: "Advanced Unit", price: 60,   mult: 1.5,  aliases: ["adv", "a", "great"] },
+  elite:    { label: "Elite Unit",    price: 150,  mult: 2.2,  aliases: ["e", "ultra"] },
+  anomaly:  { label: "Anomaly Unit",  price: 1500, mult: 100,  aliases: ["master", "m", "guaranteed"] }, // always catches
+};
+
+const ECONOMY = {
+  starterStarchrom: 200,
+  starterUnits: { standard: 10, advanced: 2 },
+  daily: { starchrom: 100, units: { standard: 5 } },
+  dailyCooldownHours: 20,
+  newSpeciesBonus: 100,   // first time you secure a deviation (or a new variant of it)
+  escapeSalvage: 3,       // Starchrom for a failed attempt, so trying is never a total loss
+  scrapValue: 0.5,        // !scrap pays this fraction of the catch reward for each duplicate
+  maxCatchChance: 0.95,   // except the Anomaly Unit
+};
+
+const lookup = {};
+for (const [tier, names] of Object.entries(ASSIGN)) for (const n of names) lookup[n.toLowerCase().replace(/[^a-z0-9]/g, "")] = tier;
+const rarityOf = (name) => lookup[String(name).toLowerCase().replace(/[^a-z0-9]/g, "")] || "uncommon";
+
+function unitKey(word) {
+  const w = String(word || "").toLowerCase().replace(/units?$/, "").trim();
+  if (!w) return "standard";
+  for (const [k, u] of Object.entries(UNITS)) if (k === w || k.startsWith(w) || u.aliases.includes(w)) return k;
+  return null;
+}
+
+module.exports = { TIERS, ASSIGN, VARIANT, UNITS, ECONOMY, rarityOf, unitKey };
