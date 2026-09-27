@@ -1,0 +1,33 @@
+<div style="max-width:900px; margin:0 auto; color:#cfd6df; line-height:1.7;">
+= Deviation Hunt — Privacy Notice =
+''Last updated: 27 September 2026''
+
+This notice covers '''Deviation Hunt''': the Twitch chat bot (<code>ohdeviationhunt</code>), its website (ohdeviationhunt-production.up.railway.app) and the '''Deviation Hunt''' Twitch panel extension. It is a fan-made game for Once Human players ([[Deviation_Hunt|game guide]]) run by Once Human Guide (ohwikiguide.com), and is not affiliated with Starry Studio or NetEase.
+
+== What we collect ==
+'''Players''' — when you use a game command such as <code>!secure</code> in a channel running Deviation Hunt, we store:
+* your Twitch user ID, username and display name
+* your game data: the deviations you've secured (with their ratings, traits and the time and channel they were caught), your Starchrom, your Securement Units and when you last claimed <code>!daily</code>
+
+'''Streamers''' — when you add the bot to your channel we store your channel's Twitch ID, username, display name and your game settings (spawn timer, spawns on/off, spawn and catch totals). Signing in with Twitch to add the bot only confirms who you are; we do not keep your Twitch login token.
+
+'''Twitch panel extension''' — the panel receives a signed token from Twitch. Only if you click '''Show my Deviation Bag''' and agree to Twitch's identity-sharing prompt does it include your Twitch user ID, which we use solely to look up and display your own collection. Nothing new is stored when you view the panel.
+
+== What we don't collect ==
+* We do not store your chat messages. The bot only looks for its own commands, and keeps an in-memory note of when a channel last had chat activity so deviations don't spawn in an empty chat.
+* No email addresses, passwords, payment details, location or device information.
+* No cookies, advertising, analytics or tracking in the panel extension.
+
+== How it's used and shared ==
+Your data is used only to run the game. Your username and collection are '''public''': they appear in chat results, on your collection page (<code>/u/''yourname''</code>), in the panel and on the leaderboard. We do not sell or share data with anyone. Game data is hosted on Railway (railway.com); Twitch provides chat and the extension.
+
+== Keeping and deleting your data ==
+Game data is kept while the game is running so your collection follows you between channels. Streamers can remove the bot at any time with <code>!hunt leave</code>, which deletes their channel settings. To have your player data deleted, ask on the [https://discord.gg/FZtkXeGeUA Once Human Guide Discord] and it will be removed.
+
+== Children ==
+Deviation Hunt is for Twitch users, who must meet Twitch's minimum age. We don't knowingly collect data beyond what's listed above from anyone.
+
+== Changes and contact ==
+If this notice changes, the date above will be updated. Questions: [https://discord.gg/FZtkXeGeUA Once Human Guide Discord].
+</div>
+__NOTOC__

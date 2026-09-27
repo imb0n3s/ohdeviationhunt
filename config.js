@@ -31,7 +31,7 @@ const cfg = {
   EXT_SECRETS: (process.env.EXT_SECRET || "").split(/[\s,]+/).map((x) => x.trim().replace(/^["']|["']$/g, "")).filter(Boolean),
 
   TERMS_URL: process.env.TERMS_URL || "https://ohwikiguide.com/OH_Wiki_Bot_Terms_of_Service",
-  PRIVACY_URL: process.env.PRIVACY_URL || "https://ohwikiguide.com/Privacy_Policy",
+  PRIVACY_URL: process.env.PRIVACY_URL || "https://ohwikiguide.com/Deviation_Hunt_Privacy",
   DISCORD_URL: process.env.DISCORD_URL || "https://discord.gg/FZtkXeGeUA",
 };
 module.exports = cfg;
