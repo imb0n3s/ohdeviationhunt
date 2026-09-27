@@ -2,6 +2,7 @@
 const cfg = require("./config");
 const db = require("./db");
 const data = require("./data");
+const traits = require("./traits");
 const { TIERS, VARIANT, UNITS, ECONOMY, unitKey } = require("./rarity");
 
 const SC = "Starchrom";
@@ -57,6 +58,9 @@ function rollSpawn() {
   else if (vars.length && r < VARIANT.skin.chance + VARIANT.variation.chance) variant = vars[Math.floor(Math.random() * vars.length)];
   return { dev, variant };
 }
+
+// "P4·M2", with a star for a perfect 5/5
+const ratingTag = (sp) => `P${sp.power}·M${sp.mood}${sp.power === 5 && sp.mood === 5 ? "⭐" : ""}`;
 
 function spawnName(s) { return s.variant ? `${s.dev.name} — ${s.variant.name}` : s.dev.name; }
 
@@ -184,9 +188,11 @@ class Spawns {
           const variant = s.variant?.name || "";
           const had = db.q.getCatch.get(userId, s.dev.id, variant);
           db.q.addCatch.run(userId, s.dev.id, variant, s.variant?.kind || "base", Date.now(), bid);
+          const sp = traits.rollSpecimen(s.dev.name, variant);
+          db.q.addSpecimen.run({ user_id: userId, deviation: s.dev.id, variant, ...sp, caught_at: Date.now(), channel: bid });
           p.starchrom += reward + (had ? 0 : ECONOMY.newSpeciesBonus);
           if (!had) firsts.push(a.display);
-          caught.push(a.display + (a.unit !== "standard" ? ` (${UNITS[a.unit].label.split(" ")[0]})` : ""));
+          caught.push(`${a.display} [${ratingTag(sp)}]`);
         } else {
           p.starchrom += ECONOMY.escapeSalvage;
           escaped.push(a.display);
@@ -206,7 +212,7 @@ class Spawns {
     } else {
       msg = `💥 ${name} broke free from everyone (${list(escaped)})! Better luck next breach.`;
     }
-    msg += ` | !dex to see your collection`;
+    msg += caught.length ? ` | [P=Deviant Power, M=Mood] · !traits ${s.dev.id} for traits` : ` | !dex to see your collection`;
     return this.send(bid, msg);
   }
 
@@ -288,12 +294,14 @@ function scrap(userId, login, display) {
       gain += each * (r.count - 1);
       n += r.count - 1;
       db.q.trimDupe.run(userId, r.deviation, r.variant);
+      const extra = db.q.specimensOf.all(userId, r.deviation).filter((x) => x.variant === r.variant).slice(1);
+      for (const x of extra) db.q.deleteSpecimen.run(x.id);
     }
     p.starchrom += gain;
     savePlayer(p);
   })();
   if (!n) return `@${display} no duplicates to scrap — you keep one of everything.`;
-  return `@${display} ♻️ scrapped ${n} duplicate${n > 1 ? "s" : ""} for ${fmt(gain)} ${SC} (kept one of each). ${unitsText(p)}`;
+  return `@${display} ♻️ scrapped ${n} duplicate${n > 1 ? "s" : ""} for ${fmt(gain)} ${SC} (kept your best Power+Mood of each). ${unitsText(p)}`;
 }
 
 function info(query, baseUrl) {
@@ -306,10 +314,30 @@ function info(query, baseUrl) {
   return `${d.name} [${tier}]${fn}${drops ? ` Drops: ${drops}.` : ""}${extra} ${cfg.WIKI_BASE}/Deviation_Main_Page`;
 }
 
+// !traits [deviation] — your best specimen of that deviation, or your latest catch
+function specimenText(userId, login, display, query, baseUrl) {
+  loadPlayer(userId, login, display);
+  let sp, dev;
+  if (query) {
+    dev = data.find(query);
+    if (!dev) return `@${display} no combat deviation matches "${query}".`;
+    sp = db.q.specimensOf.get(userId, dev.id);
+    if (!sp) return `@${display} you haven't secured a ${dev.name} yet.`;
+  } else {
+    sp = db.q.latestSpecimen.get(userId);
+    if (!sp) return `@${display} you haven't secured anything yet — type !secure when a deviation breaches!`;
+    dev = data.get(sp.deviation);
+  }
+  const count = db.q.specimensOf.all(userId, sp.deviation).length;
+  const nm = `${dev?.name || sp.deviation}${sp.variant ? ` — ${sp.variant}` : ""}`;
+  const label = query ? `best ${nm}${count > 1 ? ` (of ${count})` : ""}` : `latest: ${nm}`;
+  return `@${display} ${label} · Deviant Power ${sp.power}/5 · Mood ${sp.mood}/5 · Traits: ${traits.shortTraits(sp)} ${baseUrl}/u/${login}`;
+}
+
 function top(baseUrl) {
   const rows = db.leaderboard(5);
   if (!rows.length) return "No one has secured a deviation yet. Be the first!";
   return `🏆 Top Metas: ${rows.map((r, i) => `${i + 1}. ${r.display} ${r.species} dev${r.variants ? ` +${r.variants}✨` : ""}`).join(" · ")} — ${baseUrl}/top`;
 }
 
-module.exports = { Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

@@ -7,6 +7,7 @@ const db = require("./db");
 const twitch = require("./twitch");
 const data = require("./data");
 const game = require("./game");
+const traits = require("./traits");
 const { TIERS, UNITS, VARIANT, ECONOMY } = require("./rarity");
 
 // ---------- signed OAuth state ----------
@@ -46,6 +47,9 @@ code,kbd{background:#0b1016;padding:2px 7px;border-radius:5px;color:#c9e7ff;font
 .dev img{width:100%;aspect-ratio:1;object-fit:contain;display:block}
 .dev .n{font-weight:600;font-size:.92rem;margin-top:6px}.dev .t{font-size:.78rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase}
 .dev .c{position:absolute;top:8px;right:10px;font-size:.8rem;background:#0b1016;border-radius:99px;padding:1px 8px}
+.sp{margin-top:8px;text-align:left;font-size:.78rem}.pm{display:flex;justify-content:center;gap:10px;font-weight:600;color:#fde68a;margin-bottom:4px}
+.tr{list-style:none;margin:0;padding:0}.tr li{padding:2px 0;border-top:1px solid var(--line);color:var(--text);cursor:help}.tr li b{display:inline-block;width:16px;color:var(--accent)}
+.bv{font-size:.7rem;color:var(--muted);text-align:center;margin-top:2px}
 .dev.missing img{filter:brightness(0) opacity(.35)}.dev.missing .n{color:var(--muted)}
 .vars{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:6px}
 .vars span{font-size:.7rem;padding:1px 6px;border-radius:99px;background:#0b1016;color:var(--muted)}.vars span.have{color:#fde68a;background:#3b2f0b}
@@ -88,6 +92,7 @@ ${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones (Elite)! +40 Starchr
 <p><kbd>!units</kbd> — your Starchrom and Units · <kbd>!shop</kbd> — prices · <kbd>!buy advanced 5</kbd> — buy Units</p>
 <p><kbd>!daily</kbd> — free supply drop (+${ECONOMY.daily.starchrom} Starchrom, ${ECONOMY.daily.units.standard} Standard Units) every ${ECONOMY.dailyCooldownHours}h</p>
 <p><kbd>!dex</kbd> — your Deviadex and collection link · <kbd>!dex name</kbd> — someone else's · <kbd>!scrap</kbd> — turn duplicates into Starchrom</p>
+<p><kbd>!traits</kbd> — your latest catch's Deviant Power, Mood and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
 <p><kbd>!dev behemoth</kbd> — what a deviation does and where it drops · <kbd>!hunttop</kbd> — leaderboard · <kbd>!hunt</kbd> — help</p>
 </div>
 <h2>Streamer & mod commands</h2>
@@ -98,7 +103,7 @@ ${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones (Elite)! +40 Starchr
 <h2>How catching works</h2>
 <div class="card"><table><tr><th>Rarity</th><th>Spawn weight</th><th>Base catch</th><th>Reward</th></tr>
 ${Object.values(TIERS).map((t) => `<tr><td style="color:${t.color};font-weight:600">${t.label}</td><td>${t.weight}%</td><td>${Math.round(t.catch * 100)}%</td><td>${t.reward} Starchrom</td></tr>`).join("")}</table>
-<p>Units multiply your odds: ${Object.values(UNITS).map((u) => `${u.label} ${u.price} Starchrom (${u.mult >= 100 ? "never fails" : `×${u.mult}`})`).join(" · ")}. About 1 in ${Math.round(1 / VARIANT.variation.chance)} breaches is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b> (×${VARIANT.skin.rewardMult}). First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. Missed throws still salvage ${ECONOMY.escapeSalvage} Starchrom.</p></div>`);
+<p>Units multiply your odds: ${Object.values(UNITS).map((u) => `${u.label} ${u.price} Starchrom (${u.mult >= 100 ? "never fails" : `×${u.mult}`})`).join(" · ")}. About 1 in ${Math.round(1 / VARIANT.variation.chance)} breaches is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b> (×${VARIANT.skin.rewardMult}). Every deviation you secure is its own specimen with <b>Deviant Power 1–5</b> and <b>Mood 1–5</b> (5 is rare; a perfect 5/5 gets a ⭐) and three traits rolled by the rules on the wiki's <a href="${esc(cfg.WIKI_BASE)}/Deviation_Trait_Page">Deviation Trait Page</a>: Slot 1 is a Global trait or that deviation's own trait, Slot 2 is a combat trait (deviation-specific ones only on their own deviation), Slot 3 is a fused trait. <kbd>!scrap</kbd> keeps your best Power+Mood specimen of each. First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. Missed throws still salvage ${ECONOMY.escapeSalvage} Starchrom.</p></div>`);
 }
 
 function collectionPage(p) {
@@ -110,6 +115,13 @@ function collectionPage(p) {
     if (r.variant) h.variants.add(r.variant);
     have.set(r.deviation, h);
   }
+  const best = new Map(); // dev -> best specimen (query is already ordered best-first)
+  const specCount = new Map();
+  for (const sp of db.q.userSpecimens.all(p.user_id)) {
+    const cur = best.get(sp.deviation);
+    if (!cur || sp.power + sp.mood > cur.power + cur.mood) best.set(sp.deviation, sp);
+    specCount.set(sp.deviation, (specCount.get(sp.deviation) || 0) + 1);
+  }
   const all = data.all();
   const totalVariants = all.reduce((s, d) => s + d.variants.length, 0);
   const pct = all.length ? Math.round((c.species / all.length) * 100) : 0;
@@ -117,12 +129,16 @@ function collectionPage(p) {
   const cards = all.map((d) => {
     const h = have.get(d.id);
     const vars = d.variants.length ? `<div class="vars">${d.variants.map((v) => `<span class="${h?.variants.has(v.name) ? "have" : ""}" title="${esc(v.kind)}">${esc(v.name)}</span>`).join("")}</div>` : "";
-    return `<div class="dev ${h ? "" : "missing"}">${h ? `<span class="c">×${h.count}</span>` : ""}<img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${tierTag(d.rarity)}${h ? vars : ""}</div>`;
+    const sp = best.get(d.id);
+    const spHtml = sp ? `<div class="sp"><div class="pm"><span title="Deviant Power">⚡ ${sp.power}/5</span><span title="Mood">☺ ${sp.mood}/5</span></div>
+<ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl))}</li>`).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
+    return `<div class="dev ${h ? "" : "missing"}">${h ? `<span class="c">×${h.count}</span>` : ""}<img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${tierTag(d.rarity)}${spHtml}${h ? vars : ""}</div>`;
   }).join("");
   return page(`${p.display}'s Deviadex`, `
 <h1>${esc(p.display)}'s Deviadex</h1>
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${fmt(c.total)}</b>secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
+<p>Each card shows your best specimen: ⚡ Deviant Power and ☺ Mood (1–5) and its three traits (hover a trait for what it does).</p>
 <p>Units: ${Object.entries(UNITS).map(([k, u]) => `${esc(u.label)} ${units[k] || 0}`).join(" · ")}</p>
 <div class="grid">${cards}</div>`);
 }

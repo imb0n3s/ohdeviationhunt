@@ -14,6 +14,7 @@ const { makeHandler } = require("../commands");
   const devs = data.parse(raw);
   fs.writeFileSync(require("path").join(__dirname, "..", "combat-fallback.json"), JSON.stringify(devs, null, 1));
   await data.refresh().catch(() => {}); // wiki or snapshot
+  await require("../traits").refresh();
   console.log("deviations:", data.all().length, data.info().source);
   const out = [];
   const pool = { send: async (b, t) => { out.push(t); console.log("BOT>", t); }, join: async () => {}, leave: async () => {} };
@@ -41,6 +42,9 @@ const { makeHandler } = require("../commands");
   await say("1", "viewer42", "!dev teddy");
   await say("1", "viewer42", "!dev lonewolf");
   await say("1", "viewer42", "!hunttop");
+  await say("1", "viewer42", "!traits");
+  await say("2", "metabones", "!traits polar");
+  await say("2", "metabones", "!traits behemoth");
   await say("100", "imbon3s", "!hunt interval 7", true);
   await say("100", "imbon3s", "!hunt status", true);
   const long = out.filter((m) => m.length > 500);

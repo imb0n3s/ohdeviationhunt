@@ -10,6 +10,9 @@ const { createApp } = require("./web");
 
 async function main() {
   await data.start();
+  const traits = require("./traits");
+  await traits.refresh();
+  setInterval(traits.refresh, 6 * 60 * 60 * 1000).unref();
 
   const pool = new Conduit(null);
   pool.send = (bid, text, replyTo) => twitch.sendChat(bid, text, replyTo).catch((e) => console.error("[chat] send failed:", e.message));

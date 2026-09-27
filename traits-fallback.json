@@ -1,0 +1,786 @@
+{
+ "global": [
+  {
+   "key": "cheer_up",
+   "name": "Cheer Up",
+   "minLevel": 1,
+   "maxLevel": 3,
+   "effects": [
+    "1 Max Mood (Activity) +30%, Deviant Power (Skill) recovery speed -5%",
+    "2 Max Mood (Activity) +40%, Deviant Power (Skill) recovery speed -5%",
+    "3 Max Mood (Activity) +50%, Deviant Power (Skill) recovery speed -5%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "covert_energy",
+   "name": "Covert Energy",
+   "minLevel": 1,
+   "maxLevel": 5,
+   "effects": [
+    "1 Max Deviant Power (Skill) +10%",
+    "2 Max Deviant Power (Skill) +20%",
+    "3 Max Deviant Power (Skill) +25%",
+    "4 Max Deviant Power (Skill) +30%",
+    "5 Max Deviant Power (Skill) +35%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "feeling_blue",
+   "name": "Feeling Blue",
+   "minLevel": 1,
+   "maxLevel": 2,
+   "effects": [
+    "1 Max Mood (Activity) -5%",
+    "2 Max Mood (Activity) -10%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "growing_pains",
+   "name": "Growing Pains",
+   "minLevel": 1,
+   "maxLevel": 3,
+   "effects": [
+    "1 Max Deviant Power (Skill) +30%, Mood (Activity) recovery speed -5",
+    "2 Max Deviant Power (Skill) +40%, Mood (Activity) recovery speed -5",
+    "3 Max Deviant Power (Skill) +50%, Mood (Activity) recovery speed -5"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "optimist",
+   "name": "Optimist",
+   "minLevel": 1,
+   "maxLevel": 5,
+   "effects": [
+    "1 Max Mood (Activity) +15%",
+    "2 Max Mood (Activity) +20%",
+    "3 Max Mood (Activity) +25%",
+    "4 Max Mood (Activity) +30%",
+    "5 Max Mood (Activity) +35%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "power_rewind",
+   "name": "Power Rewind",
+   "minLevel": 1,
+   "maxLevel": 2,
+   "effects": [
+    "1 Deviant Power (Skill) recovery speed +5%",
+    "2 Deviant Power (Skill) recovery speed +10%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "rise_and_shine",
+   "name": "Rise and Shine",
+   "minLevel": 1,
+   "maxLevel": 5,
+   "effects": [
+    "1 Mood (Activity) recovery speed +5%",
+    "2 Mood (Activity) recovery speed +10%",
+    "3 Mood (Activity) recovery speed +15%",
+    "4 Mood (Activity) recovery speed +20%",
+    "5 Mood (Activity) recovery speed +25%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "stable_energy",
+   "name": "Stable Energy",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Max Deviant Power (Skill) +30%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "stable_vitality",
+   "name": "Stable Vitality",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Max Mood (Activity) +30%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "upper_hand",
+   "name": "Upper Hand",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "When Deviant Power (Skill) drops to 0, automatically consume All Mood (Activity) to recover All Deviant Power (Skill)"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "worn_out",
+   "name": "Worn-Out",
+   "minLevel": 1,
+   "maxLevel": 2,
+   "effects": [
+    "1 Max Deviant Power (Skill) -5%",
+    "2 Max Deviant Power (Skill) -10%"
+   ],
+   "fuse": null
+  }
+ ],
+ "slot1": [
+  {
+   "key": "butterfly",
+   "name": "Butterfly",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Butterfly's Emissary - Ancient Scroll: It gains Max Energy (Skill) +40%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "by_the_wind",
+   "name": "By-The-Wind",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "By-The-Wind - Bursting Magma: It gains Energy (Skill) Recovery Speed +10%",
+    "By-The-Wind - Frigid Touch: It gains Energy (Skill) Recovery Speed +15%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "dr_teddy",
+   "name": "Dr Teddy",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Dr Teddy - Infrasonic Illusion: It gains Energy (Skill) recovery speed +20%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "festering_gel",
+   "name": "Festering Gel",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Festering Gel - Milk Sugar: It gains Max Mood (Activity) +35%",
+    "Praise the Sun - Spring Rose: When synced, you receive 20% healing during the day. Effect is reduced by half at night.",
+    "Starry Sky - Marine Star: When synced, each reload gives you either a 5% Weapon DMG bonus or 5% Status DMG at random"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "grumpy_bulb",
+   "name": "Grumpy Bulb",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Grumpy Bulb - Violet Robe: It gains Max Energy (Skill) +40%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "invincible_sun",
+   "name": "Invincible Sun",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Invincible Sun - Malevolent Sun: It gains Mood (Activity) Recovery Speed +20%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "lonewolf_whisper",
+   "name": "Lonewolf's Whisper",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Lonewolf's Whisper - Bursting Magma: It gains Max Energy (Skill) +40%",
+    "Lonewolf's Whisper - Distant Tears: It gains Max Energy (Skill) +40%",
+    "Lonewolf's Whisper - Radiant Variant: It gains Max Mood (Activity) +7%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "mini_wonder",
+   "name": "Mini Wonder",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Mini Wonder - Bursting Magma: It gains Max Mood (Activity) +35%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "polar_jellyfish",
+   "name": "Polar Jellyfish",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Polar Jellyfish - Radiant: It gains Mood (Activity) Recovery Speed +20%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "shattered_maiden",
+   "name": "Shattered Maiden",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Shattered Maiden - Wandering Witch (Twitch Drop): Max Deviant Power (Skill) 10%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "snowsprite",
+   "name": "Snowsprite",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Snowsprite - Spring's Return (Green Variant): It gains Max Mood (Activity) +35%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "voodoo_doll",
+   "name": "Voodoo Doll",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Voodoo Doll - Fluffy Curse: It gains Energy (Skill) recovery speed +10%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "whalepup",
+   "name": "Whalepup",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Don't Get Wet: While equipped, the Player gains 10% DMG Reduction when Wet or in the Swimming Status"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "zapcam",
+   "name": "Zapcam",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Zapcam - Fools Memory: It gains Energy (Skill) recovery speed +10%"
+   ],
+   "fuse": null
+  }
+ ],
+ "slot2": [
+  {
+   "key": "beast_burden",
+   "name": "Beast of Burden",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with it grants Max Load +8"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "brute_force",
+   "name": "Brute Force",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with it grants Max Load +15, Movement Speed -5%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "glistening_blue",
+   "name": "Weakspot Master - Glistening Blue",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "When synced, hitting a Weakspot increases Deviation Power (Skill) by 1. Cooldown: 3s"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "starry_night",
+   "name": "Praise the Moon - Starry Night",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "When synced you deal 6% more damage (both Weapon DMG and Status DMG) at night. Effect is reduced by half during the day"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "city_folk",
+   "name": "City Folk",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with it grants Max Load +15 when exploring Settlements"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "crack_shot",
+   "name": "Crack Shot",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Having it fighting alongside grants Weapon DMG +5%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "enchanting_void",
+   "name": "Enchanting Void",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Enchanting Void - Starfall Inversion: Syncing abilities grants +5% Melee DMG. Increased to 7.5% when airborne"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "heavy_solid",
+   "name": "Heavy and Solid",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Higher Load grants higher DMG Reduction for torso, up to +15%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "invincible_sun",
+   "name": "Invincible Sun",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Invincible Sun - Starfall Inversion: Syncing abilities grants +5% Blaze Elemental DMG. Increased to 7.5% when airborne"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "lighten_mind",
+   "name": "Lighten your Mind",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Lower Load grants higher DMG Reduction for head, up to 15%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "long_runner",
+   "name": "Long Distance Runner",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with it grants Stamina Consumption -20%, Movement Speed -10%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "lonewolf_lunar",
+   "name": "Lonewolf's Whisper - Lunar Oracle",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Weapon DMG +5%. x1.5 when Sanity is below 30%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "mini_feaster",
+   "name": "Mini Feaster",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Mini Feaster - Starfall Inversion: Syncing abilities grants +5% Status DMG. Increased to 7.5% when airborne"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "mini_wonder",
+   "name": "Mini Wonder",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Mini Wonder - Starfall Inversion: Syncing abilities grants +5% head and torso DMG reduction. Increased to 7.5% when airborne"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "polar_jelly",
+   "name": "Polar Jelly",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Polar Jelly - Starfall Inversion: Syncing abilities grants +5% Frost Elemental DMG. Increased to 7.5% when airborne"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "power_king",
+   "name": "Power King",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with it grants Max Load +25, Movement Speed -5%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "psychic_kid",
+   "name": "Psychic Kid",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Having it fight alongside grants Status DMG +5%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "run_fast",
+   "name": "Run Fast",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with this Deviation grants Movement Speed +5%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "save_energy",
+   "name": "Save Energy",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with it grants Stamina Consumption -10%, Movement Speed -5%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "sedentary",
+   "name": "Sedentary",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with it grants Max Load -8 when exploring Settlements"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "stay_indoors",
+   "name": "Stay Indoors",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with it grants Stamina +8% in Settlements"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "street_rascal",
+   "name": "Street Rascal",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with it grants Movement Speed +10% in Settlements"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "two_shift",
+   "name": "Two-Shift System",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with it grants Max Load +16 at daytime, and Movement Speed +12% at night"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "vegetative_calm",
+   "name": "Vegetative Calm",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with it grants Max Stamina +15%, Movement Speed -5%"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "voodoo_doll",
+   "name": "Voodoo Doll",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Voodoo Doll - Starfall Inversion: Syncing abilities restores 1 point of Deviant Power (Skill) every 8s. Restores 1.5 points while airborne"
+   ],
+   "fuse": null
+  },
+  {
+   "key": "wellbeing",
+   "name": "Wellbeing",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Syncing with this Deviation grants Max Stamina +10"
+   ],
+   "fuse": null
+  }
+ ],
+ "slot3": [
+  {
+   "key": "brute_force_rules",
+   "name": "Brute Force Rules",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "After syncing, your dodging or mid-air dashing under the Aero Leap whim will shatter any ores or trees you touch, but you won't get resources from them."
+   ],
+   "fuse": "Bear"
+  },
+  {
+   "key": "clean_hygienic",
+   "name": "Clean and Hygienic",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "After Syncing, the player's Sanity will automatically recover to 20% when it drops below that threshold"
+   ],
+   "fuse": "Sink"
+  },
+  {
+   "key": "eureka_moment",
+   "name": "Eureka Moment",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "After syncing, if you're attacked, the attacker is revealed and their Weapon DMG is reduced by 10% for 2s (60s cooldown)"
+   ],
+   "fuse": "Warm Lamp, Small Signal Light"
+  },
+  {
+   "key": "extra_load",
+   "name": "Extra Load",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "After syncing, Maximum Load is increased by 20"
+   ],
+   "fuse": "Any Carton"
+  },
+  {
+   "key": "feline",
+   "name": "Feline Creatures",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "After syncing, fall damage is reduced by 50%, and fractures are prevented"
+   ],
+   "fuse": "Leopard"
+  },
+  {
+   "key": "foul_symbiosis",
+   "name": "Foul Symbiosis",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "When they help kill Deviants, loot has a 10% chance to gain +1 Acid"
+   ],
+   "fuse": "Boar"
+  },
+  {
+   "key": "herbivore",
+   "name": "Herbivore",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "After syncing, nearby herbivores will no longer flee from the player"
+   ],
+   "fuse": "Deer or Goat"
+  },
+  {
+   "key": "knights",
+   "name": "Knights of the Round Table",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Slightly reduces damage taken by this Deviation"
+   ],
+   "fuse": "Any Table"
+  },
+  {
+   "key": "master_temp",
+   "name": "Master of Temperatures",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Player gain 10 Heat Resist within their territory"
+   ],
+   "fuse": "Any Fan"
+  },
+  {
+   "key": "mind_massage",
+   "name": "Mind Massage",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "After syncing, Sanity will gradually recover"
+   ],
+   "fuse": "Capybara"
+  },
+  {
+   "key": "moonlight",
+   "name": "Moonlight Assault",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "At night, Deviant Skill and Activity Recovery rates are increased"
+   ],
+   "fuse": "Wolf"
+  },
+  {
+   "key": "music_resonance",
+   "name": "Music Resonance",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Will not require radio for the deviation's securement box."
+   ],
+   "fuse": "Jukebox"
+  },
+  {
+   "key": "neon",
+   "name": "Neon Flicker",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "For every Deviation with the Neon Flicker trait in the territory, the max Mood (Activity) all Deviation increases by 1"
+   ],
+   "fuse": "Like"
+  },
+  {
+   "key": "nightmare",
+   "name": "Nightmare Waters",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "After syncing, Stamina consumption is significantly reduced while diving, and Oxygen is greatly increased"
+   ],
+   "fuse": "Crocodile"
+  },
+  {
+   "key": "polar_beast",
+   "name": "Polar Beast",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "When the environmental temperature is below 0C, their Attack increases by 10%"
+   ],
+   "fuse": "Polar Bear"
+  },
+  {
+   "key": "pollution",
+   "name": "Pollution Adaptation",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "After syncing, the player's Sanity drops 90% slower within the Pollution Zone"
+   ],
+   "fuse": "Modern Toilet"
+  },
+  {
+   "key": "precision",
+   "name": "Precision Moment",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "Increases Mood by 10 (Activity) and Deviant Energy (Skill) by 10 for all Deviations in the territory every hour (effect does not stack)"
+   ],
+   "fuse": "Desktop Electronic Clock"
+  },
+  {
+   "key": "top_grunt",
+   "name": "Top Grunt",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "After syncing, no Stamina is consumed during gathering activities like chopping trees or mining"
+   ],
+   "fuse": "Buffalo"
+  },
+  {
+   "key": "warm_flame",
+   "name": "Warm Flame",
+   "minLevel": null,
+   "maxLevel": null,
+   "effects": [
+    "After syncing, the Players Cold Resist increases by 10"
+   ],
+   "fuse": "Candelabra"
+  }
+ ],
+ "slot1ForDev": {
+  "Butterfly Emissary": "butterfly",
+  "By-the-Wind": "by_the_wind",
+  "Dr. Teddy": "dr_teddy",
+  "Festering Gel": "festering_gel",
+  "Grumpy Bulb": "grumpy_bulb",
+  "Invincible Sun": "invincible_sun",
+  "Lonewolf Whisper": "lonewolf_whisper",
+  "Mini Wonder": "mini_wonder",
+  "Polar Jelly": "polar_jellyfish",
+  "Shattered Maiden": "shattered_maiden",
+  "Snowsprite": "snowsprite",
+  "Voodoo Doll": "voodoo_doll",
+  "Whalepup": "whalepup",
+  "ZapCam": "zapcam",
+  "Atomic Snail": "atomic_snail",
+  "Space Turner": "space_turner",
+  "Growshroom": "opt_extra_large"
+ },
+ "slot2ForDev": {
+  "Butterfly Emissary": [
+   "glistening_blue",
+   "starry_night"
+  ],
+  "Enchanting Void": [
+   "enchanting_void"
+  ],
+  "Invincible Sun": [
+   "invincible_sun"
+  ],
+  "Lonewolf Whisper": [
+   "lonewolf_lunar"
+  ],
+  "Mini Feaster": [
+   "mini_feaster"
+  ],
+  "Mini Wonder": [
+   "mini_wonder"
+  ],
+  "Polar Jelly": [
+   "polar_jelly"
+  ],
+  "Voodoo Doll": [
+   "voodoo_doll"
+  ],
+  "Atomic Snail": [
+   "atomic_snail"
+  ],
+  "Growshroom": [
+   "growshroom_shadowshroom"
+  ]
+ }
+}

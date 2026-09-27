@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Twitch chat game for Once Human: catch combat deviations (data from ohwikiguide.com), like Pokemon Community Game",
   "main": "index.js",
-  "scripts": { "start": "node index.js", "test": "node test/sim.js" },
+  "scripts": { "start": "node index.js", "test": "node test/sim.js",  "test:traits": "node test/traits.js" },
   "engines": { "node": ">=20" },
   "dependencies": {
     "better-sqlite3": "^11.5.0",

@@ -56,6 +56,23 @@ CREATE TABLE IF NOT EXISTS catches (
   PRIMARY KEY (user_id, deviation, variant)
 );
 
+-- every secured deviation is its own specimen with Deviant Power / Mood ratings (1-5)
+-- and three traits that follow the wiki's Deviation Trait Page
+CREATE TABLE IF NOT EXISTS specimens (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id     TEXT NOT NULL,
+  deviation   TEXT NOT NULL,
+  variant     TEXT NOT NULL DEFAULT '',
+  power       INTEGER NOT NULL,
+  mood        INTEGER NOT NULL,
+  t1          TEXT, t1_level INTEGER,
+  t2          TEXT,
+  t3          TEXT,
+  caught_at   INTEGER NOT NULL,
+  channel     TEXT
+);
+CREATE INDEX IF NOT EXISTS specimens_user ON specimens(user_id, deviation, variant);
+
 CREATE TABLE IF NOT EXISTS spawn_log (
   id             INTEGER PRIMARY KEY AUTOINCREMENT,
   ts             INTEGER NOT NULL,
@@ -109,6 +126,13 @@ const q = {
     FROM players p JOIN catches c ON c.user_id=p.user_id
     GROUP BY p.user_id ORDER BY species DESC, variants DESC, total DESC LIMIT ?`),
 
+  addSpecimen: db.prepare(`INSERT INTO specimens (user_id, deviation, variant, power, mood, t1, t1_level, t2, t3, caught_at, channel)
+    VALUES (@user_id, @deviation, @variant, @power, @mood, @t1, @t1_level, @t2, @t3, @caught_at, @channel)`),
+  // best = highest Power+Mood, then Power, then newest
+  specimensOf: db.prepare(`SELECT * FROM specimens WHERE user_id=? AND deviation=? ORDER BY (power+mood) DESC, power DESC, id DESC`),
+  userSpecimens: db.prepare(`SELECT * FROM specimens WHERE user_id=? ORDER BY deviation, variant, (power+mood) DESC, power DESC, id DESC`),
+  latestSpecimen: db.prepare(`SELECT * FROM specimens WHERE user_id=? ORDER BY id DESC LIMIT 1`),
+  deleteSpecimen: db.prepare(`DELETE FROM specimens WHERE id=?`),
   logSpawn: db.prepare(`INSERT INTO spawn_log (ts, broadcaster_id, deviation, variant, attempts, caught) VALUES (?, ?, ?, ?, ?, ?)`),
   totalSpawns: db.prepare(`SELECT COUNT(*) AS n FROM spawn_log`),
 };

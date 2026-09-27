@@ -12,9 +12,17 @@ snapshot used if the wiki is unreachable.
 
 ## Commands
 Viewers: `!secure [standard|advanced|elite|anomaly]` (alias `!catch`), `!units`, `!shop`,
-`!buy <unit> <n>`, `!daily`, `!dex [user]`, `!scrap`, `!dev <name>`, `!hunttop`, `!hunt`.
+`!buy <unit> <n>`, `!daily`, `!dex [user]`, `!scrap`, `!traits [name]`, `!dev <name>`, `!hunttop`, `!hunt`.
 Mods: `!hunt spawn`, `!hunt interval <min>`, `!hunt off|on`, `!hunt status`, `!hunt leave`.
 In the bot's own channel: `!join`, `!leave`.
+
+## Specimens & traits
+Every secured deviation is its own specimen with Deviant Power 1-5 and Mood 1-5 and three
+traits. Traits follow https://ohwikiguide.com/Deviation_Trait_Page exactly (read live, snapshot in
+`traits-fallback.json`): Slot 1 = a Global trait or the deviation's own Slot 1 trait; Slot 2 = a
+generic combat trait or the deviation's own specific ones (never another deviation's); Slot 3 =
+a combat fused trait. `npm run test:traits` checks 46,000 rolls against those rules.
+`!traits [name]` shows a specimen; `!scrap` keeps the best Power+Mood of each.
 
 ## Balance
 All tuning (rarity tiers, which deviation is which tier, catch odds, prices, rewards, daily)
