@@ -7,7 +7,7 @@
     "start": "node index.js",
     "test": "node test/sim.js",
     "test:traits": "node test/traits.js",
-    "zip:ext": "cd ext && rm -f ../deviation-bag-panel.zip && zip -q ../deviation-bag-panel.zip panel.html panel.js panel.css",
+    "zip:ext": "cd ext && rm -f ../deviation-bag-panel.zip && zip -q ../deviation-bag-panel.zip panel.html panel.js panel.css unit.png",
     "wiki": "node scripts/wiki-page.js > docs/Deviation_Hunt.wiki"
   },
   "engines": {

@@ -88,7 +88,7 @@ Your first ${cmd("!secure")} signs you up automatically — you start with '''${
 out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!secure"), `Throw a Securement Unit at the deviation that's loose in chat. Also works as ${cmd("!catch")}. One throw per person per breach.`],
   [cmd("!units"), `Show your Securement Units, ${SC}, and when your next free unit arrives. Also ${cmd("!inv")}.`],
-  [cmd("!shop"), `Show the price of Securement Units.`],
+  [cmd("!shop"), `Show what the shop sells and the prices. The Deviation Bag panel has the same shop in its '''Shop''' tab.`],
   [cmd("!buy <amount>"), `Buy Securement Units for ${fmt(unitPrice)} ${SC} each, e.g. ${cmd("!buy 2")}.`],
   [cmd("!daily"), `Claim your daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${ECONOMY.daily.units.standard} Securement Unit. Every ${ECONOMY.dailyCooldownHours} hours.`],
   [cmd("!deviationbag [name]"), `Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.`],
@@ -122,7 +122,7 @@ ${table(["Source", "Amount"], [
   ["Starting supply", `${ECONOMY.starterUnits.standard} units`],
   ["Free refill", `+${ECONOMY.hourlyUnits} unit every hour — no cap, they keep stacking even while you're away`],
   [cmd("!daily"), `+${ECONOMY.daily.units.standard} unit every ${ECONOMY.dailyCooldownHours} hours`],
-  [cmd("!buy <amount>"), `${fmt(unitPrice)} ${SC} each`],
+  [cmd("!buy <amount>") + " or the panel's '''Shop''' tab", `${fmt(unitPrice)} ${SC} each`],
 ])}
 `));
 
@@ -189,7 +189,7 @@ out.push(box("Collection", "Deviation Bag & Twitch Panel", `
 Your collection is tied to your Twitch account, not to a channel — everything you catch on any stream lands in the same Deviation Bag, and a name change doesn't lose it.
 
 * '''Collection page:''' ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)} — every deviation grouped by Combat / Crafting / Territory, your best specimen's ratings and traits, and caught variations and skins highlighted. ${cmd("!deviationbag")} posts your link.
-* '''Twitch panel:''' the ''Deviation Bag'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Deviation Bag''' once to let Twitch share your username with it. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
+* '''Twitch panel:''' the ''Deviation Bag'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Deviation Bag''' once to let Twitch share your username with it. Switch to the '''Shop''' tab to buy Securement Units with your Starchrom without typing in chat. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
 * '''Leaderboard:''' [${URL}/top ${URL.replace(/^https?:\/\//, "")}/top] or ${cmd("!hunttop")}.
 `));
 

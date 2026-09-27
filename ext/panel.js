@@ -4,7 +4,7 @@
   var API = window.DH_API || "https://ohdeviationhunt-production.up.railway.app";
   var app = document.getElementById("app");
   var who = document.getElementById("who");
-  var token = null, bag = null, view = { cat: "all", ownedOnly: false, open: null };
+  var token = null, bag = null, view = { page: "bag", cat: "all", ownedOnly: false, open: null }, cart = {}, notice = null, busy = false;
 
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function el(html) { app.innerHTML = html; }
@@ -28,10 +28,24 @@
     document.getElementById("share").onclick = function () { window.Twitch.ext.actions.requestIdShare(); };
   }
 
+  function whoLine() {
+    var p = bag && bag.player;
+    who.textContent = p ? p.display + " · " + p.starchrom.toLocaleString() + " Starchrom · " + p.units + " Securement Unit" + (p.units === 1 ? "" : "s") : "";
+  }
+
+  function setPage(page) {
+    view.page = page; view.open = null; notice = null;
+    Array.prototype.forEach.call(document.querySelectorAll(".pages button"), function (b) { b.className = b.getAttribute("data-page") === page ? "on" : ""; });
+    document.getElementById("title").textContent = page === "shop" ? "Shop" : "Deviation Bag";
+    if (bag) render();
+    window.scrollTo(0, 0);
+  }
+
   function render() {
+    whoLine();
+    if (view.page === "shop") return renderShop();
     if (view.open) return renderDetail(view.open);
     var s = bag.stats, p = bag.player;
-    who.textContent = p ? p.display + " · " + p.starchrom.toLocaleString() + " Starchrom · " + p.units + " Securement Units" : "";
     if (!p || !s.total) {
       el('<div class="msg"><p>Your Deviation Bag is empty.</p><p>When a deviation breaches containment in chat, type <b>!secure</b> to catch it. Get free Securement Units with <b>!daily</b>.</p></div>' + gridHtml());
       bindGrid(); return;
@@ -104,9 +118,69 @@
     document.getElementById("back").onclick = function () { view.open = null; render(); };
   }
 
+
+  // ---------- shop ----------
+  function money(n) { return Number(n).toLocaleString(); }
+
+  function renderShop() {
+    var p = bag.player;
+    if (!p) {
+      el('<div class="msg"><p>You haven’t played yet.</p><p>Type <b>!secure</b> in chat the next time a deviation breaches — you’ll start with 5 Securement Units and 200 Starchrom, then you can shop here.</p></div>');
+      return;
+    }
+    var html = '<div class="wallet"><div><b>' + money(p.starchrom) + '</b>Starchrom</div><div><b>' + p.units + '</b>Securement Units</div><div><b>' + esc(p.nextUnitIn || "—") + '</b>next free unit</div></div>';
+    if (notice) html += '<div class="notice ' + notice.kind + '">' + esc(notice.text) + '</div>';
+    html += (bag.shop || []).map(function (it) {
+      var q = cart[it.id] || 1, total = q * it.price, afford = p.starchrom >= total;
+      var maxAfford = Math.min(it.maxQty, Math.floor(p.starchrom / it.price));
+      return '<div class="item" data-id="' + esc(it.id) + '">' +
+        '<div class="ih"><img src="' + esc(it.icon) + '" alt=""><div><div class="in">' + esc(it.name) + '</div><div class="ip">' + money(it.price) + ' Starchrom each</div></div></div>' +
+        '<div class="id">' + esc(it.desc) + '</div>' +
+        '<div class="qty"><button data-act="dec">−</button><span>' + q + '</span><button data-act="inc">+</button>' +
+        [5, 10].map(function (n) { return '<button data-act="set" data-n="' + n + '" class="quick">' + n + '</button>'; }).join("") +
+        (maxAfford > 1 ? '<button data-act="set" data-n="' + maxAfford + '" class="quick">Max</button>' : "") + '</div>' +
+        '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? "Buy " + q + " for " + money(total) + " Starchrom" : "Need " + money(total - p.starchrom) + " more Starchrom") + '</button>' +
+        '</div>';
+    }).join("");
+    html += '<div class="hint">Earn Starchrom by securing deviations in chat, <b>!daily</b> and <b>!scrap</b>. You can also buy in chat with <b>!buy &lt;amount&gt;</b>.</div>';
+    el(html);
+    Array.prototype.forEach.call(document.querySelectorAll(".item button"), function (b) {
+      b.onclick = function () {
+        var id = b.closest(".item").getAttribute("data-id"), it = findItem(id), q = cart[id] || 1, act = b.getAttribute("data-act");
+        if (act === "inc") q = Math.min(it.maxQty, q + 1);
+        if (act === "dec") q = Math.max(1, q - 1);
+        if (act === "set") q = Math.max(1, Math.min(it.maxQty, +b.getAttribute("data-n")));
+        cart[id] = q;
+        if (act === "buy") return buy(it, q);
+        notice = null; renderShop();
+      };
+    });
+  }
+
+  function findItem(id) { for (var i = 0; i < bag.shop.length; i++) if (bag.shop[i].id === id) return bag.shop[i]; return null; }
+
+  function buy(it, q) {
+    if (busy) return;
+    busy = true; renderShop();
+    fetch(API + "/ext/shop/buy", { method: "POST", headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" }, body: JSON.stringify({ item: it.id, qty: q }) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        busy = false;
+        if (res.j.player) bag.player = res.j.player;
+        if (res.ok) { notice = { kind: "ok", text: "Bought " + res.j.qty + " " + it.name + (res.j.qty > 1 ? "s" : "") + " for " + money(res.j.cost) + " Starchrom." }; cart[it.id] = 1; }
+        else if (res.j.error === "needs_identity") return askIdentity();
+        else if (res.j.error === "not_enough") notice = { kind: "err", text: "Not enough Starchrom for that." };
+        else notice = { kind: "err", text: res.j.message || "Couldn’t complete that purchase. Try again." };
+        render();
+      })
+      .catch(function () { busy = false; notice = { kind: "err", text: "Couldn’t reach the shop. Try again in a minute." }; render(); });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll(".pages button"), function (b) { b.onclick = function () { setPage(b.getAttribute("data-page")); }; });
+
   if (!window.Twitch || !window.Twitch.ext) { el('<div class="msg">This panel runs inside Twitch.</div>'); return; }
   window.Twitch.ext.onContext(function (ctx) { document.body.className = ctx.theme === "light" ? "light" : "dark"; });
   window.Twitch.ext.onAuthorized(function (auth) { token = auth.token; load(); });
   // refresh every couple of minutes so new catches show up while watching
-  setInterval(function () { if (!view.open) load(); }, 120000);
+  setInterval(function () { if (!view.open && !busy) load(); }, 120000);
 })();

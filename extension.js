@@ -13,6 +13,8 @@ const db = require("./db");
 const data = require("./data");
 const traits = require("./traits");
 const game = require("./game");
+const shop = require("./shop");
+const express = require("express");
 
 function b64urlDecode(s) { return Buffer.from(s.replace(/-/g, "+").replace(/_/g, "/"), "base64"); }
 
@@ -38,6 +40,9 @@ function verifyExtJwt(token) {
   if (payload.exp && payload.exp * 1000 < Date.now()) throw Object.assign(new Error("expired"), { status: 401 });
   return payload; // { user_id?, opaque_user_id, channel_id, role, ... }
 }
+
+// balances the panel shows (loadPlayer also pays out any hourly free units that are due)
+const playerInfo = (p) => ({ login: p.login, display: p.display, starchrom: p.starchrom, units: p.units.standard || 0, nextUnitIn: game.nextUnitIn(p) });
 
 function bagFor(userId) {
   const p = db.q.getPlayer.get(userId);
@@ -70,11 +75,18 @@ function bagFor(userId) {
   });
   const summary = game.collectionSummary(userId);
   return {
-    player: p ? { login: p.login, display: p.display, starchrom: p.starchrom, units: JSON.parse(p.units || "{}").standard || 0 } : null,
+    player: p ? playerInfo(game.loadPlayer(p.user_id, p.login, p.display)) : null,
+    shop: shop.catalog(),
     stats: { unique: summary.species, total: summary.total, variants: summary.variants, all: all.length, allVariants: all.reduce((s, d) => s + d.variants.length, 0) },
     page: p ? `${cfg.BASE_URL}/u/${p.login}` : null,
     deviations,
   };
+}
+
+function auth(req) {
+  const jwt = verifyExtJwt((req.headers.authorization || "").replace(/^Bearer\s+/i, ""));
+  if (!jwt.user_id) throw Object.assign(new Error("share your Twitch identity with the panel first"), { status: 403, needsIdentity: true });
+  return jwt;
 }
 
 function mount(app) {
@@ -86,7 +98,7 @@ function mount(app) {
   app.use("/ext", (req, res, next) => {
     const origin = req.headers.origin || "";
     if (/^https:\/\/[a-z0-9]+\.ext-twitch\.tv$/.test(origin) || /^https?:\/\/localhost(:\d+)?$/.test(origin)) {
-      res.set({ "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Headers": "Authorization, Content-Type", "Access-Control-Allow-Methods": "GET, OPTIONS", Vary: "Origin" });
+      res.set({ "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Headers": "Authorization, Content-Type", "Access-Control-Allow-Methods": "GET, POST, OPTIONS", Vary: "Origin" });
     }
     if (req.method === "OPTIONS") { console.log(`[ext] preflight origin=${origin || "-"}`); return res.sendStatus(204); }
     next();
@@ -105,6 +117,29 @@ function mount(app) {
       res.status(e.status || 500).json({ error: e.message });
     }
   });
+
+  // Buy from the shop with Starchrom. Body: { item: "unit", qty: 3 }
+  app.post("/ext/shop/buy", express.json({ limit: "1kb" }), (req, res) => {
+    try {
+      const jwt = auth(req);
+      const row = db.q.getPlayer.get(jwt.user_id);
+      if (!row) return res.status(404).json({ error: "no_player", message: "Catch your first deviation in chat with !secure to start playing." });
+      let result;
+      db.tx(() => {
+        const p = game.loadPlayer(row.user_id, row.login, row.display);
+        result = shop.purchase(p, req.body?.item, req.body?.qty);
+        if (result.ok) game.savePlayer(p);
+        result.player = playerInfo(p);
+      })();
+      if (!result.ok) return res.status(400).json({ error: result.error, max: result.max, cost: result.cost, player: result.player });
+      console.log(`[ext] ${row.login} bought ${result.qty}x ${result.item.id} for ${result.cost}`);
+      res.json({ ok: true, item: result.item.id, qty: result.qty, cost: result.cost, player: result.player });
+    } catch (e) {
+      if (e.needsIdentity) return res.status(403).json({ error: "needs_identity" });
+      console.warn(`[ext] buy failed ${e.status || 500}: ${e.message}`);
+      res.status(e.status || 500).json({ error: e.status ? e.message : "server_error" });
+    }
+  });
 }
 
-module.exports = { mount, verifyExtJwt, bagFor };
+module.exports = { playerInfo, mount, verifyExtJwt, bagFor };

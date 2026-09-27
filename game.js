@@ -6,6 +6,7 @@ const traits = require("./traits");
 const { TIERS, VARIANT, UNITS, ECONOMY, unitKey } = require("./rarity");
 
 const SC = "Starchrom";
+const shopCatalog = require("./shop");
 const fmt = (n) => Number(n).toLocaleString("en-US");
 
 // ---------------- players ----------------
@@ -284,19 +285,23 @@ function daily(userId, login, display) {
 }
 
 function shop() {
-  return `🛒 Securement Units cost ${fmt(UNITS.standard.price)} ${SC} each — buy with !buy <amount>. You also get 1 free every hour and 1 from !daily.`;
+  const items = shopCatalog.ITEMS.map((i) => `${i.name}: ${fmt(i.price)} ${SC}`).join(" · ");
+  return `🛒 ${items} — buy with !buy <amount> (or in the Deviation Bag panel's Shop tab). You also get 1 free Securement Unit every hour and 1 from !daily.`;
 }
 
+// !buy 3  /  !buy unit 3  — defaults to Securement Units
 function buy(userId, login, display, args) {
   const qtyWord = args.find((a) => /^\d+$/.test(a || ""));
-  const qty = Math.max(1, Math.min(100, parseInt(qtyWord || "1", 10) || 1));
+  const itemWord = args.filter((a) => !/^\d+$/.test(a || "")).join(" ");
+  const item = itemWord ? shopCatalog.find(itemWord) : shopCatalog.ITEMS[0];
+  if (!item) return `@${display} the shop doesn't sell "${itemWord}". Type !shop to see what's for sale.`;
+  const qty = Math.max(1, Math.min(item.maxQty, parseInt(qtyWord || "1", 10) || 1));
   const p = loadPlayer(userId, login, display);
-  const cost = UNITS.standard.price * qty;
-  if (p.starchrom < cost) return `@${display} ${qty} Securement Unit${qty > 1 ? "s" : ""} cost ${fmt(cost)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations, !daily and !scrap.`;
-  p.starchrom -= cost;
-  p.units.standard = (p.units.standard || 0) + qty;
+  const r = shopCatalog.purchase(p, item.id, qty);
+  const label = `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
+  if (!r.ok) return `@${display} ${label} ${qty > 1 ? "cost" : "costs"} ${fmt(item.price * qty)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations, !daily and !scrap.`;
   savePlayer(p);
-  return `@${display} bought ${qty} Securement Unit${qty > 1 ? "s" : ""} for ${fmt(cost)} ${SC} — you now have ${p.units.standard}. ${bagText(p)}`;
+  return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units. ${bagText(p)}`;
 }
 
 function inventory(userId, login, display) {
@@ -378,4 +383,4 @@ function top(baseUrl) {
   return `🏆 Top Metas: ${rows.map((r, i) => `${i + 1}. ${r.display} ${r.species} dev${r.variants ? ` +${r.variants}✨` : ""}`).join(" · ")} — ${baseUrl}/top`;
 }
 
-module.exports = { specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
