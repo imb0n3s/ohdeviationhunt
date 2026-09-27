@@ -90,6 +90,11 @@ CREATE TABLE IF NOT EXISTS spawn_log (
 );
 `);
 
+// migrations for columns added after launch
+try { db.exec(`ALTER TABLE players ADD COLUMN last_unit_at INTEGER NOT NULL DEFAULT 0`); } catch {}
+// existing players start their hourly-unit clock now (no back-pay for the past)
+db.prepare(`UPDATE players SET last_unit_at=? WHERE last_unit_at=0`).run(Date.now());
+
 const q = {
   upsertChannel: db.prepare(`INSERT INTO channels (broadcaster_id, login, display_name, joined_at, joined_via, enabled)
     VALUES (@broadcaster_id, @login, @display_name, @joined_at, @joined_via, 1)
@@ -113,9 +118,9 @@ const q = {
 
   getPlayer: db.prepare(`SELECT * FROM players WHERE user_id=?`),
   getPlayerByLogin: db.prepare(`SELECT * FROM players WHERE login=?`),
-  insertPlayer: db.prepare(`INSERT INTO players (user_id, login, display, starchrom, units, created_at) VALUES (?, ?, ?, ?, ?, ?)`),
+  insertPlayer: db.prepare(`INSERT INTO players (user_id, login, display, starchrom, units, created_at, last_unit_at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
   touchPlayer: db.prepare(`UPDATE players SET login=?, display=? WHERE user_id=?`),
-  savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts WHERE user_id=@user_id`),
+  savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at WHERE user_id=@user_id`),
   countPlayers: db.prepare(`SELECT COUNT(*) AS n FROM players`),
 
   addCatch: db.prepare(`INSERT INTO catches (user_id, deviation, variant, kind, count, first_at, first_channel) VALUES (?, ?, ?, ?, 1, ?, ?)

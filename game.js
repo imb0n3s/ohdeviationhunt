@@ -13,7 +13,7 @@ const fmt = (n) => Number(n).toLocaleString("en-US");
 function loadPlayer(userId, login, display) {
   let p = db.q.getPlayer.get(userId);
   if (!p) {
-    db.q.insertPlayer.run(userId, login, display, ECONOMY.starterStarchrom, JSON.stringify(ECONOMY.starterUnits), Date.now());
+    db.q.insertPlayer.run(userId, login, display, ECONOMY.starterStarchrom, JSON.stringify(ECONOMY.starterUnits), Date.now(), Date.now());
     p = db.q.getPlayer.get(userId);
     p.isNew = true;
   } else if (login && (p.login !== login || p.display !== display)) {
@@ -23,11 +23,24 @@ function loadPlayer(userId, login, display) {
   p.units = JSON.parse(p.units || "{}");
   // older saves had Advanced/Elite/Anomaly units: fold them into plain Securement Units
   for (const k of ["advanced", "elite", "anomaly"]) if (p.units[k]) { p.units.standard = (p.units.standard || 0) + p.units[k]; delete p.units[k]; }
+  // +1 free Securement Unit for every full hour since the last one (no cap)
+  const hours = Math.floor((Date.now() - (p.last_unit_at || Date.now())) / HOUR);
+  if (hours > 0) {
+    p.units.standard = (p.units.standard || 0) + hours * ECONOMY.hourlyUnits;
+    p.last_unit_at += hours * HOUR;
+    savePlayer(p);
+  }
   return p;
 }
 
+const HOUR = 3600 * 1000;
+function nextUnitIn(p) {
+  const ms = (p.last_unit_at || Date.now()) + HOUR - Date.now();
+  return `${Math.max(1, Math.ceil(ms / 60000))}m`;
+}
+
 function savePlayer(p) {
-  db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts });
+  db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts, last_unit_at: p.last_unit_at || Date.now() });
 }
 
 // "303 Starchrom | 21 deviations (12/61 unique)" — used where the full unit list is too noisy
@@ -189,16 +202,14 @@ class Spawns {
     const unit = "standard";
     const p = loadPlayer(userId, login, display);
     if (!(p.units.standard > 0)) {
-      // out of units: quietly buy one if they can afford it
-      if (p.starchrom >= UNITS.standard.price) { p.starchrom -= UNITS.standard.price; p.units.standard = 1; }
-      else return warn(`@${display} you're out of Securement Units. Grab free ones with !daily or !buy <amount> (${UNITS.standard.price} ${SC} each). You have ${fmt(p.starchrom)} ${SC}.`);
+      return warn(`@${display} you're out of Securement Units. You get 1 free every hour (next in ${nextUnitIn(p)}), 1 from !daily, or !buy <amount> for ${fmt(UNITS.standard.price)} ${SC} each (you have ${fmt(p.starchrom)}).`);
     }
     p.units[unit] -= 1;
     p.attempts += 1;
     savePlayer(p);
     s.attempts.set(userId, { login, display, unit, isNew: p.isNew });
     this.persist(bid);
-    return p.isNew ? `@${display} welcome, Meta! You got ${ECONOMY.starterStarchrom} ${SC} + starter Securement Units. Unit thrown — results in a few seconds!` : null;
+    return p.isNew ? `@${display} welcome, Meta! You start with ${ECONOMY.starterUnits.standard} Securement Units (+1 free every hour) and ${ECONOMY.starterStarchrom} ${SC}. Unit thrown — results in a few seconds!` : null;
   }
 
   async resolve(bid) {
@@ -267,13 +278,13 @@ function daily(userId, login, display) {
   p.last_daily = Date.now();
   p.starchrom += ECONOMY.daily.starchrom;
   const got = [];
-  for (const [k, n] of Object.entries(ECONOMY.daily.units)) { p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}s`); }
+  for (const [k, n] of Object.entries(ECONOMY.daily.units)) { p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
   savePlayer(p);
   return `@${display} 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}! ${bagText(p)}`;
 }
 
 function shop() {
-  return `🛒 Securement Units cost ${fmt(UNITS.standard.price)} ${SC} each — buy with !buy <amount> (e.g. !buy 5). Free ones every day with !daily.`;
+  return `🛒 Securement Units cost ${fmt(UNITS.standard.price)} ${SC} each — buy with !buy <amount>. You also get 1 free every hour and 1 from !daily.`;
 }
 
 function buy(userId, login, display, args) {

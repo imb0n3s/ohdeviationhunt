@@ -35,13 +35,14 @@ const VARIANT = {
 
 // One kind of Securement Unit (the "ball"), bought with Starchrom.
 const UNITS = {
-  standard: { label: "Securement Unit", price: 20, mult: 1.0, aliases: [] },
+  standard: { label: "Securement Unit", price: 500, mult: 1.0, aliases: [] },
 };
 
 const ECONOMY = {
   starterStarchrom: 200,
-  starterUnits: { standard: 10 },
-  daily: { starchrom: 100, units: { standard: 5 } },
+  starterUnits: { standard: 5 },
+  hourlyUnits: 1,            // free Securement Units every hour (no cap)
+  daily: { starchrom: 100, units: { standard: 1 } },
   dailyCooldownHours: 20,
   newSpeciesBonus: 100,   // first time you secure a deviation (or a new variant of it)
   escapeSalvage: 3,       // Starchrom for a failed attempt, so trying is never a total loss
