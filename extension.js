@@ -52,6 +52,7 @@ function bagFor(userId) {
       id: d.id, name: d.name, category: d.category, img: d.img,
       owned: count.has(d.id), count: count.get(d.id) || 0,
       variantsOwned: [...(owned.get(d.id) || [])], variantsTotal: d.variants.length,
+      variants: d.variants.map((v) => ({ name: v.name, kind: v.kind, img: v.img, owned: !!owned.get(d.id)?.has(v.name) })),
       best: sp ? {
         variant: sp.variant || null, skill: sp.power, activity: sp.mood,
         traits: [[1, sp.t1, sp.t1_level], [2, sp.t2, null], [3, sp.t3, null]].map(([slot, key, lvl]) => ({

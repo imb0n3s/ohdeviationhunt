@@ -55,11 +55,20 @@
       '<div class="grid">' + (list.length ? list.map(card).join("") : '<div class="msg span">Nothing here yet.</div>') + '</div>';
   }
 
+  // caught variations/skins, skins first (they're the rarest)
+  function caughtVariants(d) {
+    return (d.variants || []).filter(function (v) { return v.owned; }).sort(function (a, b) { return (b.kind === "skin") - (a.kind === "skin"); });
+  }
+
   function card(d) {
-    var r = d.best ? '<div class="r">Skill ' + d.best.skill + ' · Act ' + d.best.activity + '</div>' : "";
-    return '<div class="dev' + (d.owned ? "" : " missing") + '" data-id="' + esc(d.id) + '">' +
-      (d.owned ? '<span class="c">×' + d.count + '</span>' : "") +
-      '<img loading="lazy" src="' + esc(d.img) + '" alt=""><div class="n">' + (d.owned ? esc(d.name) : "???") + '</div>' + r + '</div>';
+    var got = caughtVariants(d), top = got[0];
+    var cls = "dev" + (d.owned ? "" : " missing") + (top ? " shiny" + (top.kind === "skin" ? " skin" : "") : "");
+    var r = d.best ? '<div class="r">Skill ' + d.best.skill + ' \u00b7 Act ' + d.best.activity + '</div>' : "";
+    return '<div class="' + cls + '" data-id="' + esc(d.id) + '">' +
+      (d.owned ? '<span class="c">\u00d7' + d.count + '</span>' : "") +
+      (top ? '<span class="vb">\u2728 ' + got.length + '</span>' : "") +
+      '<img loading="lazy" src="' + esc((top && top.img) || d.img) + '" alt=""><div class="n">' + (d.owned ? esc(d.name) : "???") + '</div>' +
+      (top ? '<div class="vn">' + esc(top.name) + '</div>' : "") + r + '</div>';
   }
 
   function bindGrid() {
@@ -74,7 +83,9 @@
 
   function renderDetail(id) {
     var d = find(id), b = d.best;
-    var html = '<button class="btn ghost" id="back">← Back</button><div class="detail"><div class="hero"><img src="' + esc(d.img) + '" alt="">' +
+    var topV = caughtVariants(d)[0];
+    var html = '<button class="btn ghost" id="back">← Back</button><div class="detail"><div class="hero"><img src="' + esc((topV && topV.img) || d.img) + '" alt="">' +
+      (topV ? '<div class="vn big' + (topV.kind === "skin" ? " skin" : "") + '">✨ ' + (topV.kind === "skin" ? "Skin" : "Variation") + ': ' + esc(topV.name) + '</div>' : "") +
       '<h2>' + esc(d.name) + '</h2><div class="sub">' + esc(d.category.charAt(0).toUpperCase() + d.category.slice(1)) + ' · secured ×' + d.count + '</div></div>';
     if (b) {
       html += '<h3>Best specimen' + (b.variant ? " — " + esc(b.variant) : "") + '</h3>' +
@@ -82,8 +93,11 @@
         b.traits.map(function (t) { return '<div class="trait"><div class="h"><span>' + t.slot + '</span>' + esc(t.name) + '</div>' + (t.effect ? '<div class="e">' + esc(t.effect) + '</div>' : "") + '</div>'; }).join("");
     }
     if (d.variantsTotal) {
-      html += '<h3>Variants &amp; skins (' + d.variantsOwned.length + '/' + d.variantsTotal + ')</h3><div class="chips">' +
-        (d.variantsOwned.length ? d.variantsOwned.map(function (v) { return '<span class="have">' + esc(v) + '</span>'; }).join("") : '<span>None yet</span>') + '</div>';
+      var got = caughtVariants(d);
+      html += '<h3>Variants &amp; skins (' + got.length + '/' + d.variantsTotal + ' caught)</h3><div class="chips">' +
+        d.variants.map(function (v) {
+          return '<span class="' + (v.owned ? "have " + v.kind : "") + '" title="' + (v.kind === "skin" ? "Skin" : "Variation") + '">' + (v.owned ? "\u2728 " : "") + esc(v.name) + '</span>';
+        }).join("") + '</div>';
     }
     html += '</div>';
     el(html);

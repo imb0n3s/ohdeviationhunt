@@ -52,7 +52,14 @@ code,kbd{background:#0b1016;padding:2px 7px;border-radius:5px;color:#c9e7ff;font
 .bv{font-size:.7rem;color:var(--muted);text-align:center;margin-top:2px}
 .dev.missing img{filter:brightness(0) opacity(.35)}.dev.missing .n{color:var(--muted)}
 .vars{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:6px}
-.vars span{font-size:.7rem;padding:1px 6px;border-radius:99px;background:#0b1016;color:var(--muted)}.vars span.have{color:#fde68a;background:#3b2f0b}
+.vars span{font-size:.7rem;padding:1px 6px;border-radius:99px;background:#0b1016;color:var(--muted);opacity:.7}
+.vars span.have{opacity:1;font-weight:600;color:#fde68a;background:#3b2f0b;box-shadow:0 0 0 1px #fbbf24}
+.vars span.have.skin{color:#f5d0fe;background:#4a1d4f;box-shadow:0 0 0 1px #e879f9}
+.dev.shiny{border-color:#fbbf24;box-shadow:0 0 14px rgba(251,191,36,.35)}
+.dev.shiny.skin{border-color:#e879f9;box-shadow:0 0 14px rgba(232,121,249,.4)}
+.dev .vb{position:absolute;top:8px;left:10px;font-size:.75rem;font-weight:700;background:#3b2f0b;color:#fde68a;border-radius:99px;padding:1px 8px}
+.dev.skin .vb{background:#4a1d4f;color:#f5d0fe}
+.dev .vn{font-size:.75rem;font-weight:700;color:#fde68a;margin-top:2px}.dev.skin .vn{color:#f5d0fe}
 table{width:100%;border-collapse:collapse}td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-weight:600}
 .bar{height:8px;background:#0b1016;border-radius:99px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:var(--accent)}
 form.find{display:flex;gap:8px;margin:8px 0}form.find input{flex:1;min-width:0;padding:11px 12px;border-radius:9px;border:1px solid var(--line);background:#0b1016;color:var(--text);font-size:1rem}
@@ -135,11 +142,15 @@ function collectionPage(p) {
   const units = JSON.parse(p.units || "{}");
   const cardFor = (d) => {
     const h = have.get(d.id);
-    const vars = d.variants.length ? `<div class="vars">${d.variants.map((v) => `<span class="${h?.variants.has(v.name) ? "have" : ""}" title="${esc(v.kind)}">${esc(v.name)}</span>`).join("")}</div>` : "";
+    const vars = d.variants.length ? `<div class="vars">${d.variants.map((v) => { const got = h?.variants.has(v.name); return `<span class="${got ? `have ${v.kind}` : ""}" title="${v.kind === "skin" ? "Skin" : "Variation"}${got ? " — caught!" : ""}">${got ? "✨ " : ""}${esc(v.name)}</span>`; }).join("")}</div>` : "";
+    // caught variations/skins: highlight the card and show the rarest one (skins first)
+    const gotVars = h ? d.variants.filter((v) => h.variants.has(v.name)).sort((a, b) => (a.kind === "skin" ? -1 : 0) - (b.kind === "skin" ? -1 : 0)) : [];
+    const top = gotVars[0];
+    const shiny = top ? ` shiny${top.kind === "skin" ? " skin" : ""}` : "";
     const sp = best.get(d.id);
     const spHtml = sp ? `<div class="sp"><div class="pm"><span title="Skill Rating (Deviant Power)">Skill ${sp.power}/5</span><span title="Activity Rating (Mood)">Activity ${sp.mood}/5</span></div>
 <ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant, d.category))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant, d.category))}</li>`).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
-    return `<div class="dev ${h ? "" : "missing"}">${h ? `<span class="c">×${h.count}</span>` : ""}<img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${tierTag(d.rarity)}${spHtml}${h ? vars : ""}</div>`;
+    return `<div class="dev ${h ? "" : "missing"}${shiny}">${h ? `<span class="c">×${h.count}</span>` : ""}${top ? `<span class="vb" title="Variations &amp; skins caught">✨ ${gotVars.length}</span>` : ""}<img loading="lazy" src="${esc((top && top.img) || d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${top ? `<div class="vn">✨ ${top.kind === "skin" ? "Skin" : "Variation"}: ${esc(top.name)}</div>` : ""}${tierTag(d.rarity)}${spHtml}${h ? vars : ""}</div>`;
   };
   const cards = sections(all, cardFor);
   return page(`${p.display}'s Deviation Bag`, `

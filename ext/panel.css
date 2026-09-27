@@ -45,3 +45,13 @@ h3 { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(-
 footer { text-align:center; padding:4px 0 10px; }
 footer a { color:var(--accent); font-size:12px; }
 .msg.span { grid-column:1/-1; }
+.chips span { opacity:.65; }
+.chips span.have { opacity:1; font-weight:700; color:#fde68a; background:#3b2f0b; box-shadow:0 0 0 1px #fbbf24; }
+.chips span.have.skin { color:#f5d0fe; background:#4a1d4f; box-shadow:0 0 0 1px #e879f9; }
+.dev.shiny { border-color:#fbbf24; box-shadow:0 0 10px rgba(251,191,36,.35); }
+.dev.shiny.skin { border-color:#e879f9; box-shadow:0 0 10px rgba(232,121,249,.4); }
+.dev .vb { position:absolute; top:4px; left:4px; font-size:10px; font-weight:700; background:#3b2f0b; color:#fde68a; border-radius:99px; padding:0 5px; }
+.dev.skin .vb { background:#4a1d4f; color:#f5d0fe; }
+.vn { font-size:10px; font-weight:700; color:#fbbf24; line-height:1.2; }
+.dev.skin .vn, .vn.skin { color:#e879f9; }
+.vn.big { font-size:12px; margin-top:2px; }
