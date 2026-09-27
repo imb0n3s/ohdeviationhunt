@@ -19,7 +19,7 @@ const cfg = {
   DEVIATION_PAGE: process.env.DEVIATION_PAGE || "Deviation_Main_Page",
 
   // Spawns
-  SPAWN_INTERVAL_MIN: Number(process.env.SPAWN_INTERVAL_MIN || 10),  // default per channel; mods can change it
+  SPAWN_INTERVAL_MIN: Number(process.env.SPAWN_INTERVAL_MIN || 7),  // default per channel; mods can change it
   SPAWN_WINDOW_SECONDS: Number(process.env.SPAWN_WINDOW_SECONDS || 90),
   ACTIVITY_WINDOW_MIN: Number(process.env.ACTIVITY_WINDOW_MIN || 10), // someone must have chatted this recently
   LIVE_POLL_SECONDS: Number(process.env.LIVE_POLL_SECONDS || 120),

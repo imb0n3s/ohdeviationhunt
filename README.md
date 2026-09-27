@@ -1,7 +1,7 @@
 # Deviation Hunt — a Once Human catching game for Twitch chat
 
 Like Pokémon Community Game, but with Once Human's deviations (all 61: combat, crafting, territory). While a channel is live,
-a deviation "breaches containment" in chat every ~10 minutes; viewers type `!secure` to throw a
+a deviation "breaches containment" in chat every ~7 minutes; viewers type `!secure` to throw a
 Securement Unit. Collections, Starchrom and Units are global per Twitch user, so they follow a
 viewer to every channel that runs the game.
 
