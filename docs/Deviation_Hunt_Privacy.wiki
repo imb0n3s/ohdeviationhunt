@@ -22,7 +22,7 @@ This notice covers '''Deviation Hunt''': the Twitch chat bot (<code>ohdeviationh
 Your data is used only to run the game. Your username and collection are '''public''': they appear in chat results, on your collection page (<code>/u/''yourname''</code>), in the panel and on the leaderboard. We do not sell or share data with anyone. Game data is hosted on Railway (railway.com); Twitch provides chat and the extension.
 
 == Keeping and deleting your data ==
-Game data is kept while the game is running so your collection follows you between channels. Streamers can remove the bot at any time with <code>!hunt leave</code>, which deletes their channel settings. To have your player data deleted, ask on the [https://discord.gg/FZtkXeGeUA Once Human Guide Discord] and it will be removed.
+Game data is kept while the game is running so your collection follows you between channels. Streamers can remove the bot from their channel at any time with <code>!hunt leave</code>. To have your player or channel data deleted, ask on the [https://discord.gg/FZtkXeGeUA Once Human Guide Discord] and it will be removed.
 
 == Children ==
 Deviation Hunt is for Twitch users, who must meet Twitch's minimum age. We don't knowingly collect data beyond what's listed above from anyone.
