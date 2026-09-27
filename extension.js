@@ -77,7 +77,7 @@ function mount(app) {
     if (/^https:\/\/[a-z0-9]+\.ext-twitch\.tv$/.test(origin) || /^https?:\/\/localhost(:\d+)?$/.test(origin)) {
       res.set({ "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Headers": "Authorization, Content-Type", "Access-Control-Allow-Methods": "GET, OPTIONS", Vary: "Origin" });
     }
-    if (req.method === "OPTIONS") return res.sendStatus(204);
+    if (req.method === "OPTIONS") { console.log(`[ext] preflight origin=${origin || "-"}`); return res.sendStatus(204); }
     next();
   });
 
@@ -85,10 +85,12 @@ function mount(app) {
     try {
       const token = (req.headers.authorization || "").replace(/^Bearer\s+/i, "");
       const jwt = verifyExtJwt(token);
+      console.log(`[ext] bag ok origin=${req.headers.origin || "-"} user=${jwt.user_id || "(no identity)"} channel=${jwt.channel_id || "-"}`);
       if (!jwt.user_id) return res.json({ needsIdentity: true, botLogin: db.getBotAccount()?.login || null });
       res.set("Cache-Control", "no-store");
       res.json(bagFor(jwt.user_id));
     } catch (e) {
+      console.warn(`[ext] bag failed ${e.status || 500}: ${e.message} origin=${req.headers.origin || "-"} auth=${req.headers.authorization ? "yes" : "no"}`);
       res.status(e.status || 500).json({ error: e.message });
     }
   });
