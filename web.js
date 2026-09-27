@@ -131,7 +131,7 @@ function collectionPage(p) {
     const vars = d.variants.length ? `<div class="vars">${d.variants.map((v) => `<span class="${h?.variants.has(v.name) ? "have" : ""}" title="${esc(v.kind)}">${esc(v.name)}</span>`).join("")}</div>` : "";
     const sp = best.get(d.id);
     const spHtml = sp ? `<div class="sp"><div class="pm"><span title="Deviant Power">⚡ ${sp.power}/5</span><span title="Mood">☺ ${sp.mood}/5</span></div>
-<ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl))}</li>`).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
+<ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant))}</li>`).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
     return `<div class="dev ${h ? "" : "missing"}">${h ? `<span class="c">×${h.count}</span>` : ""}<img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${tierTag(d.rarity)}${spHtml}${h ? vars : ""}</div>`;
   }).join("");
   return page(`${p.display}'s Deviadex`, `

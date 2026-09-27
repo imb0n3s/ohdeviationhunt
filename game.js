@@ -188,7 +188,7 @@ class Spawns {
           const variant = s.variant?.name || "";
           const had = db.q.getCatch.get(userId, s.dev.id, variant);
           db.q.addCatch.run(userId, s.dev.id, variant, s.variant?.kind || "base", Date.now(), bid);
-          const sp = traits.rollSpecimen(s.dev.name, variant);
+          const sp = traits.rollSpecimen(s.dev.name, variant, s.dev.variants.map((v) => v.name));
           db.q.addSpecimen.run({ user_id: userId, deviation: s.dev.id, variant, ...sp, caught_at: Date.now(), channel: bid });
           p.starchrom += reward + (had ? 0 : ECONOMY.newSpeciesBonus);
           if (!had) firsts.push(a.display);

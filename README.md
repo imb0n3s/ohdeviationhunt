@@ -21,7 +21,9 @@ Every secured deviation is its own specimen with Deviant Power 1-5 and Mood 1-5 
 traits. Traits follow https://ohwikiguide.com/Deviation_Trait_Page exactly (read live, snapshot in
 `traits-fallback.json`): Slot 1 = a Global trait or the deviation's own Slot 1 trait; Slot 2 = a
 generic combat trait or the deviation's own specific ones (never another deviation's); Slot 3 =
-a combat fused trait. `npm run test:traits` checks 46,000 rolls against those rules.
+a combat fused trait. A deviation's own trait that belongs to a variation or skin (e.g. Grumpy
+Bulb - Violet Robe) only appears on that variant, and that variant always has it.
+`npm run test:traits` checks 46,000 rolls against those rules.
 `!traits [name]` shows a specimen; `!scrap` keeps the best Power+Mood of each.
 
 ## Balance

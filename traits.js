@@ -95,6 +95,41 @@ function allowed(devName) {
   };
 }
 
+// ---------- variant-locked traits ----------
+// A deviation's own trait usually belongs to one of its variations/skins, e.g. Grumpy Bulb's
+// Slot 1 trait is "Grumpy Bulb - Violet Robe: It gains Max Energy (Skill) +40%" — only a
+// Violet Robe Grumpy Bulb has it. Each such effect line becomes its own option, tied to that
+// variant. Own traits that name no variant (e.g. Whalepup's "Don't Get Wet") stay open to all.
+
+const norm = (s) => String(s || "").toLowerCase().replace(/\([^)]*\)/g, "").replace(/[^a-z0-9]/g, "");
+
+// "Lonewolf's Whisper - Bursting Magma: It gains..." -> "Bursting Magma"
+function lineLabel(line) {
+  const head = String(line).split(":")[0];
+  const parts = head.split(" - ");
+  return parts.length > 1 ? parts[parts.length - 1].replace(/\s*\([^)]*\)\s*/g, "").trim() : null;
+}
+
+function variantMatches(label, variant) {
+  const a = norm(label), b = norm(variant);
+  return !!a && !!b && (a === b || a.includes(b) || b.includes(a));
+}
+
+// Own-trait options for one slot: [{ key, label, effect, locked }]
+function ownOptions(traitList, variants) {
+  const out = [];
+  for (const t of traitList) {
+    // Slot 2 traits carry the variant in the name ("Weakspot Master - Glistening Blue")
+    const nameLabel = t.name.includes(" - ") ? t.name.split(" - ").pop().trim() : null;
+    for (const line of t.effects.length ? t.effects : [""]) {
+      const label = lineLabel(line) || nameLabel;
+      const locked = label && variants.some((v) => variantMatches(label, v)) ? label : null;
+      out.push({ key: t.key, label, effect: line, locked });
+    }
+  }
+  return out;
+}
+
 // ---------- rolling ----------
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -105,31 +140,23 @@ function rating() {
   return 5;
 }
 
-// A deviation-specific trait may list one effect per variant ("Dr Teddy - Infrasonic Illusion: ...").
-// Use the line for this specimen's variant when there is one.
-function effectFor(trait, variant) {
-  if (!trait.effects.length) return "";
-  if (variant) {
-    const v = variant.toLowerCase();
-    const hit = trait.effects.find((l) => l.toLowerCase().includes(v));
-    if (hit) return hit;
-  }
-  return pick(trait.effects);
+// variants = every variation/skin name this deviation has (from the Deviation page)
+function rollSlot(general, own, variant, chance) {
+  const mine = variant ? own.filter((o) => o.locked && variantMatches(o.locked, variant)) : [];
+  if (mine.length) return pick(mine).key;                       // a variant always carries its own trait
+  const open = own.filter((o) => !o.locked);                     // own traits not tied to any variant
+  if (open.length && Math.random() < chance) return pick(open).key;
+  return pick(general).key;
 }
 
-function rollSpecimen(devName, variant) {
+function rollSpecimen(devName, variant, variants = []) {
   const a = allowed(devName);
-  const s1 = a.slot1Own.length && Math.random() < SPECIFIC_CHANCE.slot1 ? pick(a.slot1Own) : pick(a.slot1General);
-  const s2 = a.slot2Own.length && Math.random() < SPECIFIC_CHANCE.slot2 ? pick(a.slot2Own) : pick(a.slot2General);
-  const s3 = pick(a.slot3);
-  const lvl = s1.maxLevel ? s1.minLevel + Math.floor(Math.random() * (s1.maxLevel - s1.minLevel + 1)) : null;
-  return {
-    power: rating(),
-    mood: rating(),
-    t1: s1.key, t1_level: lvl,
-    t2: s2.key,
-    t3: s3.key,
-  };
+  const t1 = rollSlot(a.slot1General, ownOptions(a.slot1Own, variants), variant, SPECIFIC_CHANCE.slot1);
+  const t2 = rollSlot(a.slot2General, ownOptions(a.slot2Own, variants), variant, SPECIFIC_CHANCE.slot2);
+  const t3 = pick(a.slot3).key;
+  const g = T.global.find((t) => t.key === t1);
+  const lvl = g?.maxLevel ? g.minLevel + Math.floor(Math.random() * (g.maxLevel - g.minLevel + 1)) : null;
+  return { power: rating(), mood: rating(), t1, t1_level: lvl, t2, t3 };
 }
 
 // ---------- display ----------
@@ -140,19 +167,33 @@ function find(slot, key) {
   return (slot === 2 ? T.slot2 : T.slot3).find((t) => t.key === key) || null;
 }
 
-function traitName(slot, key, level) {
+// the effect line of a deviation's own trait that belongs to this specimen's variant
+function ownLine(t, variant) {
+  if (!variant) return null;
+  return t.effects.find((l) => variantMatches(lineLabel(l), variant)) || null;
+}
+
+function traitName(slot, key, level, variant) {
   const t = find(slot, key);
   if (!t) return key || "—";
-  return level ? `${t.name} ${level}` : t.name;
+  if (level) return `${t.name} ${level}`;
+  const line = ownLine(t, variant);
+  if (line) return lineLabel(line);                 // e.g. "Violet Robe"
+  // an own trait that names no variant, e.g. Whalepup's "Don't Get Wet: While equipped..."
+  const first = t.effects[0] || "";
+  if (T.slot1.includes(t) && first.includes(": ") && !lineLabel(first)) return first.split(":")[0].trim();
+  return t.name.includes(" - ") ? t.name.split(" - ").pop().trim() : t.name;
 }
 
 function traitEffect(slot, key, level, variant) {
   const t = find(slot, key);
   if (!t) return "";
   if (slot === 1 && level && t.maxLevel) return (t.effects[level - 1] || "").replace(/^\d+\s+/, "");
-  return effectFor(t, variant);
+  const line = ownLine(t, variant) || t.effects[0] || "";
+  const named = lineLabel(line) || (T.slot1.includes(t) && line.indexOf(": ") > 0 && line.indexOf(": ") < 40);
+  return line.includes(": ") && named ? line.slice(line.indexOf(": ") + 2) : line;
 }
 
-const shortTraits = (s) => `${traitName(1, s.t1, s.t1_level)} | ${traitName(2, s.t2)} | ${traitName(3, s.t3)}`;
+const shortTraits = (s) => `${traitName(1, s.t1, s.t1_level, s.variant)} | ${traitName(2, s.t2, null, s.variant)} | ${traitName(3, s.t3)}`;
 
-module.exports = { refresh, parse, allowed, rollSpecimen, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS };
+module.exports = { refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS };
