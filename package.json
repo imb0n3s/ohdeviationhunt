@@ -3,8 +3,16 @@
   "version": "1.0.0",
   "description": "Twitch chat game for Once Human: catch combat deviations (data from ohwikiguide.com), like Pokemon Community Game",
   "main": "index.js",
-  "scripts": { "start": "node index.js", "test": "node test/sim.js",  "test:traits": "node test/traits.js",  "zip:ext": "cd ext && rm -f ../deviation-bag-panel.zip && zip -q ../deviation-bag-panel.zip panel.html panel.js panel.css" },
-  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test/sim.js",
+    "test:traits": "node test/traits.js",
+    "zip:ext": "cd ext && rm -f ../deviation-bag-panel.zip && zip -q ../deviation-bag-panel.zip panel.html panel.js panel.css",
+    "wiki": "node scripts/wiki-page.js > docs/Deviation_Hunt.wiki"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "better-sqlite3": "^11.5.0",
     "dotenv": "^16.4.5",

@@ -47,3 +47,13 @@ Viewers share their identity once (Twitch requirement). Upload `ext/` zipped (`n
 as the extension's assets. Console settings: Panel view, panel height 500, identity linking on,
 URL fetching allowlist `https://ohdeviationhunt-production.up.railway.app`, image allowlist
 `https://ohwikiguide.com`.
+
+## Wiki guide
+
+The player guide at https://ohwikiguide.com/Deviation_Hunt is generated from the game's own settings:
+
+```
+npm run wiki   # writes docs/Deviation_Hunt.wiki
+```
+
+Re-generate and re-publish it whenever balance, commands, traits or the economy change.

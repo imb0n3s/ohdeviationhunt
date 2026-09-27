@@ -1,0 +1,334 @@
+<div style="max-width:1000px; margin:0 auto;">
+<div style="background:linear-gradient(135deg,#0d1319,#10202e); border:1px solid #1f2a35; border-radius:16px; padding:22px 24px; margin-bottom:16px;">
+<div style="color:#0ea5e9; font-weight:800; font-size:13px; letter-spacing:1px; text-transform:uppercase;">Twitch Chat Game</div>
+<div style="color:#e6edf3; font-size:28px; font-weight:800; margin:4px 0 6px;">Deviation Hunt</div>
+<div style="color:#cfd6df; line-height:1.7;">A Once Human catching game that lives in Twitch chat. While a stream is live, deviations breach containment in chat — type <code>!secure</code> to catch them, collect all 61 deviations with their variations and skins, and roll the best Skill Rating, Activity Rating and traits. Your Deviation Bag follows you to '''every''' channel that runs the game.</div>
+<div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;">
+<span style="background:#0ea5e9; border-radius:8px; padding:6px 14px; font-weight:700;">[https://ohdeviationhunt-production.up.railway.app <span style="color:#04121c;">Add it to your channel</span>]</span>
+<span style="background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:6px 14px; font-weight:700;">[https://ohdeviationhunt-production.up.railway.app/top <span style="color:#e6edf3;">Leaderboard</span>]</span>
+<span style="background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:6px 14px; font-weight:700;">[[Deviation_Main_Page|<span style="color:#e6edf3;">Deviation database</span>]]</span>
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Start</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">How to Play</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+# Watch a stream that has '''ohdeviationhunt''' in chat.
+# When the bot posts ''"⚠️ A wild … has breached containment!"'', type <code>!secure</code> within '''90 seconds'''.
+# When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
+# Check your collection any time with <code>!deviationbag</code> or on your own page: <code>https://ohdeviationhunt-production.up.railway.app/u/''yourname''</code>
+
+Your first <code>!secure</code> signs you up automatically — you start with '''5 Securement Units''' and '''200 Starchrom'''. Every <code>!secure</code> uses one Securement Unit whether it catches or not, and you get one throw per breach.
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Chat</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">List of All Commands</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+{| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Command
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Effect
+|-
+| <code>!secure</code> || Throw a Securement Unit at the deviation that's loose in chat. Also works as <code>!catch</code>. One throw per person per breach.
+|-
+| <code>!units</code> || Show your Securement Units, Starchrom, and when your next free unit arrives. Also <code>!inv</code>.
+|-
+| <code>!shop</code> || Show the price of Securement Units.
+|-
+| <code>!buy <amount></code> || Buy Securement Units for 500 Starchrom each, e.g. <code>!buy 2</code>.
+|-
+| <code>!daily</code> || Claim your daily supply drop: +100 Starchrom and 1 Securement Unit. Every 20 hours.
+|-
+| <code>!deviationbag [name]</code> || Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.
+|-
+| <code>!traits <deviation></code> || Skill Rating, Activity Rating and all three traits of your best specimen of that deviation. Also <code>!stats</code>.
+|-
+| <code>!dev <deviation></code> || Info about a deviation: what it does, its variations and skins, and a wiki link.
+|-
+| <code>!scrap</code> || Recycle every duplicate for Starchrom (50% of its catch reward). You keep the specimen with the best Skill + Activity Rating of each deviation and variant.
+|-
+| <code>!hunttop</code> || Top collectors across every channel. Also <code>!leaderboard</code>.
+|-
+| <code>!hunt</code> || Short help message with a link to this guide.
+|}
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Mods</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Streamer & Moderator Commands</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+Only the broadcaster and moderators can use these.
+{| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Command
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Effect
+|-
+| <code>!hunt spawn</code> || Spawn a deviation right now.
+|-
+| <code>!hunt interval <minutes></code> || How often deviations breach while you're live (2–120 minutes, default 7).
+|-
+| <code>!hunt off</code> / <code>!hunt on</code> || Pause or resume spawns. Other commands keep working.
+|-
+| <code>!hunt status</code> || Live status, spawn timer, what's loose, and this channel's spawn/catch totals.
+|-
+| <code>!hunt leave</code> || Remove the bot from your channel.
+|-
+| <code>!hunt help</code> || List the mod commands in chat.
+|}
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Shop</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Securement Units</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+Securement Units are the only thing you need to catch deviations — there is one kind, and it works on everything.
+{| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Item
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Description
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Price
+|-
+| '''Securement Unit''' || Contains one breached deviation. Used up on every <code>!secure</code>, caught or not. || 500 Starchrom
+|}
+
+'''Ways to get Securement Units'''
+{| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Source
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Amount
+|-
+| Starting supply || 5 units
+|-
+| Free refill || +1 unit every hour — no cap, they keep stacking even while you're away
+|-
+| <code>!daily</code> || +1 unit every 20 hours
+|-
+| <code>!buy <amount></code> || 500 Starchrom each
+|}
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Currency</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Starchrom</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+Starchrom is earned by securing deviations and spent on Securement Units.
+{| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
+! style="background:#131c27; color:#e6edf3; text-align:left;" | How
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Starchrom
+|-
+| Securing a deviation || <span style="color:#9fb0c0; font-weight:800;">Common</span> 10 · <span style="color:#4ade80; font-weight:800;">Uncommon</span> 20 · <span style="color:#38bdf8; font-weight:800;">Rare</span> 40 · <span style="color:#c084fc; font-weight:800;">Epic</span> 80 · <span style="color:#fbbf24; font-weight:800;">Legendary</span> 200
+|-
+| Securing a Variation || ×2 the normal reward
+|-
+| Securing a Skin || 200
+|-
+| First time you secure a deviation (or a new variant of it) || +100 bonus
+|-
+| A throw that misses || +3 salvage
+|-
+| <code>!daily</code> || +100
+|-
+| <code>!scrap</code> || 50% of the catch reward per duplicate
+|}
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Odds</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Spawn Rates & Capture Rates</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+Each breach first rolls a rarity, then a deviation of that rarity. Everyone who throws gets their own roll — any number of people can secure the same deviation.
+{| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Rarity
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Spawn chance
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Capture rate
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Capture rate (Variation)
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Starchrom reward
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Deviations
+|-
+| <span style="color:#9fb0c0; font-weight:800;">Common</span> || 40% || 70% || 59.5% || 10 || 26
+|-
+| <span style="color:#4ade80; font-weight:800;">Uncommon</span> || 28% || 55% || 46.8% || 20 || 19
+|-
+| <span style="color:#38bdf8; font-weight:800;">Rare</span> || 18% || 40% || 34% || 40 || 9
+|-
+| <span style="color:#c084fc; font-weight:800;">Epic</span> || 10% || 25% || 21.3% || 80 || 4
+|-
+| <span style="color:#fbbf24; font-weight:800;">Legendary</span> || 4% || 12% || 10.2% || 200 || 3
+|}
+
+* '''Variations''' spawn about 8.3% of the time (on deviations that have them). They are 15% harder to secure and pay ×2 Starchrom.
+* '''Skins''' spawn about 2.5% of the time (on deviations that have them). Every skin counts as <span style="color:#fbbf24; font-weight:800;">Legendary</span> with a flat '''9%''' capture rate.
+* Capture rates never go above 95%.
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Deviations</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">All 61 Deviations by Rarity</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+Every deviation from the [[Deviation_Main_Page|Deviation database]] can spawn: 23 combat, 18 crafting, 20 territory. Together they have 138 variations and 27 skins to collect.
+
+<div style="margin-top:12px;"><span style="color:#9fb0c0; font-weight:800;">Common</span> <span style="color:#6b7a8c;">— 26 deviations · 70% capture</span></div>
+<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;"><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Artisans_Touch.png|28px|link=]] Artisan's Touch</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Atomic_Lighter.png|28px|link=]] Atomic Lighter</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Butterfly_Emissary.png|28px|link=]] Butterfly Emissary</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Buzzy_Bee.png|28px|link=]] Buzzy Bee</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_By-the-Wind.png|28px|link=]] By-the-Wind</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Chefosaurus_Rex.png|28px|link=]] Chefosaurus Rex</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Disco_Ball.png|28px|link=]] Disco Ball</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Dr_Teddy.png|28px|link=]] Dr. Teddy</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Electric_Eel.png|28px|link=]] Electric Eel</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Fetch-a-lot_Bunny.png|28px|link=]] Fetch-A-Lot Bunny</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Flame_Essence.png|28px|link=]] Flame Essence</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Frog_the_Leaper.png|28px|link=]] Frog the Leaper</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Growshroom.png|28px|link=]] Growshroom</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Grumpy_Bulb.png|28px|link=]] Grumpy Bulb</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Harveseed.png|28px|link=]] Harveseed</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Hug-in-a-Bowl.png|28px|link=]] Hug-in-a-Bowl</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Ice_Pot.png|28px|link=]] Ice Pot</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Logging_Beaver.png|28px|link=]] Logging Beaver</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Mini_Feaster.png|28px|link=]] Mini Feaster</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Nutcracker.png|28px|link=]] Nutcracker</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Paper_Doll.png|28px|link=]] Paper Doll</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Party_Monkey.png|28px|link=]] Party Monkey</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Pup_Buddy.png|28px|link=]] Pup Buddy</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Rain_Man.png|28px|link=]] Rain Man</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Snow_Globe.png|28px|link=]] Snow Globe</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Tar_Pudding.png|28px|link=]] Tar Pudding</span></div>
+
+<div style="margin-top:12px;"><span style="color:#4ade80; font-weight:800;">Uncommon</span> <span style="color:#6b7a8c;">— 19 deviations · 55% capture</span></div>
+<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;"><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Atomic_Snail.png|28px|link=]] Atomic Snail</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Director_Fox.png|28px|link=]] Director Fox</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Doctor_Raven.png|28px|link=]] Doctor Raven</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Dreamcatcher.png|28px|link=]] Dreamcatcher</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Enchanting_Void.png|28px|link=]] Enchanting Void</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Festering_Gel.png|28px|link=]] Festering Gel</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Gingerbread_House.png|28px|link=]] Gingerbread House</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_H37.png|28px|link=]] H37</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Hydronaut_Fish.png|28px|link=]] Hydronaut Fish</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Lethal_Rabbit.png|28px|link=]] Lethal Rabbit</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Masonic_Pyramid.png|28px|link=]] Masonic Pyramid</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Mini_Wonder.png|28px|link=]] Mini Wonder</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Orb_Lightning.png|28px|link=]] Orb Lightning</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Polar_Jelly.png|28px|link=]] Polar Jelly</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Strange_Door.png|28px|link=]] Strange Door</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Upper_World_Spawn.png|28px|link=]] Upper World Spawn</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Voodoo_Doll.png|28px|link=]] Voodoo Doll</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Wish_Box.png|28px|link=]] Wish Box</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Zapamander.png|28px|link=]] Zapamander</span></div>
+
+<div style="margin-top:12px;"><span style="color:#38bdf8; font-weight:800;">Rare</span> <span style="color:#6b7a8c;">— 9 deviations · 40% capture</span></div>
+<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;"><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Extradimensional_Cat.png|28px|link=]] Extradimensional Cat</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Invincible_Sun.png|28px|link=]] Invincible Sun</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Lonewolfs_Whisper.png|28px|link=]] Lonewolf Whisper</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Mr_Wish.png|28px|link=]] Mr. Wish</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Rebecca.png|28px|link=]] Rebecca</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Snowsprite.png|28px|link=]] Snowsprite</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Space_Turner.png|28px|link=]] Space Turner</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_The_Digby_Boy.png|28px|link=]] The Digby Boy</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Whalepup.png|28px|link=]] Whalepup</span></div>
+
+<div style="margin-top:12px;"><span style="color:#c084fc; font-weight:800;">Epic</span> <span style="color:#6b7a8c;">— 4 deviations · 25% capture</span></div>
+<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;"><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Pyro_Dino.png|28px|link=]] Pyro Dino</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Shattered_Maiden.png|28px|link=]] Shattered Maiden</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_ZapCam.png|28px|link=]] ZapCam</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Zeno-Purifier.png|28px|link=]] Zeno-Purifier</span></div>
+
+<div style="margin-top:12px;"><span style="color:#fbbf24; font-weight:800;">Legendary</span> <span style="color:#6b7a8c;">— 3 deviations · 12% capture</span></div>
+<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;"><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Behemoth.png|28px|link=]] Behemoth</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Brave_George.png|28px|link=]] Brave George</span><span style="display:inline-flex; align-items:center; gap:6px; background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:2px 8px 2px 2px; font-size:13px;">[[File:Deviation_Soul_Summoner.png|28px|link=]] Soul Summoner</span></div>
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Shiny</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Variations & Skins</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+Variations and skins are Deviation Hunt's shinies. When one breaches, the spawn message says so:
+<code>⚠️ A wild Grumpy Bulb has breached containment! ✨ VARIATION: Violet Robe Type !secure within 90s to catch it.</code>
+
+* Each variation and skin is its own entry in your Deviation Bag, and the first one of each earns the +100 new-entry bonus.
+* On your collection page and in the Twitch panel, caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.
+* Some deviations have a trait that belongs to one variant only (e.g. Grumpy Bulb's Slot 1 trait is ''Violet Robe'') — see Traits below.
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Ratings</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Skill Rating & Activity Rating</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+Every deviation you secure is its own specimen with two ratings from 1 to 5 — '''Skill Rating''' (Deviant Power) and '''Activity Rating''' (Mood). Higher is rarer:
+{| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Rating
+! style="background:#131c27; color:#e6edf3; text-align:left;" | 1
+! style="background:#131c27; color:#e6edf3; text-align:left;" | 2
+! style="background:#131c27; color:#e6edf3; text-align:left;" | 3
+! style="background:#131c27; color:#e6edf3; text-align:left;" | 4
+! style="background:#131c27; color:#e6edf3; text-align:left;" | 5
+|-
+| Chance || 30% || 28% || 22% || 13% || 7%
+|}
+
+A 5/5 specimen gets a ⭐ in chat. Catch the same deviation again to hunt for better ratings — <code>!scrap</code> always keeps your best one.
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Traits</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Traits</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+Each specimen rolls three traits using the exact rules of the [[Deviation_Trait_Page|Deviation Trait Page]], for its own category (combat, crafting or territory):
+{| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Slot
+! style="background:#131c27; color:#e6edf3; text-align:left;" | What it can roll
+|-
+| '''Slot 1''' || Any Global trait (with a random level), or — sometimes — that deviation's own Slot 1 trait.
+|-
+| '''Slot 2''' || Any general Slot 2 trait of its category, or — sometimes — one of that deviation's own Slot 2 traits. Another deviation's own trait can never appear.
+|-
+| '''Slot 3''' || Any Slot 3 (fused) trait of its category.
+|}
+
+* A deviation's own traits that belong to a specific variation or skin only ever appear on that variant — and that variant always carries it.
+* Own traits that aren't tied to a variant can appear on any specimen of that deviation.
+* See any specimen's traits with <code>!traits <deviation></code>, on your collection page, or in the Twitch panel.
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Collection</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Deviation Bag & Twitch Panel</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+Your collection is tied to your Twitch account, not to a channel — everything you catch on any stream lands in the same Deviation Bag, and a name change doesn't lose it.
+
+* '''Collection page:''' <code>https://ohdeviationhunt-production.up.railway.app/u/''yourname''</code> — every deviation grouped by Combat / Crafting / Territory, your best specimen's ratings and traits, and caught variations and skins highlighted. <code>!deviationbag</code> posts your link.
+* '''Twitch panel:''' the ''Deviation Bag'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Deviation Bag''' once to let Twitch share your username with it. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
+* '''Leaderboard:''' [https://ohdeviationhunt-production.up.railway.app/top ohdeviationhunt-production.up.railway.app/top] or <code>!hunttop</code>.
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Streamers</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Add Deviation Hunt to Your Channel</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+# Go to [https://ohdeviationhunt-production.up.railway.app ohdeviationhunt-production.up.railway.app] and click '''Add to my channel''' (sign in with Twitch). Or type <code>!join</code> in [https://www.twitch.tv/ohdeviationhunt ohdeviationhunt's chat].
+# If the bot says it needs permission, type <code>/mod ohdeviationhunt</code> in your chat and try again.
+# That's it. Deviations breach about every '''7 minutes''' while you're '''live''' and someone has chatted in the last 10 minutes. Change the timer with <code>!hunt interval <minutes></code>.
+
+To remove it, type <code>!hunt leave</code> in your chat or <code>!leave</code> in ohdeviationhunt's chat.
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">FAQ</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Frequently Asked Questions</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+'''Q: How do I start?'''<br>A: Just type <code>!secure</code> the next time a deviation breaches. Your first throw signs you up with 5 Securement Units and 200 Starchrom.
+
+'''Q: I typed !secure and the bot didn't answer.'''<br>A: That's normal — the bot stays quiet so chat isn't spammed. Results for everyone are posted when the 90-second window ends. It only replies right away if you're out of units.
+
+'''Q: Why wasn't my name in the result?'''<br>A: Only the people who secured it are listed. If your name isn't there, it broke free from your unit (you still get +3 Starchrom).
+
+'''Q: I'm out of Securement Units.'''<br>A: You get 1 free every hour with no cap, 1 from <code>!daily</code>, or <code>!buy <amount></code> for 500 Starchrom each. <code>!units</code> shows when the next free one arrives.
+
+'''Q: Do better units exist?'''<br>A: No — there's a single Securement Unit. Your odds depend only on the deviation's rarity and whether it's a variation or skin.
+
+'''Q: Does my collection carry over between channels?'''<br>A: Yes. It's tied to your Twitch account and shared across every channel running Deviation Hunt.
+
+'''Q: Why aren't deviations spawning?'''<br>A: They only breach while the stream is live and chat has been active in the last 10 minutes. A mod may also have used <code>!hunt off</code> — <code>!hunt status</code> shows what's going on.
+
+'''Q: Where do the deviations, traits and pictures come from?'''<br>A: Straight from this wiki — the [[Deviation_Main_Page|Deviation database]] and [[Deviation_Trait_Page|Deviation Trait Page]]. When the wiki is updated, the game picks it up within a few hours.
+</div>
+</div>
+
+<div style="color:#6b7a8c; font-size:12px; text-align:center; margin:6px 0 20px;">Numbers on this page come straight from the game's settings and are updated whenever the game changes.</div>
+</div>
+__NOTOC__
+[[Category:Twitch]]
