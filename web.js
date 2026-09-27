@@ -170,6 +170,7 @@ function createApp(pool) {
   app.set("trust proxy", 1);
   app.disable("x-powered-by");
 
+  require("./extension").mount(app);
   app.get("/", (req, res) => res.send(landing()));
   app.get("/dex", (req, res) => res.send(dexPage()));
   app.get("/top", (req, res) => res.send(topPage()));

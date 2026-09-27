@@ -38,3 +38,12 @@ lives in `rarity.js`.
 Own Twitch dev app (redirect `<BASE_URL>/auth/callback`), a volume at `/data`, env vars from
 `.env.example`, then open `/setup?key=...` and log in as the bot's Twitch account.
 Test locally with `npm test` (simulated chat).
+
+## Twitch panel extension (Deviation Bag)
+`ext/` holds the panel (panel.html/js/css — no inline scripts or styles, Twitch CSP). It calls
+`GET /ext/bag` with the Twitch extension JWT; the server verifies it with `EXT_SECRET` (the
+extension secret from the Twitch dev console, base64) and returns the viewer's global bag.
+Viewers share their identity once (Twitch requirement). Upload `ext/` zipped (`npm run zip:ext`)
+as the extension's assets. Console settings: Panel view, panel height 500, identity linking on,
+URL fetching allowlist `https://ohdeviationhunt-production.up.railway.app`, image allowlist
+`https://ohwikiguide.com`.

@@ -25,7 +25,9 @@ const cfg = {
   LIVE_POLL_SECONDS: Number(process.env.LIVE_POLL_SECONDS || 120),
   SPAWN_OFFLINE: process.env.SPAWN_OFFLINE === "1",
   // PAUSED=1 stops all spawns and game commands (only !join/!leave and a "paused" note on !hunt)
-  PAUSED: process.env.PAUSED === "1",                    // testing only: spawn even when not live
+  PAUSED: process.env.PAUSED === "1",
+  // Twitch extension (Deviation Bag panel): the extension secret from the dev console, base64
+  EXT_SECRET: process.env.EXT_SECRET || "",                    // testing only: spawn even when not live
 
   TERMS_URL: process.env.TERMS_URL || "https://ohwikiguide.com/OH_Wiki_Bot_Terms_of_Service",
   PRIVACY_URL: process.env.PRIVACY_URL || "https://ohwikiguide.com/Privacy_Policy",
