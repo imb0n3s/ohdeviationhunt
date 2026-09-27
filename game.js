@@ -31,7 +31,7 @@ function savePlayer(p) {
 // "303 Starchrom | 21 deviations (12/61 unique)" — used where the full unit list is too noisy
 function bagText(p) {
   const c = collectionSummary(p.user_id);
-  return `${fmt(p.starchrom)} ${SC} | ${c.total} deviation${c.total === 1 ? "" : "s"} (${c.species}/${data.all().length} unique)`;
+  return `${fmt(p.starchrom)} ${SC} | ${c.total} deviation${c.total === 1 ? "" : "s"} (${c.species}/${data.all().length} unique) — see your deviations, ratings & traits: ${cfg.BASE_URL}/u/${p.login}`;
 }
 
 function unitsText(p) {
