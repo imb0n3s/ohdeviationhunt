@@ -71,6 +71,10 @@ function bagFor(userId) {
 }
 
 function mount(app) {
+  // length only (never the value) so a bad paste is easy to spot: Twitch extension secrets are
+  // 44 base64 characters that decode to 32 bytes
+  if (cfg.EXT_SECRET) console.log(`[ext] secret loaded: ${cfg.EXT_SECRET.length} chars, ${Buffer.from(cfg.EXT_SECRET, "base64").length} bytes`);
+  else console.log("[ext] no EXT_SECRET set");
   // CORS: extension front ends are served from https://<client-id>.ext-twitch.tv
   app.use("/ext", (req, res, next) => {
     const origin = req.headers.origin || "";
