@@ -304,6 +304,25 @@ function buy(userId, login, display, args) {
   return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units. ${bagText(p)}`;
 }
 
+// Destroy one specimen for Starchrom. Only allowed while you own more than one of that deviation,
+// so a deviation never leaves your Deviation Bag this way.
+function destroySpecimen(userId, specimenId) {
+  const sp = db.q.getSpecimen.get(Number(specimenId), userId);
+  if (!sp) return { ok: false, error: "not_found" };
+  if (db.q.countDeviation.get(userId, sp.deviation).n <= 1) return { ok: false, error: "last_one" };
+  const row = db.q.getPlayer.get(userId);
+  let p;
+  db.tx(() => {
+    p = loadPlayer(userId, row.login, row.display);
+    db.q.deleteSpecimen.run(sp.id);
+    db.q.decCatch.run(userId, sp.deviation, sp.variant);
+    db.q.dropEmptyCatch.run(userId, sp.deviation, sp.variant);
+    p.starchrom += ECONOMY.destroyValue;
+    savePlayer(p);
+  })();
+  return { ok: true, gained: ECONOMY.destroyValue, deviation: sp.deviation, p };
+}
+
 function inventory(userId, login, display) {
   const p = loadPlayer(userId, login, display);
   return `@${display} ${unitsText(p)}`;
@@ -383,4 +402,4 @@ function top(baseUrl) {
   return `🏆 Top Metas: ${rows.map((r, i) => `${i + 1}. ${r.display} ${r.species} dev${r.variants ? ` +${r.variants}✨` : ""}`).join(" · ")} — ${baseUrl}/top`;
 }
 
-module.exports = { savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

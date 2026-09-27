@@ -136,6 +136,7 @@ ${table(["How", SC], [
   ["A throw that misses", `+${ECONOMY.escapeSalvage} salvage`],
   [cmd("!daily"), `+${ECONOMY.daily.starchrom}`],
   [cmd("!scrap"), `${pct(ECONOMY.scrapValue)} of the catch reward per duplicate`],
+  ["Destroying an extra specimen in the Twitch panel", `+${fmt(ECONOMY.destroyValue)} each (only while you own more than one)`],
 ])}
 `));
 
@@ -189,7 +190,7 @@ out.push(box("Collection", "Deviation Bag & Twitch Panel", `
 Your collection is tied to your Twitch account, not to a channel — everything you catch on any stream lands in the same Deviation Bag, and a name change doesn't lose it.
 
 * '''Collection page:''' ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)} — every deviation grouped by Combat / Crafting / Territory, your best specimen's ratings and traits, and caught variations and skins highlighted. ${cmd("!deviationbag")} posts your link.
-* '''Twitch panel:''' the ''Deviation Bag'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Deviation Bag''' once to let Twitch share your username with it. Switch to the '''Shop''' tab to buy Securement Units with your Starchrom without typing in chat. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
+* '''Twitch panel:''' the ''Deviation Bag'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Deviation Bag''' once to let Twitch share your username with it. Click a deviation to see '''every''' specimen you own with its Skill Rating, Activity Rating and traits — when you have more than one, you can destroy an extra for '''${fmt(ECONOMY.destroyValue)} ${SC}''' (you always keep at least one). Switch to the '''Shop''' tab to buy Securement Units with your Starchrom without typing in chat. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
 * '''Leaderboard:''' [${URL}/top ${URL.replace(/^https?:\/\//, "")}/top] or ${cmd("!hunttop")}.
 `));
 

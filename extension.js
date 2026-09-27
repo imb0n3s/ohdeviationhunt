@@ -44,6 +44,13 @@ function verifyExtJwt(token) {
 // balances the panel shows (loadPlayer also pays out any hourly free units that are due)
 const playerInfo = (p) => ({ login: p.login, display: p.display, starchrom: p.starchrom, units: p.units.standard || 0, nextUnitIn: game.nextUnitIn(p) });
 
+const specView = (x, d) => ({
+  id: x.id, variant: x.variant || null, skill: x.power, activity: x.mood, caughtAt: x.caught_at,
+  traits: [[1, x.t1, x.t1_level], [2, x.t2, null], [3, x.t3, null]].map(([slot, key, lvl]) => ({
+    slot, name: traits.traitName(slot, key, lvl, x.variant, d.category), effect: traits.traitEffect(slot, key, lvl, x.variant, d.category),
+  })),
+});
+
 function bagFor(userId) {
   const p = db.q.getPlayer.get(userId);
   const all = data.all();
@@ -65,6 +72,7 @@ function bagFor(userId) {
       owned: count.has(d.id), count: count.get(d.id) || 0,
       variantsOwned: [...(owned.get(d.id) || [])], variantsTotal: d.variants.length,
       variants: d.variants.map((v) => ({ name: v.name, kind: v.kind, img: v.img, owned: !!owned.get(d.id)?.has(v.name) })),
+      specimens: specs.filter((x) => x.deviation === d.id).map((x) => specView(x, d)),
       best: sp ? {
         variant: sp.variant || null, skill: sp.power, activity: sp.mood,
         traits: [[1, sp.t1, sp.t1_level], [2, sp.t2, null], [3, sp.t3, null]].map(([slot, key, lvl]) => ({
@@ -77,6 +85,7 @@ function bagFor(userId) {
   return {
     player: p ? playerInfo(game.loadPlayer(p.user_id, p.login, p.display)) : null,
     shop: shop.catalog(),
+    destroyValue: require("./rarity").ECONOMY.destroyValue,
     stats: { unique: summary.species, total: summary.total, variants: summary.variants, all: all.length, allVariants: all.reduce((s, d) => s + d.variants.length, 0) },
     page: p ? `${cfg.BASE_URL}/u/${p.login}` : null,
     deviations,
@@ -137,6 +146,22 @@ function mount(app) {
     } catch (e) {
       if (e.needsIdentity) return res.status(403).json({ error: "needs_identity" });
       console.warn(`[ext] buy failed ${e.status || 500}: ${e.message}`);
+      res.status(e.status || 500).json({ error: e.status ? e.message : "server_error" });
+    }
+  });
+
+  // Destroy one of your specimens for Starchrom (only while you own more than one of that deviation)
+  app.post("/ext/specimen/destroy", express.json({ limit: "1kb" }), (req, res) => {
+    try {
+      const jwt = auth(req);
+      if (!db.q.getPlayer.get(jwt.user_id)) return res.status(404).json({ error: "no_player" });
+      const r = game.destroySpecimen(jwt.user_id, req.body?.id);
+      if (!r.ok) return res.status(400).json({ error: r.error });
+      console.log(`[ext] ${r.p.login} destroyed a ${r.deviation} for ${r.gained}`);
+      res.json({ ok: true, gained: r.gained, bag: bagFor(jwt.user_id) });
+    } catch (e) {
+      if (e.needsIdentity) return res.status(403).json({ error: "needs_identity" });
+      console.warn(`[ext] destroy failed ${e.status || 500}: ${e.message}`);
       res.status(e.status || 500).json({ error: e.status ? e.message : "server_error" });
     }
   });

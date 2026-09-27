@@ -146,6 +146,8 @@ Starchrom is earned by securing deviations and spent on Securement Units.
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || +100
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!scrap</nowiki></span> || 50% of the catch reward per duplicate
+|-
+| Destroying an extra specimen in the Twitch panel || +500 each (only while you own more than one)
 |}
 </div>
 </div>
@@ -283,7 +285,7 @@ Each specimen rolls three traits using the exact rules of the [[Deviation_Trait_
 Your collection is tied to your Twitch account, not to a channel — everything you catch on any stream lands in the same Deviation Bag, and a name change doesn't lose it.
 
 * '''Collection page:''' <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>https://ohdeviationhunt-production.up.railway.app/u/</nowiki>''yourname''</span> — every deviation grouped by Combat / Crafting / Territory, your best specimen's ratings and traits, and caught variations and skins highlighted. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!deviationbag</nowiki></span> posts your link.
-* '''Twitch panel:''' the ''Deviation Bag'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Deviation Bag''' once to let Twitch share your username with it. Switch to the '''Shop''' tab to buy Securement Units with your Starchrom without typing in chat. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
+* '''Twitch panel:''' the ''Deviation Bag'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Deviation Bag''' once to let Twitch share your username with it. Click a deviation to see '''every''' specimen you own with its Skill Rating, Activity Rating and traits — when you have more than one, you can destroy an extra for '''500 Starchrom''' (you always keep at least one). Switch to the '''Shop''' tab to buy Securement Units with your Starchrom without typing in chat. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
 * '''Leaderboard:''' [https://ohdeviationhunt-production.up.railway.app/top ohdeviationhunt-production.up.railway.app/top] or <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunttop</nowiki></span>.
 </div>
 </div>

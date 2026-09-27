@@ -89,35 +89,78 @@
     Array.prototype.forEach.call(document.querySelectorAll(".tabs button"), function (b) { b.onclick = function () { view.cat = b.getAttribute("data-cat"); render(); }; });
     var o = document.getElementById("owned"); if (o) o.onchange = function () { view.ownedOnly = o.checked; render(); };
     Array.prototype.forEach.call(document.querySelectorAll(".dev"), function (c) {
-      c.onclick = function () { var d = find(c.getAttribute("data-id")); if (d && d.owned) { view.open = d.id; render(); window.scrollTo(0, 0); } };
+      c.onclick = function () { var d = find(c.getAttribute("data-id")); if (d && d.owned) { view.open = d.id; confirmId = null; detailNotice = null; render(); window.scrollTo(0, 0); } };
     });
   }
 
   function find(id) { for (var i = 0; i < bag.deviations.length; i++) if (bag.deviations[i].id === id) return bag.deviations[i]; return null; }
 
+  var confirmId = null, detailNotice = null;
+
+  function traitHtml(t) {
+    return '<div class="trait"><div class="h"><span>' + t.slot + '</span>' + esc(t.name) + '</div>' + (t.effect ? '<div class="e">' + esc(t.effect) + '</div>' : "") + '</div>';
+  }
+
   function renderDetail(id) {
-    var d = find(id), b = d.best;
+    var d = find(id);
+    if (!d || !d.owned) { view.open = null; return render(); }
     var topV = caughtVariants(d)[0];
+    var specs = (d.specimens || []).slice().sort(function (a, b) { return (b.skill + b.activity) - (a.skill + a.activity) || b.skill - a.skill || b.id - a.id; });
+    var canDestroy = d.count > 1, value = bag.destroyValue || 500;
     var html = '<button class="btn ghost" id="back">← Back</button><div class="detail"><div class="hero"><img src="' + esc((topV && topV.img) || d.img) + '" alt="">' +
       (topV ? '<div class="vn big' + (topV.kind === "skin" ? " skin" : "") + '">✨ ' + (topV.kind === "skin" ? "Skin" : "Variation") + ': ' + esc(topV.name) + '</div>' : "") +
       '<h2>' + esc(d.name) + '</h2><div class="sub">' + esc(d.category.charAt(0).toUpperCase() + d.category.slice(1)) + ' · secured ×' + d.count + '</div></div>';
-    if (b) {
-      html += '<h3>Best specimen' + (b.variant ? " — " + esc(b.variant) : "") + '</h3>' +
-        '<div class="ratings"><div><b>' + b.skill + '/5</b>Skill Rating</div><div><b>' + b.activity + '/5</b>Activity Rating</div></div>' +
-        b.traits.map(function (t) { return '<div class="trait"><div class="h"><span>' + t.slot + '</span>' + esc(t.name) + '</div>' + (t.effect ? '<div class="e">' + esc(t.effect) + '</div>' : "") + '</div>'; }).join("");
-    }
+    if (detailNotice) html += '<div class="notice ' + detailNotice.kind + '">' + esc(detailNotice.text) + '</div>';
+    html += '<h3>Your ' + esc(d.name) + ' (' + specs.length + ')</h3>';
+    if (canDestroy) html += '<div class="hint left">Destroy an extra one for <b>' + value.toLocaleString() + ' Starchrom</b>. You always keep at least one.</div>';
+    html += specs.map(function (x, i) {
+      var confirming = confirmId === x.id;
+      return '<div class="spec' + (i === 0 ? " best" : "") + '">' +
+        '<div class="sh"><div class="rt"><b>' + x.skill + '/5</b> Skill <b>' + x.activity + '/5</b> Activity' + (x.skill === 5 && x.activity === 5 ? " ⭐" : "") + '</div>' +
+        (i === 0 ? '<span class="tag">Best</span>' : "") + '</div>' +
+        (x.variant ? '<div class="vn">✨ ' + esc(x.variant) + '</div>' : "") +
+        x.traits.map(traitHtml).join("") +
+        (canDestroy ? (confirming
+          ? '<div class="confirm"><span>Destroy this one for ' + value.toLocaleString() + ' Starchrom?</span><button class="btn danger" data-act="yes" data-id="' + x.id + '"' + (busy ? " disabled" : "") + '>' + (busy ? "…" : "Destroy") + '</button><button class="btn ghost" data-act="no">Cancel</button></div>'
+          : '<button class="btn outline" data-act="ask" data-id="' + x.id + '">Destroy for ' + value.toLocaleString() + ' Starchrom</button>') : "") +
+        '</div>';
+    }).join("");
+    if (d.count > specs.length) html += '<div class="hint left">' + (d.count - specs.length) + ' older catch' + (d.count - specs.length > 1 ? "es" : "") + ' from before ratings existed ' + (d.count - specs.length > 1 ? "have" : "has") + ' no ratings or traits.</div>';
     if (d.variantsTotal) {
       var got = caughtVariants(d);
       html += '<h3>Variants &amp; skins (' + got.length + '/' + d.variantsTotal + ' caught)</h3><div class="chips">' +
         d.variants.map(function (v) {
-          return '<span class="' + (v.owned ? "have " + v.kind : "") + '" title="' + (v.kind === "skin" ? "Skin" : "Variation") + '">' + (v.owned ? "\u2728 " : "") + esc(v.name) + '</span>';
+          return '<span class="' + (v.owned ? "have " + v.kind : "") + '" title="' + (v.kind === "skin" ? "Skin" : "Variation") + '">' + (v.owned ? "✨ " : "") + esc(v.name) + '</span>';
         }).join("") + '</div>';
     }
     html += '</div>';
     el(html);
-    document.getElementById("back").onclick = function () { view.open = null; render(); };
+    document.getElementById("back").onclick = function () { view.open = null; confirmId = null; detailNotice = null; render(); };
+    Array.prototype.forEach.call(document.querySelectorAll(".spec button"), function (b) {
+      b.onclick = function () {
+        var act = b.getAttribute("data-act");
+        if (act === "ask") { confirmId = +b.getAttribute("data-id"); detailNotice = null; return renderDetail(id); }
+        if (act === "no") { confirmId = null; return renderDetail(id); }
+        if (act === "yes") destroy(+b.getAttribute("data-id"), id);
+      };
+    });
   }
 
+  function destroy(specId, devId) {
+    if (busy) return;
+    busy = true; renderDetail(devId);
+    fetch(API + "/ext/specimen/destroy", { method: "POST", headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" }, body: JSON.stringify({ id: specId }) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        busy = false; confirmId = null;
+        if (res.ok) { bag = res.j.bag; detailNotice = { kind: "ok", text: "Destroyed — +" + res.j.gained.toLocaleString() + " Starchrom." }; }
+        else if (res.j.error === "needs_identity") return askIdentity();
+        else if (res.j.error === "last_one") detailNotice = { kind: "err", text: "You can’t destroy your last one." };
+        else detailNotice = { kind: "err", text: "Couldn’t destroy that one. Try again." };
+        render();
+      })
+      .catch(function () { busy = false; detailNotice = { kind: "err", text: "Couldn’t reach the server. Try again in a minute." }; render(); });
+  }
 
   // ---------- shop ----------
   function money(n) { return Number(n).toLocaleString(); }
