@@ -28,6 +28,12 @@ function savePlayer(p) {
   db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts });
 }
 
+// "303 Starchrom | 21 deviations (12/61 unique)" — used where the full unit list is too noisy
+function bagText(p) {
+  const c = collectionSummary(p.user_id);
+  return `${fmt(p.starchrom)} ${SC} | ${c.total} deviation${c.total === 1 ? "" : "s"} (${c.species}/${data.all().length} unique)`;
+}
+
 function unitsText(p) {
   const parts = Object.entries(UNITS).map(([k, u]) => `${u.label.replace(" Unit", "")} ${p.units[k] || 0}`);
   return `${fmt(p.starchrom)} ${SC} | Units: ${parts.join(", ")}`;
@@ -157,7 +163,7 @@ class Spawns {
         else if (p.starchrom >= UNITS.standard.price) { p.starchrom -= UNITS.standard.price; p.units.standard = (p.units.standard || 0) + 1; unit = "standard"; }
       }
       if (!(p.units[unit] > 0)) {
-        return warn(`@${display} you're out of ${UNITS[unit].label}s. ${unit === "standard" ? "Grab free ones with !daily or " : ""}!buy ${unit} (${UNITS[unit].price} ${SC} each). You have ${unitsText(p)}.`);
+        return warn(`@${display} you're out of ${UNITS[unit].label}s. ${unit === "standard" ? "Grab free ones with !daily or " : ""}!buy ${unit} (${UNITS[unit].price} ${SC} each). You have ${fmt(p.starchrom)} ${SC}.`);
       }
     }
     p.units[unit] -= 1;
@@ -235,7 +241,7 @@ function daily(userId, login, display) {
   const got = [];
   for (const [k, n] of Object.entries(ECONOMY.daily.units)) { p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}s`); }
   savePlayer(p);
-  return `@${display} 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}! ${unitsText(p)}`;
+  return `@${display} 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}! ${bagText(p)}`;
 }
 
 function shop() {
@@ -257,7 +263,7 @@ function buy(userId, login, display, args) {
   p.starchrom -= cost;
   p.units[unit] = (p.units[unit] || 0) + qty;
   savePlayer(p);
-  return `@${display} bought ${qty} ${UNITS[unit].label}${qty > 1 ? "s" : ""} for ${fmt(cost)} ${SC}. ${unitsText(p)}`;
+  return `@${display} bought ${qty} ${UNITS[unit].label}${qty > 1 ? "s" : ""} for ${fmt(cost)} ${SC} — you now have ${p.units[unit]}. ${bagText(p)}`;
 }
 
 function inventory(userId, login, display) {
@@ -300,7 +306,7 @@ function scrap(userId, login, display) {
     savePlayer(p);
   })();
   if (!n) return `@${display} no duplicates to scrap — you keep one of everything.`;
-  return `@${display} ♻️ scrapped ${n} duplicate${n > 1 ? "s" : ""} for ${fmt(gain)} ${SC} (kept your best Skill + Activity Rating of each). ${unitsText(p)}`;
+  return `@${display} ♻️ scrapped ${n} duplicate${n > 1 ? "s" : ""} for ${fmt(gain)} ${SC} (kept your best Skill + Activity Rating of each). ${bagText(p)}`;
 }
 
 function info(query, baseUrl) {
