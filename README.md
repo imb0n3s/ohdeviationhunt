@@ -12,7 +12,7 @@ snapshot used if the wiki is unreachable.
 
 ## Commands
 Viewers: `!secure [standard|advanced|elite|anomaly]` (alias `!catch`), `!units`, `!shop`,
-`!buy <unit> <n>`, `!daily`, `!dex [user]`, `!scrap`, `!traits [name]`, `!dev <name>`, `!hunttop`, `!hunt`.
+`!buy <unit> <n>`, `!daily`, `!deviationbag [user]`, `!scrap`, `!traits [name]`, `!dev <name>`, `!hunttop`, `!hunt`.
 Mods: `!hunt spawn`, `!hunt interval <min>`, `!hunt off|on`, `!hunt status`, `!hunt leave`.
 In the bot's own channel: `!join`, `!leave`.
 
@@ -31,7 +31,7 @@ All tuning (rarity tiers, which deviation is which tier, catch odds, prices, rew
 lives in `rarity.js`.
 
 ## Web
-`/` add-to-Twitch page + guide · `/u/<login>` a viewer's Deviadex · `/top` leaderboard ·
+`/` add-to-Twitch page + guide · `/u/<login>` a viewer's Deviation Bag · `/top` leaderboard ·
 `/dex` all deviations · `/setup?key=ADMIN_KEY` log in as the bot account · `/admin?key=ADMIN_KEY`.
 
 ## Deploy (Railway)

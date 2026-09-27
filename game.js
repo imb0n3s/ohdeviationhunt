@@ -211,7 +211,7 @@ class Spawns {
     } else {
       msg = `💥 ${name} broke free from everyone (${list(escaped)})! Better luck next breach.`;
     }
-    msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !dex to see your collection`;
+    msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !deviationbag to see your collection`;
     return this.send(bid, msg);
   }
 
@@ -278,8 +278,8 @@ function dex(userId, login, display, baseUrl) {
   const c = collectionSummary(userId);
   const all = data.all();
   const totalVariants = all.reduce((s, d) => s + d.variants.length, 0);
-  if (!c.total) return `@${display} your Deviadex is empty — wait for a breach and type !secure! Collection page: ${baseUrl}/u/${login}`;
-  return `@${display} 📖 Deviadex: ${c.species}/${all.length} deviations, ${c.variants}/${totalVariants} variants & skins, ${c.total} secured in total. ${baseUrl}/u/${login}`;
+  if (!c.total) return `@${display} your Deviation Bag is empty — wait for a breach and type !secure! Collection page: ${baseUrl}/u/${login}`;
+  return `@${display} 📖 Deviation Bag: ${c.species}/${all.length} deviations, ${c.variants}/${totalVariants} variants & skins, ${c.total} secured in total. ${baseUrl}/u/${login}`;
 }
 
 function scrap(userId, login, display) {

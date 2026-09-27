@@ -10,7 +10,7 @@ function isModOrOwner(ev) {
   return ev.chatter_user_id === ev.broadcaster_user_id || (ev.badges || []).some((b) => b.set_id === "moderator" || b.set_id === "broadcaster");
 }
 
-const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations breach containment while the stream is live — type !secure to catch them. !units · !shop · !buy <unit> <n> · !daily · !dex · !scrap · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
+const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations breach containment while the stream is live — type !secure to catch them. !units · !shop · !buy <unit> <n> · !daily · !deviationbag · !scrap · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
 
 function makeHandler(pool, spawns) {
   const botId = () => db.getBotAccount()?.user_id;
@@ -90,7 +90,7 @@ function makeHandler(pool, spawns) {
     }
 
     // ---- everything else: light per-user cooldown ----
-    const GAME_CMDS = ["!units", "!inv", "!shop", "!buy", "!daily", "!dex", "!deviadex", "!scrap", "!dev", "!hunttop", "!leaderboard", "!traits", "!stats"];
+    const GAME_CMDS = ["!units", "!inv", "!shop", "!buy", "!daily", "!deviationbag", "!scrap", "!dev", "!hunttop", "!leaderboard", "!traits", "!stats"];
     if (!GAME_CMDS.includes(cmd)) return;
     const key = `${bid}:${uid}:${cmd}`;
     if (!isModOrOwner(ev) && Date.now() - (lastReply.get(key) || 0) < USER_CD) return;
@@ -101,8 +101,8 @@ function makeHandler(pool, spawns) {
       case "!shop": return reply(game.shop());
       case "!buy": return reply(game.buy(uid, login, name, args));
       case "!daily": return reply(game.daily(uid, login, name));
-      case "!dex": case "!deviadex": {
-        if (args[0]) { // !dex someone
+      case "!deviationbag": {
+        if (args[0]) { // !deviationbag someone
           const other = db.q.getPlayerByLogin.get(args[0].replace(/^@/, "").toLowerCase());
           if (!other) return reply(`@${name} I don't know ${args[0]} yet.`);
           return reply(game.dex(other.user_id, other.login, other.display, cfg.BASE_URL).replace(/^@\S+/, other.display + "'s"));

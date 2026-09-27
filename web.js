@@ -76,7 +76,7 @@ function landing() {
   const botName = bot?.login || "the bot";
   return page(cfg.BOT_NAME, `
 <h1>${esc(cfg.BOT_NAME)} — catch Once Human deviations in Twitch chat</h1>
-<p>While you're live, deviations breach containment in your chat. Viewers throw Securement Units with <kbd>!secure</kbd>, earn Starchrom, and build a Deviadex that follows them to every channel running the game. Every deviation, variation and skin comes straight from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">the OHWikiGuide Deviation page</a>, so new ones join the game as soon as they're on the wiki.</p>
+<p>While you're live, deviations breach containment in your chat. Viewers throw Securement Units with <kbd>!secure</kbd>, earn Starchrom, and build a Deviation Bag that follows them to every channel running the game. Every deviation, variation and skin comes straight from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">the OHWikiGuide Deviation page</a>, so new ones join the game as soon as they're on the wiki.</p>
 <div class="card">
   <a class="btn" href="/auth/twitch?action=add">Add ${esc(cfg.BOT_NAME)} to my channel</a><a class="btn secondary" href="/auth/twitch?action=remove">Remove it</a>
   <p style="margin-bottom:0">You log in with Twitch once; the bot only gets permission to read and post in your chat.${bot ? ` Prefer chat? Type <kbd>!join</kbd> in <a href="https://twitch.tv/${esc(bot.login)}">twitch.tv/${esc(bot.login)}</a>.` : ""} Then <kbd>/mod ${esc(botName)}</kbd> so it isn't rate-limited.</p>
@@ -90,14 +90,14 @@ function landing() {
 <div class="card chat">${esc(botName)}: ⚠️ A wild Lonewolf Whisper has breached containment! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.
 viewer42: !secure
 metabones: !secure elite
-${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones [Skill 4/5 · Activity 2/5]! +40 Starchrom each. 📖 New entry for metabones (+100). It broke free from viewer42. | !dex to see your collection</div>
+${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones [Skill 4/5 · Activity 2/5]! +40 Starchrom each. 📖 New entry for metabones (+100). It broke free from viewer42. | !deviationbag to see your collection</div>
 
 <h2>Viewer commands</h2>
 <div class="card">
 <p><kbd>!secure</kbd> <kbd>!secure advanced</kbd> <kbd>!secure elite</kbd> <kbd>!secure anomaly</kbd> — throw a Securement Unit at the loose deviation (one throw per breach). <kbd>!catch</kbd> works too.</p>
 <p><kbd>!units</kbd> — your Starchrom and Units · <kbd>!shop</kbd> — prices · <kbd>!buy advanced 5</kbd> — buy Units</p>
 <p><kbd>!daily</kbd> — free supply drop (+${ECONOMY.daily.starchrom} Starchrom, ${ECONOMY.daily.units.standard} Standard Units) every ${ECONOMY.dailyCooldownHours}h</p>
-<p><kbd>!dex</kbd> — your Deviadex and collection link · <kbd>!dex name</kbd> — someone else's · <kbd>!scrap</kbd> — turn duplicates into Starchrom</p>
+<p><kbd>!deviationbag</kbd> — your Deviation Bag and collection link · <kbd>!deviationbag name</kbd> — someone else's · <kbd>!scrap</kbd> — turn duplicates into Starchrom</p>
 <p><kbd>!traits</kbd> — your latest catch's Skill Rating, Activity Rating and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
 <p><kbd>!dev behemoth</kbd> — what a deviation does and where it drops · <kbd>!hunttop</kbd> — leaderboard · <kbd>!hunt</kbd> — help</p>
 </div>
@@ -141,8 +141,8 @@ function collectionPage(p) {
     return `<div class="dev ${h ? "" : "missing"}">${h ? `<span class="c">×${h.count}</span>` : ""}<img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${tierTag(d.rarity)}${spHtml}${h ? vars : ""}</div>`;
   };
   const cards = sections(all, cardFor);
-  return page(`${p.display}'s Deviadex`, `
-<h1>${esc(p.display)}'s Deviadex</h1>
+  return page(`${p.display}'s Deviation Bag`, `
+<h1>${esc(p.display)}'s Deviation Bag</h1>
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${fmt(c.total)}</b>secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
 <p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its three traits (hover a trait for what it does).</p>
@@ -175,7 +175,7 @@ function createApp(pool) {
   app.get("/u", (req, res) => res.redirect(`/u/${encodeURIComponent(String(req.query.login || "").trim().replace(/^@/, "").toLowerCase())}`));
   app.get("/u/:login", (req, res) => {
     const p = db.q.getPlayerByLogin.get(String(req.params.login).toLowerCase());
-    if (!p) return res.status(404).send(simple("Not found", "No Deviadex yet", `${esc(req.params.login)} hasn't secured anything yet. Catch a breach with <kbd>!secure</kbd> in any channel running ${esc(cfg.BOT_NAME)}.`));
+    if (!p) return res.status(404).send(simple("Not found", "No Deviation Bag yet", `${esc(req.params.login)} hasn't secured anything yet. Catch a breach with <kbd>!secure</kbd> in any channel running ${esc(cfg.BOT_NAME)}.`));
     res.send(collectionPage(p));
   });
   app.get("/health", (req, res) => res.json({ ok: true, channels: pool.channelCount, botSetUp: !!db.getBotAccount(), data: data.info() }));
