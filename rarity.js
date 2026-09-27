@@ -47,7 +47,8 @@ const ECONOMY = {
   newSpeciesBonus: 100,   // first time you secure a deviation (or a new variant of it)
   escapeSalvage: 3,       // Starchrom for a failed attempt, so trying is never a total loss
   scrapValue: 0.5,
-  destroyValue: 500,      // Starchrom for destroying one extra specimen from the panel (you always keep at least one)        // !scrap pays this fraction of the catch reward for each duplicate
+  destroyValue: 500,      // Starchrom for destroying one extra specimen from the panel (you always keep at least one)
+  destroyUnits: 1,        // ...plus this many Securement Units back        // !scrap pays this fraction of the catch reward for each duplicate
   maxCatchChance: 0.95,
 };
 

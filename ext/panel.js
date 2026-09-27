@@ -106,13 +106,14 @@
     if (!d || !d.owned) { view.open = null; return render(); }
     var topV = caughtVariants(d)[0];
     var specs = (d.specimens || []).slice().sort(function (a, b) { return (b.skill + b.activity) - (a.skill + a.activity) || b.skill - a.skill || b.id - a.id; });
-    var canDestroy = d.count > 1, value = bag.destroyValue || 500;
+    var canDestroy = d.count > 1, value = bag.destroyValue || 500, units = bag.destroyUnits == null ? 1 : bag.destroyUnits;
+    var reward = value.toLocaleString() + ' Starchrom' + (units ? ' + ' + units + ' Securement Unit' + (units > 1 ? 's' : '') : '');
     var html = '<button class="btn ghost" id="back">← Back</button><div class="detail"><div class="hero"><img src="' + esc((topV && topV.img) || d.img) + '" alt="">' +
       (topV ? '<div class="vn big' + (topV.kind === "skin" ? " skin" : "") + '">✨ ' + (topV.kind === "skin" ? "Skin" : "Variation") + ': ' + esc(topV.name) + '</div>' : "") +
       '<h2>' + esc(d.name) + '</h2><div class="sub">' + esc(d.category.charAt(0).toUpperCase() + d.category.slice(1)) + ' · secured ×' + d.count + '</div></div>';
     if (detailNotice) html += '<div class="notice ' + detailNotice.kind + '">' + esc(detailNotice.text) + '</div>';
     html += '<h3>Your ' + esc(d.name) + ' (' + specs.length + ')</h3>';
-    if (canDestroy) html += '<div class="hint left">Destroy an extra one for <b>' + value.toLocaleString() + ' Starchrom</b>. You always keep at least one.</div>';
+    if (canDestroy) html += '<div class="hint left">Destroy an extra one for <b>' + reward + '</b>. You always keep at least one.</div>';
     html += specs.map(function (x, i) {
       var confirming = confirmId === x.id;
       return '<div class="spec' + (i === 0 ? " best" : "") + '">' +
@@ -121,8 +122,8 @@
         (x.variant ? '<div class="vn">✨ ' + esc(x.variant) + '</div>' : "") +
         x.traits.map(traitHtml).join("") +
         (canDestroy ? (confirming
-          ? '<div class="confirm"><span>Destroy this one for ' + value.toLocaleString() + ' Starchrom?</span><button class="btn danger" data-act="yes" data-id="' + x.id + '"' + (busy ? " disabled" : "") + '>' + (busy ? "…" : "Destroy") + '</button><button class="btn ghost" data-act="no">Cancel</button></div>'
-          : '<button class="btn outline" data-act="ask" data-id="' + x.id + '">Destroy for ' + value.toLocaleString() + ' Starchrom</button>') : "") +
+          ? '<div class="confirm"><span>Destroy this one for ' + reward + '?</span><button class="btn danger" data-act="yes" data-id="' + x.id + '"' + (busy ? " disabled" : "") + '>' + (busy ? "…" : "Destroy") + '</button><button class="btn ghost" data-act="no">Cancel</button></div>'
+          : '<button class="btn outline" data-act="ask" data-id="' + x.id + '">Destroy for ' + reward + '</button>') : "") +
         '</div>';
     }).join("");
     if (d.count > specs.length) html += '<div class="hint left">' + (d.count - specs.length) + ' older catch' + (d.count - specs.length > 1 ? "es" : "") + ' from before ratings existed ' + (d.count - specs.length > 1 ? "have" : "has") + ' no ratings or traits.</div>';
@@ -153,7 +154,7 @@
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (res) {
         busy = false; confirmId = null;
-        if (res.ok) { bag = res.j.bag; detailNotice = { kind: "ok", text: "Destroyed — +" + res.j.gained.toLocaleString() + " Starchrom." }; }
+        if (res.ok) { bag = res.j.bag; detailNotice = { kind: "ok", text: "Destroyed — +" + res.j.gained.toLocaleString() + " Starchrom" + (res.j.units ? " and +" + res.j.units + " Securement Unit" + (res.j.units > 1 ? "s" : "") : "") + "." }; }
         else if (res.j.error === "needs_identity") return askIdentity();
         else if (res.j.error === "last_one") detailNotice = { kind: "err", text: "You can’t destroy your last one." };
         else detailNotice = { kind: "err", text: "Couldn’t destroy that one. Try again." };

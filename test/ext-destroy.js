@@ -23,7 +23,7 @@ const jwt = (payload) => { const h = b64u(JSON.stringify({ alg: "HS256", typ: "J
 
   let [s, j] = await post(tA, { id: a1 }); assert.equal(s, 200); assert.equal(j.gained, 500);
   const g = j.bag.deviations.find((d) => d.id === "grumpybulb");
-  assert.equal(g.count, 2); assert.equal(g.specimens.length, 2); assert.equal(j.bag.player.starchrom, 700);
+  assert.equal(g.count, 2); assert.equal(g.specimens.length, 2); assert.equal(j.bag.player.starchrom, 700); assert.equal(j.units, 1); assert.equal(j.bag.player.units, 6);
   console.log("destroy ok → count 2, specimens", g.specimens.map((x) => `${x.skill}/${x.activity}${x.variant ? " " + x.variant : ""}`));
   [s, j] = await post(tB, { id: a2 }); assert.equal(j.error, "not_found"); console.log("someone else's:", j.error);
   [s, j] = await post(tB, { id: b1 }); assert.equal(j.error, "last_one"); console.log("Bob's only one:", j.error);

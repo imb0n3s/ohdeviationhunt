@@ -86,6 +86,7 @@ function bagFor(userId) {
     player: p ? playerInfo(game.loadPlayer(p.user_id, p.login, p.display)) : null,
     shop: shop.catalog(),
     destroyValue: require("./rarity").ECONOMY.destroyValue,
+    destroyUnits: require("./rarity").ECONOMY.destroyUnits,
     stats: { unique: summary.species, total: summary.total, variants: summary.variants, all: all.length, allVariants: all.reduce((s, d) => s + d.variants.length, 0) },
     page: p ? `${cfg.BASE_URL}/u/${p.login}` : null,
     deviations,
@@ -157,8 +158,8 @@ function mount(app) {
       if (!db.q.getPlayer.get(jwt.user_id)) return res.status(404).json({ error: "no_player" });
       const r = game.destroySpecimen(jwt.user_id, req.body?.id);
       if (!r.ok) return res.status(400).json({ error: r.error });
-      console.log(`[ext] ${r.p.login} destroyed a ${r.deviation} for ${r.gained}`);
-      res.json({ ok: true, gained: r.gained, bag: bagFor(jwt.user_id) });
+      console.log(`[ext] ${r.p.login} destroyed a ${r.deviation} for ${r.gained} + ${r.units} unit(s)`);
+      res.json({ ok: true, gained: r.gained, units: r.units, bag: bagFor(jwt.user_id) });
     } catch (e) {
       if (e.needsIdentity) return res.status(403).json({ error: "needs_identity" });
       console.warn(`[ext] destroy failed ${e.status || 500}: ${e.message}`);

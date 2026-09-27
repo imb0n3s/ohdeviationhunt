@@ -318,9 +318,10 @@ function destroySpecimen(userId, specimenId) {
     db.q.decCatch.run(userId, sp.deviation, sp.variant);
     db.q.dropEmptyCatch.run(userId, sp.deviation, sp.variant);
     p.starchrom += ECONOMY.destroyValue;
+    p.units.standard = (p.units.standard || 0) + ECONOMY.destroyUnits;
     savePlayer(p);
   })();
-  return { ok: true, gained: ECONOMY.destroyValue, deviation: sp.deviation, p };
+  return { ok: true, gained: ECONOMY.destroyValue, units: ECONOMY.destroyUnits, deviation: sp.deviation, p };
 }
 
 function inventory(userId, login, display) {
