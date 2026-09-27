@@ -328,7 +328,5 @@ To remove it, type <span style="background:#131c27; color:#7dd3fc; border:1px so
 </div>
 </div>
 
-<div style="color:#6b7a8c; font-size:12px; text-align:center; margin:6px 0 20px;">Numbers on this page come straight from the game's settings and are updated whenever the game changes.</div>
 </div>
 __NOTOC__
-[[Category:Twitch]]

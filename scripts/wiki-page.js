@@ -213,9 +213,7 @@ const faq = [
 ];
 out.push(box("FAQ", "Frequently Asked Questions", faq.map(([q, a]) => `'''Q: ${q}'''<br>A: ${a}`).join("\n\n")));
 
-out.push(`<div style="color:#6b7a8c; font-size:12px; text-align:center; margin:6px 0 20px;">Numbers on this page come straight from the game's settings and are updated whenever the game changes.</div>
-</div>
-__NOTOC__
-[[Category:Twitch]]`);
+out.push(`</div>
+__NOTOC__`);
 
 process.stdout.write(out.join("\n"));
