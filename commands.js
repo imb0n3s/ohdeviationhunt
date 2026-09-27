@@ -10,7 +10,7 @@ function isModOrOwner(ev) {
   return ev.chatter_user_id === ev.broadcaster_user_id || (ev.badges || []).some((b) => b.set_id === "moderator" || b.set_id === "broadcaster");
 }
 
-const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations breach containment while the stream is live — type !secure to catch them. !units · !shop · !buy <unit> <n> · !daily · !deviationbag · !scrap · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
+const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations breach containment while the stream is live — type !secure to catch them. !units · !shop · !buy <n> · !daily · !deviationbag · !scrap · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
 
 function makeHandler(pool, spawns) {
   const botId = () => db.getBotAccount()?.user_id;
@@ -51,6 +51,11 @@ function makeHandler(pool, spawns) {
 
     const channel = db.getChannel(bid);
     if (!channel?.enabled && bid !== botId()) return;
+
+    if (cfg.PAUSED) {
+      if (cmd === "!hunt") return reply(`${cfg.BOT_NAME} is paused for an update — it'll be back soon!`);
+      return; // every other game command stays quiet while paused
+    }
 
     // ---- catching: always allowed, no cooldown (one throw per spawn is enforced in game.js) ----
     if (cmd === "!secure" || cmd === "!catch") return reply(spawns.attempt(bid, uid, login, name, args[0]));

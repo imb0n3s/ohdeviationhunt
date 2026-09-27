@@ -21,6 +21,8 @@ function loadPlayer(userId, login, display) {
     p.login = login; p.display = display;
   }
   p.units = JSON.parse(p.units || "{}");
+  // older saves had Advanced/Elite/Anomaly units: fold them into plain Securement Units
+  for (const k of ["advanced", "elite", "anomaly"]) if (p.units[k]) { p.units.standard = (p.units.standard || 0) + p.units[k]; delete p.units[k]; }
   return p;
 }
 
@@ -35,8 +37,8 @@ function bagText(p) {
 }
 
 function unitsText(p) {
-  const parts = Object.entries(UNITS).map(([k, u]) => `${u.label.replace(" Unit", "")} ${p.units[k] || 0}`);
-  return `${fmt(p.starchrom)} ${SC} | Units: ${parts.join(", ")}`;
+  const parts = [`${p.units.standard || 0} Securement Units`];
+  return `${fmt(p.starchrom)} ${SC} | ${parts.join(", ")}`;
 }
 
 // ---------------- spawns ----------------
@@ -71,13 +73,14 @@ const ratingTag = (sp) => `Skill ${sp.power}/5 · Activity ${sp.mood}/5${sp.powe
 function spawnName(s) { return s.variant ? `${s.dev.name} — ${s.variant.name}` : s.dev.name; }
 
 function catchChance(s, unit) {
-  if (unit === "anomaly") return 1;
+  if (s.variant?.kind === "skin") return VARIANT.skin.catch;
   let c = TIERS[s.dev.rarity].catch * UNITS[unit].mult;
   if (s.variant) c *= VARIANT[s.variant.kind].catchMult;
   return Math.min(ECONOMY.maxCatchChance, c);
 }
 
 function rewardFor(s) {
+  if (s.variant?.kind === "skin") return TIERS[VARIANT.skin.rarity].reward * VARIANT.skin.rewardMult;
   let r = TIERS[s.dev.rarity].reward;
   if (s.variant) r *= VARIANT[s.variant.kind].rewardMult;
   return r;
@@ -116,6 +119,7 @@ class Spawns {
 
   // called every ~15s
   tick() {
+    if (cfg.PAUSED) return;
     const now = Date.now();
     for (const ch of db.listEnabledChannels()) {
       const bid = ch.broadcaster_id;
@@ -130,6 +134,7 @@ class Spawns {
   }
 
   async spawn(bid, forced) {
+    if (cfg.PAUSED) return { error: "paused" };
     if (this.active.has(bid)) return { error: "already" };
     const s = rollSpawn();
     if (!s) return { error: "nodata" };
@@ -151,20 +156,12 @@ class Spawns {
     if (s.attempts.has(userId)) return null;
     // tell each viewer about a problem at most once per breach
     const warn = (msg) => { if (s.warned.has(userId)) return null; s.warned.add(userId); return msg; };
-    let unit = unitKey(unitWord);
-    if (!unit) return warn(`@${display} unknown unit — use standard, advanced, elite or anomaly.`);
+    const unit = "standard";
     const p = loadPlayer(userId, login, display);
-    if (!(p.units[unit] > 0)) {
-      if (!unitWord) {
-        // plain !secure: use the cheapest unit they own (never burn an Anomaly Unit by accident),
-        // or quietly buy one Standard Unit if they can afford it
-        const owned = ["standard", "advanced", "elite"].find((k) => p.units[k] > 0);
-        if (owned) unit = owned;
-        else if (p.starchrom >= UNITS.standard.price) { p.starchrom -= UNITS.standard.price; p.units.standard = (p.units.standard || 0) + 1; unit = "standard"; }
-      }
-      if (!(p.units[unit] > 0)) {
-        return warn(`@${display} you're out of ${UNITS[unit].label}s. ${unit === "standard" ? "Grab free ones with !daily or " : ""}!buy ${unit} (${UNITS[unit].price} ${SC} each). You have ${fmt(p.starchrom)} ${SC}.`);
-      }
+    if (!(p.units.standard > 0)) {
+      // out of units: quietly buy one if they can afford it
+      if (p.starchrom >= UNITS.standard.price) { p.starchrom -= UNITS.standard.price; p.units.standard = 1; }
+      else return warn(`@${display} you're out of Securement Units. Grab free ones with !daily or !buy <amount> (${UNITS.standard.price} ${SC} each). You have ${fmt(p.starchrom)} ${SC}.`);
     }
     p.units[unit] -= 1;
     p.attempts += 1;
@@ -244,25 +241,19 @@ function daily(userId, login, display) {
 }
 
 function shop() {
-  return `🛒 Securement Units: ${Object.entries(UNITS).map(([k, u]) => `${k} ${fmt(u.price)} ${SC} (${k === "anomaly" ? "never fails" : `x${u.mult} odds`})`).join(" · ")} — buy with !buy <unit> <amount>`;
+  return `🛒 Securement Units cost ${fmt(UNITS.standard.price)} ${SC} each — buy with !buy <amount> (e.g. !buy 5). Free ones every day with !daily.`;
 }
 
 function buy(userId, login, display, args) {
-  const [a, b] = args;
-  // accept "!buy 5 advanced" and "!buy advanced 5"
-  const qtyWord = /^\d+$/.test(a || "") ? a : b;
-  const unitWord = /^\d+$/.test(a || "") ? b : a;
-  if (!unitWord) return `@${display} usage: !buy <standard|advanced|elite|anomaly> <amount>`;
-  const unit = unitKey(unitWord);
-  if (!unit) return `@${display} unknown unit. ${shop()}`;
+  const qtyWord = args.find((a) => /^\d+$/.test(a || ""));
   const qty = Math.max(1, Math.min(100, parseInt(qtyWord || "1", 10) || 1));
   const p = loadPlayer(userId, login, display);
-  const cost = UNITS[unit].price * qty;
-  if (p.starchrom < cost) return `@${display} that's ${fmt(cost)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations, !daily and !scrap.`;
+  const cost = UNITS.standard.price * qty;
+  if (p.starchrom < cost) return `@${display} ${qty} Securement Unit${qty > 1 ? "s" : ""} cost ${fmt(cost)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations, !daily and !scrap.`;
   p.starchrom -= cost;
-  p.units[unit] = (p.units[unit] || 0) + qty;
+  p.units.standard = (p.units.standard || 0) + qty;
   savePlayer(p);
-  return `@${display} bought ${qty} ${UNITS[unit].label}${qty > 1 ? "s" : ""} for ${fmt(cost)} ${SC} — you now have ${p.units[unit]}. ${bagText(p)}`;
+  return `@${display} bought ${qty} Securement Unit${qty > 1 ? "s" : ""} for ${fmt(cost)} ${SC} — you now have ${p.units.standard}. ${bagText(p)}`;
 }
 
 function inventory(userId, login, display) {

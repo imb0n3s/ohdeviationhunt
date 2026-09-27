@@ -29,37 +29,31 @@ const ASSIGN = {
 // A spawn can be a Variation (from the wiki's Variations tab) or a Skin — the game's "shinies".
 const VARIANT = {
   variation: { chance: 1 / 12, catchMult: 0.85, rewardMult: 2, label: "Variation" },
-  skin:      { chance: 1 / 40, catchMult: 0.75, rewardMult: 4, label: "Skin" },
+  // skinned versions are always Legendary with a flat 9% capture rate
+  skin:      { chance: 1 / 40, catch: 0.09, rarity: "legendary", rewardMult: 1, label: "Skin" },
 };
 
-// Securement Units = the "balls". price in Starchrom, mult = catch chance multiplier.
+// One kind of Securement Unit (the "ball"), bought with Starchrom.
 const UNITS = {
-  standard: { label: "Standard Unit", price: 20,   mult: 1.0,  aliases: ["std", "s", "basic", "normal"] },
-  advanced: { label: "Advanced Unit", price: 60,   mult: 1.5,  aliases: ["adv", "a", "great"] },
-  elite:    { label: "Elite Unit",    price: 150,  mult: 2.2,  aliases: ["e", "ultra"] },
-  anomaly:  { label: "Anomaly Unit",  price: 1500, mult: 100,  aliases: ["master", "m", "guaranteed"] }, // always catches
+  standard: { label: "Securement Unit", price: 20, mult: 1.0, aliases: [] },
 };
 
 const ECONOMY = {
   starterStarchrom: 200,
-  starterUnits: { standard: 10, advanced: 2 },
+  starterUnits: { standard: 10 },
   daily: { starchrom: 100, units: { standard: 5 } },
   dailyCooldownHours: 20,
   newSpeciesBonus: 100,   // first time you secure a deviation (or a new variant of it)
   escapeSalvage: 3,       // Starchrom for a failed attempt, so trying is never a total loss
   scrapValue: 0.5,        // !scrap pays this fraction of the catch reward for each duplicate
-  maxCatchChance: 0.95,   // except the Anomaly Unit
+  maxCatchChance: 0.95,
 };
 
 const lookup = {};
 for (const [tier, names] of Object.entries(ASSIGN)) for (const n of names) lookup[n.toLowerCase().replace(/[^a-z0-9]/g, "")] = tier;
 const rarityOf = (name) => lookup[String(name).toLowerCase().replace(/[^a-z0-9]/g, "")] || "uncommon";
 
-function unitKey(word) {
-  const w = String(word || "").toLowerCase().replace(/units?$/, "").trim();
-  if (!w) return "standard";
-  for (const [k, u] of Object.entries(UNITS)) if (k === w || k.startsWith(w) || u.aliases.includes(w)) return k;
-  return null;
-}
+// Only one unit type now; anything typed after !secure is ignored
+function unitKey() { return "standard"; }
 
 module.exports = { TIERS, ASSIGN, VARIANT, UNITS, ECONOMY, rarityOf, unitKey };

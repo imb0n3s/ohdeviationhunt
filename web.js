@@ -89,13 +89,13 @@ function landing() {
 <h2>What it looks like</h2>
 <div class="card chat">${esc(botName)}: ⚠️ A wild Lonewolf Whisper has breached containment! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.
 viewer42: !secure
-metabones: !secure elite
+metabones: !secure
 ${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones [Skill 4/5 · Activity 2/5]! +40 Starchrom each. 📖 New entry for metabones (+100). | !traits lonewolfwhisper for traits</div>
 
 <h2>Viewer commands</h2>
 <div class="card">
-<p><kbd>!secure</kbd> <kbd>!secure advanced</kbd> <kbd>!secure elite</kbd> <kbd>!secure anomaly</kbd> — throw a Securement Unit at the loose deviation (one throw per breach). <kbd>!catch</kbd> works too.</p>
-<p><kbd>!units</kbd> — your Starchrom and Units · <kbd>!shop</kbd> — prices · <kbd>!buy advanced 5</kbd> — buy Units</p>
+<p><kbd>!secure</kbd> — throw a Securement Unit at the loose deviation (one throw per breach). <kbd>!catch</kbd> works too.</p>
+<p><kbd>!units</kbd> — your Starchrom and Units · <kbd>!shop</kbd> — prices · <kbd>!buy 5</kbd> — buy Securement Units</p>
 <p><kbd>!daily</kbd> — free supply drop (+${ECONOMY.daily.starchrom} Starchrom, ${ECONOMY.daily.units.standard} Standard Units) every ${ECONOMY.dailyCooldownHours}h</p>
 <p><kbd>!deviationbag</kbd> — your Deviation Bag and collection link · <kbd>!deviationbag name</kbd> — someone else's · <kbd>!scrap</kbd> — turn duplicates into Starchrom</p>
 <p><kbd>!traits</kbd> — your latest catch's Skill Rating, Activity Rating and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
@@ -107,9 +107,10 @@ ${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones [Skill 4/5 · Activi
 <p>Deviations only breach while your stream is live and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes.</p>
 </div>
 <h2>How catching works</h2>
-<div class="card"><table><tr><th>Rarity</th><th>Spawn weight</th><th>Base catch</th><th>Reward</th></tr>
-${Object.values(TIERS).map((t) => `<tr><td style="color:${t.color};font-weight:600">${t.label}</td><td>${t.weight}%</td><td>${Math.round(t.catch * 100)}%</td><td>${t.reward} Starchrom</td></tr>`).join("")}</table>
-<p>Units multiply your odds: ${Object.values(UNITS).map((u) => `${u.label} ${u.price} Starchrom (${u.mult >= 100 ? "never fails" : `×${u.mult}`})`).join(" · ")}. About 1 in ${Math.round(1 / VARIANT.variation.chance)} breaches is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b> (×${VARIANT.skin.rewardMult}). Every deviation you secure is its own specimen with <b>Skill Rating 1–5</b> and <b>Activity Rating 1–5</b> (5 is rare; a perfect 5/5 gets a ⭐) and three traits rolled by the rules on the wiki's <a href="${esc(cfg.WIKI_BASE)}/Deviation_Trait_Page">Deviation Trait Page</a>: Slot 1 is a Global trait or that deviation's own trait, Slot 2 is a combat, crafting or territory trait matching the deviation's type (deviation-specific ones only on their own deviation, and variant-specific ones like Grumpy Bulb's Violet Robe only on that variant), Slot 3 is a fused trait. <kbd>!scrap</kbd> keeps your best Skill + Activity specimen of each. First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. Missed throws still salvage ${ECONOMY.escapeSalvage} Starchrom.</p></div>`);
+<div class="card"><table><tr><th>Rarity</th><th>Spawn weight</th><th>Capture rate</th><th>Reward</th></tr>
+${Object.values(TIERS).map((t) => `<tr><td style="color:${t.color};font-weight:600">${t.label}</td><td>${t.weight}%</td><td>${Math.round(t.catch * 100)}%</td><td>${t.reward} Starchrom</td></tr>`).join("")}
+<tr><td style="color:${TIERS.legendary.color};font-weight:600">Skin (Legendary)</td><td>1 in ${Math.round(1 / VARIANT.skin.chance)}</td><td>${Math.round(VARIANT.skin.catch * 100)}%</td><td>${TIERS.legendary.reward} Starchrom</td></tr></table>
+<p>Every throw uses one Securement Unit (${UNITS.standard.price} Starchrom each; free ones from <kbd>!daily</kbd>). About 1 in ${Math.round(1 / VARIANT.variation.chance)} breaches is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward, a little harder to catch) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b>, which is always Legendary with a ${Math.round(VARIANT.skin.catch * 100)}% capture rate. Every deviation you secure is its own specimen with <b>Skill Rating 1–5</b> and <b>Activity Rating 1–5</b> (5 is rare; a perfect 5/5 gets a ⭐) and three traits rolled by the rules on the wiki's <a href="${esc(cfg.WIKI_BASE)}/Deviation_Trait_Page">Deviation Trait Page</a>: Slot 1 is a Global trait or that deviation's own trait, Slot 2 is a combat, crafting or territory trait matching the deviation's type (deviation-specific ones only on their own deviation, and variant-specific ones like Grumpy Bulb's Violet Robe only on that variant), Slot 3 is a fused trait. <kbd>!scrap</kbd> keeps your best Skill + Activity specimen of each. First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. Missed throws still salvage ${ECONOMY.escapeSalvage} Starchrom.</p></div>`);
 }
 
 function collectionPage(p) {
@@ -146,7 +147,7 @@ function collectionPage(p) {
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${fmt(c.total)}</b>secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
 <p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its three traits (hover a trait for what it does).</p>
-<p>Units: ${Object.entries(UNITS).map(([k, u]) => `${esc(u.label)} ${units[k] || 0}`).join(" · ")}</p>
+<p>Securement Units: ${units.standard || 0}</p>
 ${cards}`);
 }
 
