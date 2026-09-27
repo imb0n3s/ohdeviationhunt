@@ -1,7 +1,78 @@
 [
  {
+  "id": "artisanstouch",
+  "name": "Artisan's Touch",
+  "category": "crafting",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/3/34/Deviation_Artisans_Touch.png",
+  "fn": "Repairs the least durable gear you equip. The item disappears after use and only applies to the gear that you crafted.",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Red Storm",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/9/9e/Red_Storm.png"
+   }
+  ]
+ },
+ {
+  "id": "atomiclighter",
+  "name": "Atomic Lighter",
+  "category": "crafting",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/b/bd/Deviation_Atomic_Lighter.png",
+  "fn": "Randomly deals varying instances of damage. Grants extra loot upon killing monsters.",
+  "drops": [
+   "Manibus: EX-1",
+   "Way of Winter: EX-1",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/f/f8/Deviation_Atomic_Lighter_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Gravity Abyss",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/Special:FilePath/Gravity_Abyss_Atomic_Lighter.png?width=600"
+   }
+  ]
+ },
+ {
+  "id": "atomicsnail",
+  "name": "Atomic Snail",
+  "category": "crafting",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/2/2a/Deviation_Atomic_Snail.png",
+  "fn": "Produces special materials used to craft Whim potions. Enables the creation of the Aero Leap potion, which allows a short air dash while airborne.",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Gold Lightning",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/1/14/Deviation_Atomic_Snail_-_Gold_Lightning.png"
+   },
+   {
+    "name": "Lunar Oracle",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/5/55/Deviation_Atomic_Snail_-_Lunar_Oracle.png"
+   }
+  ]
+ },
+ {
   "id": "behemoth",
   "name": "Behemoth",
+  "category": "combat",
   "rarity": "legendary",
   "img": "https://ohwikiguide.com/images/3/3d/Deviation_Behemoth.png",
   "fn": "",
@@ -16,6 +87,7 @@
  {
   "id": "bravegeorge",
   "name": "Brave George",
+  "category": "combat",
   "rarity": "legendary",
   "img": "https://ohwikiguide.com/images/c/c7/Deviation_Brave_George.png",
   "fn": "A loyal companion for Metas",
@@ -29,6 +101,7 @@
  {
   "id": "butterflyemissary",
   "name": "Butterfly Emissary",
+  "category": "combat",
   "rarity": "common",
   "img": "https://ohwikiguide.com/images/5/51/Butterfly_Emissary.png",
   "fn": "Can participate in combat to mark enemy Weakspots, increasing the damage they receive.",
@@ -71,8 +144,44 @@
   ]
  },
  {
+  "id": "buzzybee",
+  "name": "Buzzy Bee",
+  "category": "territory",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/f/f6/Buzzy_Bee.png",
+  "fn": "Chance to mutate planted crops",
+  "drops": [
+   "Manibus: Sigma, Phi (Main Boss), Alpha, Psi",
+   "Way of Winter: EX-1, Psi, Delta, Taurus",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Pumpkin Lantern",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/3/3e/Deviation_Buzzy_Bee_-_Pumpkin_Lantern.png"
+   },
+   {
+    "name": "Radiant Flourish",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/9/93/Deviation_Buzzy_Bee_-_Radiant_Flourish.png"
+   },
+   {
+    "name": "Angel Dough",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/5/59/Deviation_Buzzy_Bee_-_Angel_Dough.png"
+   },
+   {
+    "name": "Lava Demon",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/d/de/Deviation_Buzzy_Bee_-_Lava_Demon.png"
+   }
+  ]
+ },
+ {
   "id": "bythewind",
   "name": "By-the-Wind",
+  "category": "combat",
   "rarity": "common",
   "img": "https://ohwikiguide.com/images/2/2c/Deviation_By-the-Wind.png",
   "fn": "Can participate in combat to continuously increase the character's action or create an anti-gravity tower",
@@ -105,8 +214,92 @@
   ]
  },
  {
+  "id": "chefosaurusrex",
+  "name": "Chefosaurus Rex",
+  "category": "territory",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/a/a1/Deviation_Chefosaurus_Rex.png",
+  "fn": "Works in the Territory to help produce food.",
+  "drops": [
+   "Manibus: Phi (Side Boss)",
+   "Way of Winter: Securement Unit",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Azure Melody",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/8/80/Deviation_Chefosaurus_Rex_-_Azure_Melody.png"
+   },
+   {
+    "name": "Christmas Spirit",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/9/9b/Deviation_Chefosaurus_Rex_-_Christmas_Spirit.png"
+   },
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/a/af/Deviation_Chefosaurus_Rex_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Tasty Hotline",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/3/32/Deviation_Chefosaurus_Rex_-_Tasty_Hotline.png"
+   }
+  ]
+ },
+ {
+  "id": "directorfox",
+  "name": "Director Fox",
+  "category": "territory",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/c/c6/Deviation_Director_Fox.png",
+  "fn": "Working in your territory helps tame, grow, and breed animals",
+  "drops": [
+   "Manibus: Psi (Main Boss)",
+   "Way of Winter: Psi",
+   "Monolith: N/A"
+  ],
+  "variants": []
+ },
+ {
+  "id": "discoball",
+  "name": "Disco Ball",
+  "category": "crafting",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/2/25/Deviation_Disco_Ball.png",
+  "fn": "Extends the duration of other Whims",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/6/6d/Deviation_Disco_Ball_-_Infrasonic_Illusion.png"
+   }
+  ]
+ },
+ {
+  "id": "doctorraven",
+  "name": "Doctor Raven",
+  "category": "territory",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/3/31/Deviation_Doctor_Raven.png",
+  "fn": "Work in the Territory to improve Supplies Workbench efficiency. Crafted treatments will have Bonus Effect",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": []
+ },
+ {
   "id": "drteddy",
   "name": "Dr. Teddy",
+  "category": "combat",
   "rarity": "common",
   "img": "https://ohwikiguide.com/images/f/fa/Deviation_Dr_Teddy.png",
   "fn": "Can participate in combat. Will heal or rescue fallen Metas.",
@@ -144,8 +337,53 @@
   ]
  },
  {
+  "id": "dreamcatcher",
+  "name": "Dreamcatcher",
+  "category": "crafting",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/5/56/Deviation_Dreamcatcher.png",
+  "fn": "When in danger, spits a spider web to restrain your enemies when you roll past them",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: Arachsiam"
+  ],
+  "variants": []
+ },
+ {
+  "id": "electriceel",
+  "name": "Electric Eel",
+  "category": "territory",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/5/51/Deviation_Electric_Eel.png",
+  "fn": "Works in the Territory to provide power to Generators",
+  "drops": [
+   "Manibus: Securement Unit",
+   "Way of Winter: Securement Unit",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Gold Lightning",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/c/c3/Deviation_Electric_Eel_-_Gold_Lightning.png"
+   },
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/2/23/Deviation_Electric_Eel_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Lunar Oracle",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/3/3d/Deviation_Electric_Eel_-_Lunar_Oracle.png"
+   }
+  ]
+ },
+ {
   "id": "enchantingvoid",
   "name": "Enchanting Void",
+  "category": "combat",
   "rarity": "uncommon",
   "img": "https://ohwikiguide.com/images/1/18/Deviation_Enchanting_Void.png",
   "fn": "Can participate in combat to increase its master's Melee DMG",
@@ -173,8 +411,49 @@
   ]
  },
  {
+  "id": "extradimensionalcat",
+  "name": "Extradimensional Cat",
+  "category": "territory",
+  "rarity": "rare",
+  "img": "https://ohwikiguide.com/images/c/c0/Deviation_Extradimensional_Cat.png",
+  "fn": "Enjoys itself inside the Territory. Accompanies its owner to sleep to make sure that they're fully energetic the next day.",
+  "drops": [
+   "Manibus: Securement Units, also In outpost floating around",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Chaotic",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/f/ff/Deviation_Extradimensional_Cat_-_Chaotic.png"
+   },
+   {
+    "name": "Good Fortune",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/0/09/Deviation_Extradimensional_Cat_-_Good_Fortune.png"
+   },
+   {
+    "name": "Heavy Ginger",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/d/d6/Deviation_Extradimensional_Cat_-_Heavy_Ginger.png"
+   },
+   {
+    "name": "Moonlit Jewels",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/6/68/Deviation_Extradimensional_Cat_-_Moonlit_Jewels.png"
+   },
+   {
+    "name": "Sweet Snowy Velvet",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/7/78/Deviation_Extradimensional_Cat_-_Sweet_Snowy_Velvet.png"
+   }
+  ]
+ },
+ {
   "id": "festeringgel",
   "name": "Festering Gel",
+  "category": "combat",
   "rarity": "uncommon",
   "img": "https://ohwikiguide.com/images/8/89/Deviation_Festering_Gel.png",
   "fn": "Can participate in combat to transform into Shelter and block enemy attacks.",
@@ -222,8 +501,153 @@
   ]
  },
  {
+  "id": "fetchalotbunny",
+  "name": "Fetch-A-Lot Bunny",
+  "category": "territory",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/2/2b/Deviation_Fetch-a-lot_Bunny.png",
+  "fn": "Gathers fruits, vegetables, & seeds",
+  "drops": [
+   "Manibus: Sigma, Phi, Alpha, Theta",
+   "Way of Winter: EX-1, Psi, Delta",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Alice",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/0/0d/Deviation_Fetch-a-lot_Bunny_-_Alice.png"
+   },
+   {
+    "name": "Aquarius",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/9/9e/Deviation_Fetch-a-lot_Bunny_-_Aquarius.png"
+   },
+   {
+    "name": "Dark Rebel",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/5/56/Deviation_Fetch-a-lot_Bunny_-_Dark_Rebel.png"
+   },
+   {
+    "name": "Gluttonous Bunny",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/4/42/Deviation_Fetch-a-lot_Bunny_-_Gluttonous_Bunny.png"
+   },
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/0/0a/Deviation_Fetch-a-lot_Bunny_-_Infrasonic_Illusion.png"
+   }
+  ]
+ },
+ {
+  "id": "flameessence",
+  "name": "Flame Essence",
+  "category": "territory",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/8/8f/Deviation_Flame_Essence.png",
+  "fn": "+Furnace/elec. furnace production speed",
+  "drops": [
+   "Manibus: Sigma, Alpha, Psi, Theta",
+   "Way of Winter: Psi, Delta, Taurus",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Golden Toad",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/7/78/Deviation_Flame_Essence_-_Golden_Toad.png"
+   },
+   {
+    "name": "Prince",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/b/be/Deviation_Flame_Essence_-_Prince.png"
+   },
+   {
+    "name": "Dynamic Sound",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/a/a8/Deviation_Flame_Essence_-_Dynamic_Sound.png"
+   }
+  ]
+ },
+ {
+  "id": "frogtheleaper",
+  "name": "Frog the Leaper",
+  "category": "crafting",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/c/c3/Deviation_Frog_the_Leaper.png",
+  "fn": "Greatly enhances jump height but also consumes stamina.",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": []
+ },
+ {
+  "id": "gingerbreadhouse",
+  "name": "Gingerbread House",
+  "category": "crafting",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/b/b8/Deviation_Gingerbread_House.png",
+  "fn": "Changes into any object in the scene after use",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/9/97/Deviation_Gingerbread_House_-_Infrasonic_Illusion.png"
+   }
+  ]
+ },
+ {
+  "id": "growshroom",
+  "name": "Growshroom",
+  "category": "territory",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/0/0c/Deviation_Growshroom.png",
+  "fn": "Plants seeds, harvests crops, and increases crop growth speed.",
+  "drops": [
+   "Manibus: Securement Silo",
+   "Way of Winter: Securement Silo",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Aberrant Progeny",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/3/38/Deviation_Growshroom_-_Aberrant_Progeny.png"
+   },
+   {
+    "name": "Extra Large",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/b/b4/Deviation_Growshroom_-_Extra_Large.png"
+   },
+   {
+    "name": "Green Touch",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/9/95/Deviation_Growshroom_-_Green_Touch.png"
+   },
+   {
+    "name": "Shadowshroom",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/b/ba/Deviation_Growshroom_-_Shadowshroom.png"
+   },
+   {
+    "name": "Roasted Mushroom Ready",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/0/03/Roasted_Mushroom_Ready.png"
+   }
+  ]
+ },
+ {
   "id": "grumpybulb",
   "name": "Grumpy Bulb",
+  "category": "combat",
   "rarity": "common",
   "img": "https://ohwikiguide.com/images/d/dc/Deviation_Grumpy_Bulb.png",
   "fn": "Can participate in combat to disrupt enemy threat, making them attack each other",
@@ -246,8 +670,112 @@
   ]
  },
  {
+  "id": "h37",
+  "name": "H37",
+  "category": "territory",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/0/0d/Deviation_H37.png",
+  "fn": "Gathers materials/junk",
+  "drops": [
+   "Manibus: Alpha (Side Boss)",
+   "Way of Winter: Securement Silo",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/9/98/Deviation_H37_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Prototype",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/b/b5/Deviation_H37_-_Prototype.png"
+   },
+   {
+    "name": "Byte Heart",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/a/aa/Deviation_H37_-_Byte_Heart.png"
+   }
+  ]
+ },
+ {
+  "id": "harveseed",
+  "name": "Harveseed",
+  "category": "crafting",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/c/c5/Deviation_Harveseed.png",
+  "fn": "When life is fading away, new vitality is unleashed",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": []
+ },
+ {
+  "id": "huginabowl",
+  "name": "Hug-in-a-Bowl",
+  "category": "crafting",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/a/ae/Deviation_Hug-in-a-Bowl.png",
+  "fn": "Produces special materials that can be used to craft special Dishes. Consume to fully recover Sanity",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/e/e5/Deviation_Hug-in-a-Bowl_-_Infrasonic_Illusion.png"
+   }
+  ]
+ },
+ {
+  "id": "hydronautfish",
+  "name": "Hydronaut Fish",
+  "category": "territory",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/a/ac/Deviation_Hydronaut_Fish.png",
+  "fn": "Gathers sea water and occasionally fish",
+  "drops": [
+   "Manibus: Securement Silo",
+   "Way of Winter: EX-1",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Evergreen",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/6/6c/Deviation_Hydronaut_Fish_-_Evergreen.png"
+   },
+   {
+    "name": "Daydream",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/8/88/Deviation_Hydronaut_Fish_-_Daydream.png"
+   }
+  ]
+ },
+ {
+  "id": "icepot",
+  "name": "Ice Pot",
+  "category": "crafting",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/7/7f/Deviation_Ice_Pot.png",
+  "fn": "Produces a magical adhesive ice block",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Psi",
+   "Monolith: N/A"
+  ],
+  "variants": []
+ },
+ {
   "id": "invinciblesun",
   "name": "Invincible Sun",
+  "category": "combat",
   "rarity": "rare",
   "img": "https://ohwikiguide.com/images/5/5c/Deviation_Invincible_Sun.png",
   "fn": "Can participate in combat to periodically release blazing energy rays, which attack all nearby enemies, inflicting continuous Burn DMG",
@@ -280,8 +808,49 @@
   ]
  },
  {
+  "id": "lethalrabbit",
+  "name": "Lethal Rabbit",
+  "category": "territory",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/4/43/Deviation_Lethal_Rabbit.png",
+  "fn": "Gathers animal meat & hide/fur/wool material",
+  "drops": [
+   "Manibus: Sigma (Side Boss)",
+   "Way of Winter: Securement Unit",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Clown Horror",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/2/2d/Deviation_Lethal_Rabbit_-_Clown_Horror.png"
+   }
+  ]
+ },
+ {
+  "id": "loggingbeaver",
+  "name": "Logging Beaver",
+  "category": "territory",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/1/19/Deviation_Logging_Beaver.png",
+  "fn": "Works in the Territory to gather Wood, or works at the Logging Platform.",
+  "drops": [
+   "Manibus: Securement Unit",
+   "Way of Winter: Securement Unit",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Christmas Spirit",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/d/d5/Deviation_Logging_Beaver_-_Christmas_Spirit.png"
+   }
+  ]
+ },
+ {
   "id": "lonewolfwhisper",
   "name": "Lonewolf Whisper",
+  "category": "combat",
   "rarity": "rare",
   "img": "https://ohwikiguide.com/images/0/02/Deviation_Lonewolfs_Whisper.png",
   "fn": "Can participate in combat. Will transform into a black wolf and attack enemies",
@@ -324,8 +893,23 @@
   ]
  },
  {
+  "id": "masonicpyramid",
+  "name": "Masonic Pyramid",
+  "category": "crafting",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/7/79/Deviation_Masonic_Pyramid.png",
+  "fn": "Produces special materials that can be used to craft Whim Potions. Use it to become invisible or spot hiding enemies.",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": []
+ },
+ {
   "id": "minifeaster",
   "name": "Mini Feaster",
+  "category": "combat",
   "rarity": "common",
   "img": "https://ohwikiguide.com/images/0/07/Deviation_Mini_Feaster.png",
   "fn": "Can participate in combat, marking enemies or summoning tentacles to attack them.",
@@ -355,6 +939,7 @@
  {
   "id": "miniwonder",
   "name": "Mini Wonder",
+  "category": "combat",
   "rarity": "uncommon",
   "img": "https://ohwikiguide.com/images/8/82/Deviation_Mini_Wonder.png",
   "fn": "Can participate in combat to absorb bullets flying towards its owner",
@@ -389,6 +974,7 @@
  {
   "id": "mrwish",
   "name": "Mr. Wish",
+  "category": "combat",
   "rarity": "rare",
   "img": "https://ohwikiguide.com/images/0/07/Deviation_Mr_Wish.png",
   "fn": "Can participate in combat to use guns to attack and apply The Bull's Eye on enemies",
@@ -416,8 +1002,194 @@
   ]
  },
  {
+  "id": "nutcracker",
+  "name": "Nutcracker",
+  "category": "territory",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/3/38/Nutcracker.png",
+  "fn": "Works in the Territory to defend it from invading enemies",
+  "drops": [
+   "Manibus: Securement Unit",
+   "Way of Winter: Securement Unit",
+   "Monolith: Forsaken Giant"
+  ],
+  "variants": [
+   {
+    "name": "Admiral",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/d/d1/Deviation_Nutcracker_-_Admiral.png"
+   },
+   {
+    "name": "Christmas",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/8/81/Deviation_Nutcracker_-_Christmas.png"
+   },
+   {
+    "name": "Clear Lake",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/f/fa/Deviation_Nutcracker_-_Clear_Lake.png"
+   },
+   {
+    "name": "Copper Green",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/2/21/Deviation_Nutcracker_-_Copper_Green.png"
+   },
+   {
+    "name": "Dappled Light",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/c/cb/Deviation_Nutcracker_-_Dappled_Light.png"
+   },
+   {
+    "name": "Date Brown",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/0/08/Deviation_Nutcracker_-_Date_Brown.png"
+   },
+   {
+    "name": "Deep Purple",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/b/b2/Deviation_Nutcracker_-_Deep_Purple.png"
+   },
+   {
+    "name": "Diamond Count",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/9/92/Deviation_Nutcracker_-_Diamond_Count.png"
+   },
+   {
+    "name": "Displaced Fairy Tale",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/1/1f/Deviation_Nutcracker_-_Displaced_Fairy_Tale.png"
+   },
+   {
+    "name": "Elegant Purple",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/2/2d/Deviation_Nutcracker_-_Elegant_Purple.png"
+   },
+   {
+    "name": "Golden Era",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/8/81/Deviation_Nutcracker_-_Golden_Era.png"
+   },
+   {
+    "name": "Green Field",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/6/61/Deviation_Nutcracker_-_Green_Field.png"
+   },
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/a/a5/Deviation_Nutcracker_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Normal",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/c/cf/Deviation_Nutcracker_-_Normal.png"
+   },
+   {
+    "name": "Ocean Blue",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/7/79/Deviation_Nutcracker_-_Ocean_Blue.png"
+   },
+   {
+    "name": "Silver Gentleman",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/e/ef/Deviation_Nutcracker_-_Silver_Gentleman.png"
+   },
+   {
+    "name": "Sugar Guard",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/5/59/Deviation_Nutcracker_-_Sugar_Guard.png"
+   },
+   {
+    "name": "Tin Soldier",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/2/2e/Deviation_Nutcracker_-_Tin_Soldier.png"
+   },
+   {
+    "name": "Wood Yellow",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/c/c9/Deviation_Nutcracker_-_Wood_Yellow.png"
+   },
+   {
+    "name": "Shadow Order",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/3/3b/Shadow_Order.png"
+   }
+  ]
+ },
+ {
+  "id": "orblightning",
+  "name": "Orb Lightning",
+  "category": "crafting",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/9/9d/Deviation_Orb_Lightning.png",
+  "fn": "Produces special materials that can be used to craft Tactical Items. When thrown, the performance of turrets in the area will be increased.",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Telepathy",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/8/81/Telepathy.png"
+   }
+  ]
+ },
+ {
+  "id": "paperdoll",
+  "name": "Paper Doll",
+  "category": "territory",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/3/35/Deviation_Paper_Doll.png",
+  "fn": "Works inside the Territory. Will discover lost materials while cleaning the place",
+  "drops": [
+   "Manibus: Sigma, Alpha, Psi, Theta",
+   "Way of Winter: Psi",
+   "Monolith: None"
+  ],
+  "variants": [
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/f/f4/Deviation_Paper_Doll_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Witchs Beloved",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/3/3a/Deviation_Paper_Doll_-_Witchs_Beloved.png"
+   },
+   {
+    "name": "Eternal Heartkeeper",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/6/6c/Deviation_Paper_Doll_-_Eternal_Heartkeeper.png"
+   }
+  ]
+ },
+ {
+  "id": "partymonkey",
+  "name": "Party Monkey",
+  "category": "crafting",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/a/a2/Deviation_Party_Monkey.png",
+  "fn": "Produces special materials and can repair its own replicas. It will attract the threat of nearby monsters",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/e/e3/Deviation_Party_Monkey_-_Infrasonic_Illusion.png"
+   }
+  ]
+ },
+ {
   "id": "polarjelly",
   "name": "Polar Jelly",
+  "category": "combat",
   "rarity": "uncommon",
   "img": "https://ohwikiguide.com/images/7/71/Deviation_Polar_Jelly.png",
   "fn": "Can participate in combat to deal Ice DMG to a large area",
@@ -445,8 +1217,34 @@
   ]
  },
  {
+  "id": "pupbuddy",
+  "name": "Pup Buddy",
+  "category": "crafting",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/2/26/Deviation_Pup_Buddy.png",
+  "fn": "Produces special materials that can be used to craft Whim Potions. Use it to increase Load capabilities.",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Gold Lightning",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/6/6d/Deviation_Pup_Buddy_-_Gold_Lightning.png"
+   },
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/c/ce/Deviation_Pup_Buddy_-_Infrasonic_Illusion.png"
+   }
+  ]
+ },
+ {
   "id": "pyrodino",
   "name": "Pyro Dino",
+  "category": "combat",
   "rarity": "epic",
   "img": "https://ohwikiguide.com/images/6/6a/Deviation_Pyro_Dino.png",
   "fn": "Can Participate in combat to breathe fire.",
@@ -469,8 +1267,69 @@
   ]
  },
  {
+  "id": "rainman",
+  "name": "Rain Man",
+  "category": "territory",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/c/c3/Deviation_Rain_Man.png",
+  "fn": "Works inside the Territory. Can cause rainfall around him to help crops grow.",
+  "drops": [
+   "Manibus: Securement Unit",
+   "Way of Winter: Psi",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Aberrant Progeny",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/1/1a/Deviation_Rain_Man_-_Aberrant_Progeny.png"
+   },
+   {
+    "name": "Childlike Whimsy",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/d/da/Deviation_Rain_Man_-_Childlike_Whimsy.png"
+   },
+   {
+    "name": "Dusken of Evernight",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/9/95/Deviation_Rain_Man_-_Dusken_of_Evernight.png"
+   },
+   {
+    "name": "Light Rain",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/4/4a/Deviation_Rain_Man_-_Light_Rain.png"
+   },
+   {
+    "name": "Youthful Heart",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/8/83/Deviation_Rain_Man_-_Youthful_Heart.png"
+   }
+  ]
+ },
+ {
+  "id": "rebecca",
+  "name": "Rebecca",
+  "category": "territory",
+  "rarity": "rare",
+  "img": "https://ohwikiguide.com/images/2/2b/Deviation_Rebecca.png",
+  "fn": "Can summon the avatar of \"her\" to comfort and soothe other Deviations",
+  "drops": [
+   "Manibus: Lea",
+   "Way of Winter: Securement Units",
+   "Monolith: None"
+  ],
+  "variants": [
+   {
+    "name": "Aberrant Progeny",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/c/c2/Deviation_Rebecca_-_Aberrant_Progeny.png"
+   }
+  ]
+ },
+ {
   "id": "shatteredmaiden",
   "name": "Shattered Maiden",
+  "category": "combat",
   "rarity": "epic",
   "img": "https://ohwikiguide.com/images/9/93/Deviation_Shattered_Maiden.png",
   "fn": "Can participate in combat, fearing and freezing enemies.",
@@ -488,8 +1347,34 @@
   ]
  },
  {
+  "id": "snowglobe",
+  "name": "Snow Globe",
+  "category": "crafting",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/b/b1/Deviation_Snow_Globe.png",
+  "fn": "Inflicts Slowdown on targets upon hit and Frozen upon multiple hits.",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Aberrant Progeny",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/3/30/Deviation_Snow_Globe_-_Aberrant_Progeny.png"
+   },
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/c/ca/Deviation_Snow_Globe_-_Infrasonic_Illusion.png"
+   }
+  ]
+ },
+ {
   "id": "snowsprite",
   "name": "Snowsprite",
+  "category": "combat",
   "rarity": "rare",
   "img": "https://ohwikiguide.com/images/e/ed/Deviation_Snowsprite.png",
   "fn": "Summons exploding crystals, +Frost DMG received by enemies",
@@ -519,6 +1404,7 @@
  {
   "id": "soulsummoner",
   "name": "Soul Summoner",
+  "category": "combat",
   "rarity": "legendary",
   "img": "https://ohwikiguide.com/images/4/4a/Deviation_Soul_Summoner.png",
   "fn": "Can participate in combat to weaken enemies with cursed arrows, increasing the Weapon DMG they receive...",
@@ -530,8 +1416,153 @@
   "variants": []
  },
  {
+  "id": "spaceturner",
+  "name": "Space Turner",
+  "category": "crafting",
+  "rarity": "rare",
+  "img": "https://ohwikiguide.com/images/1/17/Deviation_Space_Turner.png",
+  "fn": "After Use, creates a Teleport Door and summons teammates to you",
+  "drops": [
+   "Manibus: Alpha, EX-1, Sigma",
+   "Way of Winter: Delta",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/e/ef/Deviation_Space_Turner_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "White Cliff Remnants",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/b/b6/Deviation_Space_Turner_-_White_Cliff_Remnants.png"
+   }
+  ]
+ },
+ {
+  "id": "strangedoor",
+  "name": "Strange Door",
+  "category": "crafting",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/a/a5/Deviation_Strange_Door.png",
+  "fn": "Produces special materials and can repair its own replicas. Its owner can teleport between different Strange Doors.",
+  "drops": [
+   "Manibus: Psi",
+   "Way of Winter: Psi",
+   "Monolith: N/A"
+  ],
+  "variants": []
+ },
+ {
+  "id": "tarpudding",
+  "name": "Tar Pudding",
+  "category": "territory",
+  "rarity": "common",
+  "img": "https://ohwikiguide.com/images/c/c6/Deviation_Tar_Pudding.png",
+  "fn": "Works within the territory, able to extract crude oil or work in refining facilities.",
+  "drops": [
+   "Manibus: Securement Unit",
+   "Way of Winter: Securement Unit",
+   "Monolith: Gaia Cliff Monolith (Treant - Way of Winter)"
+  ],
+  "variants": [
+   {
+    "name": "Fine Brew",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/d/d1/Deviation_Tar_Pudding_-_Fine_Brew.png"
+   },
+   {
+    "name": "Radiance",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/4/4e/Deviation_Tar_Pudding_-_Radiance.png"
+   }
+  ]
+ },
+ {
+  "id": "thedigbyboy",
+  "name": "The Digby Boy",
+  "category": "territory",
+  "rarity": "rare",
+  "img": "https://ohwikiguide.com/images/5/5f/Deviation_The_Digby_Boy.png",
+  "fn": "Gathers Ore",
+  "drops": [
+   "Manibus: TBD",
+   "Way of Winter: TBD",
+   "Monolith: TBD"
+  ],
+  "variants": [
+   {
+    "name": "Dream Zone",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/f/f1/Deviation_The_Digby_Boy_-_Dream_Zone.png"
+   },
+   {
+    "name": "Emerald",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/6/64/Deviation_The_Digby_Boy_-_Emerald.png"
+   },
+   {
+    "name": "Fortune Dice",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/0/09/Deviation_The_Digby_Boy_-_Fortune_Dice.png"
+   },
+   {
+    "name": "Free Passage",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/8/89/Deviation_The_Digby_Boy_-_Free_Passage.png"
+   },
+   {
+    "name": "Gravity Abyss",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/3/3d/Deviation_The_Digby_Boy_-_Gravity_Abyss.png"
+   },
+   {
+    "name": "Prism",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/0/0d/Deviation_The_Digby_Boy_-_Prism.png"
+   },
+   {
+    "name": "Pure Gold",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/7/72/Deviation_The_Digby_Boy_-_Pure_Gold.png"
+   },
+   {
+    "name": "White Cliff Remnants",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/8/8d/Deviation_The_Digby_Boy_-_White_Cliff_Remnants.png"
+   },
+   {
+    "name": "Future Epoch",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/0/01/Deviation_The_Digby_Boy_-_Future_Epoch.png"
+   }
+  ]
+ },
+ {
+  "id": "upperworldspawn",
+  "name": "Upper World Spawn",
+  "category": "crafting",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/1/1e/Deviation_Upper_World_Spawn.png",
+  "fn": "Produces special amterials that can be used to craft Tactical Items. Using the item will grant the user a short period of immunity to all damage while losing the ability to move.",
+  "drops": [
+   "Manibus: Securement Units",
+   "Way of Winter: Securement Units",
+   "Monolith: N/A"
+  ],
+  "variants": [
+   {
+    "name": "Aberrant Progeny",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/9/90/Deviation_Upper_World_Spawn_-_Aberrant_Progeny.png"
+   }
+  ]
+ },
+ {
   "id": "voodoodoll",
   "name": "Voodoo Doll",
+  "category": "combat",
   "rarity": "uncommon",
   "img": "https://ohwikiguide.com/images/f/fd/Voodoo_Doll.png",
   "fn": "Can participate in combat, sharing the damage received by its master or possessing enemies so they share the damage its master receives instead.",
@@ -562,6 +1593,7 @@
  {
   "id": "whalepup",
   "name": "Whalepup",
+  "category": "combat",
   "rarity": "rare",
   "img": "https://ohwikiguide.com/images/8/85/Deviation_Whalepup.png",
   "fn": "Can participate in combat, transforming the battlefield into an underwater world that drowns enemies and increases the Weapon DMG they receive.",
@@ -579,8 +1611,34 @@
   ]
  },
  {
+  "id": "wishbox",
+  "name": "Wish Box",
+  "category": "territory",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/images/f/fe/Deviation_Wish_Box.png",
+  "fn": "Use in your territory to transform items in the Wish Box into something else after digestion.",
+  "drops": [
+   "Manibus: Securement Silo's",
+   "Way of Winter: Securement Silo's",
+   "Monolith: None"
+  ],
+  "variants": [
+   {
+    "name": "Clear Tone",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/7/76/Deviation_Wish_Box_-_Clear_Tone.png"
+   },
+   {
+    "name": "Infrasonic Illusion",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/images/9/9f/Deviation_Wish_Box_-_Infrasonic_Illusion.png"
+   }
+  ]
+ },
+ {
   "id": "zapamander",
   "name": "Zapamander",
+  "category": "combat",
   "rarity": "uncommon",
   "img": "https://ohwikiguide.com/images/2/25/Deviation_Zapamander.png",
   "fn": "Can participate in combat to summon thunderclouds to strike enemies and enhance electrical damage",
@@ -605,6 +1663,7 @@
  {
   "id": "zapcam",
   "name": "ZapCam",
+  "category": "combat",
   "rarity": "epic",
   "img": "https://ohwikiguide.com/images/f/f6/Deviation_ZapCam.png",
   "fn": "+Weapon DMG received by enemies",
@@ -639,6 +1698,7 @@
  {
   "id": "zenopurifier",
   "name": "Zeno-Purifier",
+  "category": "combat",
   "rarity": "epic",
   "img": "https://ohwikiguide.com/images/c/c9/Deviation_Zeno-Purifier.png",
   "fn": "Attacks enemies, gives player melee teleport",

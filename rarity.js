@@ -12,9 +12,16 @@ const TIERS = {
 };
 
 const ASSIGN = {
-  common:    ["Butterfly Emissary", "By-the-Wind", "Dr. Teddy", "Grumpy Bulb", "Mini Feaster"],
-  uncommon:  ["Enchanting Void", "Festering Gel", "Mini Wonder", "Polar Jelly", "Voodoo Doll", "Zapamander"],
-  rare:      ["Invincible Sun", "Lonewolf Whisper", "Mr. Wish", "Snowsprite", "Whalepup"],
+  common:    ["Butterfly Emissary", "By-the-Wind", "Dr. Teddy", "Grumpy Bulb", "Mini Feaster",
+              // crafting
+              "Artisan's Touch", "Atomic Lighter", "Disco Ball", "Frog the Leaper", "Harveseed", "Hug-in-a-Bowl", "Ice Pot", "Party Monkey", "Pup Buddy", "Snow Globe",
+              // territory
+              "Buzzy Bee", "Chefosaurus Rex", "Electric Eel", "Fetch-A-Lot Bunny", "Flame Essence", "Growshroom", "Logging Beaver", "Nutcracker", "Paper Doll", "Rain Man", "Tar Pudding"],
+  uncommon:  ["Enchanting Void", "Festering Gel", "Mini Wonder", "Polar Jelly", "Voodoo Doll", "Zapamander",
+              "Atomic Snail", "Dreamcatcher", "Gingerbread House", "Masonic Pyramid", "Orb Lightning", "Strange Door", "Upper World Spawn",
+              "Director Fox", "Doctor Raven", "H37", "Hydronaut Fish", "Lethal Rabbit", "Wish Box"],
+  rare:      ["Invincible Sun", "Lonewolf Whisper", "Mr. Wish", "Snowsprite", "Whalepup",
+              "Space Turner", "Extradimensional Cat", "Rebecca", "The Digby Boy"],
   epic:      ["Pyro Dino", "Shattered Maiden", "ZapCam", "Zeno-Purifier"],
   legendary: ["Behemoth", "Brave George", "Soul Summoner"],
 };

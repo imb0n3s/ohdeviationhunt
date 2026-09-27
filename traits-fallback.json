@@ -130,607 +130,1587 @@
    "fuse": null
   }
  ],
- "slot1": [
-  {
-   "key": "butterfly",
-   "name": "Butterfly",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Butterfly's Emissary - Ancient Scroll: It gains Max Energy (Skill) +40%"
+ "cats": {
+  "combat": {
+   "slot1": [
+    {
+     "key": "butterfly",
+     "name": "Butterfly",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Butterfly's Emissary - Ancient Scroll: It gains Max Energy (Skill) +40%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "by_the_wind",
+     "name": "By-The-Wind",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "By-The-Wind - Bursting Magma: It gains Energy (Skill) Recovery Speed +10%",
+      "By-The-Wind - Frigid Touch: It gains Energy (Skill) Recovery Speed +15%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "dr_teddy",
+     "name": "Dr Teddy",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Dr Teddy - Infrasonic Illusion: It gains Energy (Skill) recovery speed +20%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "festering_gel",
+     "name": "Festering Gel",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Festering Gel - Milk Sugar: It gains Max Mood (Activity) +35%",
+      "Praise the Sun - Spring Rose: When synced, you receive 20% healing during the day. Effect is reduced by half at night.",
+      "Starry Sky - Marine Star: When synced, each reload gives you either a 5% Weapon DMG bonus or 5% Status DMG at random"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "grumpy_bulb",
+     "name": "Grumpy Bulb",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Grumpy Bulb - Violet Robe: It gains Max Energy (Skill) +40%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "invincible_sun",
+     "name": "Invincible Sun",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Invincible Sun - Malevolent Sun: It gains Mood (Activity) Recovery Speed +20%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "lonewolf_whisper",
+     "name": "Lonewolf's Whisper",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Lonewolf's Whisper - Bursting Magma: It gains Max Energy (Skill) +40%",
+      "Lonewolf's Whisper - Distant Tears: It gains Max Energy (Skill) +40%",
+      "Lonewolf's Whisper - Radiant Variant: It gains Max Mood (Activity) +7%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "mini_wonder",
+     "name": "Mini Wonder",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Mini Wonder - Bursting Magma: It gains Max Mood (Activity) +35%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "polar_jellyfish",
+     "name": "Polar Jellyfish",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Polar Jellyfish - Radiant: It gains Mood (Activity) Recovery Speed +20%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "shattered_maiden",
+     "name": "Shattered Maiden",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Shattered Maiden - Wandering Witch (Twitch Drop): Max Deviant Power (Skill) 10%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "snowsprite",
+     "name": "Snowsprite",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Snowsprite - Spring's Return (Green Variant): It gains Max Mood (Activity) +35%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "voodoo_doll",
+     "name": "Voodoo Doll",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Voodoo Doll - Fluffy Curse: It gains Energy (Skill) recovery speed +10%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "whalepup",
+     "name": "Whalepup",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Don't Get Wet: While equipped, the Player gains 10% DMG Reduction when Wet or in the Swimming Status"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "zapcam",
+     "name": "Zapcam",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Zapcam - Fools Memory: It gains Energy (Skill) recovery speed +10%"
+     ],
+     "fuse": null
+    }
    ],
-   "fuse": null
+   "slot2": [
+    {
+     "key": "beast_burden",
+     "name": "Beast of Burden",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with it grants Max Load +8"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "brute_force",
+     "name": "Brute Force",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with it grants Max Load +15, Movement Speed -5%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "glistening_blue",
+     "name": "Weakspot Master - Glistening Blue",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When synced, hitting a Weakspot increases Deviation Power (Skill) by 1. Cooldown: 3s"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "starry_night",
+     "name": "Praise the Moon - Starry Night",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When synced you deal 6% more damage (both Weapon DMG and Status DMG) at night. Effect is reduced by half during the day"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "city_folk",
+     "name": "City Folk",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with it grants Max Load +15 when exploring Settlements"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "crack_shot",
+     "name": "Crack Shot",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Having it fighting alongside grants Weapon DMG +5%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "enchanting_void",
+     "name": "Enchanting Void",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Enchanting Void - Starfall Inversion: Syncing abilities grants +5% Melee DMG. Increased to 7.5% when airborne"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "heavy_solid",
+     "name": "Heavy and Solid",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Higher Load grants higher DMG Reduction for torso, up to +15%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "invincible_sun",
+     "name": "Invincible Sun",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Invincible Sun - Starfall Inversion: Syncing abilities grants +5% Blaze Elemental DMG. Increased to 7.5% when airborne"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "lighten_mind",
+     "name": "Lighten your Mind",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Lower Load grants higher DMG Reduction for head, up to 15%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "long_runner",
+     "name": "Long Distance Runner",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with it grants Stamina Consumption -20%, Movement Speed -10%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "lonewolf_lunar",
+     "name": "Lonewolf's Whisper - Lunar Oracle",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Weapon DMG +5%. x1.5 when Sanity is below 30%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "mini_feaster",
+     "name": "Mini Feaster",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Mini Feaster - Starfall Inversion: Syncing abilities grants +5% Status DMG. Increased to 7.5% when airborne"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "mini_wonder",
+     "name": "Mini Wonder",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Mini Wonder - Starfall Inversion: Syncing abilities grants +5% head and torso DMG reduction. Increased to 7.5% when airborne"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "polar_jelly",
+     "name": "Polar Jelly",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Polar Jelly - Starfall Inversion: Syncing abilities grants +5% Frost Elemental DMG. Increased to 7.5% when airborne"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "power_king",
+     "name": "Power King",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with it grants Max Load +25, Movement Speed -5%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "psychic_kid",
+     "name": "Psychic Kid",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Having it fight alongside grants Status DMG +5%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "run_fast",
+     "name": "Run Fast",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with this Deviation grants Movement Speed +5%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "save_energy",
+     "name": "Save Energy",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with it grants Stamina Consumption -10%, Movement Speed -5%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "sedentary",
+     "name": "Sedentary",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with it grants Max Load -8 when exploring Settlements"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "stay_indoors",
+     "name": "Stay Indoors",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with it grants Stamina +8% in Settlements"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "street_rascal",
+     "name": "Street Rascal",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with it grants Movement Speed +10% in Settlements"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "two_shift",
+     "name": "Two-Shift System",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with it grants Max Load +16 at daytime, and Movement Speed +12% at night"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "vegetative_calm",
+     "name": "Vegetative Calm",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with it grants Max Stamina +15%, Movement Speed -5%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "voodoo_doll",
+     "name": "Voodoo Doll",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Voodoo Doll - Starfall Inversion: Syncing abilities restores 1 point of Deviant Power (Skill) every 8s. Restores 1.5 points while airborne"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "wellbeing",
+     "name": "Wellbeing",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Syncing with this Deviation grants Max Stamina +10"
+     ],
+     "fuse": null
+    }
+   ],
+   "slot3": [
+    {
+     "key": "brute_force_rules",
+     "name": "Brute Force Rules",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After syncing, your dodging or mid-air dashing under the Aero Leap whim will shatter any ores or trees you touch, but you won't get resources from them."
+     ],
+     "fuse": "Bear"
+    },
+    {
+     "key": "clean_hygienic",
+     "name": "Clean and Hygienic",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After Syncing, the player's Sanity will automatically recover to 20% when it drops below that threshold"
+     ],
+     "fuse": "Sink"
+    },
+    {
+     "key": "eureka_moment",
+     "name": "Eureka Moment",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After syncing, if you're attacked, the attacker is revealed and their Weapon DMG is reduced by 10% for 2s (60s cooldown)"
+     ],
+     "fuse": "Warm Lamp, Small Signal Light"
+    },
+    {
+     "key": "extra_load",
+     "name": "Extra Load",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After syncing, Maximum Load is increased by 20"
+     ],
+     "fuse": "Any Carton"
+    },
+    {
+     "key": "feline",
+     "name": "Feline Creatures",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After syncing, fall damage is reduced by 50%, and fractures are prevented"
+     ],
+     "fuse": "Leopard"
+    },
+    {
+     "key": "foul_symbiosis",
+     "name": "Foul Symbiosis",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When they help kill Deviants, loot has a 10% chance to gain +1 Acid"
+     ],
+     "fuse": "Boar"
+    },
+    {
+     "key": "herbivore",
+     "name": "Herbivore",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After syncing, nearby herbivores will no longer flee from the player"
+     ],
+     "fuse": "Deer or Goat"
+    },
+    {
+     "key": "knights",
+     "name": "Knights of the Round Table",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Slightly reduces damage taken by this Deviation"
+     ],
+     "fuse": "Any Table"
+    },
+    {
+     "key": "master_temp",
+     "name": "Master of Temperatures",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Player gain 10 Heat Resist within their territory"
+     ],
+     "fuse": "Any Fan"
+    },
+    {
+     "key": "mind_massage",
+     "name": "Mind Massage",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After syncing, Sanity will gradually recover"
+     ],
+     "fuse": "Capybara"
+    },
+    {
+     "key": "moonlight",
+     "name": "Moonlight Assault",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "At night, Deviant Skill and Activity Recovery rates are increased"
+     ],
+     "fuse": "Wolf"
+    },
+    {
+     "key": "music_resonance",
+     "name": "Music Resonance",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Will not require radio for the deviation's securement box."
+     ],
+     "fuse": "Jukebox"
+    },
+    {
+     "key": "neon",
+     "name": "Neon Flicker",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "For every Deviation with the Neon Flicker trait in the territory, the max Mood (Activity) all Deviation increases by 1"
+     ],
+     "fuse": "Like"
+    },
+    {
+     "key": "nightmare",
+     "name": "Nightmare Waters",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After syncing, Stamina consumption is significantly reduced while diving, and Oxygen is greatly increased"
+     ],
+     "fuse": "Crocodile"
+    },
+    {
+     "key": "polar_beast",
+     "name": "Polar Beast",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When the environmental temperature is below 0C, their Attack increases by 10%"
+     ],
+     "fuse": "Polar Bear"
+    },
+    {
+     "key": "pollution",
+     "name": "Pollution Adaptation",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After syncing, the player's Sanity drops 90% slower within the Pollution Zone"
+     ],
+     "fuse": "Modern Toilet"
+    },
+    {
+     "key": "precision",
+     "name": "Precision Moment",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Increases Mood by 10 (Activity) and Deviant Energy (Skill) by 10 for all Deviations in the territory every hour (effect does not stack)"
+     ],
+     "fuse": "Desktop Electronic Clock"
+    },
+    {
+     "key": "top_grunt",
+     "name": "Top Grunt",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After syncing, no Stamina is consumed during gathering activities like chopping trees or mining"
+     ],
+     "fuse": "Buffalo"
+    },
+    {
+     "key": "warm_flame",
+     "name": "Warm Flame",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After syncing, the Players Cold Resist increases by 10"
+     ],
+     "fuse": "Candelabra"
+    }
+   ]
   },
-  {
-   "key": "by_the_wind",
-   "name": "By-The-Wind",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "By-The-Wind - Bursting Magma: It gains Energy (Skill) Recovery Speed +10%",
-    "By-The-Wind - Frigid Touch: It gains Energy (Skill) Recovery Speed +15%"
+  "crafting": {
+   "slot1": [
+    {
+     "key": "atomic_snail",
+     "name": "Atomic Snail",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Atomic Snail - Gold Lightning: The appearance of the Deviation has changed. It gains Energy Recovery Speed +15%."
+     ],
+     "fuse": null
+    },
+    {
+     "key": "space_turner",
+     "name": "Space Turner",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Space Turner - White Cliff Remnants: The appearance of the Deviation has changed. It gains Max Mood (Activity) +35."
+     ],
+     "fuse": null
+    }
    ],
-   "fuse": null
+   "slot2": [
+    {
+     "key": "atomic_snail",
+     "name": "Atomic Snail",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Atomic Snail - Lunar Oracle: The appearance of the Deviation has changed. It's resource production interval is reduced by 15%."
+     ],
+     "fuse": null
+    },
+    {
+     "key": "big_cup",
+     "name": "Big Cup",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Limit capacity during Crafting is increased by 20%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "buy_1_get_2",
+     "name": "Buy 1 Get 2",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When generating resources, Crafting has a 5% chance to produce 1 extra unit"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "byproduct",
+     "name": "Byproduct",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Deviation Activity Score is greater than 90%, there's a 10% chance to increase other Deviation's Deviant Power (Skill) by 2 points when generating resources (all)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "clumsy",
+     "name": "Clumsy",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "There is a 5% chance that Crafting Output -1"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "collection_plus_1",
+     "name": "Collection +1",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "There is a 5% chance that Crafting output +2, and Crafting speed -20%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "come_as_one",
+     "name": "Come As One",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Crafting Deviations produce resources, output +1 for every 1 Territory Deviation in the Territory"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "efficiency_above_all",
+     "name": "Efficiency Above All",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Crafting speed +20%, Max storage capacity -30%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "efficiency_first",
+     "name": "Efficiency First",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "The resource interval for Crafting is reduced by 5%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "eureka_moment",
+     "name": "Eureka Moment",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When generating resources, Crafting has a 1% chance to preduce 10 extra units, but the resource production interval is increased by 50%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "lazy",
+     "name": "Lazy",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Crafting speed -10%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "leftover",
+     "name": "Leftover",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Deviation Activity Score is greater than 20%, there's a 10% chance to increase other Deviation's Deviant Power (Skill) by 1 point when generating resources. Max Storage capacity -20% (all)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "little_helper",
+     "name": "Little Helper",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Crafting Deviation produce resources, there is a 3% chance to not use up Mood"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "medium_cup",
+     "name": "Medium Cup",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Max storage capacity +10%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "mineral_talent",
+     "name": "Mineral Talent",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Crafting Deviations produce resources while within the Oil Field radius, there is 20% chance to increase output by 1."
+     ],
+     "fuse": null
+    },
+    {
+     "key": "no_such_small_cup",
+     "name": "No Such Thing As a Small Cup",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Max Storage Capacity -10%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "one_more_bottle",
+     "name": "One More Bottle",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When generating resources, Crafting has a 2% chance to produce 2 extra units"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "out_of_scratch",
+     "name": "Out of Scratch",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Crafting Deviations produce resources, there is a 3% chance to not use up Deviant Power (Skill)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "piece_of_cake",
+     "name": "Piece of Cake",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Crafting Deviations produce resources, there is a 5% chance to not use up Activity Score"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "productivity_first",
+     "name": "Productivity First",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "The resource production interval for Crafting is reduced by 5%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "speed_up",
+     "name": "Speed Up",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "The resource production interval for Crafting is reduced by 10%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "stardust_empowerment",
+     "name": "Stardust Empowerment",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Crafting Deviation is working in the Pollution Zone, there is a 20% chance to not consume Energy"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "super_big_cup",
+     "name": "Super Big Cup",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Limit capacity during Crafting is increased by 30%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "joy_slacking",
+     "name": "The Joy of Slacking Off",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "There is a 10% chance that crafting consumes 0 Mood (Activity), and Crafting speed -20%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "last_night",
+     "name": "The Last Night",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "The resource production interval for Crafting is reduced by 15%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "unhinged_poduction",
+     "name": "Unhinged Poduction",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Deviation Activity Score is less than 20%, consume other Deviations' Deviant Power (Skill) by 1 point when generating resources to produce 2 extra units"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "unplanned_production",
+     "name": "Unplanned Production",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "There is a 10% chance that crafting consumes 0 Deviant Power (Skill), and Crafting speed -20%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "waste_not",
+     "name": "Waste Not",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Deviation Activity Score is greater than 90%, there's a 5% chance to increase other Deviation's Deviant Power (Skill) by 10 points when generating resources (all)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "work_of_proficiency",
+     "name": "Work of Proficiency",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Crafting Deviations produce resources, there is a 5% chance to not use up Deviant Power (Skill)."
+     ],
+     "fuse": null
+    }
+   ],
+   "slot3": [
+    {
+     "key": "brute_force_rules",
+     "name": "Brute Force Rules",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "During production, they have a 10% chance to double resource output."
+     ],
+     "fuse": "Bear"
+    },
+    {
+     "key": "clean_hygienic",
+     "name": "Clean and Hygienic",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Players Sanity will not drop below 20% when within their territory."
+     ],
+     "fuse": "Sink"
+    },
+    {
+     "key": "eureka_moment",
+     "name": "Eureka Moment",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Will not require light built above it for the deviation's securement box."
+     ],
+     "fuse": "Warm Lamp, Small Signal Light"
+    },
+    {
+     "key": "extra_load",
+     "name": "Extra Load",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Increases storage capacity for Crafting Deviations by 15%."
+     ],
+     "fuse": "Any Carton"
+    },
+    {
+     "key": "feline",
+     "name": "Feline Creatures",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When the Extradimensional Cat in the territory is active, this Deviation might yield an extra Lightweight item during production."
+     ],
+     "fuse": "Leopard"
+    },
+    {
+     "key": "foul_symbiosis",
+     "name": "Foul Symbiosis",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When producing in a Pollution Zone, they have a 10% chance to yield 1 extra Acid."
+     ],
+     "fuse": "Boar"
+    },
+    {
+     "key": "herbivore",
+     "name": "Herbivore",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "During production, they have a chance to yield an additional deviated plant."
+     ],
+     "fuse": "Deer, Goat"
+    },
+    {
+     "key": "knights",
+     "name": "Knights of The Round Table",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Their Defense increases by 5% and Deviant Energy consumption is reduced when hit."
+     ],
+     "fuse": "Any Table"
+    },
+    {
+     "key": "master_temp",
+     "name": "Master of Temperatures",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After syncing, the player's Heat Resist increases by 10."
+     ],
+     "fuse": "Any Fan"
+    },
+    {
+     "key": "mind_massage",
+     "name": "Mind Massage",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Players will recover 10% Sanity when returning to their territory (10m Cooldown)."
+     ],
+     "fuse": "Capybara"
+    },
+    {
+     "key": "moonlight",
+     "name": "Moonlight Assault",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "At night, Deviant Energy and Mood (Activity) Recovery rates are increased by 15%."
+     ],
+     "fuse": "Wolf"
+    },
+    {
+     "key": "music_resonance",
+     "name": "Music Resonance",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Will not require radio for the deviation's securement box."
+     ],
+     "fuse": "Jukebox"
+    },
+    {
+     "key": "neon",
+     "name": "Neon Flicker",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "For every Deviation with the Neon Flicker trait in the territory, the max Mood (Activity) all Deviations increases by 1."
+     ],
+     "fuse": "\"Like\""
+    },
+    {
+     "key": "nightmare",
+     "name": "Nightmare Waters",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When the territory is near water, Deviations have a chance to yield extra fish during production."
+     ],
+     "fuse": "Crocodile"
+    },
+    {
+     "key": "polar_beast",
+     "name": "Polar Beast",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When the environmental temperature in the territory is below 0C, Mood (Activity) recovers 10% faster."
+     ],
+     "fuse": "Polar Bear"
+    },
+    {
+     "key": "pollution",
+     "name": "Pollution Adaptation",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Max Deviant Energy increases by 15 within Pollution zones."
+     ],
+     "fuse": "Modern Toilet"
+    },
+    {
+     "key": "precision",
+     "name": "Precision Moment",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Increases Mood (Activity) by 10 and Deviant Energy by 10 for all Deviations in the territory every hour (effect does not stack)"
+     ],
+     "fuse": "Desktop Electronic Clock"
+    },
+    {
+     "key": "top_grunt",
+     "name": "Top Grunt",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Deviant Energy drops to 10%, automatically converts Mood (Activity) into Deviant Energy to continue working."
+     ],
+     "fuse": "Buffalo"
+    },
+    {
+     "key": "warm_flame",
+     "name": "Warm Flame",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Players gain 10 Cold Resist when within their territory."
+     ],
+     "fuse": "Candelabra"
+    }
+   ]
   },
-  {
-   "key": "dr_teddy",
-   "name": "Dr Teddy",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Dr Teddy - Infrasonic Illusion: It gains Energy (Skill) recovery speed +20%"
+  "territory": {
+   "slot1": [
+    {
+     "key": "opt_extra_large",
+     "name": "Optimism - Extra Large",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "It gains Max Mood +40%"
+     ],
+     "fuse": null
+    }
    ],
-   "fuse": null
-  },
-  {
-   "key": "festering_gel",
-   "name": "Festering Gel",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Festering Gel - Milk Sugar: It gains Max Mood (Activity) +35%",
-    "Praise the Sun - Spring Rose: When synced, you receive 20% healing during the day. Effect is reduced by half at night.",
-    "Starry Sky - Marine Star: When synced, each reload gives you either a 5% Weapon DMG bonus or 5% Status DMG at random"
+   "slot2": [
+    {
+     "key": "world_charm",
+     "name": "A World of Charm",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When the deviation is dormant and regaining Mood (Activity), there is a 10% chance that other Territorial Deviations receive Mood (Activity) +20 (all)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "old_hand",
+     "name": "An old Hand Knows the Ropes",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Faster Mood (Activity) and Deviant Power (Skill) consumptions, and Working Speed +10% for Territorial Deviation"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "anti_burnout",
+     "name": "Anti-Burnout",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When the Deviation is dormant and regaining Deviant Power (Skill), there is a 20% chance that other Territorial Deviations receive Deviant Power (Skill) +5 (all)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "baffling_behavior",
+     "name": "Baffling Behavior",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When it's Deviant Power (Skill) decreases there is a 10% chance that other Territorial Deviations also lose Deviant Power (Skill) (all)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "devoted_laborer",
+     "name": "Devoted Laborer",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Mood (Activity) and Deviant Power (Skill) consumption speed +20% for working Territorial Deviation (makes the deviation consume energy 20% slower)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "dream_wild",
+     "name": "Dream Wild",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When the Deviation is dormant and regaining Deviant Power (Skill), there is a 10% chance that other Territorial Deviations receive Deviant Power (Skill) +10 (all)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "gilded_oracle",
+     "name": "Gilded Oracle",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Territorial Deviation may bring back additional ores. (digby boy)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "growshroom_shadowshroom",
+     "name": "Growshroom - Shadowshroom",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "The appearance of the Deviation has changed. It gains Max Energy +40%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "heartthrob",
+     "name": "Heartthrob",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When its Deviant Power (Skill) decreases, there is a 10% chance that other Territorial Deviations also lose Deviant Power (Skill). When the Deviation is dormant and regaining Mood (Activity), there is a 10% chance that other Territorial Deviations receive Mood (Activity) +5. (all)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "holding_team_back",
+     "name": "Holding the Team Back",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When it's Mood (Activity) decreases there is a 10% chance that other Territorial Deviations also lose mood. (all)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "hydrophilic",
+     "name": "Hydrophilic",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Territory Deviation is resting by water, Energy Recovery Speed is increased by 30%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "imperfect_endless_motion",
+     "name": "Imperfect Endless Motion",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "There is a 10% chance that working does not consume Deviant Power (Skill)."
+     ],
+     "fuse": null
+    },
+    {
+     "key": "lazy_bones",
+     "name": "Lazy Bones",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Working speed -5% for Territorial Deviation"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "living_map",
+     "name": "Living Map",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Resource production interval -5% for Territorial Deviation"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "oneplus",
+     "name": "OnePlus",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Territory Deviation returns with resources, there is a 5% chance for them to bring back rare crystals. However, the return time required is increased."
+     ],
+     "fuse": null
+    },
+    {
+     "key": "panovision",
+     "name": "Panovision",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Working speed -10% for Territorial Deviation"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "slacking_off",
+     "name": "Slacking Off",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Mood (Activity) and Deviant Power (Skill) consumption speed +5% for working Territorial Deviation"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "smooth_sheep_rustler",
+     "name": "Smooth Sheep Rustler",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Deviation's Activity Score is less than 20%, consume all other Deviation's Deviant Power (Skill) by 5 points when generating resources (all)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "snooze_afficionado",
+     "name": "Snooze Afficionado",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When it's Mood (Activity) decreases there is a 10% chance that other Territorial Deviations also lose mood. When the Deviation is dormant and gaining Deviation Power (Skill), there is a 10% chance that other Territorial Deviations recieve Deviant Power (Skill) +5. (all)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "stardust_affinity",
+     "name": "Stardust Affinity",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Territory Deviation is working in the Pollution Zone, there is a 20% chance to not consume Mood (Activity)."
+     ],
+     "fuse": null
+    },
+    {
+     "key": "sweet_talk",
+     "name": "Sweet Talk",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When the deviation is dormant and regaining Mood (Activity), there is a 20% chance that other Territorial Deviations receive Mood (Activity) +5. (all)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "toxicologist",
+     "name": "Toxicologist",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Territorial Deviation may bring back Acid. (H37)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "voluntary_overtime",
+     "name": "Voluntary Overtime",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "There is a 10% chance that working does not consume Mood (Activity)"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "water_dormancy",
+     "name": "Water Dormancy",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Territory Deviation are resting by water, Mood (Activity) Recover Speed is increased by 30%."
+     ],
+     "fuse": null
+    },
+    {
+     "key": "wild_wood_spirit",
+     "name": "Wild Wood Spirit",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Territorial Deviation brings back resources, there is a 5% chance to bring a deviated flower"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "workaholic",
+     "name": "Workaholic",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Mood (Activity) and Deviant Power (Skill) consumption speed +10% for working Territorial Deviation (makes the deviation consume energy 10% slower)"
+     ],
+     "fuse": null
+    }
    ],
-   "fuse": null
-  },
-  {
-   "key": "grumpy_bulb",
-   "name": "Grumpy Bulb",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Grumpy Bulb - Violet Robe: It gains Max Energy (Skill) +40%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "invincible_sun",
-   "name": "Invincible Sun",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Invincible Sun - Malevolent Sun: It gains Mood (Activity) Recovery Speed +20%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "lonewolf_whisper",
-   "name": "Lonewolf's Whisper",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Lonewolf's Whisper - Bursting Magma: It gains Max Energy (Skill) +40%",
-    "Lonewolf's Whisper - Distant Tears: It gains Max Energy (Skill) +40%",
-    "Lonewolf's Whisper - Radiant Variant: It gains Max Mood (Activity) +7%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "mini_wonder",
-   "name": "Mini Wonder",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Mini Wonder - Bursting Magma: It gains Max Mood (Activity) +35%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "polar_jellyfish",
-   "name": "Polar Jellyfish",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Polar Jellyfish - Radiant: It gains Mood (Activity) Recovery Speed +20%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "shattered_maiden",
-   "name": "Shattered Maiden",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Shattered Maiden - Wandering Witch (Twitch Drop): Max Deviant Power (Skill) 10%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "snowsprite",
-   "name": "Snowsprite",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Snowsprite - Spring's Return (Green Variant): It gains Max Mood (Activity) +35%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "voodoo_doll",
-   "name": "Voodoo Doll",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Voodoo Doll - Fluffy Curse: It gains Energy (Skill) recovery speed +10%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "whalepup",
-   "name": "Whalepup",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Don't Get Wet: While equipped, the Player gains 10% DMG Reduction when Wet or in the Swimming Status"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "zapcam",
-   "name": "Zapcam",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Zapcam - Fools Memory: It gains Energy (Skill) recovery speed +10%"
-   ],
-   "fuse": null
+   "slot3": [
+    {
+     "key": "brute_force_rules",
+     "name": "Brute Force Rules",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "During production, they have a 10% chance to double resource output."
+     ],
+     "fuse": "Bear"
+    },
+    {
+     "key": "clean_hygienic",
+     "name": "Clean and Hygienic",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Players Sanity will not drop below 20% when within their territory."
+     ],
+     "fuse": "Sink"
+    },
+    {
+     "key": "eureka_moment",
+     "name": "Eureka Moment",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Will not require light built above it for the deviation's securement box."
+     ],
+     "fuse": "Warm Lamp, Small Signal Light"
+    },
+    {
+     "key": "extra_load",
+     "name": "Extra Load",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Increases storage capacity for Crafting Deviations by 15%."
+     ],
+     "fuse": "Any Carton"
+    },
+    {
+     "key": "feline",
+     "name": "Feline Creatures",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When the Extradimensional Cat in the territory is active, this Deviation might yield an extra Lightweight item during production."
+     ],
+     "fuse": "Leopard"
+    },
+    {
+     "key": "foul_symbiosis",
+     "name": "Foul Symbiosis",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When producing in a Pollution Zone, they have a 10% chance to yield 1 extra Acid."
+     ],
+     "fuse": "Boar"
+    },
+    {
+     "key": "herbivore",
+     "name": "Herbivore",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "During production, they have a chance to yield an additional deviated plant."
+     ],
+     "fuse": "Deer, Goat"
+    },
+    {
+     "key": "knights",
+     "name": "Knights of The Round Table",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Their Defense increases by 5% and Deviant Energy consumption is reduced when hit."
+     ],
+     "fuse": "Any Table"
+    },
+    {
+     "key": "master_temp",
+     "name": "Master of Temperatures",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "After syncing, the player's Heat Resist increases by 10."
+     ],
+     "fuse": "Any Fan"
+    },
+    {
+     "key": "mind_massage",
+     "name": "Mind Massage",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Players will recover 10% Sanity when returning to their territory (10m Cooldown)."
+     ],
+     "fuse": "Capybara"
+    },
+    {
+     "key": "moonlight",
+     "name": "Moonlight Assault",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "At night, Deviant Energy and Mood (Activity) Recovery rates are increased by 15%."
+     ],
+     "fuse": "Wolf"
+    },
+    {
+     "key": "music_resonance",
+     "name": "Music Resonance",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Will not require radio for the deviation's securement box."
+     ],
+     "fuse": "Jukebox"
+    },
+    {
+     "key": "neon",
+     "name": "Neon Flicker",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "For every Deviation with the Neon Flicker trait in the territory, the max Mood (Activity) all Deviations increases by 1."
+     ],
+     "fuse": "\"Like\""
+    },
+    {
+     "key": "nightmare",
+     "name": "Nightmare Waters",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When the territory is near water, Deviations have a chance to yield extra fish during production."
+     ],
+     "fuse": "Crocodile"
+    },
+    {
+     "key": "polar_beast",
+     "name": "Polar Beast",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When the environmental temperature in the territory is below 0C, Mood (Activity) recovers 10% faster."
+     ],
+     "fuse": "Polar Bear"
+    },
+    {
+     "key": "pollution",
+     "name": "Pollution Adaptation",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Max Deviant Energy increases by 15 within Pollution zones."
+     ],
+     "fuse": "Modern Toilet"
+    },
+    {
+     "key": "precision",
+     "name": "Precision Moment",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Increases Mood (Activity) by 10 and Deviant Energy by 10 for all Deviations in the territory every hour (effect does not stack)"
+     ],
+     "fuse": "Desktop Electronic Clock"
+    },
+    {
+     "key": "top_grunt",
+     "name": "Top Grunt",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When Deviant Energy drops to 10%, automatically converts Mood (Activity) into Deviant Energy to continue working."
+     ],
+     "fuse": "Buffalo"
+    },
+    {
+     "key": "warm_flame",
+     "name": "Warm Flame",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Players gain 10 Cold Resist when within their territory."
+     ],
+     "fuse": "Candelabra"
+    }
+   ]
   }
- ],
- "slot2": [
-  {
-   "key": "beast_burden",
-   "name": "Beast of Burden",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with it grants Max Load +8"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "brute_force",
-   "name": "Brute Force",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with it grants Max Load +15, Movement Speed -5%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "glistening_blue",
-   "name": "Weakspot Master - Glistening Blue",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "When synced, hitting a Weakspot increases Deviation Power (Skill) by 1. Cooldown: 3s"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "starry_night",
-   "name": "Praise the Moon - Starry Night",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "When synced you deal 6% more damage (both Weapon DMG and Status DMG) at night. Effect is reduced by half during the day"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "city_folk",
-   "name": "City Folk",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with it grants Max Load +15 when exploring Settlements"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "crack_shot",
-   "name": "Crack Shot",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Having it fighting alongside grants Weapon DMG +5%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "enchanting_void",
-   "name": "Enchanting Void",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Enchanting Void - Starfall Inversion: Syncing abilities grants +5% Melee DMG. Increased to 7.5% when airborne"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "heavy_solid",
-   "name": "Heavy and Solid",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Higher Load grants higher DMG Reduction for torso, up to +15%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "invincible_sun",
-   "name": "Invincible Sun",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Invincible Sun - Starfall Inversion: Syncing abilities grants +5% Blaze Elemental DMG. Increased to 7.5% when airborne"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "lighten_mind",
-   "name": "Lighten your Mind",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Lower Load grants higher DMG Reduction for head, up to 15%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "long_runner",
-   "name": "Long Distance Runner",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with it grants Stamina Consumption -20%, Movement Speed -10%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "lonewolf_lunar",
-   "name": "Lonewolf's Whisper - Lunar Oracle",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Weapon DMG +5%. x1.5 when Sanity is below 30%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "mini_feaster",
-   "name": "Mini Feaster",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Mini Feaster - Starfall Inversion: Syncing abilities grants +5% Status DMG. Increased to 7.5% when airborne"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "mini_wonder",
-   "name": "Mini Wonder",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Mini Wonder - Starfall Inversion: Syncing abilities grants +5% head and torso DMG reduction. Increased to 7.5% when airborne"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "polar_jelly",
-   "name": "Polar Jelly",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Polar Jelly - Starfall Inversion: Syncing abilities grants +5% Frost Elemental DMG. Increased to 7.5% when airborne"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "power_king",
-   "name": "Power King",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with it grants Max Load +25, Movement Speed -5%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "psychic_kid",
-   "name": "Psychic Kid",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Having it fight alongside grants Status DMG +5%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "run_fast",
-   "name": "Run Fast",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with this Deviation grants Movement Speed +5%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "save_energy",
-   "name": "Save Energy",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with it grants Stamina Consumption -10%, Movement Speed -5%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "sedentary",
-   "name": "Sedentary",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with it grants Max Load -8 when exploring Settlements"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "stay_indoors",
-   "name": "Stay Indoors",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with it grants Stamina +8% in Settlements"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "street_rascal",
-   "name": "Street Rascal",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with it grants Movement Speed +10% in Settlements"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "two_shift",
-   "name": "Two-Shift System",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with it grants Max Load +16 at daytime, and Movement Speed +12% at night"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "vegetative_calm",
-   "name": "Vegetative Calm",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with it grants Max Stamina +15%, Movement Speed -5%"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "voodoo_doll",
-   "name": "Voodoo Doll",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Voodoo Doll - Starfall Inversion: Syncing abilities restores 1 point of Deviant Power (Skill) every 8s. Restores 1.5 points while airborne"
-   ],
-   "fuse": null
-  },
-  {
-   "key": "wellbeing",
-   "name": "Wellbeing",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Syncing with this Deviation grants Max Stamina +10"
-   ],
-   "fuse": null
-  }
- ],
- "slot3": [
-  {
-   "key": "brute_force_rules",
-   "name": "Brute Force Rules",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "After syncing, your dodging or mid-air dashing under the Aero Leap whim will shatter any ores or trees you touch, but you won't get resources from them."
-   ],
-   "fuse": "Bear"
-  },
-  {
-   "key": "clean_hygienic",
-   "name": "Clean and Hygienic",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "After Syncing, the player's Sanity will automatically recover to 20% when it drops below that threshold"
-   ],
-   "fuse": "Sink"
-  },
-  {
-   "key": "eureka_moment",
-   "name": "Eureka Moment",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "After syncing, if you're attacked, the attacker is revealed and their Weapon DMG is reduced by 10% for 2s (60s cooldown)"
-   ],
-   "fuse": "Warm Lamp, Small Signal Light"
-  },
-  {
-   "key": "extra_load",
-   "name": "Extra Load",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "After syncing, Maximum Load is increased by 20"
-   ],
-   "fuse": "Any Carton"
-  },
-  {
-   "key": "feline",
-   "name": "Feline Creatures",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "After syncing, fall damage is reduced by 50%, and fractures are prevented"
-   ],
-   "fuse": "Leopard"
-  },
-  {
-   "key": "foul_symbiosis",
-   "name": "Foul Symbiosis",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "When they help kill Deviants, loot has a 10% chance to gain +1 Acid"
-   ],
-   "fuse": "Boar"
-  },
-  {
-   "key": "herbivore",
-   "name": "Herbivore",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "After syncing, nearby herbivores will no longer flee from the player"
-   ],
-   "fuse": "Deer or Goat"
-  },
-  {
-   "key": "knights",
-   "name": "Knights of the Round Table",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Slightly reduces damage taken by this Deviation"
-   ],
-   "fuse": "Any Table"
-  },
-  {
-   "key": "master_temp",
-   "name": "Master of Temperatures",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Player gain 10 Heat Resist within their territory"
-   ],
-   "fuse": "Any Fan"
-  },
-  {
-   "key": "mind_massage",
-   "name": "Mind Massage",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "After syncing, Sanity will gradually recover"
-   ],
-   "fuse": "Capybara"
-  },
-  {
-   "key": "moonlight",
-   "name": "Moonlight Assault",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "At night, Deviant Skill and Activity Recovery rates are increased"
-   ],
-   "fuse": "Wolf"
-  },
-  {
-   "key": "music_resonance",
-   "name": "Music Resonance",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Will not require radio for the deviation's securement box."
-   ],
-   "fuse": "Jukebox"
-  },
-  {
-   "key": "neon",
-   "name": "Neon Flicker",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "For every Deviation with the Neon Flicker trait in the territory, the max Mood (Activity) all Deviation increases by 1"
-   ],
-   "fuse": "Like"
-  },
-  {
-   "key": "nightmare",
-   "name": "Nightmare Waters",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "After syncing, Stamina consumption is significantly reduced while diving, and Oxygen is greatly increased"
-   ],
-   "fuse": "Crocodile"
-  },
-  {
-   "key": "polar_beast",
-   "name": "Polar Beast",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "When the environmental temperature is below 0C, their Attack increases by 10%"
-   ],
-   "fuse": "Polar Bear"
-  },
-  {
-   "key": "pollution",
-   "name": "Pollution Adaptation",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "After syncing, the player's Sanity drops 90% slower within the Pollution Zone"
-   ],
-   "fuse": "Modern Toilet"
-  },
-  {
-   "key": "precision",
-   "name": "Precision Moment",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "Increases Mood by 10 (Activity) and Deviant Energy (Skill) by 10 for all Deviations in the territory every hour (effect does not stack)"
-   ],
-   "fuse": "Desktop Electronic Clock"
-  },
-  {
-   "key": "top_grunt",
-   "name": "Top Grunt",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "After syncing, no Stamina is consumed during gathering activities like chopping trees or mining"
-   ],
-   "fuse": "Buffalo"
-  },
-  {
-   "key": "warm_flame",
-   "name": "Warm Flame",
-   "minLevel": null,
-   "maxLevel": null,
-   "effects": [
-    "After syncing, the Players Cold Resist increases by 10"
-   ],
-   "fuse": "Candelabra"
-  }
- ],
+ },
  "slot1ForDev": {
   "Butterfly Emissary": "butterfly",
   "By-the-Wind": "by_the_wind",

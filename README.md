@@ -1,12 +1,12 @@
 # Deviation Hunt — a Once Human catching game for Twitch chat
 
-Like Pokémon Community Game, but with Once Human's combat deviations. While a channel is live,
+Like Pokémon Community Game, but with Once Human's deviations (all 61: combat, crafting, territory). While a channel is live,
 a deviation "breaches containment" in chat every ~10 minutes; viewers type `!secure` to throw a
 Securement Unit. Collections, Starchrom and Units are global per Twitch user, so they follow a
 viewer to every channel that runs the game.
 
 Deviations, variations and skins are read live from
-https://ohwikiguide.com/Deviation_Main_Page (`combatData`, `deviationVariations`, `deviationSkins`)
+https://ohwikiguide.com/Deviation_Main_Page (`combatData`, `craftingData`, `territoryData`, `deviationVariations`, `deviationSkins`)
 every 6 hours — add a deviation to the wiki and it joins the game. `combat-fallback.json` is the
 snapshot used if the wiki is unreachable.
 
@@ -17,8 +17,8 @@ Mods: `!hunt spawn`, `!hunt interval <min>`, `!hunt off|on`, `!hunt status`, `!h
 In the bot's own channel: `!join`, `!leave`.
 
 ## Specimens & traits
-Every secured deviation is its own specimen with Deviant Power 1-5 and Mood 1-5 and three
-traits. Traits follow https://ohwikiguide.com/Deviation_Trait_Page exactly (read live, snapshot in
+Every secured deviation is its own specimen with a Skill Rating (Deviant Power) 1-5, an Activity
+Rating (Mood) 1-5 and three traits, using the Trait Page slots for its type (combat/crafting/territory). Traits follow https://ohwikiguide.com/Deviation_Trait_Page exactly (read live, snapshot in
 `traits-fallback.json`): Slot 1 = a Global trait or the deviation's own Slot 1 trait; Slot 2 = a
 generic combat trait or the deviation's own specific ones (never another deviation's); Slot 3 =
 a combat fused trait. A deviation's own trait that belongs to a variation or skin (e.g. Grumpy

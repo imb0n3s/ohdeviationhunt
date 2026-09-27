@@ -10,7 +10,7 @@ function isModOrOwner(ev) {
   return ev.chatter_user_id === ev.broadcaster_user_id || (ev.badges || []).some((b) => b.set_id === "moderator" || b.set_id === "broadcaster");
 }
 
-const HELP = () => `🎯 ${cfg.BOT_NAME}: combat deviations breach containment while the stream is live — type !secure to catch them. !units · !shop · !buy <unit> <n> · !daily · !dex · !scrap · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
+const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations breach containment while the stream is live — type !secure to catch them. !units · !shop · !buy <unit> <n> · !daily · !dex · !scrap · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
 
 function makeHandler(pool, spawns) {
   const botId = () => db.getBotAccount()?.user_id;
@@ -112,7 +112,7 @@ function makeHandler(pool, spawns) {
       case "!scrap": return reply(game.scrap(uid, login, name));
       case "!dev": {
         if (!args.length) return reply(`@${name} usage: !dev <deviation name>`);
-        return reply(game.info(args.join(" "), cfg.BASE_URL) || `@${name} no combat deviation matches "${args.join(" ")}".`);
+        return reply(game.info(args.join(" "), cfg.BASE_URL) || `@${name} no deviation matches "${args.join(" ")}".`);
       }
       case "!traits": case "!stats": return reply(game.specimenText(uid, login, name, args.join(" "), cfg.BASE_URL));
       case "!hunttop": case "!leaderboard": return reply(game.top(cfg.BASE_URL));

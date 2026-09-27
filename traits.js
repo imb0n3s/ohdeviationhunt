@@ -1,11 +1,11 @@
 // traits.js — Deviant Power / Mood ratings and the three trait slots, following the
 // wiki's Deviation Trait Page (https://ohwikiguide.com/Deviation_Trait_Page).
 //
-// The page's own filter rules for a COMBAT deviation are copied exactly:
+// The page's own filter rules are copied exactly, per category (combat / crafting / territory):
 //   Slot 1: any Global trait, or that deviation's own name-matched Slot 1 trait (slot1ForDev)
-//   Slot 2: any generic combat Slot 2 trait, or that deviation's own specific ones (slot2ForDev);
+//   Slot 2: any generic Slot 2 trait of its category, or that deviation's own specific ones (slot2ForDev);
 //           another deviation's specific Slot 2 trait is never allowed
-//   Slot 3: any combat Slot 3 (fused) trait
+//   Slot 3: any Slot 3 (fused) trait of its category
 // The page data (g_data1, c_data1-3, slot1ForDev, slot2ForDev) is pulled live and refreshed
 // with the deviation data; traits-fallback.json is the snapshot if the wiki is unreachable.
 const fs = require("fs");
@@ -46,17 +46,17 @@ function toTrait(key, [label, lines]) {
   return { key, name: m ? m[1] : label, minLevel: m ? +m[2] : null, maxLevel: m ? +m[3] : null, effects, fuse };
 }
 
+// the page's catMeta: which data objects hold slots 1-3 for each deviation category
+const CAT_DATA = { combat: ["c_data1", "c_data2", "c_data3"], crafting: ["cr_data1", "cr_data2", "cr_data3"], territory: ["data1", "data2", "data3"] };
+
 function parse(raw) {
   const obj = (n) => Object.entries(grab(raw, n)).map(([k, v]) => toTrait(k, v));
-  const t = {
-    global: obj("g_data1"),
-    slot1: obj("c_data1"),
-    slot2: obj("c_data2"),
-    slot3: obj("c_data3"),
-    slot1ForDev: grab(raw, "slot1ForDev"),
-    slot2ForDev: grab(raw, "slot2ForDev"),
-  };
-  if (!t.global.length || !t.slot2.length || !t.slot3.length) throw new Error("trait page parsed empty");
+  const t = { global: obj("g_data1"), cats: {}, slot1ForDev: grab(raw, "slot1ForDev"), slot2ForDev: grab(raw, "slot2ForDev") };
+  for (const [cat, [a, b, c]] of Object.entries(CAT_DATA)) {
+    t.cats[cat] = { slot1: obj(a), slot2: obj(b), slot3: obj(c) };
+    if (!t.cats[cat].slot2.length || !t.cats[cat].slot3.length) throw new Error(`trait page: ${cat} parsed empty`);
+  }
+  if (!t.global.length) throw new Error("trait page: no global traits");
   return t;
 }
 
@@ -67,10 +67,11 @@ async function refresh() {
     T = parse(await res.text());
     source = "wiki";
     try { fs.writeFileSync(FALLBACK, JSON.stringify(T, null, 1)); } catch {}
-    console.log(`[traits] ${T.global.length} global, ${T.slot1.length}/${T.slot2.length}/${T.slot3.length} combat slot traits from the wiki`);
+    console.log(`[traits] ${T.global.length} global + ${Object.entries(T.cats).map(([c, v]) => `${c} ${v.slot1.length}/${v.slot2.length}/${v.slot3.length}`).join(", ")} slot traits from the wiki`);
   } catch (e) {
     console.error("[traits] wiki load failed:", e.message);
     if (!T) { T = JSON.parse(fs.readFileSync(FALLBACK, "utf8")); source = "snapshot"; }
+    if (!T.cats) throw new Error("trait snapshot is from an old version");
   }
 }
 
@@ -82,16 +83,19 @@ function specificSlot2Keys() {
   return s;
 }
 
-function allowed(devName) {
+const catOf = (cat) => T.cats[cat] || T.cats.combat;
+
+function allowed(devName, cat = "combat") {
+  const C = catOf(cat);
   const own1 = T.slot1ForDev[devName];
   const own2 = T.slot2ForDev[devName] || [];
   const specific2 = specificSlot2Keys();
   return {
     slot1General: T.global,
-    slot1Own: own1 ? T.slot1.filter((t) => t.key === own1) : [],
-    slot2General: T.slot2.filter((t) => !specific2.has(t.key)),
-    slot2Own: T.slot2.filter((t) => own2.includes(t.key)),
-    slot3: T.slot3,
+    slot1Own: own1 ? C.slot1.filter((t) => t.key === own1) : [],
+    slot2General: C.slot2.filter((t) => !specific2.has(t.key)),
+    slot2Own: C.slot2.filter((t) => own2.includes(t.key)),
+    slot3: C.slot3,
   };
 }
 
@@ -149,8 +153,8 @@ function rollSlot(general, own, variant, chance) {
   return pick(general).key;
 }
 
-function rollSpecimen(devName, variant, variants = []) {
-  const a = allowed(devName);
+function rollSpecimen(devName, variant, variants = [], cat = "combat") {
+  const a = allowed(devName, cat);
   const t1 = rollSlot(a.slot1General, ownOptions(a.slot1Own, variants), variant, SPECIFIC_CHANCE.slot1);
   const t2 = rollSlot(a.slot2General, ownOptions(a.slot2Own, variants), variant, SPECIFIC_CHANCE.slot2);
   const t3 = pick(a.slot3).key;
@@ -161,10 +165,11 @@ function rollSpecimen(devName, variant, variants = []) {
 
 // ---------- display ----------
 
-function find(slot, key) {
+function find(slot, key, cat) {
   if (!T || !key) return null;
-  if (slot === 1) return T.global.find((t) => t.key === key) || T.slot1.find((t) => t.key === key);
-  return (slot === 2 ? T.slot2 : T.slot3).find((t) => t.key === key) || null;
+  const C = catOf(cat);
+  if (slot === 1) return T.global.find((t) => t.key === key) || C.slot1.find((t) => t.key === key);
+  return (slot === 2 ? C.slot2 : C.slot3).find((t) => t.key === key) || null;
 }
 
 // the effect line of a deviation's own trait that belongs to this specimen's variant
@@ -173,27 +178,27 @@ function ownLine(t, variant) {
   return t.effects.find((l) => variantMatches(lineLabel(l), variant)) || null;
 }
 
-function traitName(slot, key, level, variant) {
-  const t = find(slot, key);
+function traitName(slot, key, level, variant, cat) {
+  const t = find(slot, key, cat);
   if (!t) return key || "—";
   if (level) return `${t.name} ${level}`;
   const line = ownLine(t, variant);
   if (line) return lineLabel(line);                 // e.g. "Violet Robe"
   // an own trait that names no variant, e.g. Whalepup's "Don't Get Wet: While equipped..."
   const first = t.effects[0] || "";
-  if (T.slot1.includes(t) && first.includes(": ") && !lineLabel(first)) return first.split(":")[0].trim();
+  if (catOf(cat).slot1.includes(t) && first.includes(": ") && !lineLabel(first)) return first.split(":")[0].trim();
   return t.name.includes(" - ") ? t.name.split(" - ").pop().trim() : t.name;
 }
 
-function traitEffect(slot, key, level, variant) {
-  const t = find(slot, key);
+function traitEffect(slot, key, level, variant, cat) {
+  const t = find(slot, key, cat);
   if (!t) return "";
   if (slot === 1 && level && t.maxLevel) return (t.effects[level - 1] || "").replace(/^\d+\s+/, "");
   const line = ownLine(t, variant) || t.effects[0] || "";
-  const named = lineLabel(line) || (T.slot1.includes(t) && line.indexOf(": ") > 0 && line.indexOf(": ") < 40);
+  const named = lineLabel(line) || (catOf(cat).slot1.includes(t) && line.indexOf(": ") > 0 && line.indexOf(": ") < 40);
   return line.includes(": ") && named ? line.slice(line.indexOf(": ") + 2) : line;
 }
 
-const shortTraits = (s) => `${traitName(1, s.t1, s.t1_level, s.variant)} | ${traitName(2, s.t2, null, s.variant)} | ${traitName(3, s.t3)}`;
+const shortTraits = (s, cat) => `${traitName(1, s.t1, s.t1_level, s.variant, cat)} | ${traitName(2, s.t2, null, s.variant, cat)} | ${traitName(3, s.t3, null, null, cat)}`;
 
 module.exports = { refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS };

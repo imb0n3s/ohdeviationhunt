@@ -1,6 +1,6 @@
-// data.js — the combat deviations, pulled live from the wiki's Deviation Main Page.
+// data.js — every deviation (combat, crafting, territory), pulled live from the wiki's Deviation Main Page.
 //
-// The page keeps its data in JS objects (combatData, deviationVariations, deviationSkins).
+// The page keeps its data in JS objects (combatData, craftingData, territoryData, deviationVariations, deviationSkins).
 // We fetch the raw wikitext, cut those objects out and evaluate them in a sandbox.
 // Refreshes every few hours, so anything added to the wiki joins the game automatically.
 // If the wiki is unreachable we fall back to the snapshot in combat-fallback.json.
@@ -35,8 +35,17 @@ function grabObject(raw, name) {
 const strip = (s) => String(s).replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "");
 
+const CATEGORIES = { combat: "combatData", crafting: "craftingData", territory: "territoryData" };
+
 function parse(raw) {
-  const combat = grabObject(raw, "combatData");
+  const all = [];
+  for (const [category, objName] of Object.entries(CATEGORIES)) all.push(...parseCategory(raw, objName, category));
+  if (all.length < 5) throw new Error(`only ${all.length} deviations parsed`);
+  return all.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function parseCategory(raw, objName, category) {
+  const combat = grabObject(raw, objName);
   let vars = {}, skins = {};
   try { vars = grabObject(raw, "deviationVariations"); } catch {}
   try { skins = grabObject(raw, "deviationSkins"); } catch {}
@@ -57,10 +66,9 @@ function parse(raw) {
       ...(vars[v.title] || []).map((x) => ({ name: x.n, kind: "variation", img: x.u })),
       ...(skins[v.title] || []).map((x) => ({ name: x.n, kind: "skin", img: x.u })),
     ];
-    out.push({ id: slug(v.title) || id, name: v.title, rarity: rarityOf(v.title), img, fn: fnLine ? fnLine.replace(/^Function:\s*/, "") : "", drops, variants });
+    out.push({ id: slug(v.title) || id, name: v.title, category, rarity: rarityOf(v.title), img, fn: fnLine ? fnLine.replace(/^Function:\s*/, "") : "", drops, variants });
   }
-  if (out.length < 5) throw new Error(`only ${out.length} combat deviations parsed`);
-  return out.sort((a, b) => a.name.localeCompare(b.name));
+  return out;
 }
 
 async function refresh() {
@@ -72,7 +80,7 @@ async function refresh() {
     source = "wiki";
     loadedAt = Date.now();
     try { fs.writeFileSync(FALLBACK, JSON.stringify(deviations, null, 1)); } catch {}
-    console.log(`[data] ${deviations.length} combat deviations from the wiki`);
+    console.log(`[data] ${deviations.length} deviations from the wiki`);
   } catch (e) {
     console.error("[data] wiki load failed:", e.message);
     if (!deviations.length) {

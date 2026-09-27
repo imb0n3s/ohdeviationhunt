@@ -187,7 +187,7 @@ class Spawns {
           const variant = s.variant?.name || "";
           const had = db.q.getCatch.get(userId, s.dev.id, variant);
           db.q.addCatch.run(userId, s.dev.id, variant, s.variant?.kind || "base", Date.now(), bid);
-          const sp = traits.rollSpecimen(s.dev.name, variant, s.dev.variants.map((v) => v.name));
+          const sp = traits.rollSpecimen(s.dev.name, variant, s.dev.variants.map((v) => v.name), s.dev.category);
           db.q.addSpecimen.run({ user_id: userId, deviation: s.dev.id, variant, ...sp, caught_at: Date.now(), channel: bid });
           p.starchrom += reward + (had ? 0 : ECONOMY.newSpeciesBonus);
           if (!had) firsts.push(a.display);
@@ -279,7 +279,7 @@ function dex(userId, login, display, baseUrl) {
   const all = data.all();
   const totalVariants = all.reduce((s, d) => s + d.variants.length, 0);
   if (!c.total) return `@${display} your Deviadex is empty — wait for a breach and type !secure! Collection page: ${baseUrl}/u/${login}`;
-  return `@${display} 📖 Deviadex: ${c.species}/${all.length} combat deviations, ${c.variants}/${totalVariants} variants & skins, ${c.total} secured in total. ${baseUrl}/u/${login}`;
+  return `@${display} 📖 Deviadex: ${c.species}/${all.length} deviations, ${c.variants}/${totalVariants} variants & skins, ${c.total} secured in total. ${baseUrl}/u/${login}`;
 }
 
 function scrap(userId, login, display) {
@@ -319,7 +319,7 @@ function specimenText(userId, login, display, query, baseUrl) {
   let sp, dev;
   if (query) {
     dev = data.find(query);
-    if (!dev) return `@${display} no combat deviation matches "${query}".`;
+    if (!dev) return `@${display} no deviation matches "${query}".`;
     sp = db.q.specimensOf.get(userId, dev.id);
     if (!sp) return `@${display} you haven't secured a ${dev.name} yet.`;
   } else {
@@ -330,7 +330,7 @@ function specimenText(userId, login, display, query, baseUrl) {
   const count = db.q.specimensOf.all(userId, sp.deviation).length;
   const nm = `${dev?.name || sp.deviation}${sp.variant ? ` — ${sp.variant}` : ""}`;
   const label = query ? `best ${nm}${count > 1 ? ` (of ${count})` : ""}` : `latest: ${nm}`;
-  return `@${display} ${label} · Skill Rating ${sp.power}/5 · Activity Rating ${sp.mood}/5 · Traits: ${traits.shortTraits(sp)} ${baseUrl}/u/${login}`;
+  return `@${display} ${label} · Skill Rating ${sp.power}/5 · Activity Rating ${sp.mood}/5 · Traits: ${traits.shortTraits(sp, dev?.category)} ${baseUrl}/u/${login}`;
 }
 
 function top(baseUrl) {

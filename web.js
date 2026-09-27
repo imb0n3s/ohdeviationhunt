@@ -63,6 +63,12 @@ nav{display:flex;gap:18px;margin-bottom:24px;flex-wrap:wrap}nav a{color:var(--mu
 <footer>Deviation data from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">ohwikiguide.com</a> · <a href="${esc(cfg.TERMS_URL)}">Terms</a> · <a href="${esc(cfg.PRIVACY_URL)}">Privacy</a>${cfg.DISCORD_URL ? ` · <a href="${esc(cfg.DISCORD_URL)}">Discord</a>` : ""} · Fan-made, not affiliated with Starry Studio / NetEase.</footer></main></body></html>`;
 }
 const simple = (title, heading, text, extra = "") => page(title, `<h1>${esc(heading)}</h1><p>${text}</p>${extra}<p><a href="/">&larr; Back</a></p>`);
+const CAT_LABEL = { combat: "Combat", crafting: "Crafting", territory: "Territory" };
+// one heading + grid per deviation type
+const sections = (all, card) => Object.keys(CAT_LABEL).map((c) => {
+  const list = all.filter((d) => (d.category || "combat") === c);
+  return list.length ? `<h2>${CAT_LABEL[c]} <span style="color:var(--muted);font-weight:400">(${list.length})</span></h2><div class="grid">${list.map(card).join("")}</div>` : "";
+}).join("");
 const tierTag = (r) => `<div class="t" style="color:${TIERS[r].color}">${TIERS[r].label}</div>`;
 
 function landing() {
@@ -70,12 +76,12 @@ function landing() {
   const botName = bot?.login || "the bot";
   return page(cfg.BOT_NAME, `
 <h1>${esc(cfg.BOT_NAME)} — catch Once Human deviations in Twitch chat</h1>
-<p>While you're live, combat deviations breach containment in your chat. Viewers throw Securement Units with <kbd>!secure</kbd>, earn Starchrom, and build a Deviadex that follows them to every channel running the game. Every deviation, variation and skin comes straight from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">the OHWikiGuide Deviation page</a>, so new ones join the game as soon as they're on the wiki.</p>
+<p>While you're live, deviations breach containment in your chat. Viewers throw Securement Units with <kbd>!secure</kbd>, earn Starchrom, and build a Deviadex that follows them to every channel running the game. Every deviation, variation and skin comes straight from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">the OHWikiGuide Deviation page</a>, so new ones join the game as soon as they're on the wiki.</p>
 <div class="card">
   <a class="btn" href="/auth/twitch?action=add">Add ${esc(cfg.BOT_NAME)} to my channel</a><a class="btn secondary" href="/auth/twitch?action=remove">Remove it</a>
   <p style="margin-bottom:0">You log in with Twitch once; the bot only gets permission to read and post in your chat.${bot ? ` Prefer chat? Type <kbd>!join</kbd> in <a href="https://twitch.tv/${esc(bot.login)}">twitch.tv/${esc(bot.login)}</a>.` : ""} Then <kbd>/mod ${esc(botName)}</kbd> so it isn't rate-limited.</p>
 </div>
-<div class="stats"><div class="stat"><b>${fmt(db.countChannels())}</b>channels</div><div class="stat"><b>${fmt(db.countPlayers())}</b>Metas</div><div class="stat"><b>${fmt(db.totalCatches())}</b>deviations secured</div><div class="stat"><b>${data.all().length}</b>combat deviations</div></div>
+<div class="stats"><div class="stat"><b>${fmt(db.countChannels())}</b>channels</div><div class="stat"><b>${fmt(db.countPlayers())}</b>Metas</div><div class="stat"><b>${fmt(db.totalCatches())}</b>deviations secured</div><div class="stat"><b>${data.all().length}</b>deviations</div></div>
 
 <h2>Find a collection</h2>
 <form class="find" action="/u" method="get"><input name="login" placeholder="Twitch username" aria-label="Twitch username"><button>View</button></form>
@@ -103,7 +109,7 @@ ${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones [Skill 4/5 · Activi
 <h2>How catching works</h2>
 <div class="card"><table><tr><th>Rarity</th><th>Spawn weight</th><th>Base catch</th><th>Reward</th></tr>
 ${Object.values(TIERS).map((t) => `<tr><td style="color:${t.color};font-weight:600">${t.label}</td><td>${t.weight}%</td><td>${Math.round(t.catch * 100)}%</td><td>${t.reward} Starchrom</td></tr>`).join("")}</table>
-<p>Units multiply your odds: ${Object.values(UNITS).map((u) => `${u.label} ${u.price} Starchrom (${u.mult >= 100 ? "never fails" : `×${u.mult}`})`).join(" · ")}. About 1 in ${Math.round(1 / VARIANT.variation.chance)} breaches is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b> (×${VARIANT.skin.rewardMult}). Every deviation you secure is its own specimen with <b>Skill Rating 1–5</b> and <b>Activity Rating 1–5</b> (5 is rare; a perfect 5/5 gets a ⭐) and three traits rolled by the rules on the wiki's <a href="${esc(cfg.WIKI_BASE)}/Deviation_Trait_Page">Deviation Trait Page</a>: Slot 1 is a Global trait or that deviation's own trait, Slot 2 is a combat trait (deviation-specific ones only on their own deviation), Slot 3 is a fused trait. <kbd>!scrap</kbd> keeps your best Skill + Activity specimen of each. First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. Missed throws still salvage ${ECONOMY.escapeSalvage} Starchrom.</p></div>`);
+<p>Units multiply your odds: ${Object.values(UNITS).map((u) => `${u.label} ${u.price} Starchrom (${u.mult >= 100 ? "never fails" : `×${u.mult}`})`).join(" · ")}. About 1 in ${Math.round(1 / VARIANT.variation.chance)} breaches is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b> (×${VARIANT.skin.rewardMult}). Every deviation you secure is its own specimen with <b>Skill Rating 1–5</b> and <b>Activity Rating 1–5</b> (5 is rare; a perfect 5/5 gets a ⭐) and three traits rolled by the rules on the wiki's <a href="${esc(cfg.WIKI_BASE)}/Deviation_Trait_Page">Deviation Trait Page</a>: Slot 1 is a Global trait or that deviation's own trait, Slot 2 is a combat, crafting or territory trait matching the deviation's type (deviation-specific ones only on their own deviation, and variant-specific ones like Grumpy Bulb's Violet Robe only on that variant), Slot 3 is a fused trait. <kbd>!scrap</kbd> keeps your best Skill + Activity specimen of each. First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. Missed throws still salvage ${ECONOMY.escapeSalvage} Starchrom.</p></div>`);
 }
 
 function collectionPage(p) {
@@ -126,27 +132,28 @@ function collectionPage(p) {
   const totalVariants = all.reduce((s, d) => s + d.variants.length, 0);
   const pct = all.length ? Math.round((c.species / all.length) * 100) : 0;
   const units = JSON.parse(p.units || "{}");
-  const cards = all.map((d) => {
+  const cardFor = (d) => {
     const h = have.get(d.id);
     const vars = d.variants.length ? `<div class="vars">${d.variants.map((v) => `<span class="${h?.variants.has(v.name) ? "have" : ""}" title="${esc(v.kind)}">${esc(v.name)}</span>`).join("")}</div>` : "";
     const sp = best.get(d.id);
     const spHtml = sp ? `<div class="sp"><div class="pm"><span title="Skill Rating (Deviant Power)">Skill ${sp.power}/5</span><span title="Activity Rating (Mood)">Activity ${sp.mood}/5</span></div>
-<ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant))}</li>`).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
+<ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant, d.category))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant, d.category))}</li>`).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
     return `<div class="dev ${h ? "" : "missing"}">${h ? `<span class="c">×${h.count}</span>` : ""}<img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${tierTag(d.rarity)}${spHtml}${h ? vars : ""}</div>`;
-  }).join("");
+  };
+  const cards = sections(all, cardFor);
   return page(`${p.display}'s Deviadex`, `
 <h1>${esc(p.display)}'s Deviadex</h1>
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${fmt(c.total)}</b>secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
 <p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its three traits (hover a trait for what it does).</p>
 <p>Units: ${Object.entries(UNITS).map(([k, u]) => `${esc(u.label)} ${units[k] || 0}`).join(" · ")}</p>
-<div class="grid">${cards}</div>`);
+${cards}`);
 }
 
 function dexPage() {
   const all = data.all();
-  const cards = all.map((d) => `<div class="dev"><img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${esc(d.name)}</div>${tierTag(d.rarity)}<div class="vars">${d.variants.length ? `<span>${d.variants.length} variants/skins</span>` : ""}</div></div>`).join("");
-  return page("All combat deviations", `<h1>All combat deviations</h1><p>${all.length} deviations can breach containment, pulled from the <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">wiki</a>.</p><div class="grid">${cards}</div>`);
+  const cards = sections(all, (d) => `<div class="dev"><img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${esc(d.name)}</div>${tierTag(d.rarity)}<div class="vars">${d.variants.length ? `<span>${d.variants.length} variants/skins</span>` : ""}</div></div>`);
+  return page("All deviations", `<h1>All deviations</h1><p>All ${all.length} deviations can breach containment, pulled from the <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">wiki</a>.</p>${cards}`);
 }
 
 function topPage() {
