@@ -19,6 +19,7 @@ async function main() {
   const spawns = new Spawns((bid, text) => pool.send(bid, text));
   pool.spawns = spawns;
   pool.onChat = makeHandler(pool, spawns);
+  spawns.restore();
 
   // Which joined channels are live right now? Helix /streams takes up to 100 ids per call.
   let polling = false;

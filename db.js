@@ -73,6 +73,12 @@ CREATE TABLE IF NOT EXISTS specimens (
 );
 CREATE INDEX IF NOT EXISTS specimens_user ON specimens(user_id, deviation, variant);
 
+-- deviations currently loose in chat, so a restart/redeploy doesn't lose them
+CREATE TABLE IF NOT EXISTS active_spawns (
+  broadcaster_id TEXT PRIMARY KEY,
+  data           TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS spawn_log (
   id             INTEGER PRIMARY KEY AUTOINCREMENT,
   ts             INTEGER NOT NULL,
@@ -133,6 +139,9 @@ const q = {
   userSpecimens: db.prepare(`SELECT * FROM specimens WHERE user_id=? ORDER BY deviation, variant, (power+mood) DESC, power DESC, id DESC`),
   latestSpecimen: db.prepare(`SELECT * FROM specimens WHERE user_id=? ORDER BY id DESC LIMIT 1`),
   deleteSpecimen: db.prepare(`DELETE FROM specimens WHERE id=?`),
+  saveActive: db.prepare(`INSERT INTO active_spawns (broadcaster_id, data) VALUES (?, ?) ON CONFLICT(broadcaster_id) DO UPDATE SET data=excluded.data`),
+  deleteActive: db.prepare(`DELETE FROM active_spawns WHERE broadcaster_id=?`),
+  listActive: db.prepare(`SELECT * FROM active_spawns`),
   logSpawn: db.prepare(`INSERT INTO spawn_log (ts, broadcaster_id, deviation, variant, attempts, caught) VALUES (?, ?, ?, ?, ?, ?)`),
   totalSpawns: db.prepare(`SELECT COUNT(*) AS n FROM spawn_log`),
 };

@@ -103,6 +103,35 @@ class Spawns {
 
   noteChat(bid) { this.lastChat.set(bid, Date.now()); }
 
+  // ---- persistence: a loose deviation survives restarts/redeploys ----
+  persist(bid) {
+    const s = this.active.get(bid);
+    if (!s) return db.q.deleteActive.run(bid);
+    db.q.saveActive.run(bid, JSON.stringify({ dev: s.dev.id, variant: s.variant ? { name: s.variant.name, kind: s.variant.kind } : null, endsAt: s.endsAt, attempts: [...s.attempts], warned: [...s.warned] }));
+  }
+
+  // called once at startup: bring back loose deviations and finish any that ran out while we were down
+  restore() {
+    for (const row of db.q.listActive.all()) {
+      try {
+        const d = JSON.parse(row.data);
+        const dev = data.get(d.dev);
+        if (!dev) { db.q.deleteActive.run(row.broadcaster_id); continue; }
+        const variant = d.variant ? dev.variants.find((v) => v.name === d.variant.name) || d.variant : null;
+        const s = { dev, variant, endsAt: d.endsAt, attempts: new Map(d.attempts), warned: new Set(d.warned) };
+        const bid = row.broadcaster_id;
+        const wait = Math.max(2000, d.endsAt - Date.now());
+        s.timer = setTimeout(() => this.resolve(bid).catch((e) => console.error("[resolve]", e)), wait);
+        this.active.set(bid, s);
+    this.persist(bid);
+        console.log(`[spawn] restored ${bid}: ${spawnName(s)}, ${s.attempts.size} throws, resolving in ${Math.round(wait / 1000)}s`);
+      } catch (e) {
+        console.error("[spawn] restore failed:", e.message);
+        db.q.deleteActive.run(row.broadcaster_id);
+      }
+    }
+  }
+
   intervalMs(bid) {
     const ch = db.getChannel(bid);
     const min = ch?.interval_min || cfg.SPAWN_INTERVAL_MIN;
@@ -143,6 +172,7 @@ class Spawns {
     s.endsAt = Date.now() + cfg.SPAWN_WINDOW_SECONDS * 1000;
     s.timer = setTimeout(() => this.resolve(bid).catch((e) => console.error("[resolve]", e)), cfg.SPAWN_WINDOW_SECONDS * 1000);
     this.active.set(bid, s);
+    this.persist(bid);
     this.scheduleNext(bid, this.intervalMs(bid) + cfg.SPAWN_WINDOW_SECONDS * 1000);
     console.log(`[spawn] ${bid}: ${spawnName(s)} (${s.dev.rarity})${forced ? " [forced]" : ""}`);
     await this.send(bid, spawnAnnouncement(s));
@@ -167,6 +197,7 @@ class Spawns {
     p.attempts += 1;
     savePlayer(p);
     s.attempts.set(userId, { login, display, unit, isNew: p.isNew });
+    this.persist(bid);
     return p.isNew ? `@${display} welcome, Meta! You got ${ECONOMY.starterStarchrom} ${SC} + starter Securement Units. Unit thrown — results in a few seconds!` : null;
   }
 
@@ -174,6 +205,7 @@ class Spawns {
     const s = this.active.get(bid);
     if (!s) return;
     this.active.delete(bid);
+    db.q.deleteActive.run(bid);
     clearTimeout(s.timer);
     const name = spawnName(s);
     if (!s.attempts.size) {
