@@ -10,7 +10,7 @@ const ITEMS = [
   {
     id: "unit",
     name: "Securement Unit",
-    desc: "Throw one with !secure to try to catch a deviation spotted in the wild. Used up when you catch one; returned if it breaks free.",
+    desc: "Houses one deviation you catch with !secure. Only used when a catch succeeds — you need an empty one to throw.",
     price: UNITS.standard.price,
     grants: { units: { standard: 1 } },
     maxQty: 100,
@@ -48,6 +48,7 @@ function purchase(p, itemId, qty) {
   const cost = item.price * qty;
   if (p.starchrom < cost) return { ok: false, error: "not_enough", cost, have: p.starchrom, item };
   p.starchrom -= cost;
+  require("./db").addSpent(cost);
   applyGrants(p, item.grants, qty);
   return { ok: true, item, qty, cost };
 }

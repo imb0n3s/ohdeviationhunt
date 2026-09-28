@@ -45,7 +45,8 @@ const ECONOMY = {
   daily: { starchrom: 100, units: { standard: 1 } },
   dailyResetTz: "America/Chicago", // !daily resets at midnight in this time zone
   newSpeciesBonus: 100,   // first time you secure a deviation (or a new variant of it)
-  escapeSalvage: 3,       // Starchrom for a failed attempt, so trying is never a total loss
+  throwCost: 10,          // Starchrom per !secure throw. A Securement Unit is only used to HOUSE a caught deviation;
+                          // a throw that misses costs just the Starchrom.
   scrapValue: 0.5,
   destroyValue: 500,      // Starchrom for destroying one extra specimen from the panel (you always keep at least one)
   destroyUnits: 1,        // ...plus this many Securement Units back        // !scrap pays this fraction of the catch reward for each duplicate

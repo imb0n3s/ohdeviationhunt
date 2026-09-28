@@ -127,6 +127,7 @@ const q = {
   setSetting: db.prepare(`INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`),
 
   getPlayer: db.prepare(`SELECT * FROM players WHERE user_id=?`),
+  allPlayers: db.prepare(`SELECT user_id FROM players`),
   getPlayerByLogin: db.prepare(`SELECT * FROM players WHERE login=?`),
   insertPlayer: db.prepare(`INSERT INTO players (user_id, login, display, starchrom, units, created_at, last_unit_at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
   touchPlayer: db.prepare(`UPDATE players SET login=?, display=? WHERE user_id=?`),
@@ -196,6 +197,9 @@ module.exports = {
   countPlayers: () => q.countPlayers.get().n,
   totalCatches: () => q.totalCatches.get().n,
   totalSpawns: () => q.totalSpawns.get().n,
+  // running total of all Starchrom players have spent (throws + shop), kept in settings
+  starchromSpent: () => Number(q.getSetting.get("stat:starchrom_spent")?.value || 0),
+  addSpent: (n) => { if (n > 0) q.setSetting.run("stat:starchrom_spent", String(Number(q.getSetting.get("stat:starchrom_spent")?.value || 0) + n)); },
   leaderboard: (n = 10) => q.leaderboard.all(n),
   logSpawn: (bid, dev, variant, attempts, caught) => q.logSpawn.run(Date.now(), bid, dev, variant || "", attempts, caught),
 };

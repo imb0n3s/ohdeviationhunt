@@ -19,11 +19,11 @@
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
 # Watch a stream that has '''ohdeviationhunt''' in chat — [https://deviationhunt.ohwikiguide.com/channels see every channel running it].
-# When the bot posts ''"👀 A … has been spotted in the wild!"'', type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> within '''90 seconds'''. The bot replies with how many Securement Units you have left after that throw.
+# When the bot posts ''"👀 A … has been spotted in the wild!"'', type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> within '''90 seconds'''. Each throw costs 10 Starchrom; the bot replies with how many Securement Units you'll have left if you catch it.
 # When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
 # Check your collection any time with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!deviationbag</nowiki></span> or on your own page: <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>https://deviationhunt.ohwikiguide.com/u/</nowiki>''yourname''</span>
 
-Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> signs you up automatically — you start with '''5 Securement Units''' and '''200 Starchrom'''. Every <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> uses one Securement Unit, but if the deviation breaks free you get that unit back. You get one throw per spawn.
+Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> signs you up automatically — you start with '''5 Securement Units''' and '''200 Starchrom'''. Every <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> throw costs '''10 Starchrom'''. A Securement Unit is only used to '''house''' a deviation you catch — if it breaks free, you keep the unit. You need at least one empty unit to throw, and you get one throw per spawn.
 </div>
 </div>
 
@@ -38,7 +38,7 @@ Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Command
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Effect
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> || Throw a Securement Unit at the deviation that's loose in chat. Also works as <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!catch</nowiki></span>. One throw per person per spawn.
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> || Throw at the deviation that's loose in chat (10 Starchrom; a catch goes into one of your Securement Units). Also works as <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!catch</nowiki></span>. One throw per person per spawn.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!units</nowiki></span> || Show your Securement Units, Starchrom, and when your next free unit arrives. Also <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!inv</nowiki></span>.
 |-
@@ -105,7 +105,7 @@ Securement Units are the only thing you need to catch deviations — there is on
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Description
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Price
 |-
-| '''Securement Unit''' || Catches one deviation. Used up when <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> catches; returned if it breaks free. || 500 Starchrom
+| '''Securement Unit''' || Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw. || 500 Starchrom
 |}
 
 '''Ways to get Securement Units'''
@@ -133,7 +133,7 @@ Securement Units are the only thing you need to catch deviations — there is on
 <span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Starchrom</span>
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
-Starchrom is earned by securing deviations and spent on Securement Units.
+Starchrom is earned by securing deviations and spent on throws (10 per <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span>) and Securement Units.
 {| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | How
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Starchrom
@@ -145,8 +145,6 @@ Starchrom is earned by securing deviations and spent on Securement Units.
 | Securing a Skin || 200
 |-
 | First time you secure a deviation (or a new variant of it) || +100 bonus
-|-
-| A throw that misses || +3 salvage (and your Securement Unit back)
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || +100
 |-
@@ -324,7 +322,7 @@ To remove it, type <span style="background:#131c27; color:#7dd3fc; border:1px so
 
 '''Q: I typed !secure and the bot didn't answer.'''<br>A: That's normal — the bot stays quiet so chat isn't spammed. Results for everyone are posted when the 90-second window ends. It only replies right away if you're out of units.
 
-'''Q: Why wasn't my name in the result?'''<br>A: The result names who secured it and who it broke free from. If it broke free from you, your Securement Unit is returned and you get +3 Starchrom.
+'''Q: Why wasn't my name in the result?'''<br>A: The result names who secured it and who it broke free from. If it broke free from you, you only spent the 10 Starchrom throw — your Securement Unit stays empty and ready.
 
 '''Q: I'm out of Securement Units.'''<br>A: Claim <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> during a live stream: you get 1 right away and 1 free every hour for the rest of the day while you're in a live stream. Or <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy <amount></nowiki></span> for 500 Starchrom each. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!units</nowiki></span> shows when the next free one arrives.
 

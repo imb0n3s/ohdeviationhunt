@@ -79,15 +79,15 @@ out.push(`<div style="max-width:1000px; margin:0 auto;">
 
 out.push(box("Start", "How to Play", `
 # Watch a stream that has '''${BOT}''' in chat — [${URL}/channels see every channel running it].
-# When the bot posts ''"👀 A … has been spotted in the wild!"'', type ${cmd("!secure")} within '''${cfg.SPAWN_WINDOW_SECONDS} seconds'''. The bot replies with how many Securement Units you have left after that throw.
+# When the bot posts ''"👀 A … has been spotted in the wild!"'', type ${cmd("!secure")} within '''${cfg.SPAWN_WINDOW_SECONDS} seconds'''. Each throw costs ${ECONOMY.throwCost} ${SC}; the bot replies with how many Securement Units you'll have left if you catch it.
 # When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
 # Check your collection any time with ${cmd("!deviationbag")} or on your own page: ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)}
 
-Your first ${cmd("!secure")} signs you up automatically — you start with '''${ECONOMY.starterUnits.standard} Securement Units''' and '''${ECONOMY.starterStarchrom} ${SC}'''. Every ${cmd("!secure")} uses one Securement Unit, but if the deviation breaks free you get that unit back. You get one throw per spawn.
+Your first ${cmd("!secure")} signs you up automatically — you start with '''${ECONOMY.starterUnits.standard} Securement Units''' and '''${ECONOMY.starterStarchrom} ${SC}'''. Every ${cmd("!secure")} throw costs '''${ECONOMY.throwCost} ${SC}'''. A Securement Unit is only used to '''house''' a deviation you catch — if it breaks free, you keep the unit. You need at least one empty unit to throw, and you get one throw per spawn.
 `));
 
 out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
-  [cmd("!secure"), `Throw a Securement Unit at the deviation that's loose in chat. Also works as ${cmd("!catch")}. One throw per person per spawn.`],
+  [cmd("!secure"), `Throw at the deviation that's loose in chat (${ECONOMY.throwCost} ${SC}; a catch goes into one of your Securement Units). Also works as ${cmd("!catch")}. One throw per person per spawn.`],
   [cmd("!units"), `Show your Securement Units, ${SC}, and when your next free unit arrives. Also ${cmd("!inv")}.`],
   [cmd("!shop"), `Show what the shop sells and the prices. The Deviation Bag panel has the same shop in its '''Shop''' tab.`],
   [cmd("!buy <amount>"), `Buy Securement Units for ${fmt(unitPrice)} ${SC} each, e.g. ${cmd("!buy 2")}.`],
@@ -116,7 +116,7 @@ ${table(["Command", "Effect"], [
 out.push(box("Shop", "Securement Units", `
 Securement Units are the only thing you need to catch deviations — there is one kind, and it works on everything.
 ${table(["Item", "Description", "Price"], [
-  ["'''Securement Unit'''", "Catches one deviation. Used up when " + cmd("!secure") + " catches; returned if it breaks free.", `${fmt(unitPrice)} ${SC}`],
+  ["'''Securement Unit'''", "Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw.", `${fmt(unitPrice)} ${SC}`],
 ])}
 
 '''Ways to get Securement Units'''
@@ -130,13 +130,12 @@ ${table(["Source", "Amount"], [
 `));
 
 out.push(box("Currency", SC, `
-${SC} is earned by securing deviations and spent on Securement Units.
+${SC} is earned by securing deviations and spent on throws (${ECONOMY.throwCost} per ${cmd("!secure")}) and Securement Units.
 ${table(["How", SC], [
   ["Securing a deviation", Object.entries(TIERS).map(([k, t]) => `${tierTag(k)} ${t.reward}`).join(" · ")],
   ["Securing a Variation", `×${VARIANT.variation.rewardMult} the normal reward`],
   ["Securing a Skin", `${skinReward}`],
   ["First time you secure a deviation (or a new variant of it)", `+${ECONOMY.newSpeciesBonus} bonus`],
-  ["A throw that misses", `+${ECONOMY.escapeSalvage} salvage (and your Securement Unit back)`],
   [cmd("!daily"), `+${ECONOMY.daily.starchrom}`],
   [cmd("!scrap"), `${pct(ECONOMY.scrapValue)} of the catch reward per duplicate`],
   ["Destroying an extra specimen in the Twitch panel", `+${fmt(ECONOMY.destroyValue)} each, plus ${ECONOMY.destroyUnits} Securement Unit back (only while you own more than one)`],
@@ -210,7 +209,7 @@ To remove it, type ${cmd("!hunt leave")} in your chat or ${cmd("!leave")} in ${B
 const faq = [
   ["How do I start?", `Just type ${cmd("!secure")} the next time a deviation shows up. Your first throw signs you up with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}.`],
   ["I typed !secure and the bot didn't answer.", `That's normal — the bot stays quiet so chat isn't spammed. Results for everyone are posted when the ${cfg.SPAWN_WINDOW_SECONDS}-second window ends. It only replies right away if you're out of units.`],
-  ["Why wasn't my name in the result?", `The result names who secured it and who it broke free from. If it broke free from you, your Securement Unit is returned and you get +${ECONOMY.escapeSalvage} ${SC}.`],
+  ["Why wasn't my name in the result?", `The result names who secured it and who it broke free from. If it broke free from you, you only spent the ${ECONOMY.throwCost} ${SC} throw — your Securement Unit stays empty and ready.`],
   ["I'm out of Securement Units.", `Claim ${cmd("!daily")} during a live stream: you get 1 right away and 1 free every hour for the rest of the day while you're in a live stream. Or ${cmd("!buy <amount>")} for ${fmt(unitPrice)} ${SC} each. ${cmd("!units")} shows when the next free one arrives.`],
   ["Do better units exist?", `No — there's a single Securement Unit. Your odds depend only on the deviation's rarity and whether it's a variation or skin.`],
   ["Does my collection carry over between channels?", "Yes. It's tied to your Twitch account and shared across every channel running Deviation Hunt."],
