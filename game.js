@@ -3,7 +3,7 @@ const cfg = require("./config");
 const db = require("./db");
 const data = require("./data");
 const traits = require("./traits");
-const { TIERS, VARIANT, UNITS, ECONOMY, unitKey } = require("./rarity");
+const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, unitKey } = require("./rarity");
 
 const SC = "Starchrom";
 const shopCatalog = require("./shop");
@@ -22,6 +22,7 @@ function loadPlayer(userId, login, display) {
     p.login = login; p.display = display;
   }
   p.units = JSON.parse(p.units || "{}");
+  try { p.gloves = JSON.parse(p.gloves || "[]"); } catch { p.gloves = []; }
   // older saves had Advanced/Elite/Anomaly units: fold them into plain Securement Units
   for (const k of ["advanced", "elite", "anomaly"]) if (p.units[k]) { p.units.standard = (p.units.standard || 0) + p.units[k]; delete p.units[k]; }
   return p;
@@ -54,7 +55,7 @@ function nextUnitIn(p) {
 }
 
 function savePlayer(p) {
-  db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts, last_unit_at: p.last_unit_at || Date.now() });
+  db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts, last_unit_at: p.last_unit_at || Date.now(), gloves: JSON.stringify(p.gloves || []) });
 }
 
 // "303 Starchrom | 21 deviations (12/61 unique)" — used where the full unit list is too noisy
@@ -99,11 +100,18 @@ const ratingTag = (sp) => `Skill ${sp.power}/5 · Activity ${sp.mood}/5${sp.powe
 
 function spawnName(s) { return s.variant ? `${s.dev.name} — ${s.variant.name}` : s.dev.name; }
 
-function catchChance(s, unit) {
-  if (s.variant?.kind === "skin") return VARIANT.skin.catch;
+// the best gloves a player owns (null if none)
+function bestGlove(p) {
+  let best = null;
+  for (const g of GLOVES) if ((p.gloves || []).includes(g.id) && (!best || g.bonus > best.bonus)) best = g;
+  return best;
+}
+
+function catchChance(s, unit, bonus = 0) {
+  if (s.variant?.kind === "skin") return Math.min(ECONOMY.maxCatchChance, VARIANT.skin.catch + bonus);
   let c = TIERS[s.dev.rarity].catch * UNITS[unit].mult;
   if (s.variant) c *= VARIANT[s.variant.kind].catchMult;
-  return Math.min(ECONOMY.maxCatchChance, c);
+  return Math.min(ECONOMY.maxCatchChance, c + bonus);
 }
 
 function rewardFor(s) {
@@ -226,11 +234,12 @@ class Spawns {
     p.units[unit] -= 1; // held for this spawn: kept if you catch it (the deviation lives in it), returned if it breaks free
     p.attempts += 1;
     savePlayer(p);
-    s.attempts.set(userId, { login, display, unit, isNew: p.isNew });
+    const glove = bestGlove(p);
+    s.attempts.set(userId, { login, display, unit, isNew: p.isNew, bonus: glove ? glove.bonus : 0 });
     this.persist(bid);
     const left = p.units[unit];
     const leftTxt = `${left} Securement Unit${left === 1 ? "" : "s"} left`;
-    const throwTxt = `🎯 Threw at the ${spawnName(s)} (−${ECONOMY.throwCost} ${SC}). If you catch it, it goes into a Securement Unit — you'll have ${leftTxt}.`;
+    const throwTxt = `🎯 Threw at the ${spawnName(s)} (−${ECONOMY.throwCost} ${SC}). If you catch it, it goes into a Securement Unit — you'll have ${leftTxt}.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}%.` : ""}`;
     if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}. ${throwTxt} Type !daily for more, plus 1 free unit every hour this stream. Results when time runs out!`;
     return `@${display} ${throwTxt} Results when time runs out!`;
   }
@@ -252,7 +261,7 @@ class Spawns {
     db.tx(() => {
       for (const [userId, a] of s.attempts) {
         const p = loadPlayer(userId, a.login, a.display);
-        if (Math.random() < catchChance(s, a.unit)) {
+        if (Math.random() < catchChance(s, a.unit, a.bonus || 0)) {
           const variant = s.variant?.name || "";
           const had = db.q.getCatch.get(userId, s.dev.id, variant);
           db.q.addCatch.run(userId, s.dev.id, variant, s.variant?.kind || "base", Date.now(), bid);
@@ -322,11 +331,11 @@ function daily(userId, login, display, bid) {
 }
 
 function shop() {
-  const items = shopCatalog.ITEMS.map((i) => `${i.name}: ${fmt(i.price)} ${SC}`).join(" · ");
-  return `🛒 ${items} — buy with !buy <amount> (or in the Deviation Bag panel's Shop tab). !daily gives 1, and turns on 1 free every hour for the rest of that stream.`;
+  const items = shopCatalog.ITEMS.map((i) => `${i.name}${i.bonus ? ` (+${Math.round(i.bonus * 100)}% catch)` : ""}: ${fmt(i.price)} ${SC}`).join(" · ");
+  return `🛒 ${items} — !buy <amount> for units, !buy rustic / bbq / savior for gloves (or use the Deviation Bag panel's Shop tab). Gloves are yours forever; your best pair counts on every throw.`;
 }
 
-// !buy 3  /  !buy unit 3  — defaults to Securement Units
+// !buy 3  /  !buy unit 3  /  !buy savior — defaults to Securement Units
 function buy(userId, login, display, args) {
   const qtyWord = args.find((a) => /^\d+$/.test(a || ""));
   const itemWord = args.filter((a) => !/^\d+$/.test(a || "")).join(" ");
@@ -335,9 +344,15 @@ function buy(userId, login, display, args) {
   const qty = Math.max(1, Math.min(item.maxQty, parseInt(qtyWord || "1", 10) || 1));
   const p = loadPlayer(userId, login, display);
   const r = shopCatalog.purchase(p, item.id, qty);
-  const label = `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
-  if (!r.ok) return `@${display} ${label} ${qty > 1 ? "cost" : "costs"} ${fmt(item.price * qty)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations, !daily and !scrap.`;
+  if (!r.ok && r.error === "owned") return `@${display} you already own ${item.name}.`;
+  if (!r.ok && r.error === "outclassed") return `@${display} you already wear ${r.better.name} (+${Math.round(r.better.bonus * 100)}%), which beat ${item.name}.`;
+  const label = item.kind === "gloves" ? item.name : `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
+  if (!r.ok) return `@${display} ${label} ${qty > 1 || item.kind === "gloves" ? "cost" : "costs"} ${fmt(item.price * qty)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations, !daily and !scrap.`;
   savePlayer(p);
+  if (item.kind === "gloves") {
+    const best = bestGlove(p);
+    return `@${display} 🧤 bought ${item.name} for ${fmt(r.cost)} ${SC}! +${Math.round(item.bonus * 100)}% catch chance on every throw from now on. You have ${fmt(p.starchrom)} ${SC} left.`;
+  }
   return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units. ${bagText(p)}`;
 }
 
@@ -496,4 +511,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

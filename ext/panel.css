@@ -111,3 +111,9 @@ footer a { color:var(--accent); font-size:12px; }
 .mypage { display:inline-block; font-size:12px; font-weight:600; color:var(--accent); text-decoration:none; margin-top:3px; }
 .mypage:hover { text-decoration:underline; }
 .mypage[hidden] { display:none; }
+.sect { color:var(--muted); font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; margin:12px 2px 6px; }
+.item.glove { border-color:var(--gc); box-shadow:inset 3px 0 0 var(--gc); }
+.item.glove .in { color:var(--gc); }
+.item.glove .rar { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; padding:1px 6px; border-radius:99px; background:var(--gc); color:#0d1319; margin-left:4px; vertical-align:middle; }
+.gicon { width:56px; height:56px; flex:none; display:flex; align-items:center; justify-content:center; font-size:32px; border-radius:10px; background:radial-gradient(circle, color-mix(in srgb, var(--gc) 45%, transparent), transparent 70%); border:1px solid var(--gc); }
+.btn.buy.owned { background:transparent; color:var(--gc); border:1px solid var(--gc); opacity:1; }

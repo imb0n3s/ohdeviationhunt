@@ -8,7 +8,7 @@ for (const k of ["TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET", "ADMIN_KEY", "SESSI
 process.env.BASE_URL ||= "https://deviationhunt.ohwikiguide.com";
 const path = require("path");
 const cfg = require("../config");
-const { TIERS, VARIANT, UNITS, ECONOMY, rarityOf } = require("../rarity");
+const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, rarityOf } = require("../rarity");
 const { RATING_WEIGHTS, SLOT_CHANCE } = require("../traits");
 const devs = require(path.join(__dirname, "..", "combat-fallback.json"));
 
@@ -113,11 +113,13 @@ ${table(["Command", "Effect"], [
 ])}
 `));
 
-out.push(box("Shop", "Securement Units", `
-Securement Units are the only thing you need to catch deviations — there is one kind, and it works on everything.
+out.push(box("Shop", "Securement Units & Gloves", `
+Buy with ${cmd("!buy")} in chat or in the Deviation Bag panel's '''Shop''' tab.
 ${table(["Item", "Description", "Price"], [
-  ["'''Securement Unit'''", "Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw.", `${fmt(unitPrice)} ${SC}`],
+  ["'''Securement Unit'''", "Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw. " + cmd("!buy <amount>"), `${fmt(unitPrice)} ${SC}`],
+  ...GLOVES.map((g) => [`'''<span style="color:${g.color};">${g.name}</span>''' <small>(${g.rarity})</small>`, `+${Math.round(g.bonus * 100)}% catch chance on every throw. Bought once and kept forever. ${cmd("!buy " + g.id)}`, `${fmt(g.price)} ${SC}`]),
 ])}
+Gloves don't stack — only your best pair counts, so you can't buy a pair weaker than one you already own. The bonus is added to the catch chance (a ${pct(TIERS.legendary.catch)} Legendary becomes ${pct(TIERS.legendary.catch + GLOVES[GLOVES.length - 1].bonus)} with ${GLOVES[GLOVES.length - 1].name}), still capped at ${pct(ECONOMY.maxCatchChance)}.
 
 '''Ways to get Securement Units'''
 ${table(["Source", "Amount"], [

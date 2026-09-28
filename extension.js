@@ -42,7 +42,7 @@ function verifyExtJwt(token) {
 }
 
 // balances the panel shows
-const playerInfo = (p) => ({ login: p.login, display: p.display, starchrom: p.starchrom, units: p.units.standard || 0, nextUnitIn: game.nextUnitIn(p), hourly: game.hourlyStatus(p), now: Date.now() });
+const playerInfo = (p) => ({ login: p.login, display: p.display, starchrom: p.starchrom, units: p.units.standard || 0, nextUnitIn: game.nextUnitIn(p), hourly: game.hourlyStatus(p), now: Date.now(), gloves: p.gloves || [], glove: game.bestGlove(p)?.id || null });
 
 const specView = (x, d) => ({
   id: x.id, variant: x.variant || null, skill: x.power, activity: x.mood, caughtAt: x.caught_at,

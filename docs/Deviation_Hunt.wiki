@@ -96,17 +96,24 @@ Only the broadcaster and moderators can use these.
 <div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
 <div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
 <span style="color:#0ea5e9; font-weight:800;">Shop</span>
-<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Securement Units</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Securement Units & Gloves</span>
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
-Securement Units are the only thing you need to catch deviations — there is one kind, and it works on everything.
+Buy with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy</nowiki></span> in chat or in the Deviation Bag panel's '''Shop''' tab.
 {| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Item
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Description
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Price
 |-
-| '''Securement Unit''' || Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw. || 500 Starchrom
+| '''Securement Unit''' || Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy <amount></nowiki></span> || 500 Starchrom
+|-
+| '''<span style="color:#4ade80;">Rustic Gloves</span>''' <small>(Basic)</small> || +3% catch chance on every throw. Bought once and kept forever. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy rustic</nowiki></span> || 1,000 Starchrom
+|-
+| '''<span style="color:#c084fc;">BBQ Gloves</span>''' <small>(Uncommon)</small> || +5% catch chance on every throw. Bought once and kept forever. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy bbq</nowiki></span> || 1,750 Starchrom
+|-
+| '''<span style="color:#fbbf24;">Savior Gloves</span>''' <small>(Legendary)</small> || +9% catch chance on every throw. Bought once and kept forever. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy savior</nowiki></span> || 3,000 Starchrom
 |}
+Gloves don't stack — only your best pair counts, so you can't buy a pair weaker than one you already own. The bonus is added to the catch chance (a 12% Legendary becomes 21% with Savior Gloves), still capped at 95%.
 
 '''Ways to get Securement Units'''
 {| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"

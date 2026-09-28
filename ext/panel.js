@@ -198,7 +198,9 @@
     }
     var html = '<div class="wallet"><div><b>' + money(p.starchrom) + '</b>Starchrom</div><div><b>' + p.units + '</b>Securement Units</div><div><b>' + esc(p.nextUnitIn || "—") + '</b>next free unit</div></div>';
     if (notice) html += '<div class="notice ' + notice.kind + '">' + esc(notice.text) + '</div>';
+    var gl = (bag.shop || []).filter(function (it) { return it.kind === "gloves"; });
     html += (bag.shop || []).map(function (it) {
+      if (it.kind === "gloves") return gloveHtml(it, p, it === gl[0]);
       var q = cart[it.id] || 1, total = q * it.price, afford = p.starchrom >= total;
       var maxAfford = Math.min(it.maxQty, Math.floor(p.starchrom / it.price));
       return '<div class="item" data-id="' + esc(it.id) + '">' +
@@ -225,6 +227,19 @@
     });
   }
 
+  function gloveHtml(it, p, first) {
+    var owned = (p.gloves || []).indexOf(it.glove) >= 0, active = p.glove === it.glove, afford = p.starchrom >= it.price;
+    var better = !owned && (bag.shop || []).some(function (g) { return g.kind === "gloves" && g.glove === p.glove && g.bonus > it.bonus; });
+    var btn = owned ? '<button class="btn buy owned" disabled>' + (active ? "✓ Owned · active" : "✓ Owned") + '</button>'
+      : better ? '<button class="btn buy owned" disabled>You wear better gloves</button>'
+      : '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? "Buy for " + money(it.price) + " Starchrom" : "Need " + money(it.price - p.starchrom) + " more Starchrom") + '</button>';
+    return (first ? '<div class="sect">Gloves</div>' : "") +
+      '<div class="item glove' + (active ? " active" : "") + '" data-id="' + esc(it.id) + '" style="--gc:' + esc(it.color || "#9fb0c0") + '">' +
+      '<div class="ih"><div class="gicon">🧤</div><div><div class="in">' + esc(it.name) + ' <span class="rar">' + esc(it.rarity || "") + '</span></div>' +
+      '<div class="ip">+' + Math.round((it.bonus || 0) * 100) + '% catch chance · ' + money(it.price) + ' Starchrom</div></div></div>' +
+      '<div class="id">' + esc(it.desc) + '</div>' + btn + '</div>';
+  }
+
   function findItem(id) { for (var i = 0; i < bag.shop.length; i++) if (bag.shop[i].id === id) return bag.shop[i]; return null; }
 
   function buy(it, q) {
@@ -235,9 +250,11 @@
       .then(function (res) {
         busy = false;
         if (res.j.player) bag.player = res.j.player;
-        if (res.ok) { notice = { kind: "ok", text: "Bought " + res.j.qty + " " + it.name + (res.j.qty > 1 ? "s" : "") + " for " + money(res.j.cost) + " Starchrom." }; cart[it.id] = 1; }
+        if (res.ok) { notice = { kind: "ok", text: "Bought " + (it.kind === "gloves" ? it.name : res.j.qty + " " + it.name + (res.j.qty > 1 ? "s" : "")) + " for " + money(res.j.cost) + " Starchrom." }; cart[it.id] = 1; }
         else if (res.j.error === "needs_identity") return askIdentity();
         else if (res.j.error === "not_enough") notice = { kind: "err", text: "Not enough Starchrom for that." };
+        else if (res.j.error === "outclassed") notice = { kind: "err", text: "You already wear better gloves." };
+        else if (res.j.error === "owned") notice = { kind: "err", text: "You already own " + it.name + "." };
         else notice = { kind: "err", text: res.j.message || "Couldn’t complete that purchase. Try again." };
         render();
       })

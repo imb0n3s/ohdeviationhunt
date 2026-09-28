@@ -217,7 +217,7 @@ function collectionPage(p) {
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${fmt(c.total)}</b>secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
 <p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
-<p>Securement Units: <b>${units.standard || 0}</b> · next free unit: ${game.nextUnitIn(live)} (1 every hour while you're in a live stream, after today's <kbd>!daily</kbd>)</p>
+<p>Securement Units: <b>${units.standard || 0}</b>${(() => { const g = game.bestGlove(live); return g ? ` · 🧤 <b style="color:${g.color}">${esc(g.name)}</b> (+${Math.round(g.bonus * 100)}% catch)` : ""; })()} · next free unit: ${game.nextUnitIn(live)} (1 every hour while you're in a live stream, after today's <kbd>!daily</kbd>)</p>
 ${cards}`);
 }
 

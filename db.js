@@ -102,6 +102,7 @@ try { db.exec(`ALTER TABLE players ADD COLUMN last_active_at INTEGER NOT NULL DE
 try { db.exec(`ALTER TABLE players ADD COLUMN daily_channel TEXT`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN daily_stream TEXT`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN active_stream TEXT`); } catch {}
+try { db.exec(`ALTER TABLE players ADD COLUMN gloves TEXT NOT NULL DEFAULT '[]'`); } catch {}
 // !daily claims (one per player per day, Central time; tied to the stream it was claimed in)
 db.exec(`CREATE TABLE IF NOT EXISTS daily_claims (user_id TEXT NOT NULL, stream_id TEXT NOT NULL, channel TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (user_id, stream_id))`);
 
@@ -138,7 +139,7 @@ const q = {
   setDailyStream: db.prepare(`UPDATE players SET daily_channel=?, daily_stream=? WHERE user_id=?`),
   // players whose next hourly free unit is due (eligibility is checked in game.js)
   dueHourly: db.prepare(`SELECT * FROM players WHERE active_stream IS NOT NULL AND last_unit_at<=?`),
-  savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at WHERE user_id=@user_id`),
+  savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at, gloves=@gloves WHERE user_id=@user_id`),
   countPlayers: db.prepare(`SELECT COUNT(*) AS n FROM players`),
 
   addCatch: db.prepare(`INSERT INTO catches (user_id, deviation, variant, kind, count, first_at, first_channel) VALUES (?, ?, ?, ?, 1, ?, ?)
