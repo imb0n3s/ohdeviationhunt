@@ -4,7 +4,9 @@
 // To add an item: add an entry to ITEMS. `grants` says what one purchase gives; add a new
 // grant type in applyGrants() if it's something the game doesn't track yet.
 //   icon: a file bundled in the extension zip (ext/), or an https://ohwikiguide.com/ image
-const { UNITS, GLOVES } = require("./rarity");
+const { UNITS, GLOVES, ECONOMY } = require("./rarity");
+// most Securement Units this player can hold
+const unitCap = (p) => ECONOMY.unitCap + (p.extra_cap || 0);
 
 const ITEMS = [
   {
@@ -67,6 +69,10 @@ function purchase(p, itemId, qty) {
   }
   qty = Math.floor(Number(qty));
   if (!(qty >= 1 && qty <= item.maxQty)) return { ok: false, error: "bad_qty", max: item.maxQty };
+  if (item.grants.units) {
+    const room = Math.max(0, unitCap(p) - (p.units.standard || 0));
+    if (qty > room) return { ok: false, error: room ? "too_many" : "full", room, cap: unitCap(p), item };
+  }
   const cost = item.price * qty;
   if (p.starchrom < cost) return { ok: false, error: "not_enough", cost, have: p.starchrom, item };
   p.starchrom -= cost;
@@ -78,4 +84,4 @@ function purchase(p, itemId, qty) {
 // what the panel needs to draw the shop
 const catalog = () => ITEMS.map(({ id, kind, glove, name, desc, price, maxQty, icon, bonus, rarity, color }) => ({ id, kind: kind || "item", glove, name, desc, price, maxQty, icon, bonus, rarity, color }));
 
-module.exports = { ITEMS, find, purchase, catalog };
+module.exports = { ITEMS, find, purchase, catalog, unitCap };

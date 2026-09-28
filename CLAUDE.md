@@ -30,3 +30,6 @@
   Save All → back to Hosted Test (reload/confirm) → add Bits to the wiki page.
   B's call (2026-09-28): DON'T switch Bits on until it takes real Bits — i.e. after the extension is
   approved/released (in Local/Hosted Test Twitch makes Bits purchases free). Onboarding was submitted 2026-09-28.
+- Unit cap: ECONOMY.unitCap = 100 Securement Units (+ players.extra_cap). B wants extra capacity sold as
+  blocks of Securement Pods for 50 Bits each once Bits can take real Bits (block size not decided yet — ask B).
+  Add it as a BITS_PACKS-style product that raises extra_cap, same receipt flow as /ext/bits/complete.

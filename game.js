@@ -101,6 +101,9 @@ const ratingTag = (sp) => `${sp.power}/${sp.mood}${sp.power === 5 && sp.mood ===
 function spawnName(s) { return s.variant ? `${s.dev.name} — ${s.variant.name}` : s.dev.name; }
 
 // the best gloves a player owns (null if none)
+const unitCap = (p) => shopCatalog.unitCap(p);
+const unitRoom = (p) => Math.max(0, unitCap(p) - (p.units.standard || 0));
+
 function bestGlove(p) {
   let best = null;
   for (const g of GLOVES) if ((p.gloves || []).includes(g.id) && (!best || g.bonus > best.bonus)) best = g;
@@ -319,7 +322,7 @@ function daily(userId, login, display, bid) {
   p.last_daily = Date.now();
   p.starchrom += ECONOMY.daily.starchrom;
   const got = [];
-  for (const [k, n] of Object.entries(ECONOMY.daily.units)) { p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
+  for (const [k, n0] of Object.entries(ECONOMY.daily.units)) { const n = Math.min(n0, unitRoom(p)); if (!n) { got.push(`no Securement Unit (you're full at ${unitCap(p)})`); continue; } p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
   p.last_unit_at = Date.now();          // first free hourly unit comes an hour after !daily
   db.tx(() => {
     savePlayer(p);
@@ -344,6 +347,8 @@ function buy(userId, login, display, args) {
   const p = loadPlayer(userId, login, display);
   const r = shopCatalog.purchase(p, item.id, qty);
   if (!r.ok && r.error === "owned") return `@${display} you already own ${item.name}.`;
+  if (!r.ok && r.error === "full") return `@${display} your Securement Units are full (${r.cap}/${r.cap}) — catch something to free one up.`;
+  if (!r.ok && r.error === "too_many") return `@${display} you can hold ${r.cap} Securement Units, so you can buy up to ${r.room} more right now.`;
   if (!r.ok && r.error === "outclassed") return `@${display} you already wear ${r.better.name} (+${Math.round(r.better.bonus * 100)}%), which beat ${item.name}.`;
   const label = item.kind === "gloves" ? item.name : `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
   if (!r.ok) return `@${display} ${label} ${qty > 1 || item.kind === "gloves" ? "cost" : "costs"} ${fmt(item.price * qty)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations, !daily and !scrap.`;
@@ -352,7 +357,7 @@ function buy(userId, login, display, args) {
     const best = bestGlove(p);
     return `@${display} 🧤 bought ${item.name} for ${fmt(r.cost)} ${SC}! +${Math.round(item.bonus * 100)}% catch chance on every throw from now on. You have ${fmt(p.starchrom)} ${SC} left.`;
   }
-  return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units. ${bagText(p)}`;
+  return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0}/${unitCap(p)} Securement Units. ${bagText(p)}`;
 }
 
 // Destroy one specimen for Starchrom. Only allowed while you own more than one of that deviation,
@@ -362,17 +367,18 @@ function destroySpecimen(userId, specimenId) {
   if (!sp) return { ok: false, error: "not_found" };
   if (db.q.countDeviation.get(userId, sp.deviation).n <= 1) return { ok: false, error: "last_one" };
   const row = db.q.getPlayer.get(userId);
-  let p;
+  let p, gotUnits = 0;
   db.tx(() => {
     p = loadPlayer(userId, row.login, row.display);
     db.q.deleteSpecimen.run(sp.id);
     db.q.decCatch.run(userId, sp.deviation, sp.variant);
     db.q.dropEmptyCatch.run(userId, sp.deviation, sp.variant);
     p.starchrom += ECONOMY.destroyValue;
-    p.units.standard = (p.units.standard || 0) + ECONOMY.destroyUnits;
+    gotUnits = Math.min(ECONOMY.destroyUnits, unitRoom(p));
+    p.units.standard = (p.units.standard || 0) + gotUnits;
     savePlayer(p);
   })();
-  return { ok: true, gained: ECONOMY.destroyValue, units: ECONOMY.destroyUnits, deviation: sp.deviation, p };
+  return { ok: true, gained: ECONOMY.destroyValue, units: gotUnits, deviation: sp.deviation, p };
 }
 
 // ---------------- hourly free units ----------------
@@ -388,8 +394,9 @@ function unitNotices(now = Date.now()) {
     const p = loadPlayer(row.user_id, row.login, row.display);
     // away for a while (not in any live stream)? start a fresh hour instead of paying for the gap
     if (now - p.last_unit_at > 2 * HOUR) { p.last_unit_at = now; savePlayer(p); continue; }
-    p.units.standard = (p.units.standard || 0) + ECONOMY.hourlyUnits;
     p.last_unit_at += HOUR;
+    if (!unitRoom(p)) { savePlayer(p); continue; } // full at the cap: the hour passes quietly
+    p.units.standard = (p.units.standard || 0) + Math.min(ECONOMY.hourlyUnits, unitRoom(p));
     savePlayer(p);
     if (!byChannel.has(ch)) byChannel.set(ch, []);
     byChannel.get(ch).push({ name: `@${p.display}`, got: ECONOMY.hourlyUnits });
@@ -510,4 +517,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { unitCap, unitRoom, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

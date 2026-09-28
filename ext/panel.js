@@ -196,20 +196,22 @@
       el('<div class="msg"><p>You haven’t played yet.</p><p>Type <b>!secure</b> in chat the next time a deviation shows up — you’ll start with 5 Securement Units and 200 Starchrom, then you can shop here.</p></div>');
       return;
     }
-    var html = '<div class="wallet"><div><b>' + money(p.starchrom) + '</b>Starchrom</div><div><b>' + p.units + '</b>Securement Units</div><div><b>' + esc(p.nextUnitIn || "—") + '</b>next free unit</div></div>';
+    var html = '<div class="wallet"><div><b>' + money(p.starchrom) + '</b>Starchrom</div><div><b>' + p.units + (p.unitCap ? '<small>/' + p.unitCap + '</small>' : '') + '</b>Securement Units</div><div><b>' + esc(p.nextUnitIn || "—") + '</b>next free unit</div></div>';
     if (notice) html += '<div class="notice ' + notice.kind + '">' + esc(notice.text) + '</div>';
     var gl = (bag.shop || []).filter(function (it) { return it.kind === "gloves"; });
     html += (bag.shop || []).map(function (it) {
       if (it.kind === "gloves") return gloveHtml(it, p, it === gl[0]);
-      var q = cart[it.id] || 1, total = q * it.price, afford = p.starchrom >= total;
-      var maxAfford = Math.min(it.maxQty, Math.floor(p.starchrom / it.price));
+      var room = unitRoom(p), lim = Math.min(it.maxQty, room);
+      var q = Math.min(cart[it.id] || 1, Math.max(1, lim)), total = q * it.price, afford = p.starchrom >= total;
+      var maxAfford = Math.min(lim, Math.floor(p.starchrom / it.price));
       return '<div class="item" data-id="' + esc(it.id) + '">' +
         '<div class="ih"><img src="' + esc(it.icon) + '" alt=""><div><div class="in">' + esc(it.name) + '</div><div class="ip">' + money(it.price) + ' Starchrom each</div></div></div>' +
         '<div class="id">' + esc(it.desc) + '</div>' +
         '<div class="qty"><button data-act="dec">−</button><span>' + q + '</span><button data-act="inc">+</button>' +
         [5, 10].map(function (n) { return '<button data-act="set" data-n="' + n + '" class="quick">' + n + '</button>'; }).join("") +
         (maxAfford > 1 ? '<button data-act="set" data-n="' + maxAfford + '" class="quick">Max</button>' : "") + '</div>' +
-        '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? "Buy " + q + " for " + money(total) + " Starchrom" : "Need " + money(total - p.starchrom) + " more Starchrom") + '</button>' +
+        (room < 1 ? '<button class="btn buy" disabled>Securement Units full (' + p.unitCap + ')</button>' :
+        '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? "Buy " + q + " for " + money(total) + " Starchrom" : "Need " + money(total - p.starchrom) + " more Starchrom") + '</button>') +
         '</div>';
     }).join("");
     html += bitsHtml();
@@ -221,9 +223,9 @@
     Array.prototype.forEach.call(document.querySelectorAll(".item:not(.bits) button"), function (b) {
       b.onclick = function () {
         var id = b.closest(".item").getAttribute("data-id"), it = findItem(id), q = cart[id] || 1, act = b.getAttribute("data-act");
-        if (act === "inc") q = Math.min(it.maxQty, q + 1);
+        if (act === "inc") q = Math.min(it.maxQty, unitRoom(bag.player), q + 1);
         if (act === "dec") q = Math.max(1, q - 1);
-        if (act === "set") q = Math.max(1, Math.min(it.maxQty, +b.getAttribute("data-n")));
+        if (act === "set") q = Math.max(1, Math.min(it.maxQty, unitRoom(bag.player), +b.getAttribute("data-n")));
         cart[id] = q;
         if (act === "buy") return buy(it, q);
         notice = null; renderShop();
@@ -284,6 +286,8 @@
       '<div class="id">' + esc(it.desc) + '</div>' + btn + '</div>';
   }
 
+  function unitRoom(p) { return p.unitCap ? Math.max(0, p.unitCap - p.units) : 100; }
+
   function findItem(id) { for (var i = 0; i < bag.shop.length; i++) if (bag.shop[i].id === id) return bag.shop[i]; return null; }
 
   function buy(it, q) {
@@ -297,6 +301,7 @@
         if (res.ok) { notice = { kind: "ok", text: "Bought " + (it.kind === "gloves" ? it.name : res.j.qty + " " + it.name + (res.j.qty > 1 ? "s" : "")) + " for " + money(res.j.cost) + " Starchrom." }; cart[it.id] = 1; }
         else if (res.j.error === "needs_identity") return askIdentity();
         else if (res.j.error === "not_enough") notice = { kind: "err", text: "Not enough Starchrom for that." };
+        else if (res.j.error === "full" || res.j.error === "too_many") notice = { kind: "err", text: "You can hold up to " + (res.j.player && res.j.player.unitCap || 100) + " Securement Units." };
         else if (res.j.error === "outclassed") notice = { kind: "err", text: "You already wear better gloves." };
         else if (res.j.error === "owned") notice = { kind: "err", text: "You already own " + it.name + "." };
         else notice = { kind: "err", text: res.j.message || "Couldn’t complete that purchase. Try again." };

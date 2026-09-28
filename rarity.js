@@ -45,6 +45,7 @@ const ECONOMY = {
   daily: { starchrom: 100, units: { standard: 1 } },
   dailyResetTz: "America/Chicago", // !daily resets at midnight in this time zone
   newSpeciesBonus: 100,   // first time you secure a deviation (or a new variant of it)
+  unitCap: 100,           // most Securement Units a player can hold (+ players.extra_cap, for future Bits capacity blocks)
   throwCost: 10,          // Starchrom per !secure throw. A Securement Unit is only used to HOUSE a caught deviation;
                           // a throw that misses costs just the Starchrom.
   scrapValue: 0.5,

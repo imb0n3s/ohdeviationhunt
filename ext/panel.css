@@ -122,3 +122,4 @@ footer a { color:var(--accent); font-size:12px; }
 .btn.bitsbuy { background:linear-gradient(135deg,#9146ff,#772ce8); color:#fff; padding:8px 6px; line-height:1.2; font-size:12px; }
 .btn.bitsbuy b { font-size:15px; display:block; }
 .btn.bitsbuy span { display:block; font-size:11px; opacity:.85; margin-top:2px; }
+.wallet b small { font-size:11px; opacity:.7; font-weight:700; }
