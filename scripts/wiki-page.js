@@ -70,6 +70,7 @@ out.push(`<div style="max-width:1000px; margin:0 auto;">
 <div style="color:#cfd6df; line-height:1.7;">A Once Human catching game that lives in Twitch chat. While a stream is live, deviations are spotted in the wild in chat — type ${cmd("!secure")} to catch them, collect all ${devs.length} deviations with their variations and skins, and roll the best Skill Rating, Activity Rating and traits. Your Deviation Bag follows you to '''every''' channel that runs the game.</div>
 <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;">
 <span style="background:#0ea5e9; border-radius:8px; padding:6px 14px; font-weight:700;">[${URL} <span style="color:#04121c;">Add it to your channel</span>]</span>
+<span style="background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:6px 14px; font-weight:700;">[${URL}/channels <span style="color:#e6edf3;">Where to play</span>]</span>
 <span style="background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:6px 14px; font-weight:700;">[${URL}/top <span style="color:#e6edf3;">Leaderboard</span>]</span>
 <span style="background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:6px 14px; font-weight:700;">[[Deviation_Main_Page|<span style="color:#e6edf3;">Deviation database</span>]]</span>
 </div>
@@ -77,7 +78,7 @@ out.push(`<div style="max-width:1000px; margin:0 auto;">
 `);
 
 out.push(box("Start", "How to Play", `
-# Watch a stream that has '''${BOT}''' in chat.
+# Watch a stream that has '''${BOT}''' in chat — [${URL}/channels see every channel running it].
 # When the bot posts ''"👀 A … has been spotted in the wild!"'', type ${cmd("!secure")} within '''${cfg.SPAWN_WINDOW_SECONDS} seconds'''.
 # When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
 # Check your collection any time with ${cmd("!deviationbag")} or on your own page: ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)}

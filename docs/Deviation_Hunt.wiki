@@ -5,6 +5,7 @@
 <div style="color:#cfd6df; line-height:1.7;">A Once Human catching game that lives in Twitch chat. While a stream is live, deviations are spotted in the wild in chat — type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> to catch them, collect all 61 deviations with their variations and skins, and roll the best Skill Rating, Activity Rating and traits. Your Deviation Bag follows you to '''every''' channel that runs the game.</div>
 <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;">
 <span style="background:#0ea5e9; border-radius:8px; padding:6px 14px; font-weight:700;">[https://ohdeviationhunt-production.up.railway.app <span style="color:#04121c;">Add it to your channel</span>]</span>
+<span style="background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:6px 14px; font-weight:700;">[https://ohdeviationhunt-production.up.railway.app/channels <span style="color:#e6edf3;">Where to play</span>]</span>
 <span style="background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:6px 14px; font-weight:700;">[https://ohdeviationhunt-production.up.railway.app/top <span style="color:#e6edf3;">Leaderboard</span>]</span>
 <span style="background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:6px 14px; font-weight:700;">[[Deviation_Main_Page|<span style="color:#e6edf3;">Deviation database</span>]]</span>
 </div>
@@ -17,7 +18,7 @@
 <span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">How to Play</span>
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
-# Watch a stream that has '''ohdeviationhunt''' in chat.
+# Watch a stream that has '''ohdeviationhunt''' in chat — [https://ohdeviationhunt-production.up.railway.app/channels see every channel running it].
 # When the bot posts ''"👀 A … has been spotted in the wild!"'', type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> within '''90 seconds'''.
 # When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
 # Check your collection any time with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!deviationbag</nowiki></span> or on your own page: <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>https://ohdeviationhunt-production.up.railway.app/u/</nowiki>''yourname''</span>
