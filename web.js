@@ -234,11 +234,11 @@ function collectionPage(p, viewer, msg) {
   const cards = sections(all, cardFor);
   return page(`${p.display}'s Securement Pods`, `
 <h1>${esc(p.display)}'s Securement Pods</h1>
-<div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${fmt(c.total)}/${game.unitCap(live)}</b>secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
+<div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${game.podsUsed(live)}/${game.unitCap(live)}</b>Securement Pods · ${fmt(c.total)} secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
 <p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
 <div id="shop">${webShop(p, live, viewer, msg)}</div>
-<p>Securement Units: <b>${units.standard || 0}/${game.unitCap(live)}</b>${(() => { const g = game.bestGlove(live); return g ? ` · 🧤 <b style="color:${g.color}">${esc(g.name)}</b> (+${Math.round(g.bonus * 100)}% catch)` : ""; })()} · next free unit: ${game.nextUnitIn(live)} (1 every hour while you're in a live stream, after today's <kbd>!daily</kbd>)</p>
+<p>Empty Securement Units: <b>${units.standard || 0}</b> · Securement Pods used: <b>${game.podsUsed(live)}/${game.unitCap(live)}</b> (caught + empty)${(() => { const g = game.bestGlove(live); return g ? ` · 🧤 <b style="color:${g.color}">${esc(g.name)}</b> (+${Math.round(g.bonus * 100)}% catch)` : ""; })()} · next free unit: ${game.nextUnitIn(live)} (1 every hour while you're in a live stream, after today's <kbd>!daily</kbd>)</p>
 ${cards}`);
 }
 
@@ -246,7 +246,7 @@ ${cards}`);
 const IMG_BASE = "https://raw.githubusercontent.com/imb0n3s/ohdeviationhunt/main/ext/";
 const SHOP_MSG = {
   not_enough: "Not enough Starchrom for that.", owned: "You already own those gloves.", outclassed: "You already wear better gloves.",
-  bad_qty: "Pick an amount between 1 and 100.", full: "Your Securement Units are full.", too_many: "That would go over your Securement Unit limit.", unknown_item: "That item isn't sold here.", signin: "Sign in with Twitch as the owner of this page to shop.",
+  bad_qty: "Pick an amount between 1 and 100.", full: "Your Securement Pods are full.", too_many: "That would go over your Securement Pod limit.", unknown_item: "That item isn't sold here.", signin: "Sign in with Twitch as the owner of this page to shop.",
 };
 function webShop(p, live, viewer, msg) {
   const note = msg ? `<div class="note ${msg.ok ? "ok" : "err"}">${esc(msg.text)}</div>` : "";
@@ -263,8 +263,8 @@ function webShop(p, live, viewer, msg) {
       return `<div class="si glove" style="--gc:${esc(it.color)}"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)} <span class="rar">${esc(it.rarity)}</span></div><div class="sd">+${Math.round(it.bonus * 100)}% catch chance on every throw · ${fmt(it.price)} Starchrom · yours forever</div>${form(it, btn)}</div></div>`;
     }
     const room = game.unitRoom(live), max = Math.max(0, Math.min(it.maxQty, room, Math.floor(live.starchrom / it.price)));
-    if (!room) return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div><button disabled>Securement Units full (${game.unitCap(live)})</button></div></div>`;
-    return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div>${form(it, `<input type="number" name="qty" min="1" max="${Math.min(it.maxQty, room)}" value="1"><button ${live.starchrom < it.price ? "disabled" : ""}>${live.starchrom < it.price ? `Need ${fmt(it.price - live.starchrom)} more` : "Buy"}</button> <span class="muted">you can buy ${max} (holding ${live.units.standard || 0}/${game.unitCap(live)})</span>`)}</div></div>`;
+    if (!room) return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div><button disabled>Securement Pods full (${game.podsUsed(live)}/${game.unitCap(live)})</button></div></div>`;
+    return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div>${form(it, `<input type="number" name="qty" min="1" max="${Math.min(it.maxQty, room)}" value="1"><button ${live.starchrom < it.price ? "disabled" : ""}>${live.starchrom < it.price ? `Need ${fmt(it.price - live.starchrom)} more` : "Buy"}</button> <span class="muted">you can buy ${max} (${game.podsUsed(live)}/${game.unitCap(live)} pods used)</span>`)}</div></div>`;
   }).join("");
   return `<div class="card shopbox">${note}<div class="shophead"><b>🛒 Shop</b><span>${fmt(live.starchrom)} Starchrom · ${live.units.standard || 0} Securement Units</span><span class="muted">Signed in as ${esc(viewer.login)} · <a href="/logout?next=${encodeURIComponent("/u/" + p.login)}">sign out</a></span></div><div class="shopgrid">${items}</div></div>`;
 }

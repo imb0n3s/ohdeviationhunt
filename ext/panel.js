@@ -76,7 +76,7 @@
     var pct = Math.round(s.unique / s.all * 100);
     el('<div class="stats"><div class="stat"><b>' + s.unique + '/' + s.all + '</b>deviations</div>' +
        '<div class="stat"><b>' + s.variants + '</b>variants &amp; skins</div>' +
-       '<div class="stat"><b>' + s.total + (bag.player && bag.player.unitCap ? '<small>/' + bag.player.unitCap + '</small>' : '') + '</b>secured</div></div>' +
+       (bag.player && bag.player.unitCap ? '<div class="stat"><b>' + bag.player.podsUsed + '<small>/' + bag.player.unitCap + '</small></b>pods · ' + s.total + ' secured</div></div>' : '<div class="stat"><b>' + s.total + '</b>secured</div></div>') +
        '<div class="bar"><i id="barfill"></i></div>' + gridHtml() +
        (bag.page ? '<footer><a href="' + esc(bag.page) + '" target="_blank" rel="noopener">Open my full collection ↗</a></footer>' : ""));
     document.getElementById("barfill").style.width = pct + "%"; // set via CSSOM (Twitch CSP blocks inline styles)
@@ -196,7 +196,7 @@
       el('<div class="msg"><p>You haven’t played yet.</p><p>Type <b>!secure</b> in chat the next time a deviation shows up — you’ll start with 5 Securement Units and 200 Starchrom, then you can shop here.</p></div>');
       return;
     }
-    var html = '<div class="wallet"><div><b>' + money(p.starchrom) + '</b>Starchrom</div><div><b>' + p.units + (p.unitCap ? '<small>/' + p.unitCap + '</small>' : '') + '</b>Securement Units</div><div><b>' + esc(p.nextUnitIn || "—") + '</b>next free unit</div></div>';
+    var html = '<div class="wallet"><div><b>' + money(p.starchrom) + '</b>Starchrom</div><div><b>' + p.units + '</b>empty Securement Units</div><div><b>' + esc(p.nextUnitIn || "—") + '</b>next free unit</div></div>';
     if (notice) html += '<div class="notice ' + notice.kind + '">' + esc(notice.text) + '</div>';
     var gl = (bag.shop || []).filter(function (it) { return it.kind === "gloves"; });
     html += (bag.shop || []).map(function (it) {
@@ -210,7 +210,7 @@
         '<div class="qty"><button data-act="dec">−</button><span>' + q + '</span><button data-act="inc">+</button>' +
         [5, 10].map(function (n) { return '<button data-act="set" data-n="' + n + '" class="quick">' + n + '</button>'; }).join("") +
         (maxAfford > 1 ? '<button data-act="set" data-n="' + maxAfford + '" class="quick">Max</button>' : "") + '</div>' +
-        (room < 1 ? '<button class="btn buy" disabled>Securement Units full (' + p.unitCap + ')</button>' :
+        (room < 1 ? '<button class="btn buy" disabled>Securement Pods full (' + p.podsUsed + '/' + p.unitCap + ')</button>' :
         '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? "Buy " + q + " for " + money(total) + " Starchrom" : "Need " + money(total - p.starchrom) + " more Starchrom") + '</button>') +
         '</div>';
     }).join("");
@@ -238,7 +238,7 @@
   function bitsHtml() {
     var packs = (bag.bitsPacks || []).filter(function (x) { return bitsProducts[x.sku]; });
     if (!bitsOn || !packs.length) return "";
-    return '<div class="sect">Starchrom with Bits</div><div class="item bits"><div class="id">5 Bits = 100 Starchrom · 50 Bits = room for 5 more Securement Units (permanent). Bits used here support the streamer.</div><div class="packs">' +
+    return '<div class="sect">Starchrom with Bits</div><div class="item bits"><div class="id">5 Bits = 100 Starchrom · 50 Bits = 5 more Securement Pods (permanent). Bits used here support the streamer.</div><div class="packs">' +
       packs.map(function (x) {
         var cost = bitsProducts[x.sku].cost && bitsProducts[x.sku].cost.amount || x.bits;
         return '<button class="btn bitsbuy" data-sku="' + esc(x.sku) + '"' + (busy ? " disabled" : "") + '><b>' + (x.capacity ? "+" + x.capacity : money(x.starchrom)) + '</b> ' + (x.capacity ? "Securement Pod space" : "Starchrom") + '<span>' + cost + ' Bits</span></button>';
@@ -286,7 +286,7 @@
       '<div class="id">' + esc(it.desc) + '</div>' + btn + '</div>';
   }
 
-  function unitRoom(p) { return p.unitCap ? Math.max(0, p.unitCap - p.units) : 100; }
+  function unitRoom(p) { return p.unitCap ? Math.max(0, p.unitCap - (p.podsUsed != null ? p.podsUsed : p.units)) : 100; }
 
   function findItem(id) { for (var i = 0; i < bag.shop.length; i++) if (bag.shop[i].id === id) return bag.shop[i]; return null; }
 
@@ -301,7 +301,7 @@
         if (res.ok) { notice = { kind: "ok", text: "Bought " + (it.kind === "gloves" ? it.name : res.j.qty + " " + it.name + (res.j.qty > 1 ? "s" : "")) + " for " + money(res.j.cost) + " Starchrom." }; cart[it.id] = 1; }
         else if (res.j.error === "needs_identity") return askIdentity();
         else if (res.j.error === "not_enough") notice = { kind: "err", text: "Not enough Starchrom for that." };
-        else if (res.j.error === "full" || res.j.error === "too_many") notice = { kind: "err", text: "You can hold up to " + (res.j.player && res.j.player.unitCap || 100) + " Securement Units." };
+        else if (res.j.error === "full" || res.j.error === "too_many") notice = { kind: "err", text: "That goes over your " + (res.j.player && res.j.player.unitCap || 100) + " Securement Pods (caught + empty)." };
         else if (res.j.error === "outclassed") notice = { kind: "err", text: "You already wear better gloves." };
         else if (res.j.error === "owned") notice = { kind: "err", text: "You already own " + it.name + "." };
         else notice = { kind: "err", text: res.j.message || "Couldn’t complete that purchase. Try again." };

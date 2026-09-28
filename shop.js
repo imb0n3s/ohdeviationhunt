@@ -7,6 +7,8 @@
 const { UNITS, GLOVES, ECONOMY } = require("./rarity");
 // most Securement Units this player can hold
 const unitCap = (p) => ECONOMY.unitCap + (p.extra_cap || 0);
+// Securement Pods in use = deviations you've caught (each lives in one) + empty Securement Units
+const podsUsed = (p) => (p.units.standard || 0) + require("./db").q.countCatchesFor.get(p.user_id).n;
 
 const ITEMS = [
   {
@@ -70,7 +72,7 @@ function purchase(p, itemId, qty) {
   qty = Math.floor(Number(qty));
   if (!(qty >= 1 && qty <= item.maxQty)) return { ok: false, error: "bad_qty", max: item.maxQty };
   if (item.grants.units) {
-    const room = Math.max(0, unitCap(p) - (p.units.standard || 0));
+    const room = Math.max(0, unitCap(p) - podsUsed(p));
     if (qty > room) return { ok: false, error: room ? "too_many" : "full", room, cap: unitCap(p), item };
   }
   const cost = item.price * qty;
@@ -84,4 +86,4 @@ function purchase(p, itemId, qty) {
 // what the panel needs to draw the shop
 const catalog = () => ITEMS.map(({ id, kind, glove, name, desc, price, maxQty, icon, bonus, rarity, color }) => ({ id, kind: kind || "item", glove, name, desc, price, maxQty, icon, bonus, rarity, color }));
 
-module.exports = { ITEMS, find, purchase, catalog, unitCap };
+module.exports = { ITEMS, find, purchase, catalog, unitCap, podsUsed };

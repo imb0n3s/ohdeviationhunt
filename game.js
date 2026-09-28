@@ -102,7 +102,8 @@ function spawnName(s) { return s.variant ? `${s.dev.name} — ${s.variant.name}`
 
 // the best gloves a player owns (null if none)
 const unitCap = (p) => shopCatalog.unitCap(p);
-const unitRoom = (p) => Math.max(0, unitCap(p) - (p.units.standard || 0));
+const podsUsed = (p) => shopCatalog.podsUsed(p);
+const unitRoom = (p) => Math.max(0, unitCap(p) - podsUsed(p));
 
 function bestGlove(p) {
   let best = null;
@@ -322,7 +323,7 @@ function daily(userId, login, display, bid) {
   p.last_daily = Date.now();
   p.starchrom += ECONOMY.daily.starchrom;
   const got = [];
-  for (const [k, n0] of Object.entries(ECONOMY.daily.units)) { const n = Math.min(n0, unitRoom(p)); if (!n) { got.push(`no Securement Unit (you're full at ${unitCap(p)})`); continue; } p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
+  for (const [k, n0] of Object.entries(ECONOMY.daily.units)) { const n = Math.min(n0, unitRoom(p)); if (!n) { got.push(`no Securement Unit (your Securement Pods are full at ${unitCap(p)})`); continue; } p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
   p.last_unit_at = Date.now();          // first free hourly unit comes an hour after !daily
   db.tx(() => {
     savePlayer(p);
@@ -347,8 +348,8 @@ function buy(userId, login, display, args) {
   const p = loadPlayer(userId, login, display);
   const r = shopCatalog.purchase(p, item.id, qty);
   if (!r.ok && r.error === "owned") return `@${display} you already own ${item.name}.`;
-  if (!r.ok && r.error === "full") return `@${display} your Securement Units are full (${r.cap}/${r.cap}) — catch something to free one up.`;
-  if (!r.ok && r.error === "too_many") return `@${display} you can hold ${r.cap} Securement Units, so you can buy up to ${r.room} more right now.`;
+  if (!r.ok && r.error === "full") return `@${display} your Securement Pods are full (${r.cap}/${r.cap} — caught deviations and empty units both count). !scrap duplicates to free some up.`;
+  if (!r.ok && r.error === "too_many") return `@${display} you have ${r.cap} Securement Pods (caught deviations + empty units), so you can buy up to ${r.room} more Securement Units right now.`;
   if (!r.ok && r.error === "outclassed") return `@${display} you already wear ${r.better.name} (+${Math.round(r.better.bonus * 100)}%), which beat ${item.name}.`;
   const label = item.kind === "gloves" ? item.name : `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
   if (!r.ok) return `@${display} ${label} ${qty > 1 || item.kind === "gloves" ? "cost" : "costs"} ${fmt(item.price * qty)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations, !daily and !scrap.`;
@@ -357,7 +358,7 @@ function buy(userId, login, display, args) {
     const best = bestGlove(p);
     return `@${display} 🧤 bought ${item.name} for ${fmt(r.cost)} ${SC}! +${Math.round(item.bonus * 100)}% catch chance on every throw from now on. You have ${fmt(p.starchrom)} ${SC} left.`;
   }
-  return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0}/${unitCap(p)} Securement Units. ${bagText(p)}`;
+  return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units (${podsUsed(p)}/${unitCap(p)} Securement Pods used). ${bagText(p)}`;
 }
 
 // Destroy one specimen for Starchrom. Only allowed while you own more than one of that deviation,
@@ -517,4 +518,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { unitCap, unitRoom, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

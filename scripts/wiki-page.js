@@ -119,7 +119,7 @@ ${table(["Item", "Description", "Price"], [
   ["'''Securement Unit'''", "Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw. " + cmd("!buy <amount>"), `${fmt(unitPrice)} ${SC}`],
   ...GLOVES.map((g) => [`'''<span style="color:${g.color};">${g.name}</span>''' <small>(${g.rarity})</small>`, `+${Math.round(g.bonus * 100)}% catch chance on every throw. Bought once and kept forever. ${cmd("!buy " + g.id)}`, `${fmt(g.price)} ${SC}`]),
 ])}
-You can hold up to '''${ECONOMY.unitCap} Securement Units''' at a time — when you're full, free hourly units and the one from ${cmd("!daily")} are skipped until you catch something.
+You have '''${ECONOMY.unitCap} Securement Pods''' — every deviation you've caught '''and''' every empty Securement Unit takes one. When all ${ECONOMY.unitCap} are used, you can't buy more units, and free hourly units and the one from ${cmd("!daily")} are skipped. Free space with ${cmd("!scrap")} or by destroying extra specimens in the panel.
 
 Gloves don't stack — only your best pair counts, so you can't buy a pair weaker than one you already own. The bonus is added to the catch chance (a ${pct(TIERS.legendary.catch)} Legendary becomes ${pct(TIERS.legendary.catch + GLOVES[GLOVES.length - 1].bonus)} with ${GLOVES[GLOVES.length - 1].name}), still capped at ${pct(ECONOMY.maxCatchChance)}.
 
