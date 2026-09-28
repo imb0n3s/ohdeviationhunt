@@ -92,8 +92,8 @@ table{width:100%;border-collapse:collapse}td,th{padding:8px 6px;border-bottom:1p
 form.find{display:flex;gap:8px;margin:8px 0}form.find input{flex:1;min-width:0;padding:11px 12px;border-radius:9px;border:1px solid var(--line);background:#0b1016;color:var(--text);font-size:1rem}
 form.find button{padding:0 18px;border-radius:9px;border:0;background:var(--accent);color:#fff;font-weight:600}
 footer{margin-top:48px;color:var(--muted);font-size:.9em}footer a{color:var(--muted)}a{color:var(--accent)}
-nav{display:flex;gap:18px;margin-bottom:24px;flex-wrap:wrap}nav a{color:var(--muted);text-decoration:none;font-weight:600}nav a:hover{color:var(--text)}
-</style></head><body><main><nav><a href="/">${esc(cfg.BOT_NAME)}</a><a href="/dex">All deviations</a><a href="/channels">Channels</a><a href="/top">Leaderboard</a><a href="${esc(cfg.WIKI_BASE)}">OHWikiGuide</a></nav>${body}
+nav{display:flex;gap:18px;margin-bottom:24px;flex-wrap:wrap}nav a.me{color:var(--accent);font-weight:700}nav a{color:var(--muted);text-decoration:none;font-weight:600}nav a:hover{color:var(--text)}
+</style></head><body><main><nav><a href="/">${esc(cfg.BOT_NAME)}</a><a href="/dex">All deviations</a><a href="/channels">Channels</a><a href="/top">Leaderboard</a><a href="/me" class="me">My Securement Pods</a><a href="${esc(cfg.WIKI_BASE)}">OHWikiGuide</a></nav>${body}
 <footer>Deviation data from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">ohwikiguide.com</a> · <a href="${esc(cfg.TERMS_URL)}">Terms</a> · <a href="${esc(cfg.PRIVACY_URL)}">Privacy</a>${cfg.DISCORD_URL ? ` · <a href="${esc(cfg.DISCORD_URL)}">Discord</a>` : ""} · Fan-made, not affiliated with Starry Studio / NetEase.</footer></main></body></html>`;
 }
 const simple = (title, heading, text, extra = "") => page(title, `<h1>${esc(heading)}</h1><p>${text}</p>${extra}<p><a href="/">&larr; Back</a></p>`);
@@ -335,8 +335,16 @@ function createApp(pool) {
     back(`ok:${r.item.id}:${r.qty}`);
   });
 
+  // "My Securement Pods": your own page if you're signed in, otherwise sign in with Twitch first
+  app.get("/me", (req, res) => {
+    const v = viewerOf(req);
+    if (!v) return res.redirect("/login?next=/me");
+    if (db.q.getPlayer.get(v.uid)) return res.redirect(`/u/${encodeURIComponent(v.login)}`);
+    res.send(simple("No Securement Pods yet", "No Securement Pods yet", `You're signed in as <b>${esc(v.login)}</b>, but you haven't played yet. Type <kbd>!secure</kbd> in any channel running ${esc(cfg.BOT_NAME)} the next time a deviation is spotted — see <a href="/channels">where to play</a>. · <a href="/logout">sign out</a>`));
+  });
+
   app.get("/login", (req, res) => {
-    const next = /^\/u\/[a-z0-9_]{1,40}$/i.test(String(req.query.next || "")) ? req.query.next : "/";
+    const next = /^\/(u\/[a-z0-9_]{1,40}|me)$/i.test(String(req.query.next || "")) ? req.query.next : "/";
     const state = sign({ purpose: "viewer", next, nonce: crypto.randomBytes(8).toString("hex"), ts: Date.now() });
     res.setHeader("Set-Cookie", cookie(state));
     res.redirect(twitch.authorizeUrl({ scopes: [], state }));
@@ -383,7 +391,7 @@ function createApp(pool) {
         const v = sign({ purpose: "session", uid: user.id, login: user.login, exp: Date.now() + SESSION_DAYS * 864e5, ts: Date.now() });
         res.setHeader("Set-Cookie", sessionCookie(v, SESSION_DAYS * 86400));
         const hasPlayer = !!db.q.getPlayer.get(user.id);
-        return res.redirect(hasPlayer ? `/u/${encodeURIComponent(user.login)}#shop` : (state.next || "/"));
+        return res.redirect(state.next === "/me" ? "/me" : hasPlayer ? `/u/${encodeURIComponent(user.login)}#shop` : (state.next || "/"));
       }
       if (state.purpose === "bot") {
         const wasSetUp = !!db.getBotAccount();

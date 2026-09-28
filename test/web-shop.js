@@ -25,5 +25,8 @@ const sign = (d) => { const b = Buffer.from(JSON.stringify(d)).toString("base64u
   html = await (await fetch(`${base}/u/alice`)).text(); assert.ok(html.includes("Sign in with Twitch") && !html.includes('name="item"'));
   html = await (await fetch(`${base}/u/alice`, { headers: { Cookie: sess("B", "bob") } })).text(); assert.ok(!html.includes('name="item"'));
   require("fs").writeFileSync("/tmp/webshop.html", (await (await fetch(`${base}/u/alice`, { headers: { Cookie: sess("A", "alice") } })).text()));
+  r = await fetch(`${base}/me`, { redirect: "manual" }); assert.equal(r.headers.get("location"), "/login?next=/me");
+  r = await fetch(`${base}/me`, { redirect: "manual", headers: { Cookie: sess("A", "alice") } }); assert.equal(r.headers.get("location"), "/u/alice");
+  r = await fetch(`${base}/me`, { headers: { Cookie: sess("Z", "zed") } }); assert.ok((await r.text()).includes("haven't played yet")); console.log("/me works");
   console.log("all web shop checks passed"); srv.close(); process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });
