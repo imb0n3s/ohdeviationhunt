@@ -238,10 +238,9 @@ class Spawns {
     s.attempts.set(userId, { login, display, unit, isNew: p.isNew, bonus: glove ? glove.bonus : 0 });
     this.persist(bid);
     const left = p.units[unit];
-    const leftTxt = `${left} Securement Unit${left === 1 ? "" : "s"} left`;
-    const throwTxt = `🎯 Threw at the ${spawnName(s)} (−${ECONOMY.throwCost} ${SC}). If you catch it, it goes into a Securement Unit — you'll have ${leftTxt}.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}%.` : ""}`;
-    if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}. ${throwTxt} Type !daily for more, plus 1 free unit every hour this stream. Results when time runs out!`;
-    return `@${display} ${throwTxt} Results when time runs out!`;
+    const throwTxt = `🎯 Threw at the ${spawnName(s)} (−${ECONOMY.throwCost} ${SC}). You'll have ${left} Securement Pod${left === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}%` : ""}`;
+    if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}. ${throwTxt} Type !daily for more, plus 1 free unit every hour this stream.`;
+    return `@${display} ${throwTxt}`;
   }
 
   async resolve(bid) {
