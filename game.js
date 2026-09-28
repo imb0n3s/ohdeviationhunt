@@ -363,13 +363,13 @@ function unitNotices(now = Date.now()) {
     if (!byChannel.has(ch)) byChannel.set(ch, []);
     byChannel.get(ch).push({ name: `@${p.display}`, got: ECONOMY.hourlyUnits });
   }
-  // "🎁 @luna acquired a Securement Unit!" / "🎁 @luna, @bob acquired a Securement Unit!"
+  // "🎁 @luna acquired a Securement Unit! 🎁" / "🎁 @luna, @bob acquired a Securement Unit! 🎁"
   const out = [];
   for (const [ch, list] of byChannel) {
     const groups = new Map();
     for (const x of list) { if (!groups.has(x.got)) groups.set(x.got, []); groups.get(x.got).push(x.name); }
     for (const [got, names] of groups) {
-      const tail = got === 1 ? " acquired a Securement Unit!" : ` acquired ${got} Securement Units!`;
+      const tail = got === 1 ? " acquired a Securement Unit! 🎁" : ` acquired ${got} Securement Units! 🎁`;
       let batch = [];
       for (const n of names) {
         if (batch.length && ("🎁 " + [...batch, n].join(", ") + tail).length > 450) { out.push([ch, "🎁 " + batch.join(", ") + tail]); batch = []; }

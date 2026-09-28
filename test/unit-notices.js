@@ -19,7 +19,7 @@ play("3", "CH"); backdate("3", 3 * H);                   // playing but no !dail
 assert.equal(game.unitNotices().length, 0);               // under an hour
 backdate("1", H + 60e3); backdate("2", H + 60e3);
 let n = game.unitNotices(); console.log(n);
-assert.deepEqual(n, [["CH", "🎁 @Luna, @Bob acquired a Securement Unit!"]]);
+assert.deepEqual(n, [["CH", "🎁 @Luna, @Bob acquired a Securement Unit! 🎁"]]);
 const u1 = units("1");
 
 // Luna moves to another stream 40 min into her next hour: the timer keeps running, notice goes there
@@ -27,7 +27,7 @@ backdate("1", 40 * 60e3); play("1", "CH2");
 assert.equal(game.unitNotices().length, 0);
 backdate("1", 21 * 60e3);
 n = game.unitNotices(); console.log(n);
-assert.deepEqual(n, [["CH2", "🎁 @Luna acquired a Securement Unit!"]]);   // one unit, in ONE stream only
+assert.deepEqual(n, [["CH2", "🎁 @Luna acquired a Securement Unit! 🎁"]]);   // one unit, in ONE stream only
 assert.equal(units("1"), u1 + 1);
 
 // "watching" two streams: whichever she played in last is the only one that counts
