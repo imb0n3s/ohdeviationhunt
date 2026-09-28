@@ -9,7 +9,7 @@ process.env.BASE_URL ||= "https://ohdeviationhunt-production.up.railway.app";
 const path = require("path");
 const cfg = require("../config");
 const { TIERS, VARIANT, UNITS, ECONOMY, rarityOf } = require("../rarity");
-const { RATING_WEIGHTS } = require("../traits");
+const { RATING_WEIGHTS, SLOT_CHANCE } = require("../traits");
 const devs = require(path.join(__dirname, "..", "combat-fallback.json"));
 
 const URL = cfg.BASE_URL;
@@ -175,14 +175,14 @@ A 5/5 specimen gets a ⭐ in chat. Catch the same deviation again to hunt for be
 `));
 
 out.push(box("Traits", "Traits", `
-Each specimen rolls three traits using the exact rules of the [[Deviation_Trait_Page|Deviation Trait Page]], for its own category (combat, crafting or territory):
-${table(["Slot", "What it can roll"], [
-  ["'''Slot 1'''", `Any Global trait (with a random level), or — sometimes — that deviation's own Slot 1 trait.`],
-  ["'''Slot 2'''", `Any general Slot 2 trait of its category, or — sometimes — one of that deviation's own Slot 2 traits. Another deviation's own trait can never appear.`],
-  ["'''Slot 3'''", `Any Slot 3 (fused) trait of its category.`],
+Each specimen has three trait slots, and '''each slot may or may not have a trait''' — so a specimen can have none, one, two or all three. Filled slots follow the exact rules of the [[Deviation_Trait_Page|Deviation Trait Page]], for the deviation's own category (combat, crafting or territory):
+${table(["Slot", "Chance of a trait", "What it can roll"], [
+  ["'''Slot 1'''", pct(SLOT_CHANCE[1]), `Any Global trait (with a random level), or — sometimes — that deviation's own Slot 1 trait.`],
+  ["'''Slot 2'''", pct(SLOT_CHANCE[2]), `Any general Slot 2 trait of its category, or — sometimes — one of that deviation's own Slot 2 traits. Another deviation's own trait can never appear.`],
+  ["'''Slot 3'''", pct(SLOT_CHANCE[3]), `Any Slot 3 (fused) trait of its category.`],
 ])}
 
-* A deviation's own traits that belong to a specific variation or skin only ever appear on that variant — and that variant always carries it.
+* A deviation's own traits that belong to a specific variation or skin only ever appear on that variant — and that variant always carries it, so its slot is never empty.
 * Own traits that aren't tied to a variant can appear on any specimen of that deviation.
 * See any specimen's traits with ${cmd("!traits <deviation>")}, on your collection page, or in the Twitch panel.
 `));

@@ -99,3 +99,6 @@ footer a { color:var(--accent); font-size:12px; }
 .confirm span { flex:1; }
 .confirm .btn.ghost { padding:6px 4px; }
 .hint.left { text-align:left; margin:-2px 0 8px; }
+
+.trait.empty { opacity:.5; }
+.trait.empty .h { font-weight:600; font-style:italic; color:var(--muted); }

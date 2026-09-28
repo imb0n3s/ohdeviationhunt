@@ -98,6 +98,7 @@
   var confirmId = null, detailNotice = null;
 
   function traitHtml(t) {
+    if (!t.name) return '<div class="trait empty"><div class="h"><span>' + t.slot + '</span>Empty slot</div></div>';
     return '<div class="trait"><div class="h"><span>' + t.slot + '</span>' + esc(t.name) + '</div>' + (t.effect ? '<div class="e">' + esc(t.effect) + '</div>' : "") + '</div>';
   }
 

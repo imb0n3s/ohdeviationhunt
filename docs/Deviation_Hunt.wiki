@@ -259,19 +259,20 @@ A 5/5 specimen gets a ⭐ in chat. Catch the same deviation again to hunt for be
 <span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Traits</span>
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
-Each specimen rolls three traits using the exact rules of the [[Deviation_Trait_Page|Deviation Trait Page]], for its own category (combat, crafting or territory):
+Each specimen has three trait slots, and '''each slot may or may not have a trait''' — so a specimen can have none, one, two or all three. Filled slots follow the exact rules of the [[Deviation_Trait_Page|Deviation Trait Page]], for the deviation's own category (combat, crafting or territory):
 {| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Slot
+! style="background:#131c27; color:#e6edf3; text-align:left;" | Chance of a trait
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | What it can roll
 |-
-| '''Slot 1''' || Any Global trait (with a random level), or — sometimes — that deviation's own Slot 1 trait.
+| '''Slot 1''' || 60% || Any Global trait (with a random level), or — sometimes — that deviation's own Slot 1 trait.
 |-
-| '''Slot 2''' || Any general Slot 2 trait of its category, or — sometimes — one of that deviation's own Slot 2 traits. Another deviation's own trait can never appear.
+| '''Slot 2''' || 50% || Any general Slot 2 trait of its category, or — sometimes — one of that deviation's own Slot 2 traits. Another deviation's own trait can never appear.
 |-
-| '''Slot 3''' || Any Slot 3 (fused) trait of its category.
+| '''Slot 3''' || 40% || Any Slot 3 (fused) trait of its category.
 |}
 
-* A deviation's own traits that belong to a specific variation or skin only ever appear on that variant — and that variant always carries it.
+* A deviation's own traits that belong to a specific variation or skin only ever appear on that variant — and that variant always carries it, so its slot is never empty.
 * Own traits that aren't tied to a variant can appear on any specimen of that deviation.
 * See any specimen's traits with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!traits <deviation></nowiki></span>, on your collection page, or in the Twitch panel.
 </div>

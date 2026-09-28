@@ -48,7 +48,7 @@ code,kbd{background:#0b1016;padding:2px 7px;border-radius:5px;color:#c9e7ff;font
 .dev .n{font-weight:600;font-size:.92rem;margin-top:6px}.dev .t{font-size:.78rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase}
 .dev .c{position:absolute;top:8px;right:10px;font-size:.8rem;background:#0b1016;border-radius:99px;padding:1px 8px}
 .sp{margin-top:8px;text-align:left;font-size:.78rem}.pm{display:flex;justify-content:center;gap:10px;font-weight:600;color:#fde68a;margin-bottom:4px}
-.tr{list-style:none;margin:0;padding:0}.tr li{padding:2px 0;border-top:1px solid var(--line);color:var(--text);cursor:help}.tr li b{display:inline-block;width:16px;color:var(--accent)}
+.tr{list-style:none;margin:0;padding:0}.tr li{padding:2px 0;border-top:1px solid var(--line);color:var(--text);cursor:help}.tr li b{display:inline-block;width:16px;color:var(--accent)}.tr li.empty{color:var(--muted);font-style:italic;cursor:default}
 .bv{font-size:.7rem;color:var(--muted);text-align:center;margin-top:2px}
 .dev.missing img{filter:brightness(0) opacity(.35)}.dev.missing .n{color:var(--muted)}
 .vars{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:6px}
@@ -139,7 +139,8 @@ function collectionPage(p) {
   const all = data.all();
   const totalVariants = all.reduce((s, d) => s + d.variants.length, 0);
   const pct = all.length ? Math.round((c.species / all.length) * 100) : 0;
-  const units = JSON.parse(p.units || "{}");
+  const live = game.loadPlayer(p.user_id, p.login, p.display); // pays out any hourly free units that are due
+  const units = live.units;
   const cardFor = (d) => {
     const h = have.get(d.id);
     const vars = d.variants.length ? `<div class="vars">${d.variants.map((v) => { const got = h?.variants.has(v.name); return `<span class="${got ? `have ${v.kind}` : ""}" title="${v.kind === "skin" ? "Skin" : "Variation"}${got ? " — caught!" : ""}">${got ? "✨ " : ""}${esc(v.name)}</span>`; }).join("")}</div>` : "";
@@ -149,7 +150,7 @@ function collectionPage(p) {
     const shiny = top ? ` shiny${top.kind === "skin" ? " skin" : ""}` : "";
     const sp = best.get(d.id);
     const spHtml = sp ? `<div class="sp"><div class="pm"><span title="Skill Rating (Deviant Power)">Skill ${sp.power}/5</span><span title="Activity Rating (Mood)">Activity ${sp.mood}/5</span></div>
-<ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant, d.category))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant, d.category))}</li>`).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
+<ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => (key ? `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant, d.category))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant, d.category))}</li>` : `<li class="empty"><b>${slot}</b>Empty slot</li>`)).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
     return `<div class="dev ${h ? "" : "missing"}${shiny}">${h ? `<span class="c">×${h.count}</span>` : ""}${top ? `<span class="vb" title="Variations &amp; skins caught">✨ ${gotVars.length}</span>` : ""}<img loading="lazy" src="${esc((top && top.img) || d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${top ? `<div class="vn">✨ ${top.kind === "skin" ? "Skin" : "Variation"}: ${esc(top.name)}</div>` : ""}${tierTag(d.rarity)}${spHtml}${h ? vars : ""}</div>`;
   };
   const cards = sections(all, cardFor);
@@ -157,8 +158,8 @@ function collectionPage(p) {
 <h1>${esc(p.display)}'s Deviation Bag</h1>
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${fmt(c.total)}</b>secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
-<p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its three traits (hover a trait for what it does).</p>
-<p>Securement Units: ${units.standard || 0}</p>
+<p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
+<p>Securement Units: <b>${units.standard || 0}</b> · next free unit in ${game.nextUnitIn(live)} (1 every hour, no cap)</p>
 ${cards}`);
 }
 

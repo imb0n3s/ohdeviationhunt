@@ -15,6 +15,9 @@ const cfg = require("./config");
 
 const FALLBACK = path.join(__dirname, "traits-fallback.json");
 
+// Chance each slot has a trait at all (rolled separately, so a specimen can have 0-3 traits).
+// A variation/skin with its own locked trait always has that slot filled.
+const SLOT_CHANCE = { 1: 0.6, 2: 0.5, 3: 0.4 };
 // Chance a slot rolls the deviation's own special trait instead of a general one
 const SPECIFIC_CHANCE = { slot1: 0.15, slot2: 0.2 };
 // Deviant Power and Mood ratings 1-5: higher is rarer
@@ -145,9 +148,10 @@ function rating() {
 }
 
 // variants = every variation/skin name this deviation has (from the Deviation page)
-function rollSlot(general, own, variant, chance) {
+function rollSlot(general, own, variant, chance, slotChance) {
   const mine = variant ? own.filter((o) => o.locked && variantMatches(o.locked, variant)) : [];
   if (mine.length) return pick(mine).key;                       // a variant always carries its own trait
+  if (Math.random() >= slotChance) return null;                  // empty slot
   const open = own.filter((o) => !o.locked);                     // own traits not tied to any variant
   if (open.length && Math.random() < chance) return pick(open).key;
   return pick(general).key;
@@ -155,10 +159,10 @@ function rollSlot(general, own, variant, chance) {
 
 function rollSpecimen(devName, variant, variants = [], cat = "combat") {
   const a = allowed(devName, cat);
-  const t1 = rollSlot(a.slot1General, ownOptions(a.slot1Own, variants), variant, SPECIFIC_CHANCE.slot1);
-  const t2 = rollSlot(a.slot2General, ownOptions(a.slot2Own, variants), variant, SPECIFIC_CHANCE.slot2);
-  const t3 = pick(a.slot3).key;
-  const g = T.global.find((t) => t.key === t1);
+  const t1 = rollSlot(a.slot1General, ownOptions(a.slot1Own, variants), variant, SPECIFIC_CHANCE.slot1, SLOT_CHANCE[1]);
+  const t2 = rollSlot(a.slot2General, ownOptions(a.slot2Own, variants), variant, SPECIFIC_CHANCE.slot2, SLOT_CHANCE[2]);
+  const t3 = Math.random() < SLOT_CHANCE[3] ? pick(a.slot3).key : null;
+  const g = t1 && T.global.find((t) => t.key === t1);
   const lvl = g?.maxLevel ? g.minLevel + Math.floor(Math.random() * (g.maxLevel - g.minLevel + 1)) : null;
   return { power: rating(), mood: rating(), t1, t1_level: lvl, t2, t3 };
 }
@@ -179,6 +183,7 @@ function ownLine(t, variant) {
 }
 
 function traitName(slot, key, level, variant, cat) {
+  if (!key) return null;                              // empty slot
   const t = find(slot, key, cat);
   if (!t) return key || "—";
   if (level) return `${t.name} ${level}`;
@@ -199,6 +204,6 @@ function traitEffect(slot, key, level, variant, cat) {
   return line.includes(": ") && named ? line.slice(line.indexOf(": ") + 2) : line;
 }
 
-const shortTraits = (s, cat) => `${traitName(1, s.t1, s.t1_level, s.variant, cat)} | ${traitName(2, s.t2, null, s.variant, cat)} | ${traitName(3, s.t3, null, null, cat)}`;
+const shortTraits = (s, cat) => [traitName(1, s.t1, s.t1_level, s.variant, cat), traitName(2, s.t2, null, s.variant, cat), traitName(3, s.t3, null, null, cat)].filter(Boolean).join(" | ") || "none";
 
-module.exports = { refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS };
+module.exports = { refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS, SLOT_CHANCE };
