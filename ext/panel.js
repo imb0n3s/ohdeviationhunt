@@ -1,4 +1,4 @@
-// panel.js — Deviation Bag panel. Shows the viewer's own collection (same on every channel).
+// panel.js — Securement Pods panel. Shows the viewer's own collection (same on every channel).
 (function () {
   "use strict";
   var API = window.DH_API || "https://deviationhunt.ohwikiguide.com";
@@ -17,14 +17,14 @@
         if (j.needsIdentity) return askIdentity(j.botLogin);
         bag = j; render();
       })
-      .catch(function () { el('<div class="msg">Couldn’t load your Deviation Bag right now. Try again in a minute.</div>'); });
+      .catch(function () { el('<div class="msg">Couldn’t load your Securement Pods right now. Try again in a minute.</div>'); });
   }
 
   function askIdentity(botLogin) {
     who.textContent = "";
     el('<div class="msg"><p>See every deviation you’ve secured — on any channel running Deviation Hunt.</p>' +
        '<p>Twitch needs you to share your username with this panel once.</p>' +
-       '<button class="btn" id="share">Show my Deviation Bag</button></div>');
+       '<button class="btn" id="share">Show my Securement Pods</button></div>');
     document.getElementById("share").onclick = function () { window.Twitch.ext.actions.requestIdShare(); };
   }
 
@@ -59,7 +59,7 @@
   function setPage(page) {
     view.page = page; view.open = null; notice = null;
     Array.prototype.forEach.call(document.querySelectorAll(".pages button"), function (b) { b.className = b.getAttribute("data-page") === page ? "on" : ""; });
-    document.getElementById("title").textContent = page === "shop" ? "Shop" : "Deviation Bag";
+    document.getElementById("title").textContent = page === "shop" ? "Shop" : "Securement Pods";
     if (bag) render();
     window.scrollTo(0, 0);
   }
@@ -70,7 +70,7 @@
     if (view.open) return renderDetail(view.open);
     var s = bag.stats, p = bag.player;
     if (!p || !s.total) {
-      el('<div class="msg"><p>Your Deviation Bag is empty.</p><p>When a deviation is spotted in the wild in chat, type <b>!secure</b> to catch it. Get free Securement Units with <b>!daily</b>.</p></div>' + gridHtml());
+      el('<div class="msg"><p>Your Securement Pods are empty.</p><p>When a deviation is spotted in the wild in chat, type <b>!secure</b> to catch it. Get free Securement Units with <b>!daily</b>.</p></div>' + gridHtml());
       bindGrid(); return;
     }
     var pct = Math.round(s.unique / s.all * 100);
@@ -78,7 +78,7 @@
        '<div class="stat"><b>' + s.variants + '</b>variants &amp; skins</div>' +
        '<div class="stat"><b>' + s.total + '</b>secured</div></div>' +
        '<div class="bar"><i id="barfill"></i></div>' + gridHtml() +
-       (bag.page ? '<footer><a href="' + esc(bag.page) + '" target="_blank" rel="noopener">Open full Deviation Bag ↗</a></footer>' : ""));
+       (bag.page ? '<footer><a href="' + esc(bag.page) + '" target="_blank" rel="noopener">Open my full collection ↗</a></footer>' : ""));
     document.getElementById("barfill").style.width = pct + "%"; // set via CSSOM (Twitch CSP blocks inline styles)
     bindGrid();
   }

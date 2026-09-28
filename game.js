@@ -289,7 +289,7 @@ class Spawns {
     } else {
       msg = `💥 ${name} got away from ${list(escaped, 8)}! Better luck next time.`;
     }
-    msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !deviationbag to see your collection`;
+    msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !pods to see your collection`;
     return this.send(bid, msg);
   }
 
@@ -332,7 +332,7 @@ function daily(userId, login, display, bid) {
 
 function shop() {
   const items = shopCatalog.ITEMS.map((i) => `${i.name}${i.bonus ? ` (+${Math.round(i.bonus * 100)}% catch)` : ""}: ${fmt(i.price)} ${SC}`).join(" · ");
-  return `🛒 ${items} — !buy <amount> for units, !buy rustic / bbq / savior for gloves (or use the Deviation Bag panel's Shop tab). Gloves are yours forever; your best pair counts on every throw.`;
+  return `🛒 ${items} — !buy <amount> for units, !buy rustic / bbq / savior for gloves (or use the Securement Pods panel's Shop tab). Gloves are yours forever; your best pair counts on every throw.`;
 }
 
 // !buy 3  /  !buy unit 3  /  !buy savior — defaults to Securement Units
@@ -357,7 +357,7 @@ function buy(userId, login, display, args) {
 }
 
 // Destroy one specimen for Starchrom. Only allowed while you own more than one of that deviation,
-// so a deviation never leaves your Deviation Bag this way.
+// so a deviation never leaves your Securement Pods this way.
 function destroySpecimen(userId, specimenId) {
   const sp = db.q.getSpecimen.get(Number(specimenId), userId);
   if (!sp) return { ok: false, error: "not_found" };
@@ -431,8 +431,8 @@ function dex(userId, login, display, baseUrl) {
   const c = collectionSummary(userId);
   const all = data.all();
   const totalVariants = all.reduce((s, d) => s + d.variants.length, 0);
-  if (!c.total) return `@${display} your Deviation Bag is empty — wait for a deviation to show up and type !secure! Collection page: ${baseUrl}/u/${login}`;
-  return `@${display} 📖 Deviation Bag: ${c.species}/${all.length} deviations, ${c.variants}/${totalVariants} variants & skins, ${c.total} secured in total. ${baseUrl}/u/${login}`;
+  if (!c.total) return `@${display} your Securement Pods are empty — wait for a deviation to show up and type !secure! Collection page: ${baseUrl}/u/${login}`;
+  return `@${display} 📖 Securement Pods: ${c.species}/${all.length} deviations, ${c.variants}/${totalVariants} variants & skins, ${c.total} secured in total. ${baseUrl}/u/${login}`;
 }
 
 function scrap(userId, login, display) {

@@ -67,7 +67,7 @@ function panelHtml(bag, openId) {
   const css = fs.readFileSync(path.join(EXT, "panel.css"), "utf8");
   const js = fs.readFileSync(path.join(EXT, "panel.js"), "utf8");
   return `<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body class="dark">
-<header><div class="title">Deviation Bag</div><div id="who" class="who"></div></header><main id="app"></main>
+<header><div class="title">Securement Pods</div><div id="who" class="who"></div></header><main id="app"></main>
 <script>
 window.Twitch = { ext: { onContext(cb){ cb({ theme: "dark" }); }, onAuthorized(cb){ setTimeout(() => cb({ token: "x" }), 0); }, actions: { requestIdShare(){} } } };
 window.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve(${JSON.stringify(bag)}) });
@@ -101,7 +101,7 @@ ${openId ? `<script>setTimeout(() => { const c = document.querySelector('.dev[da
   await shot(`<body style="margin:0;width:1024px;height:768px;${bg}${font}color:#e6edf3;display:flex;align-items:center;gap:28px;padding:0 36px;box-sizing:border-box;">
     <div style="flex:1;">
       <div style="color:#0ea5e9;font-weight:800;letter-spacing:1px;font-size:14px;">TWITCH PANEL</div>
-      <div style="font-size:30px;font-weight:800;margin:6px 0 14px;line-height:1.15;">Your Deviation Bag on every stream</div>
+      <div style="font-size:30px;font-weight:800;margin:6px 0 14px;line-height:1.15;">Your Securement Pods on every stream</div>
       <div style="color:#93a4b5;font-size:16px;line-height:1.6;">Every Once Human deviation you've secured in chat with <b style="color:#e6edf3">!secure</b> — Skill &amp; Activity Ratings, traits, and the variations and skins you've caught.</div>
     </div>
     ${[grid, detail].map((f) => `<img src="${b64(f)}" style="width:318px;height:500px;border-radius:10px;border:1px solid #26333f;box-shadow:0 20px 50px rgba(0,0,0,.5);">`).join("")}

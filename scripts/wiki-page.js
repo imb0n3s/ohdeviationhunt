@@ -67,7 +67,7 @@ out.push(`<div style="max-width:1000px; margin:0 auto;">
 <div style="background:linear-gradient(135deg,#0d1319,#10202e); border:1px solid #1f2a35; border-radius:16px; padding:22px 24px; margin-bottom:16px;">
 <div style="color:#0ea5e9; font-weight:800; font-size:13px; letter-spacing:1px; text-transform:uppercase;">Twitch Chat Game</div>
 <div style="color:#e6edf3; font-size:28px; font-weight:800; margin:4px 0 6px;">Deviation Hunt</div>
-<div style="color:#cfd6df; line-height:1.7;">A Once Human catching game that lives in Twitch chat. While a stream is live, deviations are spotted in the wild in chat — type ${cmd("!secure")} to catch them, collect all ${devs.length} deviations with their variations and skins, and roll the best Skill Rating, Activity Rating and traits. Your Deviation Bag follows you to '''every''' channel that runs the game.</div>
+<div style="color:#cfd6df; line-height:1.7;">A Once Human catching game that lives in Twitch chat. While a stream is live, deviations are spotted in the wild in chat — type ${cmd("!secure")} to catch them, collect all ${devs.length} deviations with their variations and skins, and roll the best Skill Rating, Activity Rating and traits. Your Securement Pods follows you to '''every''' channel that runs the game.</div>
 <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;">
 <span style="background:#0ea5e9; border-radius:8px; padding:6px 14px; font-weight:700;">[${URL} <span style="color:#04121c;">Add it to your channel</span>]</span>
 <span style="background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:6px 14px; font-weight:700;">[${URL}/channels <span style="color:#e6edf3;">Where to play</span>]</span>
@@ -81,7 +81,7 @@ out.push(box("Start", "How to Play", `
 # Watch a stream that has '''${BOT}''' in chat — [${URL}/channels see every channel running it].
 # When the bot posts ''"👀 A … has been spotted in the wild!"'', type ${cmd("!secure")} within '''${cfg.SPAWN_WINDOW_SECONDS} seconds'''. Each throw costs ${ECONOMY.throwCost} ${SC}; the bot replies with how many Securement Units you'll have left if you catch it.
 # When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
-# Check your collection any time with ${cmd("!deviationbag")} or on your own page: ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)}
+# Check your collection any time with ${cmd("!pods")} or on your own page: ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)}
 
 Your first ${cmd("!secure")} signs you up automatically — you start with '''${ECONOMY.starterUnits.standard} Securement Units''' and '''${ECONOMY.starterStarchrom} ${SC}'''. Every ${cmd("!secure")} throw costs '''${ECONOMY.throwCost} ${SC}'''. A Securement Unit is only used to '''house''' a deviation you catch — if it breaks free, you keep the unit. You need at least one empty unit to throw, and you get one throw per spawn.
 `));
@@ -89,10 +89,10 @@ Your first ${cmd("!secure")} signs you up automatically — you start with '''${
 out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!secure"), `Throw at the deviation that's loose in chat (${ECONOMY.throwCost} ${SC}; a catch goes into one of your Securement Units). Also works as ${cmd("!catch")}. One throw per person per spawn.`],
   [cmd("!units"), `Show your Securement Units, ${SC}, and when your next free unit arrives. Also ${cmd("!inv")}.`],
-  [cmd("!shop"), `Show what the shop sells and the prices. The Deviation Bag panel has the same shop in its '''Shop''' tab.`],
+  [cmd("!shop"), `Show what the shop sells and the prices. The Securement Pods panel has the same shop in its '''Shop''' tab.`],
   [cmd("!buy <amount>"), `Buy Securement Units for ${fmt(unitPrice)} ${SC} each, e.g. ${cmd("!buy 2")}.`],
   [cmd("!daily"), `Claim your daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${ECONOMY.daily.units.standard} Securement Unit, and turn on ${ECONOMY.hourlyUnits} free Securement Unit every hour for the rest of the day while you're in a live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream.`],
-  [cmd("!deviationbag [name]"), `Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.`],
+  [cmd("!pods [name]"), `Also works as ${cmd("!deviationbag")}. Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.`],
   [cmd("!traits <deviation>"), `Skill Rating, Activity Rating and all three traits of your best specimen of that deviation. Also ${cmd("!stats")}.`],
   [cmd("!dev <deviation>"), `Info about a deviation: what it does, its variations and skins, and a wiki link.`],
   [cmd("!scrap"), `Recycle every duplicate for ${SC} (${pct(ECONOMY.scrapValue)} of its catch reward). You keep the specimen with the best Skill + Activity Rating of each deviation and variant.`],
@@ -114,7 +114,7 @@ ${table(["Command", "Effect"], [
 `));
 
 out.push(box("Shop", "Securement Units & Gloves", `
-Buy with ${cmd("!buy")} in chat or in the Deviation Bag panel's '''Shop''' tab.
+Buy with ${cmd("!buy")} in chat or in the Securement Pods panel's '''Shop''' tab.
 ${table(["Item", "Description", "Price"], [
   ["'''Securement Unit'''", "Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw. " + cmd("!buy <amount>"), `${fmt(unitPrice)} ${SC}`],
   ...GLOVES.map((g) => [`'''<span style="color:${g.color};">${g.name}</span>''' <small>(${g.rarity})</small>`, `+${Math.round(g.bonus * 100)}% catch chance on every throw. Bought once and kept forever. ${cmd("!buy " + g.id)}`, `${fmt(g.price)} ${SC}`]),
@@ -165,7 +165,7 @@ out.push(box("Shiny", "Variations & Skins", `
 Variations and skins are Deviation Hunt's shinies. When one appears, the spawn message says so:
 ${code(`👀 A Grumpy Bulb has been spotted in the wild! ✨ VARIATION: Violet Robe Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`)}
 
-* Each variation and skin is its own entry in your Deviation Bag, and the first one of each earns the +${ECONOMY.newSpeciesBonus} new-entry bonus.
+* Each variation and skin is its own entry in your Securement Pods, and the first one of each earns the +${ECONOMY.newSpeciesBonus} new-entry bonus.
 * On your collection page and in the Twitch panel, caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.
 * Some deviations have a trait that belongs to one variant only (e.g. Grumpy Bulb's Slot 1 trait is ''Violet Robe'') — see Traits below.
 `));
@@ -190,11 +190,11 @@ ${table(["Slot", "Chance of a trait", "What it can roll"], [
 * See any specimen's traits with ${cmd("!traits <deviation>")}, on your collection page, or in the Twitch panel.
 `));
 
-out.push(box("Collection", "Deviation Bag & Twitch Panel", `
-Your collection is tied to your Twitch account, not to a channel — everything you catch on any stream lands in the same Deviation Bag, and a name change doesn't lose it.
+out.push(box("Collection", "Securement Pods & Twitch Panel", `
+Your collection is tied to your Twitch account, not to a channel — everything you catch on any stream lands in the same Securement Pods, and a name change doesn't lose it.
 
-* '''Collection page:''' ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)} — every deviation grouped by Combat / Crafting / Territory, your best specimen's ratings and traits, and caught variations and skins highlighted. ${cmd("!deviationbag")} posts your link.
-* '''Twitch panel:''' the ''Deviation Bag'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Deviation Bag''' once to let Twitch share your username with it. Under your name, a countdown shows how long until your next free hourly Securement Unit (or reminds you to type ${cmd("!daily")} first), plus a link to your own collection page. Click a deviation to see '''every''' specimen you own with its Skill Rating, Activity Rating and traits — when you have more than one, you can destroy an extra for '''${fmt(ECONOMY.destroyValue)} ${SC} + ${ECONOMY.destroyUnits} Securement Unit''' (you always keep at least one). Switch to the '''Shop''' tab to buy Securement Units with your Starchrom without typing in chat. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
+* '''Collection page:''' ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)} — every deviation grouped by Combat / Crafting / Territory, your best specimen's ratings and traits, and caught variations and skins highlighted. ${cmd("!pods")} posts your link.
+* '''Twitch panel:''' the ''Securement Pods'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Securement Pods''' once to let Twitch share your username with it. Under your name, a countdown shows how long until your next free hourly Securement Unit (or reminds you to type ${cmd("!daily")} first), plus a link to your own collection page. Click a deviation to see '''every''' specimen you own with its Skill Rating, Activity Rating and traits — when you have more than one, you can destroy an extra for '''${fmt(ECONOMY.destroyValue)} ${SC} + ${ECONOMY.destroyUnits} Securement Unit''' (you always keep at least one). Switch to the '''Shop''' tab to buy Securement Units with your Starchrom without typing in chat. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
 * '''Leaderboard:''' [${URL}/top ${URL.replace(/^https?:\/\//, "")}/top] or ${cmd("!hunttop")}.
 `));
 

@@ -123,7 +123,7 @@ function channelList(pool, { limit } = {}) {
 function channelsPage(pool) {
   const c = channelList(pool);
   return page("Channels", `<h1>Where to play</h1>
-<p>Every Twitch channel running ${esc(cfg.BOT_NAME)} — ${c.total} channel${c.total === 1 ? "" : "s"}, ${c.live} live right now. Deviations only show up while a channel is live. Your Deviation Bag is the same on all of them.</p>
+<p>Every Twitch channel running ${esc(cfg.BOT_NAME)} — ${c.total} channel${c.total === 1 ? "" : "s"}, ${c.live} live right now. Deviations only show up while a channel is live. Your Securement Pods are the same on all of them.</p>
 ${c.html}
 <p style="margin-top:24px">Streamer? <a href="/auth/twitch?action=add">Add ${esc(cfg.BOT_NAME)} to your channel</a>.</p>`);
 }
@@ -133,7 +133,7 @@ function landing(pool) {
   const botName = bot?.login || "the bot";
   return page(cfg.BOT_NAME, `
 <h1>${esc(cfg.BOT_NAME)} — catch Once Human deviations in Twitch chat</h1>
-<p>While you're live, deviations show up in the wild in your chat. Viewers throw with <kbd>!secure</kbd> (10 Starchrom a throw) and house what they catch in Securement Units, earn Starchrom, and build a Deviation Bag that follows them to every channel running the game. Every deviation, variation and skin comes straight from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">the OHWikiGuide Deviation page</a>, so new ones join the game as soon as they're on the wiki.</p>
+<p>While you're live, deviations show up in the wild in your chat. Viewers throw with <kbd>!secure</kbd> (10 Starchrom a throw) and house what they catch in Securement Units, earn Starchrom, and fill Securement Pods that follow them to every channel running the game. Every deviation, variation and skin comes straight from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">the OHWikiGuide Deviation page</a>, so new ones join the game as soon as they're on the wiki.</p>
 <div class="card">
   <a class="btn" href="/auth/twitch?action=add">Add ${esc(cfg.BOT_NAME)} to my channel</a><a class="btn secondary" href="/auth/twitch?action=remove">Remove it</a>
   <p style="margin-bottom:0">You log in with Twitch once; the bot only gets permission to read and post in your chat.${bot ? ` Prefer chat? Type <kbd>!join</kbd> in <a href="https://twitch.tv/${esc(bot.login)}">twitch.tv/${esc(bot.login)}</a>.` : ""} Then <kbd>/mod ${esc(botName)}</kbd> so it isn't rate-limited.</p>
@@ -141,7 +141,7 @@ function landing(pool) {
 <div class="stats"><div class="stat"><b>${fmt(channelList(pool).total)}</b>channels</div><div class="stat"><b>${fmt(db.countPlayers())}</b>Metas</div><div class="stat"><b>${fmt(db.totalCatches())}</b>deviations secured</div><div class="stat"><b>${data.all().length}</b>deviations</div><div class="stat"><b>${fmt(db.starchromSpent())}</b>Starchrom spent</div></div>
 
 ${(() => { const c = channelList(pool, { limit: 12 }); return `<h2>Where to play <span class="sub">${c.live} live · ${c.total} channel${c.total === 1 ? "" : "s"}</span></h2>
-<p>Every Twitch channel with ${esc(cfg.BOT_NAME)}. Deviations only show up while a channel is live — your Deviation Bag is the same on all of them.</p>
+<p>Every Twitch channel with ${esc(cfg.BOT_NAME)}. Deviations only show up while a channel is live — your Securement Pods are the same on all of them.</p>
 ${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels →</a></p>` : ""}`; })()}
 
 <h2>OBS Source</h2>
@@ -162,7 +162,7 @@ ${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones [Skill 4/5 · Activi
 <p><kbd>!secure</kbd> — throw a Securement Unit at the loose deviation (one throw per spawn). <kbd>!catch</kbd> works too.</p>
 <p><kbd>!units</kbd> — your Starchrom and Units · <kbd>!shop</kbd> — prices · <kbd>!buy 5</kbd> — buy Securement Units</p>
 <p><kbd>!daily</kbd> — free supply drop (+${ECONOMY.daily.starchrom} Starchrom and ${ECONOMY.daily.units.standard} Securement Unit), once a day (resets at midnight Central) during a live stream, plus ${ECONOMY.hourlyUnits} free Securement Unit every hour for the rest of the day while you're in a live stream</p>
-<p><kbd>!deviationbag</kbd> — your Deviation Bag and collection link · <kbd>!deviationbag name</kbd> — someone else's · <kbd>!scrap</kbd> — turn duplicates into Starchrom</p>
+<p><kbd>!pods</kbd> — your Securement Pods and collection link · <kbd>!pods name</kbd> — someone else's · <kbd>!scrap</kbd> — turn duplicates into Starchrom</p>
 <p><kbd>!traits</kbd> — your latest catch's Skill Rating, Activity Rating and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
 <p><kbd>!dev behemoth</kbd> — what a deviation does and where it drops · <kbd>!hunttop</kbd> — leaderboard · <kbd>!hunt</kbd> — help</p>
 </div>
@@ -212,8 +212,8 @@ function collectionPage(p) {
     return `<div class="dev ${h ? "" : "missing"}${shiny}">${h ? `<span class="c">×${h.count}</span>` : ""}${top ? `<span class="vb" title="Variations &amp; skins caught">✨ ${gotVars.length}</span>` : ""}<img loading="lazy" src="${esc((top && top.img) || d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${top ? `<div class="vn">✨ ${top.kind === "skin" ? "Skin" : "Variation"}: ${esc(top.name)}</div>` : ""}${tierTag(d.rarity)}${spHtml}${h ? vars : ""}</div>`;
   };
   const cards = sections(all, cardFor);
-  return page(`${p.display}'s Deviation Bag`, `
-<h1>${esc(p.display)}'s Deviation Bag</h1>
+  return page(`${p.display}'s Securement Pods`, `
+<h1>${esc(p.display)}'s Securement Pods</h1>
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${fmt(c.total)}</b>secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
 <p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
@@ -258,7 +258,7 @@ function createApp(pool) {
   app.get("/u", (req, res) => res.redirect(`/u/${encodeURIComponent(String(req.query.login || "").trim().replace(/^@/, "").toLowerCase())}`));
   app.get("/u/:login", (req, res) => {
     const p = db.q.getPlayerByLogin.get(String(req.params.login).toLowerCase());
-    if (!p) return res.status(404).send(simple("Not found", "No Deviation Bag yet", `${esc(req.params.login)} hasn't secured anything yet. Catch one with <kbd>!secure</kbd> in any channel running ${esc(cfg.BOT_NAME)}.`));
+    if (!p) return res.status(404).send(simple("Not found", "No Securement Pods yet", `${esc(req.params.login)} hasn't secured anything yet. Catch one with <kbd>!secure</kbd> in any channel running ${esc(cfg.BOT_NAME)}.`));
     res.send(collectionPage(p));
   });
   app.get("/health", (req, res) => res.json({ ok: true, channels: pool.channelCount, botSetUp: !!db.getBotAccount(), data: data.info() }));
