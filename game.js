@@ -447,6 +447,7 @@ function scrap(userId, login, display) {
   let n = 0, gain = 0;
   db.tx(() => {
     for (const r of db.q.dupes.all(userId)) {
+      if (r.variant) continue; // variations and skins are never scrapped
       const dev = data.get(r.deviation);
       const variant = dev?.variants.find((v) => v.name === r.variant);
       const each = Math.round(rewardFor({ dev: dev || { rarity: "uncommon" }, variant: r.variant ? variant || { kind: r.kind } : null }) * ECONOMY.scrapValue);
@@ -459,8 +460,8 @@ function scrap(userId, login, display) {
     p.starchrom += gain;
     savePlayer(p);
   })();
-  if (!n) return `@${display} no duplicates to scrap — you keep one of everything.`;
-  return `@${display} ♻️ scrapped ${n} duplicate${n > 1 ? "s" : ""} for ${fmt(gain)} ${SC} (kept your best Skill + Activity Rating of each). ${bagText(p)}`;
+  if (!n) return `@${display} no duplicates to scrap — you keep one of everything, and variations and skins are never scrapped.`;
+  return `@${display} ♻️ scrapped ${n} duplicate${n > 1 ? "s" : ""} for ${fmt(gain)} ${SC} (kept your best Skill + Activity Rating of each; variations and skins are never scrapped). ${bagText(p)}`;
 }
 
 function info(query, baseUrl) {

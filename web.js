@@ -287,7 +287,7 @@ ${table([
     row("!buy &lt;amount&gt;", `Buy Securement Units, e.g. <kbd>!buy 3</kbd>. Buy gloves with <kbd>!buy rustic</kbd>, <kbd>!buy bbq</kbd> or <kbd>!buy savior</kbd>. You can hold ${E.unitCap} Securement Pods in total (caught deviations + empty units).`),
     row("!traits [deviation]", `Skill Rating, Activity Rating and traits of your latest catch, or of a deviation you've secured (<kbd>!traits grumpy bulb</kbd>). Also <kbd>!stats</kbd>.`),
     row("!dev &lt;deviation&gt;", `Info about any deviation: rarity, type, variations and skins.`),
-    row("!scrap", `Turn duplicate specimens into Starchrom (${Math.round(E.scrapValue * 100)}% of the catch reward each). Keeps your best Skill + Activity specimen of every deviation and frees up pods.`),
+    row("!scrap", `Turn duplicate specimens into Starchrom (${Math.round(E.scrapValue * 100)}% of the catch reward each). Keeps your best Skill + Activity specimen of every deviation and frees up pods. Variations and skins are never scrapped.`),
     row("!hunttop", `The leaderboard link. Also <kbd>!leaderboard</kbd>.`),
     row("!hunt", `A quick how-to-play reminder in chat.`),
   ])}

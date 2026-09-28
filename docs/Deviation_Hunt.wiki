@@ -54,7 +54,7 @@ Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!dev <deviation></nowiki></span> || Info about a deviation: what it does, its variations and skins, and a wiki link.
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!scrap</nowiki></span> || Recycle every duplicate for Starchrom (50% of its catch reward). You keep the specimen with the best Skill + Activity Rating of each deviation and variant.
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!scrap</nowiki></span> || Recycle every duplicate for Starchrom (50% of its catch reward). You keep the specimen with the best Skill + Activity Rating of each deviation. Variations and skins are '''never''' scrapped.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunttop</nowiki></span> || Top collectors across every channel. Also <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!leaderboard</nowiki></span>.
 |-
