@@ -96,7 +96,7 @@ function rollSpawn() {
 }
 
 // "P4·M2", with a star for a perfect 5/5
-const ratingTag = (sp) => `Skill ${sp.power}/5 · Activity ${sp.mood}/5${sp.power === 5 && sp.mood === 5 ? " ⭐" : ""}`;
+const ratingTag = (sp) => `${sp.power}/${sp.mood}${sp.power === 5 && sp.mood === 5 ? " ⭐" : ""}`;
 
 function spawnName(s) { return s.variant ? `${s.dev.name} — ${s.variant.name}` : s.dev.name; }
 
@@ -483,7 +483,7 @@ function specimenText(userId, login, display, query, baseUrl) {
   const count = db.q.specimensOf.all(userId, sp.deviation).length;
   const nm = `${dev?.name || sp.deviation}${sp.variant ? ` — ${sp.variant}` : ""}`;
   const label = query ? `best ${nm}${count > 1 ? ` (of ${count})` : ""}` : `latest: ${nm}`;
-  return `@${display} ${label} · Skill Rating ${sp.power}/5 · Activity Rating ${sp.mood}/5 · Traits: ${traits.shortTraits(sp, dev?.category)} ${baseUrl}/u/${login}`;
+  return `@${display} ${label} · ${ratingTag(sp)} · Traits: ${traits.shortTraits(sp, dev?.category)} ${baseUrl}/u/${login}`;
 }
 
 function top(baseUrl) {
