@@ -33,3 +33,4 @@
 - Pod cap: ECONOMY.unitCap = 100 Securement Pods = caught deviations + empty Securement Units (+ players.extra_cap). Extra room is sold for Bits:
   pods5 = +5 capacity for 50 Bits (in BITS_PACKS; decided by B 2026-09-28). When switching Bits on, the Twitch
   products are: starchrom100/5, starchrom500/25, starchrom1000/50, starchrom2000/100 AND pods5/50.
+- PENDING (2026-09-28): republish the wiki page from commit c2efd9e or later (!scrap never scraps variations/skins) — couldn't reach Chrome.
