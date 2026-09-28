@@ -272,7 +272,7 @@ class Spawns {
           db.q.addSpecimen.run({ user_id: userId, deviation: s.dev.id, variant, ...sp, caught_at: Date.now(), channel: bid });
           p.starchrom += reward + (had ? 0 : ECONOMY.newSpeciesBonus);
           if (!had) firsts.push(a.display);
-          caught.push(`${a.display} [${ratingTag(sp)}]`);
+          caught.push(`${ratingTag(sp)} ${a.display}`);
         } else {
           p.units[a.unit] = (p.units[a.unit] || 0) + 1; // it broke free, so the unit it was going into is still empty
           escaped.push(a.display);
