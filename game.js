@@ -241,7 +241,7 @@ class Spawns {
     s.attempts.set(userId, { login, display, unit, isNew: p.isNew, bonus: glove ? glove.bonus : 0 });
     this.persist(bid);
     const left = p.units[unit];
-    const throwTxt = `🎯 Threw at the ${spawnName(s)} (−${ECONOMY.throwCost} ${SC}). You'll have ${left} Securement Pod${left === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}%` : ""}`;
+    const throwTxt = `🎯 Threw at the ${spawnName(s)} (−${ECONOMY.throwCost} ${SC}, Left: ${fmt(p.starchrom)}). You'll have ${left} Securement Pod${left === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}%` : ""}`;
     if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}. ${throwTxt} Type !daily for more, plus 1 free unit every hour this stream.`;
     return `@${display} ${throwTxt}`;
   }
