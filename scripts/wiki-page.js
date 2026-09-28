@@ -120,7 +120,7 @@ ${table(["Item", "Description", "Price"], [
 '''Ways to get Securement Units'''
 ${table(["Source", "Amount"], [
   ["Starting supply", `${ECONOMY.starterUnits.standard} units`],
-  ["Free refill", `+${ECONOMY.hourlyUnits} unit every hour — no cap, they keep stacking even while you're away`],
+  ["Free refill", `+${ECONOMY.hourlyUnits} unit every hour — no cap, they keep stacking even while you're away. While you're playing on a live stream, the bot tells you in chat when yours arrives.`],
   [cmd("!daily"), `+${ECONOMY.daily.units.standard} unit every ${ECONOMY.dailyCooldownHours} hours`],
   ["Destroying an extra specimen in the Twitch panel", `+${ECONOMY.destroyUnits} unit (plus ${fmt(ECONOMY.destroyValue)} ${SC})`],
   [cmd("!buy <amount>") + " or the panel's '''Shop''' tab", `${fmt(unitPrice)} ${SC} each`],

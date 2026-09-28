@@ -53,6 +53,13 @@ async function main() {
   pool.refreshLive();
   setInterval(pool.refreshLive, cfg.LIVE_POLL_SECONDS * 1000).unref();
   setInterval(() => spawns.tick(), 15 * 1000).unref();
+  // hourly free Securement Unit notices for people who are playing
+  const { unitNotices } = require("./game");
+  setInterval(() => {
+    try {
+      for (const [ch, msg] of unitNotices((id) => spawns.live.has(id))) pool.send(ch, msg);
+    } catch (e) { console.error("[units] notice failed:", e.message); }
+  }, 60 * 1000).unref();
 }
 
 process.on("unhandledRejection", (e) => console.error("unhandledRejection:", e));

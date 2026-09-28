@@ -324,6 +324,42 @@ function destroySpecimen(userId, specimenId) {
   return { ok: true, gained: ECONOMY.destroyValue, units: ECONOMY.destroyUnits, deviation: sp.deviation, p };
 }
 
+// ---------------- free-unit chat notices ----------------
+// Once a minute: anyone who played in a live channel recently and whose hourly free unit is due
+// gets it paid out now and is mentioned in that channel's chat. One message per channel,
+// split if it gets long. People who aren't playing get their units silently, as before.
+function unitNotices(isLive, now = Date.now()) {
+  if (!cfg.UNIT_NOTICE_ACTIVE_MIN || cfg.PAUSED) return [];
+  const rows = db.q.dueActive.all(now - cfg.UNIT_NOTICE_ACTIVE_MIN * 60 * 1000, now - HOUR);
+  const byChannel = new Map();
+  for (const row of rows) {
+    const ch = row.last_channel;
+    if (!isLive(ch) || !db.getChannel(ch)?.enabled) continue;
+    const before = JSON.parse(row.units || "{}").standard || 0;
+    const p = loadPlayer(row.user_id, row.login, row.display); // pays out what's due
+    const got = (p.units.standard || 0) - before;
+    if (got <= 0) continue;
+    if (!byChannel.has(ch)) byChannel.set(ch, []);
+    byChannel.get(ch).push({ name: `@${p.display}`, got });
+  }
+  // "🎁 @luna acquired a Securement Unit!" / "🎁 @luna, @bob acquired a Securement Unit!"
+  const out = [];
+  for (const [ch, list] of byChannel) {
+    const groups = new Map();
+    for (const x of list) { if (!groups.has(x.got)) groups.set(x.got, []); groups.get(x.got).push(x.name); }
+    for (const [got, names] of groups) {
+      const tail = got === 1 ? " acquired a Securement Unit!" : ` acquired ${got} Securement Units!`;
+      let batch = [];
+      for (const n of names) {
+        if (batch.length && ("🎁 " + [...batch, n].join(", ") + tail).length > 450) { out.push([ch, "🎁 " + batch.join(", ") + tail]); batch = []; }
+        batch.push(n);
+      }
+      if (batch.length) out.push([ch, "🎁 " + batch.join(", ") + tail]);
+    }
+  }
+  return out; // [[channelId, message], ...]
+}
+
 function inventory(userId, login, display) {
   const p = loadPlayer(userId, login, display);
   return `@${display} ${unitsText(p)}`;
@@ -403,4 +439,4 @@ function top(baseUrl) {
   return `🏆 Top Metas: ${rows.map((r, i) => `${i + 1}. ${r.display} ${r.species} dev${r.variants ? ` +${r.variants}✨` : ""}`).join(" · ")} — ${baseUrl}/top`;
 }
 
-module.exports = { destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

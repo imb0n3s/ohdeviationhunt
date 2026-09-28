@@ -58,7 +58,8 @@ function makeHandler(pool, spawns) {
     }
 
     // ---- catching: always allowed, no cooldown (one throw per spawn is enforced in game.js) ----
-    if (cmd === "!secure" || cmd === "!catch") return reply(spawns.attempt(bid, uid, login, name, args[0]));
+    const played = () => db.q.touchActive.run(bid, Date.now(), uid); // remembers where they play (free-unit notices)
+    if (cmd === "!secure" || cmd === "!catch") { const r = spawns.attempt(bid, uid, login, name, args[0]); played(); return reply(r); }
 
     // ---- mods / broadcaster: !hunt ... ----
     if (cmd === "!hunt") {
@@ -101,6 +102,7 @@ function makeHandler(pool, spawns) {
     if (!isModOrOwner(ev) && Date.now() - (lastReply.get(key) || 0) < USER_CD) return;
     lastReply.set(key, Date.now());
 
+    try {
     switch (cmd) {
       case "!units": case "!inv": return reply(game.inventory(uid, login, name));
       case "!shop": return reply(game.shop());
@@ -122,6 +124,7 @@ function makeHandler(pool, spawns) {
       case "!traits": case "!stats": return reply(game.specimenText(uid, login, name, args.join(" "), cfg.BASE_URL));
       case "!hunttop": case "!leaderboard": return reply(game.top(cfg.BASE_URL));
     }
+    } finally { played(); }
   };
 }
 

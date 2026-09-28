@@ -112,7 +112,7 @@ Securement Units are the only thing you need to catch deviations — there is on
 |-
 | Starting supply || 5 units
 |-
-| Free refill || +1 unit every hour — no cap, they keep stacking even while you're away
+| Free refill || +1 unit every hour — no cap, they keep stacking even while you're away. While you're playing on a live stream, the bot tells you in chat when yours arrives.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || +1 unit every 20 hours
 |-

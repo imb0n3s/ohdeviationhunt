@@ -94,6 +94,9 @@ CREATE TABLE IF NOT EXISTS spawn_log (
 try { db.exec(`ALTER TABLE players ADD COLUMN last_unit_at INTEGER NOT NULL DEFAULT 0`); } catch {}
 // existing players start their hourly-unit clock now (no back-pay for the past)
 db.prepare(`UPDATE players SET last_unit_at=? WHERE last_unit_at=0`).run(Date.now());
+// where and when each player last played (for the free-unit chat notices)
+try { db.exec(`ALTER TABLE players ADD COLUMN last_channel TEXT`); } catch {}
+try { db.exec(`ALTER TABLE players ADD COLUMN last_active_at INTEGER NOT NULL DEFAULT 0`); } catch {}
 
 const q = {
   upsertChannel: db.prepare(`INSERT INTO channels (broadcaster_id, login, display_name, joined_at, joined_via, enabled)
@@ -120,6 +123,9 @@ const q = {
   getPlayerByLogin: db.prepare(`SELECT * FROM players WHERE login=?`),
   insertPlayer: db.prepare(`INSERT INTO players (user_id, login, display, starchrom, units, created_at, last_unit_at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
   touchPlayer: db.prepare(`UPDATE players SET login=?, display=? WHERE user_id=?`),
+  touchActive: db.prepare(`UPDATE players SET last_channel=?, last_active_at=? WHERE user_id=?`),
+  // players who played recently and whose next free unit is due
+  dueActive: db.prepare(`SELECT * FROM players WHERE last_active_at>? AND last_unit_at<=? AND last_channel IS NOT NULL`),
   savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at WHERE user_id=@user_id`),
   countPlayers: db.prepare(`SELECT COUNT(*) AS n FROM players`),
 
