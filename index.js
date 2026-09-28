@@ -9,12 +9,17 @@ const { Spawns } = require("./game");
 const { createApp } = require("./web");
 
 async function main() {
+  // Start answering web requests right away (restarts on deploy are shorter), then load the
+  // deviation + trait data from the wiki.
+  const pool = new Conduit(null);
+  const app = createApp(pool);
+  app.listen(cfg.PORT, () => console.log(`[web] ${cfg.BOT_NAME} on ${cfg.BASE_URL} (port ${cfg.PORT})`));
+
   await data.start();
   const traits = require("./traits");
   await traits.refresh();
   setInterval(traits.refresh, 6 * 60 * 60 * 1000).unref();
 
-  const pool = new Conduit(null);
   pool.send = (bid, text, replyTo) => twitch.sendChat(bid, text, replyTo).catch((e) => console.error("[chat] send failed:", e.message));
   const spawns = new Spawns((bid, text) => pool.send(bid, text));
   pool.spawns = spawns;
@@ -43,8 +48,6 @@ async function main() {
     finally { polling = false; }
   };
 
-  const app = createApp(pool);
-  app.listen(cfg.PORT, () => console.log(`[web] ${cfg.BOT_NAME} on ${cfg.BASE_URL} (port ${cfg.PORT})`));
 
   if (db.getBotAccount()) {
     await pool.joinAllFromDb().catch((e) => console.error("[eventsub] startup failed:", e.message));

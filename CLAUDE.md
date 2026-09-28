@@ -14,3 +14,5 @@
   deviationhunt -> wlw9g11p.up.railway.app, DNS only). BASE_URL env is set to it. The old
   *.up.railway.app address 301-redirects pages; /ext, /auth, /health still answer there.
   Twitch app redirect URLs and the extension allowlists include both addresses.
+- Every deploy restarts the server (~30-60s offline; the volume prevents overlap). Railway Watch
+  Paths skip deploys for docs/, scripts/, test/, ext/ and *.md changes. Batch server changes.
