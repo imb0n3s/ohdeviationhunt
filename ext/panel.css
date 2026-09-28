@@ -124,3 +124,9 @@ footer a { color:var(--accent); font-size:12px; }
 .btn.bitsbuy span { display:block; font-size:11px; opacity:.85; margin-top:2px; }
 .wallet b small { font-size:11px; opacity:.7; font-weight:700; }
 .stat b small { font-size:12px; opacity:.7; }
+.pages button { padding:5px 8px; font-size:12px; }
+.cmdlist { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:2px 10px; margin-bottom:8px; }
+.cmd { padding:8px 0; border-bottom:1px solid var(--line); font-size:12px; color:var(--muted); line-height:1.45; }
+.cmd:last-child { border-bottom:0; }
+.cmd > kbd { display:inline-block; margin-bottom:3px; font-size:12px; }
+.cmd kbd { background:#0d1319; border:1px solid var(--line); color:#7dd3fc; border-radius:5px; padding:0 5px; font-family:ui-monospace,Consolas,monospace; font-size:11px; }

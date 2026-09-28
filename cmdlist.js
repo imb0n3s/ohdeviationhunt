@@ -1,0 +1,42 @@
+// cmdlist.js — the one list of chat commands, shown on the website's Commands page and in the
+// Twitch panel's Commands tab. Text is plain; `backticks` mark a command (rendered as <kbd>).
+const cfg = require("./config");
+const shop = require("./shop");
+const { ECONOMY: E, UNITS } = require("./rarity");
+
+const fmt = (n) => Number(n).toLocaleString("en-US");
+
+function commandSections() {
+  const gloves = shop.ITEMS.filter((i) => i.kind === "gloves").map((i) => `${i.name} +${Math.round(i.bonus * 100)}% (${fmt(i.price)})`).join(" · ");
+  return [
+    { id: "viewer", title: "Viewer commands", rows: [
+      ["!daily", `Start here. Once a day (resets at midnight Central) while the stream is live: +${E.daily.starchrom} Starchrom and ${E.daily.units.standard} Securement Unit, and it turns on 1 free Securement Unit every hour you play in a live stream for the rest of the day.`],
+      ["!secure", `Throw at the deviation that's spotted in the wild (you have ${cfg.SPAWN_WINDOW_SECONDS} seconds). Costs ${E.throwCost} Starchrom and needs an empty Securement Unit; if you catch it, it lives in that unit. One throw per spawn. Also \`!catch\`.`],
+      ["!pods", "Your Securement Pods: how many deviations, variants & skins you've secured, plus a link to your collection page. Add a name (`!pods luna_raventhorn`) to see someone else's."],
+      ["!starchrom", "How much Starchrom you have. Also `!sc`."],
+      ["!units", "Your Starchrom, Securement Units and when your next free hourly unit arrives. Also `!inv`."],
+      ["!shop", `What the shop sells: Securement Units (${fmt(UNITS.standard.price)} Starchrom each) and Gloves — ${gloves}.`],
+      ["!buy <amount>", `Buy Securement Units, e.g. \`!buy 3\`. Buy gloves with \`!buy rustic\`, \`!buy bbq\` or \`!buy savior\`. You can hold ${E.unitCap} Securement Pods in total (caught deviations + empty units).`],
+      ["!traits [deviation]", "Skill Rating, Activity Rating and traits of your latest catch, or of a deviation you've secured (`!traits grumpy bulb`). Also `!stats`."],
+      ["!dev <deviation>", "Info about any deviation: rarity, type, variations and skins."],
+      ["!scrap", `Turn duplicate specimens into Starchrom (${Math.round(E.scrapValue * 100)}% of the catch reward each). Keeps your best Skill + Activity specimen of every deviation and frees up pods. Variations and skins are never scrapped.`],
+      ["!hunttop", "The leaderboard link. Also `!leaderboard`."],
+      ["!hunt", "A quick how-to-play reminder in chat."],
+    ] },
+    { id: "streamer", title: "Streamer commands", note: "For the broadcaster and moderators, in your own chat.", rows: [
+      ["!hunt spawn", "Spawn a deviation right now."],
+      ["!hunt interval <minutes>", `How often deviations appear while you're live (2–120 minutes; default about every ${cfg.SPAWN_INTERVAL_MIN}).`],
+      ["!hunt off / !hunt on", "Pause or resume spawns. Other commands keep working."],
+      ["!hunt status", "Live status, spawn settings, what's loose right now, and spawn/catch totals for your channel."],
+      ["!hunt obs", "Your OBS Source link — a Browser Source that shows the deviation and its countdown on stream while it can be caught."],
+      ["!hunt leave", "Remove Deviation Hunt from your channel. Everyone keeps their collections."],
+      ["!hunt help", "Lists these mod commands in chat."],
+    ] },
+    { id: "join", title: "Adding the game to your channel", rows: [
+      ["!join", "Type it in the bot's chat (twitch.tv/ohdeviationhunt) to add Deviation Hunt to your channel, or use Add to my channel on deviationhunt.ohwikiguide.com. Then `/mod ohdeviationhunt` in your chat so it isn't rate-limited."],
+      ["!leave", "Type it in the bot's chat to remove the game from your channel."],
+    ] },
+  ];
+}
+
+module.exports = { commandSections };

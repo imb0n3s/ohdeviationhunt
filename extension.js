@@ -116,6 +116,9 @@ function mount(app) {
     next();
   });
 
+  // every chat command, for the panel's Commands tab (public — no sign-in needed)
+  app.get("/ext/commands", (req, res) => { res.set("Cache-Control", "public, max-age=300"); res.json(require("./cmdlist").commandSections()); });
+
   app.get("/ext/bag", (req, res) => {
     try {
       const token = (req.headers.authorization || "").replace(/^Bearer\s+/i, "");

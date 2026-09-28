@@ -272,43 +272,12 @@ function webShop(p, live, viewer, msg) {
 }
 
 function commandsPage() {
-  const E = ECONOMY, row = (c, d) => `<tr><td><kbd>${c}</kbd></td><td>${d}</td></tr>`;
-  const table = (rows) => `<div class="card"><table class="cmds">${rows.join("")}</table></div>`;
-  const glovesTxt = shop.ITEMS.filter((i) => i.kind === "gloves").map((i) => `${esc(i.name)} +${Math.round(i.bonus * 100)}% (${fmt(i.price)})`).join(" · ");
+  const kbd = (t) => esc(t).replace(/`([^`]+)`/g, "<kbd>$1</kbd>");
+  const table = (rows) => `<div class="card"><table class="cmds">${rows.map(([c, d]) => `<tr><td><kbd>${esc(c)}</kbd></td><td>${kbd(d)}</td></tr>`).join("")}</table></div>`;
+  const secs = require("./cmdlist").commandSections();
   return page("Commands", `<h1>Commands</h1>
 <p>Type these in the chat of any channel running ${esc(cfg.BOT_NAME)} (<a href="/channels">where to play</a>). Your Securement Pods are the same on every channel.</p>
-<h2>Viewer commands</h2>
-${table([
-    row("!daily", `Start here. Once a day (resets at midnight Central) while the stream is live: +${E.daily.starchrom} Starchrom and ${E.daily.units.standard} Securement Unit, and it turns on 1 free Securement Unit every hour you play in a live stream for the rest of the day.`),
-    row("!secure", `Throw at the deviation that's spotted in the wild (you have ${cfg.SPAWN_WINDOW_SECONDS} seconds). Costs ${E.throwCost} Starchrom and needs an empty Securement Unit; if you catch it, it lives in that unit. One throw per spawn. Also <kbd>!catch</kbd>.`),
-    row("!pods", `Your Securement Pods: how many deviations, variants &amp; skins you've secured, plus a link to your collection page. Add a name (<kbd>!pods luna_raventhorn</kbd>) to see someone else's.`),
-    row("!starchrom", `How much Starchrom you have. Also <kbd>!sc</kbd>.`),
-    row("!units", `Your Starchrom, Securement Units and when your next free hourly unit arrives. Also <kbd>!inv</kbd>.`),
-    row("!shop", `What the shop sells: Securement Units (${fmt(UNITS.standard.price)} Starchrom each) and Gloves — ${glovesTxt}.`),
-    row("!buy &lt;amount&gt;", `Buy Securement Units, e.g. <kbd>!buy 3</kbd>. Buy gloves with <kbd>!buy rustic</kbd>, <kbd>!buy bbq</kbd> or <kbd>!buy savior</kbd>. You can hold ${E.unitCap} Securement Pods in total (caught deviations + empty units).`),
-    row("!traits [deviation]", `Skill Rating, Activity Rating and traits of your latest catch, or of a deviation you've secured (<kbd>!traits grumpy bulb</kbd>). Also <kbd>!stats</kbd>.`),
-    row("!dev &lt;deviation&gt;", `Info about any deviation: rarity, type, variations and skins.`),
-    row("!scrap", `Turn duplicate specimens into Starchrom (${Math.round(E.scrapValue * 100)}% of the catch reward each). Keeps your best Skill + Activity specimen of every deviation and frees up pods. Variations and skins are never scrapped.`),
-    row("!hunttop", `The leaderboard link. Also <kbd>!leaderboard</kbd>.`),
-    row("!hunt", `A quick how-to-play reminder in chat.`),
-  ])}
-<p>You can also shop and see every specimen in the <b>Securement Pods</b> panel under the stream, or on <a href="/me">your own page</a> here.</p>
-<h2>Streamer commands</h2>
-<p>For the broadcaster and moderators, in your own chat.</p>
-${table([
-    row("!hunt spawn", "Spawn a deviation right now."),
-    row("!hunt interval &lt;minutes&gt;", `How often deviations appear while you're live (2–120 minutes; default about every ${cfg.SPAWN_INTERVAL_MIN}).`),
-    row("!hunt off / !hunt on", "Pause or resume spawns. Other commands keep working."),
-    row("!hunt status", "Live status, spawn settings, what's loose right now, and spawn/catch totals for your channel."),
-    row("!hunt obs", "Your OBS Source link — a Browser Source that shows the deviation and its countdown on stream while it can be caught."),
-    row("!hunt leave", "Remove Deviation Hunt from your channel. Everyone keeps their collections."),
-    row("!hunt help", "Lists these mod commands in chat."),
-  ])}
-<h2>Adding the game to your channel</h2>
-${table([
-    row("!join", `Type it in <a href="https://www.twitch.tv/${esc(db.getBotAccount()?.login || "ohdeviationhunt")}">the bot's chat</a> to add Deviation Hunt to your channel, or use <b>Add to my channel</b> on <a href="/">the home page</a>. Then <kbd>/mod ${esc(db.getBotAccount()?.login || "ohdeviationhunt")}</kbd> in your chat so it isn't rate-limited.`),
-    row("!leave", "Type it in the bot's chat to remove the game from your channel."),
-  ])}`);
+${secs.map((s) => `<h2>${esc(s.title)}</h2>${s.note ? `<p>${esc(s.note)}</p>` : ""}${table(s.rows)}${s.id === "viewer" ? `<p>You can also shop and see every specimen in the <b>Securement Pods</b> panel under the stream, or on <a href="/me">your own page</a> here.</p>` : ""}`).join("\n")}`);
 }
 
 function dexPage() {

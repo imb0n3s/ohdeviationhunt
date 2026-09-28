@@ -59,12 +59,30 @@
   function setPage(page) {
     view.page = page; view.open = null; notice = null;
     Array.prototype.forEach.call(document.querySelectorAll(".pages button"), function (b) { b.className = b.getAttribute("data-page") === page ? "on" : ""; });
-    document.getElementById("title").textContent = page === "shop" ? "Shop" : "Securement Pods";
+    document.getElementById("title").textContent = page === "shop" ? "Shop" : page === "cmds" ? "Commands" : "Securement Pods";
+    if (page === "cmds") return renderCommands();
     if (bag) render();
     window.scrollTo(0, 0);
   }
 
+  // ---- Commands tab: the same list as the website's Commands page (works before sign-in too) ----
+  var commands = null;
+  function renderCommands() {
+    if (!commands) {
+      el('<div class="msg">Loading commands…</div>');
+      fetch(API + "/ext/commands").then(function (r) { return r.json(); }).then(function (c) { commands = c; if (view.page === "cmds") renderCommands(); })
+        .catch(function () { if (view.page === "cmds") el('<div class="msg">Couldn’t load the commands. Try again in a minute.</div>'); });
+      return;
+    }
+    var kbd = function (t) { return esc(t).replace(/`([^`]+)`/g, "<kbd>$1</kbd>"); };
+    el(commands.map(function (s) {
+      return '<div class="sect">' + esc(s.title) + '</div>' + (s.note ? '<div class="hint">' + esc(s.note) + '</div>' : "") +
+        '<div class="cmdlist">' + s.rows.map(function (r) { return '<div class="cmd"><kbd>' + esc(r[0]) + '</kbd><div>' + kbd(r[1]) + '</div></div>'; }).join("") + '</div>';
+    }).join("") + '<div class="hint">Full list: deviationhunt.ohwikiguide.com/commands</div>');
+  }
+
   function render() {
+    if (view.page === "cmds") return renderCommands();
     whoLine();
     if (view.page === "shop") return renderShop();
     if (view.open) return renderDetail(view.open);
