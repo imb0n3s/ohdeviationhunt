@@ -102,13 +102,15 @@ async function refreshAvatars() {
   } catch (e) { console.error("[web] avatars:", e.message); }
 }
 
+const FEATURED = String(process.env.FEATURED_CHANNEL || "imbon3s").toLowerCase();
 function channelList(pool, { limit } = {}) {
   const bot = db.getBotAccount();
   const live = pool?.spawns?.live || new Set(), info = pool?.spawns?.streamInfo || new Map();
   const list = db.listEnabledChannels()
     .filter((c) => c.broadcaster_id !== bot?.user_id)
     .map((c) => ({ ...c, isLive: live.has(c.broadcaster_id), info: info.get(c.broadcaster_id) }))
-    .sort((a, b) => (b.isLive - a.isLive) || ((b.info?.viewers || 0) - (a.info?.viewers || 0)) || b.catches - a.catches || a.display_name.localeCompare(b.display_name));
+    // the home channel (FEATURED_CHANNEL, default imbon3s) always leads while it's live
+    .sort((a, b) => ((b.isLive && b.login === FEATURED) - (a.isLive && a.login === FEATURED)) || (b.isLive - a.isLive) || ((b.info?.viewers || 0) - (a.info?.viewers || 0)) || b.catches - a.catches || a.display_name.localeCompare(b.display_name));
   const shown = limit ? list.slice(0, limit) : list;
   if (!list.length) return { html: `<p>No channels yet — be the first to add it!</p>`, total: 0, live: 0 };
   const html = `<div class="chans">${shown.map((c) => `<a class="chan${c.isLive ? " live" : ""}" href="https://twitch.tv/${esc(c.login)}" target="_blank" rel="noopener">
