@@ -144,6 +144,10 @@ ${(() => { const c = channelList(pool, { limit: 12 }); return `<h2>Where to play
 <p>Every Twitch channel with ${esc(cfg.BOT_NAME)}. Deviations only show up while a channel is live — your Deviation Bag is the same on all of them.</p>
 ${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels →</a></p>` : ""}`; })()}
 
+<h2>OBS Source</h2>
+<div class="card"><p style="margin-top:0">Show the deviation on your stream while it can be caught: its picture, name, variation or skin, and a countdown. It appears when one is spotted and disappears when it's secured or gets away.</p>
+<p>Type <kbd>!hunt obs</kbd> in your chat (broadcaster or mods) and the bot replies with your channel's link. In OBS add a <b>Browser</b> source with that link, size <b>600 × 600</b>. Add <code>?demo=1</code> to the end while you position it so you can see it, then remove it.</p></div>
+
 <h2>Find a collection</h2>
 <form class="find" action="/u" method="get"><input name="login" placeholder="Twitch username" aria-label="Twitch username"><button>View</button></form>
 
@@ -246,6 +250,7 @@ function createApp(pool) {
     next();
   });
   require("./extension").mount(app);
+  require("./overlay").mount(app, pool);
   app.get("/", async (req, res) => { await refreshAvatars(); res.send(landing(pool)); });
   app.get("/channels", async (req, res) => { await refreshAvatars(); res.send(channelsPage(pool)); });
   app.get("/dex", (req, res) => res.send(dexPage()));
