@@ -58,8 +58,8 @@ function makeHandler(pool, spawns) {
     }
 
     // ---- catching: always allowed, no cooldown (one throw per spawn is enforced in game.js) ----
-    const played = () => db.q.touchActive.run(bid, Date.now(), uid); // remembers where they play (free-unit notices)
-    if (cmd === "!secure" || cmd === "!catch") { const r = spawns.attempt(bid, uid, login, name, args[0]); played(); return reply(r); }
+    const played = () => db.q.touchActive.run(bid, Date.now(), spawns.streamIds?.get(bid) && spawns.live.has(bid) ? spawns.streamIds.get(bid) : null, uid); // remembers where they play (free-unit notices)
+    if (cmd === "!secure" || cmd === "!catch") { played(); const r = spawns.attempt(bid, uid, login, name, args[0]); played(); return reply(r); }
 
     // ---- mods / broadcaster: !hunt ... ----
     if (cmd === "!hunt") {
@@ -102,6 +102,7 @@ function makeHandler(pool, spawns) {
     if (!isModOrOwner(ev) && Date.now() - (lastReply.get(key) || 0) < USER_CD) return;
     lastReply.set(key, Date.now());
 
+    played();
     try {
     switch (cmd) {
       case "!units": case "!inv": return reply(game.inventory(uid, login, name));

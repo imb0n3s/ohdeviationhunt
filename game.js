@@ -31,11 +31,17 @@ const HOUR = 3600 * 1000;
 // Hourly free units run only while the stream the player did !daily in is still live.
 // index.js tells us each live channel's current Twitch stream id.
 let streamOf = () => null;
+const dayKey = (ms) => new Date(ms).toLocaleDateString("en-CA", { timeZone: ECONOMY.dailyResetTz });
+function dailyToday(userId) { const last = db.q.lastDaily.get(userId)?.at; return !!last && dayKey(last) === dayKey(Date.now()); }
 function setStreamLookup(fn) { streamOf = fn; }
-const hourlyOn = (p) => !!p.daily_stream && streamOf(p.daily_channel) === p.daily_stream;
+// Hourly free units run while the player (a) has claimed today's !daily and (b) is in a live
+// stream: the channel of their latest game command, during that same broadcast. It's a single
+// "current stream", so watching several streams never earns more; switching streams keeps the timer.
+const hourlyOn = (p) => dailyToday(p.user_id) && !!p.active_stream && streamOf(p.last_channel) === p.active_stream;
 
 function nextUnitIn(p) {
-  if (!hourlyOn(p)) return "after !daily";
+  if (!dailyToday(p.user_id)) return "after !daily";
+  if (!hourlyOn(p)) return "in a live stream";
   const ms = (p.last_unit_at || Date.now()) + HOUR - Date.now();
   return `${Math.max(1, Math.ceil(ms / 60000))}m`;
 }
@@ -271,13 +277,12 @@ class Spawns {
 
 // !daily: once per day (resets at midnight Central), and only during a live stream. It also
 // points the player's hourly free units at that stream — they only ever run in one stream.
-const dayKey = (ms) => new Date(ms).toLocaleDateString("en-CA", { timeZone: ECONOMY.dailyResetTz });
 function untilReset(now = Date.now()) {
   const t = new Date(now).toLocaleTimeString("en-GB", { timeZone: ECONOMY.dailyResetTz, hour12: false }).split(":").map(Number);
   const mins = Math.max(1, Math.ceil((24 * 3600 - (t[0] % 24) * 3600 - t[1] * 60 - t[2]) / 60));
   return `${Math.floor(mins / 60) ? `${Math.floor(mins / 60)}h ` : ""}${mins % 60}m`;
 }
-const dailyReady = (userId) => { const last = db.q.lastDaily.get(userId)?.at; return !last || dayKey(last) !== dayKey(Date.now()); };
+const dailyReady = (userId) => !dailyToday(userId);
 
 function daily(userId, login, display, bid) {
   const stream = bid ? streamOf(bid) : null;
@@ -286,7 +291,6 @@ function daily(userId, login, display, bid) {
   if (!dailyReady(userId)) {
     return `@${display} you already claimed today's !daily — it resets at midnight Central (in ${untilReset()}).${hourlyOn(p) ? ` Next free Securement Unit in ${nextUnitIn(p)}.` : ""}`;
   }
-  const moved = hourlyOn(p) && p.daily_channel !== bid;
   p.last_daily = Date.now();
   p.starchrom += ECONOMY.daily.starchrom;
   const got = [];
@@ -297,7 +301,7 @@ function daily(userId, login, display, bid) {
     db.q.addDaily.run(userId, stream, bid, Date.now());
     db.q.setDailyStream.run(bid, stream, userId);
   })();
-  return `@${display} 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}! You'll get 1 free Securement Unit every hour while this stream is live${moved ? " (your hourly units moved here from the other stream)" : ""}. ${bagText(p)}`;
+  return `@${display} 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}! For the rest of today you'll also get 1 free Securement Unit every hour while you're in a live stream (one stream at a time — the timer keeps going if you switch). ${bagText(p)}`;
 }
 
 function shop() {
@@ -341,19 +345,20 @@ function destroySpecimen(userId, specimenId) {
 }
 
 // ---------------- hourly free units ----------------
-// Once a minute: players who did !daily in a stream that is still live get 1 free Securement
-// Unit per hour since their !daily, and the bot says so in that channel. One message per
+// Once a minute: players with today's !daily who are in a live stream get 1 free Securement
+// Unit per hour, and the bot says so in the channel they're in. One message per
 // channel, split if it gets long. Nobody else gets hourly units.
 function unitNotices(now = Date.now()) {
   if (cfg.PAUSED) return [];
   const byChannel = new Map();
   for (const row of db.q.dueHourly.all(now - HOUR)) {
-    const ch = row.daily_channel;
-    if (!ch || streamOf(ch) !== row.daily_stream || !db.getChannel(ch)?.enabled) continue;
+    const ch = row.last_channel;
+    if (!ch || !hourlyOn(row) || !db.getChannel(ch)?.enabled) continue;
     const p = loadPlayer(row.user_id, row.login, row.display);
+    // away for a while (not in any live stream)? start a fresh hour instead of paying for the gap
+    if (now - p.last_unit_at > 2 * HOUR) { p.last_unit_at = now; savePlayer(p); continue; }
     p.units.standard = (p.units.standard || 0) + ECONOMY.hourlyUnits;
-    // normally step exactly one hour; after a long gap (bot restart) restart the clock from now
-    p.last_unit_at = now - p.last_unit_at > 2 * HOUR ? now : p.last_unit_at + HOUR;
+    p.last_unit_at += HOUR;
     savePlayer(p);
     if (!byChannel.has(ch)) byChannel.set(ch, []);
     byChannel.get(ch).push({ name: `@${p.display}`, got: ECONOMY.hourlyUnits });

@@ -90,7 +90,7 @@ out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!units"), `Show your Securement Units, ${SC}, and when your next free unit arrives. Also ${cmd("!inv")}.`],
   [cmd("!shop"), `Show what the shop sells and the prices. The Deviation Bag panel has the same shop in its '''Shop''' tab.`],
   [cmd("!buy <amount>"), `Buy Securement Units for ${fmt(unitPrice)} ${SC} each, e.g. ${cmd("!buy 2")}.`],
-  [cmd("!daily"), `Claim your daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${ECONOMY.daily.units.standard} Securement Unit, and turn on ${ECONOMY.hourlyUnits} free Securement Unit every hour for the rest of that live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream.`],
+  [cmd("!daily"), `Claim your daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${ECONOMY.daily.units.standard} Securement Unit, and turn on ${ECONOMY.hourlyUnits} free Securement Unit every hour for the rest of the day while you're in a live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream.`],
   [cmd("!deviationbag [name]"), `Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.`],
   [cmd("!traits <deviation>"), `Skill Rating, Activity Rating and all three traits of your best specimen of that deviation. Also ${cmd("!stats")}.`],
   [cmd("!dev <deviation>"), `Info about a deviation: what it does, its variations and skins, and a wiki link.`],
@@ -120,7 +120,7 @@ ${table(["Item", "Description", "Price"], [
 '''Ways to get Securement Units'''
 ${table(["Source", "Amount"], [
   ["Starting supply", `${ECONOMY.starterUnits.standard} units`],
-  ["Free hourly unit", `+${ECONOMY.hourlyUnits} unit every hour — '''only after you claim ${cmd("!daily")} during a live stream''', and only while that same stream stays live. The bot tells you in chat each time one arrives. Hourly units only run in '''one stream''': the one you claimed today's ${cmd("!daily")} in.`],
+  ["Free hourly unit", `+${ECONOMY.hourlyUnits} unit every hour after you claim today's ${cmd("!daily")}, while you're in a live stream running the game (the one where you last used a game command). '''One stream at a time''' — watching several doesn't earn more, and the timer keeps running when you switch streams. The bot tells you in chat each time one arrives.`],
   [cmd("!daily"), `+${ECONOMY.daily.units.standard} unit, once a day (resets at midnight Central)`],
   ["Destroying an extra specimen in the Twitch panel", `+${ECONOMY.destroyUnits} unit (plus ${fmt(ECONOMY.destroyValue)} ${SC})`],
   [cmd("!buy <amount>") + " or the panel's '''Shop''' tab", `${fmt(unitPrice)} ${SC} each`],
@@ -207,7 +207,7 @@ const faq = [
   ["How do I start?", `Just type ${cmd("!secure")} the next time a deviation shows up. Your first throw signs you up with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}.`],
   ["I typed !secure and the bot didn't answer.", `That's normal — the bot stays quiet so chat isn't spammed. Results for everyone are posted when the ${cfg.SPAWN_WINDOW_SECONDS}-second window ends. It only replies right away if you're out of units.`],
   ["Why wasn't my name in the result?", `Only the people who secured it are listed. If your name isn't there, it broke free from your unit (you still get +${ECONOMY.escapeSalvage} ${SC}).`],
-  ["I'm out of Securement Units.", `Claim ${cmd("!daily")} during a live stream: you get 1 right away and 1 free every hour for the rest of that stream. Or ${cmd("!buy <amount>")} for ${fmt(unitPrice)} ${SC} each. ${cmd("!units")} shows when the next free one arrives.`],
+  ["I'm out of Securement Units.", `Claim ${cmd("!daily")} during a live stream: you get 1 right away and 1 free every hour for the rest of the day while you're in a live stream. Or ${cmd("!buy <amount>")} for ${fmt(unitPrice)} ${SC} each. ${cmd("!units")} shows when the next free one arrives.`],
   ["Do better units exist?", `No — there's a single Securement Unit. Your odds depend only on the deviation's rarity and whether it's a variation or skin.`],
   ["Does my collection carry over between channels?", "Yes. It's tied to your Twitch account and shared across every channel running Deviation Hunt."],
   ["Why aren't deviations spawning?", `They only appear while the stream is live and chat has been active in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes. A mod may also have used ${cmd("!hunt off")} — ${cmd("!hunt status")} shows what's going on.`],
