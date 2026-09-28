@@ -8,6 +8,7 @@
 // Viewers must share their identity with the extension once (Twitch's rule) before we
 // get their real user id; until then the panel shows a "Share" button.
 const crypto = require("crypto");
+const { BITS_PACKS } = require("./rarity");
 const cfg = require("./config");
 const db = require("./db");
 const data = require("./data");
@@ -85,6 +86,7 @@ function bagFor(userId) {
   return {
     player: p ? playerInfo(game.loadPlayer(p.user_id, p.login, p.display)) : null,
     shop: shop.catalog(),
+    bitsPacks: BITS_PACKS,
     destroyValue: require("./rarity").ECONOMY.destroyValue,
     destroyUnits: require("./rarity").ECONOMY.destroyUnits,
     stats: { unique: summary.species, total: summary.total, variants: summary.variants, all: all.length, allVariants: all.reduce((s, d) => s + d.variants.length, 0) },
@@ -147,6 +149,34 @@ function mount(app) {
     } catch (e) {
       if (e.needsIdentity) return res.status(403).json({ error: "needs_identity" });
       console.warn(`[ext] buy failed ${e.status || 500}: ${e.message}`);
+      res.status(e.status || 500).json({ error: e.status ? e.message : "server_error" });
+    }
+  });
+
+  // Bits purchase: the panel sends Twitch's signed transaction receipt after useBits() completes.
+  app.post("/ext/bits/complete", express.json({ limit: "8kb" }), (req, res) => {
+    try {
+      const jwt = auth(req);
+      const receipt = verifyExtJwt(req.body?.receipt);
+      const d = receipt.data || {};
+      if (receipt.topic !== "bits_transaction_receipt" || !d.transactionId) return res.status(400).json({ error: "bad_receipt" });
+      if (String(d.userId) !== String(jwt.user_id)) return res.status(403).json({ error: "wrong_user" });
+      const pack = BITS_PACKS.find((x) => x.sku === d.product?.sku);
+      if (!pack || Number(d.product?.cost?.amount) !== pack.bits) return res.status(400).json({ error: "unknown_product" });
+      const row = db.q.getPlayer.get(jwt.user_id);
+      if (!row) return res.status(404).json({ error: "no_player" });
+      let credited = false, player;
+      db.tx(() => {
+        const p = game.loadPlayer(row.user_id, row.login, row.display);
+        credited = db.q.addBitsTx.run(d.transactionId, row.user_id, pack.sku, pack.bits, pack.starchrom, jwt.channel_id || null, Date.now()).changes === 1;
+        if (credited) { p.starchrom += pack.starchrom; game.savePlayer(p); }
+        player = playerInfo(p);
+      })();
+      console.log(`[ext] bits ${credited ? "credited" : "duplicate"}: ${row.login} ${pack.sku} (${pack.bits} bits) tx=${d.transactionId}`);
+      res.json({ ok: true, credited, starchrom: pack.starchrom, player });
+    } catch (e) {
+      if (e.needsIdentity) return res.status(403).json({ error: "needs_identity" });
+      console.warn(`[ext] bits failed ${e.status || 500}: ${e.message}`);
       res.status(e.status || 500).json({ error: e.status ? e.message : "server_error" });
     }
   });

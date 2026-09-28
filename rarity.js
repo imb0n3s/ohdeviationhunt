@@ -68,4 +68,13 @@ const GLOVES = [
   { id: "savior", name: "Savior Gloves", bonus: 0.09, price: 3000, rarity: "Legendary", color: "#fbbf24", icon: "savior.png" },
 ];
 
-module.exports = { TIERS, ASSIGN, VARIANT, UNITS, ECONOMY, GLOVES, rarityOf, unitKey };
+// Starchrom bought with Bits in the Twitch panel (5 Bits = 100 Starchrom). Each pack must also exist as a
+// Bits product with the same SKU and Bits amount in the extension's Monetization tab.
+const BITS_PACKS = [
+  { sku: "starchrom100",  bits: 5,   starchrom: 100 },
+  { sku: "starchrom500",  bits: 25,  starchrom: 500 },
+  { sku: "starchrom1000", bits: 50,  starchrom: 1000 },
+  { sku: "starchrom2000", bits: 100, starchrom: 2000 },
+];
+
+module.exports = { TIERS, ASSIGN, VARIANT, UNITS, ECONOMY, GLOVES, BITS_PACKS, rarityOf, unitKey };

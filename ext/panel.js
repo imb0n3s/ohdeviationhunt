@@ -212,9 +212,13 @@
         '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? "Buy " + q + " for " + money(total) + " Starchrom" : "Need " + money(total - p.starchrom) + " more Starchrom") + '</button>' +
         '</div>';
     }).join("");
+    html += bitsHtml();
     html += '<div class="hint">Earn Starchrom by securing deviations in chat, <b>!daily</b> and <b>!scrap</b>. You can also buy in chat with <b>!buy &lt;amount&gt;</b>.</div>';
     el(html);
-    Array.prototype.forEach.call(document.querySelectorAll(".item button"), function (b) {
+    Array.prototype.forEach.call(document.querySelectorAll(".bitsbuy"), function (b) {
+      b.onclick = function () { buyBits(b.getAttribute("data-sku")); };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".item:not(.bits) button"), function (b) {
       b.onclick = function () {
         var id = b.closest(".item").getAttribute("data-id"), it = findItem(id), q = cart[id] || 1, act = b.getAttribute("data-act");
         if (act === "inc") q = Math.min(it.maxQty, q + 1);
@@ -224,6 +228,46 @@
         if (act === "buy") return buy(it, q);
         notice = null; renderShop();
       };
+    });
+  }
+
+  // ---- Starchrom packs bought with Bits (only shown when Twitch has Bits turned on for this viewer) ----
+  var bitsOn = false, bitsProducts = {};
+  function bitsHtml() {
+    var packs = (bag.bitsPacks || []).filter(function (x) { return bitsProducts[x.sku]; });
+    if (!bitsOn || !packs.length) return "";
+    return '<div class="sect">Starchrom with Bits</div><div class="item bits"><div class="id">5 Bits = 100 Starchrom. Bits used here support the streamer.</div><div class="packs">' +
+      packs.map(function (x) {
+        var cost = bitsProducts[x.sku].cost && bitsProducts[x.sku].cost.amount || x.bits;
+        return '<button class="btn bitsbuy" data-sku="' + esc(x.sku) + '"' + (busy ? " disabled" : "") + '><b>' + money(x.starchrom) + '</b> Starchrom<span>' + cost + ' Bits</span></button>';
+      }).join("") + '</div></div>';
+  }
+  function buyBits(sku) {
+    if (busy) return;
+    busy = true; notice = null; renderShop();
+    window.Twitch.ext.bits.useBits(sku);
+  }
+  function initBits() {
+    var ext = window.Twitch.ext;
+    if (!ext.features || !ext.bits) return;
+    bitsOn = !!ext.features.isBitsEnabled;
+    if (ext.features.onChanged) ext.features.onChanged(function () { bitsOn = !!ext.features.isBitsEnabled; if (bag && view.page === "shop") renderShop(); });
+    ext.bits.getProducts().then(function (ps) {
+      (ps || []).forEach(function (p) { bitsProducts[p.sku] = p; });
+      if (bag && view.page === "shop") renderShop();
+    }).catch(function () {});
+    ext.bits.onTransactionCancelled(function () { busy = false; if (view.page === "shop") renderShop(); });
+    ext.bits.onTransactionComplete(function (tx) {
+      fetch(API + "/ext/bits/complete", { method: "POST", headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" }, body: JSON.stringify({ receipt: tx.transactionReceipt }) })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (res) {
+          busy = false;
+          if (res.j.error === "wrong_user") return;
+          if (res.j.player) bag.player = res.j.player;
+          notice = res.ok ? { kind: "ok", text: "+" + money(res.j.starchrom) + " Starchrom — thanks for the Bits!" } : { kind: "err", text: "Your Bits went through but the Starchrom didn’t arrive yet. Refresh the panel; if it’s still missing, tell the streamer." };
+          whoLine(); if (view.page === "shop") renderShop();
+        })
+        .catch(function () { busy = false; notice = { kind: "err", text: "Couldn’t reach the game to add your Starchrom. Refresh the panel in a minute." }; renderShop(); });
     });
   }
 
@@ -266,6 +310,7 @@
   if (!window.Twitch || !window.Twitch.ext) { el('<div class="msg">This panel runs inside Twitch.</div>'); return; }
   window.Twitch.ext.onContext(function (ctx) { document.body.className = ctx.theme === "light" ? "light" : "dark"; });
   window.Twitch.ext.onAuthorized(function (auth) { token = auth.token; load(); });
+  try { initBits(); } catch (e) {}
   // refresh every couple of minutes so new catches show up while watching
   setInterval(function () { if (!view.open && !busy) load(); }, 120000);
 })();

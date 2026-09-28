@@ -118,3 +118,7 @@ footer a { color:var(--accent); font-size:12px; }
 .gicon { width:56px; height:56px; flex:none; display:flex; align-items:center; justify-content:center; font-size:32px; border-radius:10px; background:radial-gradient(circle, color-mix(in srgb, var(--gc) 45%, transparent), transparent 70%); border:1px solid var(--gc); }
 .btn.buy.owned { background:transparent; color:var(--gc); border:1px solid var(--gc); opacity:1; }
 .gicon img { width:100%; height:100%; object-fit:cover; border-radius:9px; }
+.item.bits .packs { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px; }
+.btn.bitsbuy { background:linear-gradient(135deg,#9146ff,#772ce8); color:#fff; padding:8px 6px; line-height:1.2; font-size:12px; }
+.btn.bitsbuy b { font-size:15px; display:block; }
+.btn.bitsbuy span { display:block; font-size:11px; opacity:.85; margin-top:2px; }

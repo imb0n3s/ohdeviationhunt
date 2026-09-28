@@ -104,9 +104,12 @@ try { db.exec(`ALTER TABLE players ADD COLUMN daily_stream TEXT`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN active_stream TEXT`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN gloves TEXT NOT NULL DEFAULT '[]'`); } catch {}
 // !daily claims (one per player per day, Central time; tied to the stream it was claimed in)
+// every Bits purchase, keyed by Twitch's transaction id so a receipt can never be credited twice
+db.exec(`CREATE TABLE IF NOT EXISTS bits_tx (transaction_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, sku TEXT NOT NULL, bits INTEGER NOT NULL, starchrom INTEGER NOT NULL, channel TEXT, at INTEGER NOT NULL)`);
 db.exec(`CREATE TABLE IF NOT EXISTS daily_claims (user_id TEXT NOT NULL, stream_id TEXT NOT NULL, channel TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (user_id, stream_id))`);
 
 const q = {
+  addBitsTx: db.prepare(`INSERT OR IGNORE INTO bits_tx (transaction_id, user_id, sku, bits, starchrom, channel, at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
   upsertChannel: db.prepare(`INSERT INTO channels (broadcaster_id, login, display_name, joined_at, joined_via, enabled)
     VALUES (@broadcaster_id, @login, @display_name, @joined_at, @joined_via, 1)
     ON CONFLICT(broadcaster_id) DO UPDATE SET login=excluded.login, display_name=excluded.display_name, enabled=1`),
