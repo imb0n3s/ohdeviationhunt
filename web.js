@@ -83,7 +83,7 @@ function landing() {
   const botName = bot?.login || "the bot";
   return page(cfg.BOT_NAME, `
 <h1>${esc(cfg.BOT_NAME)} — catch Once Human deviations in Twitch chat</h1>
-<p>While you're live, deviations breach containment in your chat. Viewers throw Securement Units with <kbd>!secure</kbd>, earn Starchrom, and build a Deviation Bag that follows them to every channel running the game. Every deviation, variation and skin comes straight from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">the OHWikiGuide Deviation page</a>, so new ones join the game as soon as they're on the wiki.</p>
+<p>While you're live, deviations show up in the wild in your chat. Viewers throw Securement Units with <kbd>!secure</kbd>, earn Starchrom, and build a Deviation Bag that follows them to every channel running the game. Every deviation, variation and skin comes straight from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">the OHWikiGuide Deviation page</a>, so new ones join the game as soon as they're on the wiki.</p>
 <div class="card">
   <a class="btn" href="/auth/twitch?action=add">Add ${esc(cfg.BOT_NAME)} to my channel</a><a class="btn secondary" href="/auth/twitch?action=remove">Remove it</a>
   <p style="margin-bottom:0">You log in with Twitch once; the bot only gets permission to read and post in your chat.${bot ? ` Prefer chat? Type <kbd>!join</kbd> in <a href="https://twitch.tv/${esc(bot.login)}">twitch.tv/${esc(bot.login)}</a>.` : ""} Then <kbd>/mod ${esc(botName)}</kbd> so it isn't rate-limited.</p>
@@ -94,14 +94,14 @@ function landing() {
 <form class="find" action="/u" method="get"><input name="login" placeholder="Twitch username" aria-label="Twitch username"><button>View</button></form>
 
 <h2>What it looks like</h2>
-<div class="card chat">${esc(botName)}: ⚠️ A wild Lonewolf Whisper has breached containment! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.
+<div class="card chat">${esc(botName)}: 👀 A Lonewolf Whisper has been spotted in the wild! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.
 viewer42: !secure
 metabones: !secure
 ${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones [Skill 4/5 · Activity 2/5]! +40 Starchrom each. 📖 New entry for metabones (+100). | !traits lonewolfwhisper for traits</div>
 
 <h2>Viewer commands</h2>
 <div class="card">
-<p><kbd>!secure</kbd> — throw a Securement Unit at the loose deviation (one throw per breach). <kbd>!catch</kbd> works too.</p>
+<p><kbd>!secure</kbd> — throw a Securement Unit at the loose deviation (one throw per spawn). <kbd>!catch</kbd> works too.</p>
 <p><kbd>!units</kbd> — your Starchrom and Units · <kbd>!shop</kbd> — prices · <kbd>!buy 5</kbd> — buy Securement Units</p>
 <p><kbd>!daily</kbd> — free supply drop (+${ECONOMY.daily.starchrom} Starchrom and ${ECONOMY.daily.units.standard} Securement Unit) every ${ECONOMY.dailyCooldownHours}h</p>
 <p><kbd>!deviationbag</kbd> — your Deviation Bag and collection link · <kbd>!deviationbag name</kbd> — someone else's · <kbd>!scrap</kbd> — turn duplicates into Starchrom</p>
@@ -110,14 +110,14 @@ ${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones [Skill 4/5 · Activi
 </div>
 <h2>Streamer & mod commands</h2>
 <div class="card">
-<p><kbd>!hunt spawn</kbd> — release one right now · <kbd>!hunt interval 10</kbd> — minutes between breaches (default ${cfg.SPAWN_INTERVAL_MIN}) · <kbd>!hunt off</kbd> / <kbd>!hunt on</kbd> · <kbd>!hunt status</kbd> · <kbd>!hunt leave</kbd></p>
-<p>Deviations only breach while your stream is live and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes.</p>
+<p><kbd>!hunt spawn</kbd> — release one right now · <kbd>!hunt interval 10</kbd> — minutes between spawns (default ${cfg.SPAWN_INTERVAL_MIN}) · <kbd>!hunt off</kbd> / <kbd>!hunt on</kbd> · <kbd>!hunt status</kbd> · <kbd>!hunt leave</kbd></p>
+<p>Deviations only appear while your stream is live and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes.</p>
 </div>
 <h2>How catching works</h2>
 <div class="card"><table><tr><th>Rarity</th><th>Spawn weight</th><th>Capture rate</th><th>Reward</th></tr>
 ${Object.values(TIERS).map((t) => `<tr><td style="color:${t.color};font-weight:600">${t.label}</td><td>${t.weight}%</td><td>${Math.round(t.catch * 100)}%</td><td>${t.reward} Starchrom</td></tr>`).join("")}
 <tr><td style="color:${TIERS.legendary.color};font-weight:600">Skin (Legendary)</td><td>1 in ${Math.round(1 / VARIANT.skin.chance)}</td><td>${Math.round(VARIANT.skin.catch * 100)}%</td><td>${TIERS.legendary.reward} Starchrom</td></tr></table>
-<p>Everyone starts with ${ECONOMY.starterUnits.standard} Securement Units. Every throw uses one; you get ${ECONOMY.hourlyUnits} free every hour, ${ECONOMY.daily.units.standard} from <kbd>!daily</kbd>, or buy more for ${fmt(UNITS.standard.price)} Starchrom each. About 1 in ${Math.round(1 / VARIANT.variation.chance)} breaches is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward, a little harder to catch) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b>, which is always Legendary with a ${Math.round(VARIANT.skin.catch * 100)}% capture rate. Every deviation you secure is its own specimen with <b>Skill Rating 1–5</b> and <b>Activity Rating 1–5</b> (5 is rare; a perfect 5/5 gets a ⭐) and three traits rolled by the rules on the wiki's <a href="${esc(cfg.WIKI_BASE)}/Deviation_Trait_Page">Deviation Trait Page</a>: Slot 1 is a Global trait or that deviation's own trait, Slot 2 is a combat, crafting or territory trait matching the deviation's type (deviation-specific ones only on their own deviation, and variant-specific ones like Grumpy Bulb's Violet Robe only on that variant), Slot 3 is a fused trait. <kbd>!scrap</kbd> keeps your best Skill + Activity specimen of each. First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. Missed throws still salvage ${ECONOMY.escapeSalvage} Starchrom.</p></div>`);
+<p>Everyone starts with ${ECONOMY.starterUnits.standard} Securement Units. Every throw uses one; you get ${ECONOMY.hourlyUnits} free every hour, ${ECONOMY.daily.units.standard} from <kbd>!daily</kbd>, or buy more for ${fmt(UNITS.standard.price)} Starchrom each. About 1 in ${Math.round(1 / VARIANT.variation.chance)} spawns is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward, a little harder to catch) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b>, which is always Legendary with a ${Math.round(VARIANT.skin.catch * 100)}% capture rate. Every deviation you secure is its own specimen with <b>Skill Rating 1–5</b> and <b>Activity Rating 1–5</b> (5 is rare; a perfect 5/5 gets a ⭐) and three traits rolled by the rules on the wiki's <a href="${esc(cfg.WIKI_BASE)}/Deviation_Trait_Page">Deviation Trait Page</a>: Slot 1 is a Global trait or that deviation's own trait, Slot 2 is a combat, crafting or territory trait matching the deviation's type (deviation-specific ones only on their own deviation, and variant-specific ones like Grumpy Bulb's Violet Robe only on that variant), Slot 3 is a fused trait. <kbd>!scrap</kbd> keeps your best Skill + Activity specimen of each. First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. Missed throws still salvage ${ECONOMY.escapeSalvage} Starchrom.</p></div>`);
 }
 
 function collectionPage(p) {
@@ -165,7 +165,7 @@ ${cards}`);
 function dexPage() {
   const all = data.all();
   const cards = sections(all, (d) => `<div class="dev"><img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${esc(d.name)}</div>${tierTag(d.rarity)}<div class="vars">${d.variants.length ? `<span>${d.variants.length} variants/skins</span>` : ""}</div></div>`);
-  return page("All deviations", `<h1>All deviations</h1><p>All ${all.length} deviations can breach containment, pulled from the <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">wiki</a>.</p>${cards}`);
+  return page("All deviations", `<h1>All deviations</h1><p>All ${all.length} deviations can appear in the wild, pulled from the <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">wiki</a>.</p>${cards}`);
 }
 
 function topPage() {
@@ -188,7 +188,7 @@ function createApp(pool) {
   app.get("/u", (req, res) => res.redirect(`/u/${encodeURIComponent(String(req.query.login || "").trim().replace(/^@/, "").toLowerCase())}`));
   app.get("/u/:login", (req, res) => {
     const p = db.q.getPlayerByLogin.get(String(req.params.login).toLowerCase());
-    if (!p) return res.status(404).send(simple("Not found", "No Deviation Bag yet", `${esc(req.params.login)} hasn't secured anything yet. Catch a breach with <kbd>!secure</kbd> in any channel running ${esc(cfg.BOT_NAME)}.`));
+    if (!p) return res.status(404).send(simple("Not found", "No Deviation Bag yet", `${esc(req.params.login)} hasn't secured anything yet. Catch one with <kbd>!secure</kbd> in any channel running ${esc(cfg.BOT_NAME)}.`));
     res.send(collectionPage(p));
   });
   app.get("/health", (req, res) => res.json({ ok: true, channels: pool.channelCount, botSetUp: !!db.getBotAccount(), data: data.info() }));
@@ -243,7 +243,7 @@ function createApp(pool) {
       }
       pool.refreshLive?.();
       return res.send(simple("Added", `Added to ${user.display_name}'s channel!`,
-        `Deviations will breach about every ${cfg.SPAWN_INTERVAL_MIN} minutes while you're live. Want one now? Type <code>!hunt spawn</code> in your chat. Please <code>/mod ${esc(db.getBotAccount().login)}</code> so it isn't rate-limited.`));
+        `Deviations will appear about every ${cfg.SPAWN_INTERVAL_MIN} minutes while you're live. Want one now? Type <code>!hunt spawn</code> in your chat. Please <code>/mod ${esc(db.getBotAccount().login)}</code> so it isn't rate-limited.`));
     } catch (e) {
       console.error("[auth] callback error:", e);
       res.status(500).send(simple("Error", "Something went wrong", esc(e.message)));

@@ -102,7 +102,7 @@ function rewardFor(s) {
 
 function spawnAnnouncement(s) {
   const v = s.variant ? ` ✨ ${VARIANT[s.variant.kind].label.toUpperCase()}: ${s.variant.name}!` : "";
-  return `⚠️ A wild ${s.dev.name} has breached containment!${v} Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`;
+  return `👀 A ${s.dev.name} has been spotted in the wild!${v} Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`;
 }
 
 // Per-channel spawn state lives in memory; the result goes to SQLite when it resolves
@@ -198,7 +198,7 @@ class Spawns {
     const s = this.active.get(bid);
     if (!s) return null; // nothing out right now — stay silent so chat isn't spammed
     if (s.attempts.has(userId)) return null;
-    // tell each viewer about a problem at most once per breach
+    // tell each viewer about a problem at most once per spawn
     const warn = (msg) => { if (s.warned.has(userId)) return null; s.warned.add(userId); return msg; };
     const unit = "standard";
     const p = loadPlayer(userId, login, display);
@@ -255,7 +255,7 @@ class Spawns {
       msg = `🔒 ${name} secured by ${list(caught, 7)}! +${reward} ${SC} each.`;
       if (firsts.length) msg += ` 📖 New entry for ${list(firsts, 8)} (+${ECONOMY.newSpeciesBonus}).`;
     } else {
-      msg = `💥 ${name} broke free! Better luck next breach.`;
+      msg = `💥 ${name} got away! Better luck next time.`;
     }
     msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !deviationbag to see your collection`;
     return this.send(bid, msg);
@@ -342,7 +342,7 @@ function dex(userId, login, display, baseUrl) {
   const c = collectionSummary(userId);
   const all = data.all();
   const totalVariants = all.reduce((s, d) => s + d.variants.length, 0);
-  if (!c.total) return `@${display} your Deviation Bag is empty — wait for a breach and type !secure! Collection page: ${baseUrl}/u/${login}`;
+  if (!c.total) return `@${display} your Deviation Bag is empty — wait for a deviation to show up and type !secure! Collection page: ${baseUrl}/u/${login}`;
   return `@${display} 📖 Deviation Bag: ${c.species}/${all.length} deviations, ${c.variants}/${totalVariants} variants & skins, ${c.total} secured in total. ${baseUrl}/u/${login}`;
 }
 
@@ -388,7 +388,7 @@ function specimenText(userId, login, display, query, baseUrl) {
     if (!sp) return `@${display} you haven't secured a ${dev.name} yet.`;
   } else {
     sp = db.q.latestSpecimen.get(userId);
-    if (!sp) return `@${display} you haven't secured anything yet — type !secure when a deviation breaches!`;
+    if (!sp) return `@${display} you haven't secured anything yet — type !secure when a deviation shows up!`;
     dev = data.get(sp.deviation);
   }
   const count = db.q.specimensOf.all(userId, sp.deviation).length;

@@ -67,7 +67,7 @@ out.push(`<div style="max-width:1000px; margin:0 auto;">
 <div style="background:linear-gradient(135deg,#0d1319,#10202e); border:1px solid #1f2a35; border-radius:16px; padding:22px 24px; margin-bottom:16px;">
 <div style="color:#0ea5e9; font-weight:800; font-size:13px; letter-spacing:1px; text-transform:uppercase;">Twitch Chat Game</div>
 <div style="color:#e6edf3; font-size:28px; font-weight:800; margin:4px 0 6px;">Deviation Hunt</div>
-<div style="color:#cfd6df; line-height:1.7;">A Once Human catching game that lives in Twitch chat. While a stream is live, deviations breach containment in chat — type ${cmd("!secure")} to catch them, collect all ${devs.length} deviations with their variations and skins, and roll the best Skill Rating, Activity Rating and traits. Your Deviation Bag follows you to '''every''' channel that runs the game.</div>
+<div style="color:#cfd6df; line-height:1.7;">A Once Human catching game that lives in Twitch chat. While a stream is live, deviations are spotted in the wild in chat — type ${cmd("!secure")} to catch them, collect all ${devs.length} deviations with their variations and skins, and roll the best Skill Rating, Activity Rating and traits. Your Deviation Bag follows you to '''every''' channel that runs the game.</div>
 <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;">
 <span style="background:#0ea5e9; border-radius:8px; padding:6px 14px; font-weight:700;">[${URL} <span style="color:#04121c;">Add it to your channel</span>]</span>
 <span style="background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:6px 14px; font-weight:700;">[${URL}/top <span style="color:#e6edf3;">Leaderboard</span>]</span>
@@ -78,15 +78,15 @@ out.push(`<div style="max-width:1000px; margin:0 auto;">
 
 out.push(box("Start", "How to Play", `
 # Watch a stream that has '''${BOT}''' in chat.
-# When the bot posts ''"⚠️ A wild … has breached containment!"'', type ${cmd("!secure")} within '''${cfg.SPAWN_WINDOW_SECONDS} seconds'''.
+# When the bot posts ''"👀 A … has been spotted in the wild!"'', type ${cmd("!secure")} within '''${cfg.SPAWN_WINDOW_SECONDS} seconds'''.
 # When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
 # Check your collection any time with ${cmd("!deviationbag")} or on your own page: ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)}
 
-Your first ${cmd("!secure")} signs you up automatically — you start with '''${ECONOMY.starterUnits.standard} Securement Units''' and '''${ECONOMY.starterStarchrom} ${SC}'''. Every ${cmd("!secure")} uses one Securement Unit whether it catches or not, and you get one throw per breach.
+Your first ${cmd("!secure")} signs you up automatically — you start with '''${ECONOMY.starterUnits.standard} Securement Units''' and '''${ECONOMY.starterStarchrom} ${SC}'''. Every ${cmd("!secure")} uses one Securement Unit whether it catches or not, and you get one throw per spawn.
 `));
 
 out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
-  [cmd("!secure"), `Throw a Securement Unit at the deviation that's loose in chat. Also works as ${cmd("!catch")}. One throw per person per breach.`],
+  [cmd("!secure"), `Throw a Securement Unit at the deviation that's loose in chat. Also works as ${cmd("!catch")}. One throw per person per spawn.`],
   [cmd("!units"), `Show your Securement Units, ${SC}, and when your next free unit arrives. Also ${cmd("!inv")}.`],
   [cmd("!shop"), `Show what the shop sells and the prices. The Deviation Bag panel has the same shop in its '''Shop''' tab.`],
   [cmd("!buy <amount>"), `Buy Securement Units for ${fmt(unitPrice)} ${SC} each, e.g. ${cmd("!buy 2")}.`],
@@ -103,7 +103,7 @@ out.push(box("Mods", "Streamer & Moderator Commands", `
 Only the broadcaster and moderators can use these.
 ${table(["Command", "Effect"], [
   [cmd("!hunt spawn"), "Spawn a deviation right now."],
-  [cmd("!hunt interval <minutes>"), `How often deviations breach while you're live (2–120 minutes, default ${cfg.SPAWN_INTERVAL_MIN}).`],
+  [cmd("!hunt interval <minutes>"), `How often deviations appear while you're live (2–120 minutes, default ${cfg.SPAWN_INTERVAL_MIN}).`],
   [cmd("!hunt off") + " / " + cmd("!hunt on"), "Pause or resume spawns. Other commands keep working."],
   [cmd("!hunt status"), "Live status, spawn timer, what's loose, and this channel's spawn/catch totals."],
   [cmd("!hunt leave"), "Remove the bot from your channel."],
@@ -114,7 +114,7 @@ ${table(["Command", "Effect"], [
 out.push(box("Shop", "Securement Units", `
 Securement Units are the only thing you need to catch deviations — there is one kind, and it works on everything.
 ${table(["Item", "Description", "Price"], [
-  ["'''Securement Unit'''", "Contains one breached deviation. Used up on every " + cmd("!secure") + ", caught or not.", `${fmt(unitPrice)} ${SC}`],
+  ["'''Securement Unit'''", "Catches one deviation. Used up on every " + cmd("!secure") + ", caught or not.", `${fmt(unitPrice)} ${SC}`],
 ])}
 
 '''Ways to get Securement Units'''
@@ -145,7 +145,7 @@ const rarityRows = Object.entries(TIERS).map(([k, t]) => [
   tierTag(k), pct(t.weight / totalWeight), pct(t.catch), pct(t.catch * VARIANT.variation.catchMult), `${t.reward}`, `${(byTier[k] || []).length}`,
 ]);
 out.push(box("Odds", "Spawn Rates & Capture Rates", `
-Each breach first rolls a rarity, then a deviation of that rarity. Everyone who throws gets their own roll — any number of people can secure the same deviation.
+Each spawn first rolls a rarity, then a deviation of that rarity. Everyone who throws gets their own roll — any number of people can secure the same deviation.
 ${table(["Rarity", "Spawn chance", "Capture rate", "Capture rate (Variation)", `${SC} reward`, "Deviations"], rarityRows)}
 
 * '''Variations''' spawn about ${pct(VARIANT.variation.chance)} of the time (on deviations that have them). They are ${pct(1 - VARIANT.variation.catchMult)} harder to secure and pay ×${VARIANT.variation.rewardMult} ${SC}.
@@ -159,8 +159,8 @@ ${Object.keys(TIERS).filter((k) => byTier[k]).map((k) => `\n<div style="margin-t
 `));
 
 out.push(box("Shiny", "Variations & Skins", `
-Variations and skins are Deviation Hunt's shinies. When one breaches, the spawn message says so:
-${code(`⚠️ A wild Grumpy Bulb has breached containment! ✨ VARIATION: Violet Robe Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`)}
+Variations and skins are Deviation Hunt's shinies. When one appears, the spawn message says so:
+${code(`👀 A Grumpy Bulb has been spotted in the wild! ✨ VARIATION: Violet Robe Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`)}
 
 * Each variation and skin is its own entry in your Deviation Bag, and the first one of each earns the +${ECONOMY.newSpeciesBonus} new-entry bonus.
 * On your collection page and in the Twitch panel, caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.
@@ -198,19 +198,19 @@ Your collection is tied to your Twitch account, not to a channel — everything 
 out.push(box("Streamers", "Add Deviation Hunt to Your Channel", `
 # Go to [${URL} ${URL.replace(/^https?:\/\//, "")}] and click '''Add to my channel''' (sign in with Twitch). Or type ${cmd("!join")} in [https://www.twitch.tv/${BOT} ${BOT}'s chat].
 # If the bot says it needs permission, type ${cmd(`/mod ${BOT}`)} in your chat and try again.
-# That's it. Deviations breach about every '''${cfg.SPAWN_INTERVAL_MIN} minutes''' while you're '''live''' and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes. Change the timer with ${cmd("!hunt interval <minutes>")}.
+# That's it. Deviations appear about every '''${cfg.SPAWN_INTERVAL_MIN} minutes''' while you're '''live''' and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes. Change the timer with ${cmd("!hunt interval <minutes>")}.
 
 To remove it, type ${cmd("!hunt leave")} in your chat or ${cmd("!leave")} in ${BOT}'s chat.
 `));
 
 const faq = [
-  ["How do I start?", `Just type ${cmd("!secure")} the next time a deviation breaches. Your first throw signs you up with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}.`],
+  ["How do I start?", `Just type ${cmd("!secure")} the next time a deviation shows up. Your first throw signs you up with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}.`],
   ["I typed !secure and the bot didn't answer.", `That's normal — the bot stays quiet so chat isn't spammed. Results for everyone are posted when the ${cfg.SPAWN_WINDOW_SECONDS}-second window ends. It only replies right away if you're out of units.`],
   ["Why wasn't my name in the result?", `Only the people who secured it are listed. If your name isn't there, it broke free from your unit (you still get +${ECONOMY.escapeSalvage} ${SC}).`],
   ["I'm out of Securement Units.", `You get 1 free every hour with no cap, 1 from ${cmd("!daily")}, or ${cmd("!buy <amount>")} for ${fmt(unitPrice)} ${SC} each. ${cmd("!units")} shows when the next free one arrives.`],
   ["Do better units exist?", `No — there's a single Securement Unit. Your odds depend only on the deviation's rarity and whether it's a variation or skin.`],
   ["Does my collection carry over between channels?", "Yes. It's tied to your Twitch account and shared across every channel running Deviation Hunt."],
-  ["Why aren't deviations spawning?", `They only breach while the stream is live and chat has been active in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes. A mod may also have used ${cmd("!hunt off")} — ${cmd("!hunt status")} shows what's going on.`],
+  ["Why aren't deviations spawning?", `They only appear while the stream is live and chat has been active in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes. A mod may also have used ${cmd("!hunt off")} — ${cmd("!hunt status")} shows what's going on.`],
   ["Where do the deviations, traits and pictures come from?", "Straight from this wiki — the [[Deviation_Main_Page|Deviation database]] and [[Deviation_Trait_Page|Deviation Trait Page]]. When the wiki is updated, the game picks it up within a few hours."],
 ];
 out.push(box("FAQ", "Frequently Asked Questions", faq.map(([q, a]) => `'''Q: ${q}'''<br>A: ${a}`).join("\n\n")));

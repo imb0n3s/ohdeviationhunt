@@ -10,7 +10,7 @@ function isModOrOwner(ev) {
   return ev.chatter_user_id === ev.broadcaster_user_id || (ev.badges || []).some((b) => b.set_id === "moderator" || b.set_id === "broadcaster");
 }
 
-const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations breach containment while the stream is live — type !secure to catch them. !units · !shop · !buy <n> · !daily · !deviationbag · !scrap · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
+const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations appear in the wild while the stream is live — type !secure to catch them. !units · !shop · !buy <n> · !daily · !deviationbag · !scrap · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
 
 function makeHandler(pool, spawns) {
   const botId = () => db.getBotAccount()?.user_id;
@@ -40,7 +40,7 @@ function makeHandler(pool, spawns) {
         db.addChannel({ broadcaster_id: uid, login, display_name: name, joined_via: "chat" });
         await pool.join(uid);
         pool.refreshLive?.();
-        return reply(`@${name} joined your channel! Deviations will start breaching while you're live. Mods: !hunt help. Type !leave here to remove me.`);
+        return reply(`@${name} joined your channel! Deviations will start appearing while you're live. Mods: !hunt help. Type !leave here to remove me.`);
       } catch (e) {
         db.removeChannel(uid);
         if (e.message === "NEEDS_PERMISSION") return reply(`@${name} I need permission first: type /mod ${botLogin()} in your chat and !join again, or add me in one click at ${cfg.BASE_URL}`);
@@ -74,7 +74,7 @@ function makeHandler(pool, spawns) {
         if (!(n >= 2 && n <= 120)) return reply("Usage: !hunt interval <minutes 2-120>");
         db.setSpawnInterval(bid, n);
         spawns.scheduleNext(bid);
-        return reply(`Deviations will breach about every ${n} minutes while you're live.`);
+        return reply(`Deviations will appear about every ${n} minutes while you're live.`);
       }
       if (mod && (sub === "off" || sub === "on")) {
         db.setSpawnsOn(bid, sub === "on");

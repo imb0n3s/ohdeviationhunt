@@ -47,7 +47,7 @@
     if (view.open) return renderDetail(view.open);
     var s = bag.stats, p = bag.player;
     if (!p || !s.total) {
-      el('<div class="msg"><p>Your Deviation Bag is empty.</p><p>When a deviation breaches containment in chat, type <b>!secure</b> to catch it. Get free Securement Units with <b>!daily</b>.</p></div>' + gridHtml());
+      el('<div class="msg"><p>Your Deviation Bag is empty.</p><p>When a deviation is spotted in the wild in chat, type <b>!secure</b> to catch it. Get free Securement Units with <b>!daily</b>.</p></div>' + gridHtml());
       bindGrid(); return;
     }
     var pct = Math.round(s.unique / s.all * 100);
@@ -169,7 +169,7 @@
   function renderShop() {
     var p = bag.player;
     if (!p) {
-      el('<div class="msg"><p>You haven’t played yet.</p><p>Type <b>!secure</b> in chat the next time a deviation breaches — you’ll start with 5 Securement Units and 200 Starchrom, then you can shop here.</p></div>');
+      el('<div class="msg"><p>You haven’t played yet.</p><p>Type <b>!secure</b> in chat the next time a deviation shows up — you’ll start with 5 Securement Units and 200 Starchrom, then you can shop here.</p></div>');
       return;
     }
     var html = '<div class="wallet"><div><b>' + money(p.starchrom) + '</b>Starchrom</div><div><b>' + p.units + '</b>Securement Units</div><div><b>' + esc(p.nextUnitIn || "—") + '</b>next free unit</div></div>';

@@ -2,7 +2,7 @@
 <div style="background:linear-gradient(135deg,#0d1319,#10202e); border:1px solid #1f2a35; border-radius:16px; padding:22px 24px; margin-bottom:16px;">
 <div style="color:#0ea5e9; font-weight:800; font-size:13px; letter-spacing:1px; text-transform:uppercase;">Twitch Chat Game</div>
 <div style="color:#e6edf3; font-size:28px; font-weight:800; margin:4px 0 6px;">Deviation Hunt</div>
-<div style="color:#cfd6df; line-height:1.7;">A Once Human catching game that lives in Twitch chat. While a stream is live, deviations breach containment in chat — type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> to catch them, collect all 61 deviations with their variations and skins, and roll the best Skill Rating, Activity Rating and traits. Your Deviation Bag follows you to '''every''' channel that runs the game.</div>
+<div style="color:#cfd6df; line-height:1.7;">A Once Human catching game that lives in Twitch chat. While a stream is live, deviations are spotted in the wild in chat — type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> to catch them, collect all 61 deviations with their variations and skins, and roll the best Skill Rating, Activity Rating and traits. Your Deviation Bag follows you to '''every''' channel that runs the game.</div>
 <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;">
 <span style="background:#0ea5e9; border-radius:8px; padding:6px 14px; font-weight:700;">[https://ohdeviationhunt-production.up.railway.app <span style="color:#04121c;">Add it to your channel</span>]</span>
 <span style="background:#131c27; border:1px solid #1f2a35; border-radius:8px; padding:6px 14px; font-weight:700;">[https://ohdeviationhunt-production.up.railway.app/top <span style="color:#e6edf3;">Leaderboard</span>]</span>
@@ -18,11 +18,11 @@
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
 # Watch a stream that has '''ohdeviationhunt''' in chat.
-# When the bot posts ''"⚠️ A wild … has breached containment!"'', type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> within '''90 seconds'''.
+# When the bot posts ''"👀 A … has been spotted in the wild!"'', type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> within '''90 seconds'''.
 # When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
 # Check your collection any time with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!deviationbag</nowiki></span> or on your own page: <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>https://ohdeviationhunt-production.up.railway.app/u/</nowiki>''yourname''</span>
 
-Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> signs you up automatically — you start with '''5 Securement Units''' and '''200 Starchrom'''. Every <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> uses one Securement Unit whether it catches or not, and you get one throw per breach.
+Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> signs you up automatically — you start with '''5 Securement Units''' and '''200 Starchrom'''. Every <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> uses one Securement Unit whether it catches or not, and you get one throw per spawn.
 </div>
 </div>
 
@@ -37,7 +37,7 @@ Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Command
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Effect
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> || Throw a Securement Unit at the deviation that's loose in chat. Also works as <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!catch</nowiki></span>. One throw per person per breach.
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> || Throw a Securement Unit at the deviation that's loose in chat. Also works as <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!catch</nowiki></span>. One throw per person per spawn.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!units</nowiki></span> || Show your Securement Units, Starchrom, and when your next free unit arrives. Also <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!inv</nowiki></span>.
 |-
@@ -76,7 +76,7 @@ Only the broadcaster and moderators can use these.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt spawn</nowiki></span> || Spawn a deviation right now.
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt interval <minutes></nowiki></span> || How often deviations breach while you're live (2–120 minutes, default 7).
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt interval <minutes></nowiki></span> || How often deviations appear while you're live (2–120 minutes, default 7).
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt off</nowiki></span> / <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt on</nowiki></span> || Pause or resume spawns. Other commands keep working.
 |-
@@ -102,7 +102,7 @@ Securement Units are the only thing you need to catch deviations — there is on
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Description
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Price
 |-
-| '''Securement Unit''' || Contains one breached deviation. Used up on every <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span>, caught or not. || 500 Starchrom
+| '''Securement Unit''' || Catches one deviation. Used up on every <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span>, caught or not. || 500 Starchrom
 |}
 
 '''Ways to get Securement Units'''
@@ -161,7 +161,7 @@ Starchrom is earned by securing deviations and spent on Securement Units.
 <span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Spawn Rates & Capture Rates</span>
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
-Each breach first rolls a rarity, then a deviation of that rarity. Everyone who throws gets their own roll — any number of people can secure the same deviation.
+Each spawn first rolls a rarity, then a deviation of that rarity. Everyone who throws gets their own roll — any number of people can secure the same deviation.
 {| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Rarity
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Spawn chance
@@ -220,8 +220,8 @@ Every deviation from the [[Deviation_Main_Page|Deviation database]] can spawn: 2
 <span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Variations & Skins</span>
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
-Variations and skins are Deviation Hunt's shinies. When one breaches, the spawn message says so:
-<span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;">⚠️ A wild Grumpy Bulb has breached containment! ✨ VARIATION: Violet Robe Type !secure within 90s to catch it.</span>
+Variations and skins are Deviation Hunt's shinies. When one appears, the spawn message says so:
+<span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;">👀 A Grumpy Bulb has been spotted in the wild! ✨ VARIATION: Violet Robe Type !secure within 90s to catch it.</span>
 
 * Each variation and skin is its own entry in your Deviation Bag, and the first one of each earns the +100 new-entry bonus.
 * On your collection page and in the Twitch panel, caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.
@@ -301,7 +301,7 @@ Your collection is tied to your Twitch account, not to a channel — everything 
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
 # Go to [https://ohdeviationhunt-production.up.railway.app ohdeviationhunt-production.up.railway.app] and click '''Add to my channel''' (sign in with Twitch). Or type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!join</nowiki></span> in [https://www.twitch.tv/ohdeviationhunt ohdeviationhunt's chat].
 # If the bot says it needs permission, type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>/mod ohdeviationhunt</nowiki></span> in your chat and try again.
-# That's it. Deviations breach about every '''7 minutes''' while you're '''live''' and someone has chatted in the last 10 minutes. Change the timer with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt interval <minutes></nowiki></span>.
+# That's it. Deviations appear about every '''7 minutes''' while you're '''live''' and someone has chatted in the last 10 minutes. Change the timer with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt interval <minutes></nowiki></span>.
 
 To remove it, type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt leave</nowiki></span> in your chat or <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!leave</nowiki></span> in ohdeviationhunt's chat.
 </div>
@@ -314,7 +314,7 @@ To remove it, type <span style="background:#131c27; color:#7dd3fc; border:1px so
 <span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Frequently Asked Questions</span>
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
-'''Q: How do I start?'''<br>A: Just type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> the next time a deviation breaches. Your first throw signs you up with 5 Securement Units and 200 Starchrom.
+'''Q: How do I start?'''<br>A: Just type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> the next time a deviation shows up. Your first throw signs you up with 5 Securement Units and 200 Starchrom.
 
 '''Q: I typed !secure and the bot didn't answer.'''<br>A: That's normal — the bot stays quiet so chat isn't spammed. Results for everyone are posted when the 90-second window ends. It only replies right away if you're out of units.
 
@@ -326,7 +326,7 @@ To remove it, type <span style="background:#131c27; color:#7dd3fc; border:1px so
 
 '''Q: Does my collection carry over between channels?'''<br>A: Yes. It's tied to your Twitch account and shared across every channel running Deviation Hunt.
 
-'''Q: Why aren't deviations spawning?'''<br>A: They only breach while the stream is live and chat has been active in the last 10 minutes. A mod may also have used <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt off</nowiki></span> — <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt status</nowiki></span> shows what's going on.
+'''Q: Why aren't deviations spawning?'''<br>A: They only appear while the stream is live and chat has been active in the last 10 minutes. A mod may also have used <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt off</nowiki></span> — <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt status</nowiki></span> shows what's going on.
 
 '''Q: Where do the deviations, traits and pictures come from?'''<br>A: Straight from this wiki — the [[Deviation_Main_Page|Deviation database]] and [[Deviation_Trait_Page|Deviation Trait Page]]. When the wiki is updated, the game picks it up within a few hours.
 </div>
