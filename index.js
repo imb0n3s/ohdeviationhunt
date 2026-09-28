@@ -28,15 +28,16 @@ async function main() {
     polling = true;
     try {
       const ids = db.listEnabledChannels().map((c) => c.broadcaster_id);
-      const live = new Set(), streams = new Map();
+      const live = new Set(), streams = new Map(), info = new Map();
       for (let i = 0; i < ids.length; i += 100) {
         const u = ids.slice(i, i + 100);
         const qs = u.map((id) => `user_id=${id}`).join("&");
         const r = await twitch.helix("GET", `/streams?first=100&${qs}`, { as: "app" });
-        for (const s of r.data || []) { live.add(s.user_id); streams.set(s.user_id, s.id); }
+        for (const s of r.data || []) { live.add(s.user_id); streams.set(s.user_id, s.id); info.set(s.user_id, { title: s.title, game: s.game_name, viewers: s.viewer_count }); }
       }
       for (const id of ids) spawns.setLive(id, live.has(id));
       spawns.streamIds = streams;
+      spawns.streamInfo = info;
       for (const id of [...spawns.live]) if (!ids.includes(id)) spawns.setLive(id, false);
     } catch (e) { console.error("[live] poll failed:", e.message); }
     finally { polling = false; }

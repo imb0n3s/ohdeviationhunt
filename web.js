@@ -48,6 +48,13 @@ code,kbd{background:#0b1016;padding:2px 7px;border-radius:5px;color:#c9e7ff;font
 .dev .n{font-weight:600;font-size:.92rem;margin-top:6px}.dev .t{font-size:.78rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase}
 .dev .c{position:absolute;top:8px;right:10px;font-size:.8rem;background:#0b1016;border-radius:99px;padding:1px 8px}
 .sp{margin-top:8px;text-align:left;font-size:.78rem}.pm{display:flex;justify-content:center;gap:10px;font-weight:600;color:#fde68a;margin-bottom:4px}
+.chans{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin:12px 0}
+.chan{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:var(--text)}
+.chan:hover{border-color:var(--accent)}.chan.live{border-color:#ef4444;box-shadow:0 0 0 1px rgba(239,68,68,.35)}
+.chan img{width:44px;height:44px;border-radius:50%;flex:none;background:var(--line)}.chan.live img{box-shadow:0 0 0 2px #ef4444}
+.ci{min-width:0}.cn{font-weight:700}.cs{color:var(--muted);font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lv{background:#ef4444;color:#fff;font-size:.65rem;font-weight:800;border-radius:4px;padding:1px 5px;vertical-align:middle;margin-left:4px}
+h2 .sub{font-size:.8rem;color:var(--muted);font-weight:600;margin-left:6px}
 .tr{list-style:none;margin:0;padding:0}.tr li{padding:2px 0;border-top:1px solid var(--line);color:var(--text);cursor:help}.tr li b{display:inline-block;width:16px;color:var(--accent)}.tr li.empty{color:var(--muted);font-style:italic;cursor:default}
 .bv{font-size:.7rem;color:var(--muted);text-align:center;margin-top:2px}
 .dev.missing img{filter:brightness(0) opacity(.35)}.dev.missing .n{color:var(--muted)}
@@ -66,7 +73,7 @@ form.find{display:flex;gap:8px;margin:8px 0}form.find input{flex:1;min-width:0;p
 form.find button{padding:0 18px;border-radius:9px;border:0;background:var(--accent);color:#fff;font-weight:600}
 footer{margin-top:48px;color:var(--muted);font-size:.9em}footer a{color:var(--muted)}a{color:var(--accent)}
 nav{display:flex;gap:18px;margin-bottom:24px;flex-wrap:wrap}nav a{color:var(--muted);text-decoration:none;font-weight:600}nav a:hover{color:var(--text)}
-</style></head><body><main><nav><a href="/">${esc(cfg.BOT_NAME)}</a><a href="/dex">All deviations</a><a href="/top">Leaderboard</a><a href="${esc(cfg.WIKI_BASE)}">OHWikiGuide</a></nav>${body}
+</style></head><body><main><nav><a href="/">${esc(cfg.BOT_NAME)}</a><a href="/dex">All deviations</a><a href="/channels">Channels</a><a href="/top">Leaderboard</a><a href="${esc(cfg.WIKI_BASE)}">OHWikiGuide</a></nav>${body}
 <footer>Deviation data from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">ohwikiguide.com</a> · <a href="${esc(cfg.TERMS_URL)}">Terms</a> · <a href="${esc(cfg.PRIVACY_URL)}">Privacy</a>${cfg.DISCORD_URL ? ` · <a href="${esc(cfg.DISCORD_URL)}">Discord</a>` : ""} · Fan-made, not affiliated with Starry Studio / NetEase.</footer></main></body></html>`;
 }
 const simple = (title, heading, text, extra = "") => page(title, `<h1>${esc(heading)}</h1><p>${text}</p>${extra}<p><a href="/">&larr; Back</a></p>`);
@@ -78,7 +85,48 @@ const sections = (all, card) => Object.keys(CAT_LABEL).map((c) => {
 }).join("");
 const tierTag = (r) => `<div class="t" style="color:${TIERS[r].color}">${TIERS[r].label}</div>`;
 
-function landing() {
+
+// ---------- channels running the game (public list) ----------
+const avatars = new Map(); // broadcaster id -> profile image url
+let avatarsAt = 0;
+async function refreshAvatars() {
+  if (Date.now() - avatarsAt < 6 * 3600e3 && db.listEnabledChannels().every((c) => avatars.has(c.broadcaster_id))) return;
+  avatarsAt = Date.now();
+  try {
+    const twitch = require("./twitch");
+    const ids = db.listEnabledChannels().map((c) => c.broadcaster_id);
+    for (let i = 0; i < ids.length; i += 100) {
+      const r = await twitch.helix("GET", `/users?${ids.slice(i, i + 100).map((id) => `id=${id}`).join("&")}`, { as: "app" });
+      for (const u of r.data || []) avatars.set(u.id, u.profile_image_url);
+    }
+  } catch (e) { console.error("[web] avatars:", e.message); }
+}
+
+function channelList(pool, { limit } = {}) {
+  const bot = db.getBotAccount();
+  const live = pool?.spawns?.live || new Set(), info = pool?.spawns?.streamInfo || new Map();
+  const list = db.listEnabledChannels()
+    .filter((c) => c.broadcaster_id !== bot?.user_id)
+    .map((c) => ({ ...c, isLive: live.has(c.broadcaster_id), info: info.get(c.broadcaster_id) }))
+    .sort((a, b) => (b.isLive - a.isLive) || ((b.info?.viewers || 0) - (a.info?.viewers || 0)) || b.catches - a.catches || a.display_name.localeCompare(b.display_name));
+  const shown = limit ? list.slice(0, limit) : list;
+  if (!list.length) return { html: `<p>No channels yet — be the first to add it!</p>`, total: 0, live: 0 };
+  const html = `<div class="chans">${shown.map((c) => `<a class="chan${c.isLive ? " live" : ""}" href="https://twitch.tv/${esc(c.login)}" target="_blank" rel="noopener">
+<img src="${esc(avatars.get(c.broadcaster_id) || "")}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+<div class="ci"><div class="cn">${esc(c.display_name)}${c.isLive ? ` <span class="lv">LIVE</span>` : ""}</div>
+<div class="cs">${c.isLive && c.info ? `${esc(c.info.game || "")}${c.info.title ? ` · ${esc(c.info.title.slice(0, 70))}` : ""}` : `${fmt(c.catches)} deviations secured here`}</div></div></a>`).join("")}</div>`;
+  return { html, total: list.length, live: list.filter((c) => c.isLive).length };
+}
+
+function channelsPage(pool) {
+  const c = channelList(pool);
+  return page("Channels", `<h1>Where to play</h1>
+<p>Every Twitch channel running ${esc(cfg.BOT_NAME)} — ${c.total} channel${c.total === 1 ? "" : "s"}, ${c.live} live right now. Deviations only show up while a channel is live. Your Deviation Bag is the same on all of them.</p>
+${c.html}
+<p style="margin-top:24px">Streamer? <a href="/auth/twitch?action=add">Add ${esc(cfg.BOT_NAME)} to your channel</a>.</p>`);
+}
+
+function landing(pool) {
   const bot = db.getBotAccount();
   const botName = bot?.login || "the bot";
   return page(cfg.BOT_NAME, `
@@ -88,7 +136,11 @@ function landing() {
   <a class="btn" href="/auth/twitch?action=add">Add ${esc(cfg.BOT_NAME)} to my channel</a><a class="btn secondary" href="/auth/twitch?action=remove">Remove it</a>
   <p style="margin-bottom:0">You log in with Twitch once; the bot only gets permission to read and post in your chat.${bot ? ` Prefer chat? Type <kbd>!join</kbd> in <a href="https://twitch.tv/${esc(bot.login)}">twitch.tv/${esc(bot.login)}</a>.` : ""} Then <kbd>/mod ${esc(botName)}</kbd> so it isn't rate-limited.</p>
 </div>
-<div class="stats"><div class="stat"><b>${fmt(db.countChannels())}</b>channels</div><div class="stat"><b>${fmt(db.countPlayers())}</b>Metas</div><div class="stat"><b>${fmt(db.totalCatches())}</b>deviations secured</div><div class="stat"><b>${data.all().length}</b>deviations</div></div>
+<div class="stats"><div class="stat"><b>${fmt(channelList(pool).total)}</b>channels</div><div class="stat"><b>${fmt(db.countPlayers())}</b>Metas</div><div class="stat"><b>${fmt(db.totalCatches())}</b>deviations secured</div><div class="stat"><b>${data.all().length}</b>deviations</div></div>
+
+${(() => { const c = channelList(pool, { limit: 12 }); return `<h2>Where to play <span class="sub">${c.live} live · ${c.total} channel${c.total === 1 ? "" : "s"}</span></h2>
+<p>Every Twitch channel with ${esc(cfg.BOT_NAME)}. Deviations only show up while a channel is live — your Deviation Bag is the same on all of them.</p>
+${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels →</a></p>` : ""}`; })()}
 
 <h2>Find a collection</h2>
 <form class="find" action="/u" method="get"><input name="login" placeholder="Twitch username" aria-label="Twitch username"><button>View</button></form>
@@ -183,7 +235,8 @@ function createApp(pool) {
   app.disable("x-powered-by");
 
   require("./extension").mount(app);
-  app.get("/", (req, res) => res.send(landing()));
+  app.get("/", async (req, res) => { await refreshAvatars(); res.send(landing(pool)); });
+  app.get("/channels", async (req, res) => { await refreshAvatars(); res.send(channelsPage(pool)); });
   app.get("/dex", (req, res) => res.send(dexPage()));
   app.get("/top", (req, res) => res.send(topPage()));
   app.get("/u", (req, res) => res.redirect(`/u/${encodeURIComponent(String(req.query.login || "").trim().replace(/^@/, "").toLowerCase())}`));
