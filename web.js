@@ -177,7 +177,7 @@ ${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels �
 <div class="card chat">${esc(botName)}: 👀 A Lonewolf Whisper has been spotted in the wild! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.
 viewer42: !secure
 metabones: !secure
-${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones [Skill 4/5 · Activity 2/5]! +40 Starchrom each. 📖 New entry for metabones (+100). | !traits lonewolfwhisper for traits</div>
+${esc(botName)}: 🔒 Lonewolf Whisper secured a 4/2 by metabones! +40 Starchrom each. 📖 New entry for metabones (+100). | !traits lonewolfwhisper for traits</div>
 
 <h2>Viewer commands</h2>
 <div class="card">
