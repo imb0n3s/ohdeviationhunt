@@ -10,3 +10,7 @@
   move it back to Hosted Test, then RELOAD the status page and confirm "Current Status: Hosted Test"
   (the move can silently fail); in Local Test the panel loads from localhost and shows blank.
   Panel zip: `npm run zip:ext`, commit a copy to docs/ext-assets/ (git add -f), upload in the Files tab.
+- Site lives at https://deviationhunt.ohwikiguide.com (Railway custom domain; Cloudflare CNAME
+  deviationhunt -> wlw9g11p.up.railway.app, DNS only). BASE_URL env is set to it. The old
+  *.up.railway.app address 301-redirects pages; /ext, /auth, /health still answer there.
+  Twitch app redirect URLs and the extension allowlists include both addresses.
