@@ -101,6 +101,8 @@ try { db.exec(`ALTER TABLE players ADD COLUMN last_active_at INTEGER NOT NULL DE
 // units only run while that same stream is live
 try { db.exec(`ALTER TABLE players ADD COLUMN daily_channel TEXT`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN daily_stream TEXT`); } catch {}
+// one !daily per player per Twitch stream
+db.exec(`CREATE TABLE IF NOT EXISTS daily_claims (user_id TEXT NOT NULL, stream_id TEXT NOT NULL, channel TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (user_id, stream_id))`);
 
 const q = {
   upsertChannel: db.prepare(`INSERT INTO channels (broadcaster_id, login, display_name, joined_at, joined_via, enabled)
@@ -128,6 +130,8 @@ const q = {
   insertPlayer: db.prepare(`INSERT INTO players (user_id, login, display, starchrom, units, created_at, last_unit_at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
   touchPlayer: db.prepare(`UPDATE players SET login=?, display=? WHERE user_id=?`),
   touchActive: db.prepare(`UPDATE players SET last_channel=?, last_active_at=? WHERE user_id=?`),
+  hasDaily: db.prepare(`SELECT 1 FROM daily_claims WHERE user_id=? AND stream_id=?`),
+  addDaily: db.prepare(`INSERT OR IGNORE INTO daily_claims (user_id, stream_id, channel, at) VALUES (?, ?, ?, ?)`),
   setDailyStream: db.prepare(`UPDATE players SET daily_channel=?, daily_stream=? WHERE user_id=?`),
   // players with an hourly clock running (did !daily in some stream) whose next free unit is due
   dueHourly: db.prepare(`SELECT * FROM players WHERE daily_stream IS NOT NULL AND last_unit_at<=?`),

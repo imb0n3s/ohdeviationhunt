@@ -203,7 +203,7 @@ class Spawns {
     const unit = "standard";
     const p = loadPlayer(userId, login, display);
     if (!(p.units.standard > 0)) {
-      return warn(`@${display} you're out of Securement Units. ${hourlyOn(p) ? `Your next free one arrives in ${nextUnitIn(p)}` : p.last_daily + ECONOMY.dailyCooldownHours * HOUR <= Date.now() ? "Claim !daily for 1 now plus 1 free every hour while this stream is live" : "Your !daily isn't ready yet"}, or !buy <amount> for ${fmt(UNITS.standard.price)} ${SC} each (you have ${fmt(p.starchrom)}).`);
+      return warn(`@${display} you're out of Securement Units. ${hourlyOn(p) ? `Your next free one arrives in ${nextUnitIn(p)}` : !db.q.hasDaily.get(userId, streamOf(bid) || "") ? "Claim !daily for 1 now plus 1 free every hour while this stream is live" : "You've already claimed !daily this stream"}, or !buy <amount> for ${fmt(UNITS.standard.price)} ${SC} each (you have ${fmt(p.starchrom)}).`);
     }
     p.units[unit] -= 1;
     p.attempts += 1;
@@ -269,23 +269,27 @@ class Spawns {
 
 // ---------------- other commands ----------------
 
+// !daily: once per Twitch stream (any channel running the game). It also switches the player's
+// hourly free units to this stream — hourly units only ever run in one stream at a time.
 function daily(userId, login, display, bid) {
+  const stream = bid ? streamOf(bid) : null;
+  if (!stream) return `@${display} !daily only works while the stream is live — grab it next time the streamer is on.`;
   const p = loadPlayer(userId, login, display);
-  const wait = p.last_daily + ECONOMY.dailyCooldownHours * 3600 * 1000 - Date.now();
-  if (wait > 0) {
-    const mins = Math.ceil(wait / 60000), h = Math.floor(mins / 60), m = mins % 60;
-    return `@${display} your daily supply drop is on its way — come back in ${h ? `${h}h ` : ""}${m}m.`;
+  if (db.q.hasDaily.get(userId, stream)) {
+    return `@${display} you already claimed !daily this stream. ${hourlyOn(p) && p.daily_stream === stream ? `Next free Securement Unit in ${nextUnitIn(p)}.` : "You can claim it again in the next stream you watch."}`;
   }
+  const moved = hourlyOn(p) && p.daily_channel !== bid;
   p.last_daily = Date.now();
   p.starchrom += ECONOMY.daily.starchrom;
   const got = [];
   for (const [k, n] of Object.entries(ECONOMY.daily.units)) { p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
-  const stream = bid ? streamOf(bid) : null;
   p.last_unit_at = Date.now();          // first free hourly unit comes an hour after !daily
-  savePlayer(p);
-  db.q.setDailyStream.run(stream ? bid : null, stream, userId);
-  const hourly = stream ? " You'll get 1 free Securement Unit every hour while this stream is live." : " (Free hourly units only run during a live stream — claim !daily while the streamer is live next time.)";
-  return `@${display} 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}!${hourly} ${bagText(p)}`;
+  db.tx(() => {
+    savePlayer(p);
+    db.q.addDaily.run(userId, stream, bid, Date.now());
+    db.q.setDailyStream.run(bid, stream, userId);
+  })();
+  return `@${display} 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}! You'll get 1 free Securement Unit every hour while this stream is live${moved ? " (your hourly units moved here from the other stream)" : ""}. ${bagText(p)}`;
 }
 
 function shop() {

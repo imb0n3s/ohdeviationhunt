@@ -27,7 +27,16 @@ assert.equal(game.nextUnitIn(game.loadPlayer("3")), "after !daily");
 streams = {};                                            // stream ends
 backdate("1", H + 60e3);
 assert.equal(game.unitNotices().length, 0); assert.equal(units("1"), start[1] + 1);
-streams = { CH: "stream-2" };                             // new stream: needs a new !daily
+streams = { CH: "stream-2", CH2: "other-1" };           // new stream: no 20h wait, !daily works again
+db.addChannel({ broadcaster_id: "CH2", login: "other", display_name: "other", joined_via: "test" });
+assert.equal(game.unitNotices().length, 0);               // hourly didn't carry over without a new !daily
+let m = game.daily("1", "luna", "Luna", "CH"); console.log(m); assert.match(m, /Daily supply drop/);
+m = game.daily("1", "luna", "Luna", "CH"); console.log(m); assert.match(m, /already claimed/);
+m = game.daily("1", "luna", "Luna", "CH2"); console.log(m); assert.match(m, /moved here/);   // other stream
+backdate("1", H + 60e3);
+n = game.unitNotices(); console.log(n);
+assert.deepEqual(n.map((x) => x[0]), ["CH2"]);            // only earns in ONE stream (the latest)
 assert.equal(game.unitNotices().length, 0);
-console.log(game.daily("1", "luna", "Luna", "CH"));       // still on cooldown
+streams = {};
+m = game.daily("2", "bob", "Bob", "CH"); console.log(m); assert.match(m, /only works while the stream is live/);
 console.log("hourly unit checks passed");

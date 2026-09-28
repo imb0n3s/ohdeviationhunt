@@ -43,7 +43,6 @@ const ECONOMY = {
   starterUnits: { standard: 5 },
   hourlyUnits: 1,            // free Securement Units every hour, only while the stream you did !daily in is live (no cap)
   daily: { starchrom: 100, units: { standard: 1 } },
-  dailyCooldownHours: 20,
   newSpeciesBonus: 100,   // first time you secure a deviation (or a new variant of it)
   escapeSalvage: 3,       // Starchrom for a failed attempt, so trying is never a total loss
   scrapValue: 0.5,
