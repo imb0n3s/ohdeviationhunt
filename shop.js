@@ -29,6 +29,7 @@ const ITEMS = [
     bonus: g.bonus,
     rarity: g.rarity,
     color: g.color,
+    icon: g.icon || null,
     aliases: [g.id, g.id + "glove", g.id + "gloves"],
   })),
 ];

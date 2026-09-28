@@ -235,7 +235,7 @@
       : '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? "Buy for " + money(it.price) + " Starchrom" : "Need " + money(it.price - p.starchrom) + " more Starchrom") + '</button>';
     return (first ? '<div class="sect">Gloves</div>' : "") +
       '<div class="item glove' + (active ? " active" : "") + '" data-id="' + esc(it.id) + '" style="--gc:' + esc(it.color || "#9fb0c0") + '">' +
-      '<div class="ih"><div class="gicon">🧤</div><div><div class="in">' + esc(it.name) + ' <span class="rar">' + esc(it.rarity || "") + '</span></div>' +
+      '<div class="ih"><div class="gicon">' + (it.icon ? '<img src="' + esc(it.icon) + '" alt="">' : "🧤") + '</div><div><div class="in">' + esc(it.name) + ' <span class="rar">' + esc(it.rarity || "") + '</span></div>' +
       '<div class="ip">+' + Math.round((it.bonus || 0) * 100) + '% catch chance · ' + money(it.price) + ' Starchrom</div></div></div>' +
       '<div class="id">' + esc(it.desc) + '</div>' + btn + '</div>';
   }

@@ -117,3 +117,4 @@ footer a { color:var(--accent); font-size:12px; }
 .item.glove .rar { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; padding:1px 6px; border-radius:99px; background:var(--gc); color:#0d1319; margin-left:4px; vertical-align:middle; }
 .gicon { width:56px; height:56px; flex:none; display:flex; align-items:center; justify-content:center; font-size:32px; border-radius:10px; background:radial-gradient(circle, color-mix(in srgb, var(--gc) 45%, transparent), transparent 70%); border:1px solid var(--gc); }
 .btn.buy.owned { background:transparent; color:var(--gc); border:1px solid var(--gc); opacity:1; }
+.gicon img { width:100%; height:100%; object-fit:cover; border-radius:9px; }
