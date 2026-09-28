@@ -63,9 +63,9 @@ function unitKey() { return "standard"; }
 // Gloves: bought once in the shop and kept forever. Only your best pair counts; its bonus is added
 // straight onto every throw's catch chance (still capped at ECONOMY.maxCatchChance).
 const GLOVES = [
-  { id: "rustic", name: "Rustic Gloves", bonus: 0.03, price: 1000, rarity: "Basic",     color: "#4ade80", icon: "rustic.png" },
-  { id: "bbq",    name: "BBQ Gloves",    bonus: 0.05, price: 1750, rarity: "Uncommon",  color: "#c084fc", icon: "bbq.png" },
-  { id: "savior", name: "Savior Gloves", bonus: 0.09, price: 3000, rarity: "Legendary", color: "#fbbf24", icon: "savior.png" },
+  { id: "rustic", name: "Rustic Gloves", bonus: 0.03, price: 3000, rarity: "Basic",     color: "#4ade80", icon: "rustic.png" },
+  { id: "bbq",    name: "BBQ Gloves",    bonus: 0.05, price: 7500, rarity: "Uncommon",  color: "#c084fc", icon: "bbq.png" },
+  { id: "savior", name: "Savior Gloves", bonus: 0.09, price: 10000, rarity: "Legendary", color: "#fbbf24", icon: "savior.png" },
 ];
 
 // Starchrom bought with Bits in the Twitch panel (5 Bits = 100 Starchrom). Each pack must also exist as a

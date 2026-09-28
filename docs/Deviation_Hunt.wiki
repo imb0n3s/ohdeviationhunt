@@ -107,11 +107,11 @@ Buy with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a3
 |-
 | '''Securement Unit''' || Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy <amount></nowiki></span> || 500 Starchrom
 |-
-| '''<span style="color:#4ade80;">Rustic Gloves</span>''' <small>(Basic)</small> || +3% catch chance on every throw. Bought once and kept forever. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy rustic</nowiki></span> || 1,000 Starchrom
+| '''<span style="color:#4ade80;">Rustic Gloves</span>''' <small>(Basic)</small> || +3% catch chance on every throw. Bought once and kept forever. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy rustic</nowiki></span> || 3,000 Starchrom
 |-
-| '''<span style="color:#c084fc;">BBQ Gloves</span>''' <small>(Uncommon)</small> || +5% catch chance on every throw. Bought once and kept forever. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy bbq</nowiki></span> || 1,750 Starchrom
+| '''<span style="color:#c084fc;">BBQ Gloves</span>''' <small>(Uncommon)</small> || +5% catch chance on every throw. Bought once and kept forever. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy bbq</nowiki></span> || 7,500 Starchrom
 |-
-| '''<span style="color:#fbbf24;">Savior Gloves</span>''' <small>(Legendary)</small> || +9% catch chance on every throw. Bought once and kept forever. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy savior</nowiki></span> || 3,000 Starchrom
+| '''<span style="color:#fbbf24;">Savior Gloves</span>''' <small>(Legendary)</small> || +9% catch chance on every throw. Bought once and kept forever. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy savior</nowiki></span> || 10,000 Starchrom
 |}
 Gloves don't stack — only your best pair counts, so you can't buy a pair weaker than one you already own. The bonus is added to the catch chance (a 12% Legendary becomes 21% with Savior Gloves), still capped at 95%.
 
