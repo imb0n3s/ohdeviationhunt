@@ -55,7 +55,7 @@ function nextUnitIn(p) {
 }
 
 function savePlayer(p) {
-  db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts, last_unit_at: p.last_unit_at || Date.now(), gloves: JSON.stringify(p.gloves || []) });
+  db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts, last_unit_at: p.last_unit_at || Date.now(), gloves: JSON.stringify(p.gloves || []), extra_cap: p.extra_cap || 0 });
 }
 
 // "303 Starchrom | 21 deviations (12/61 unique)" — used where the full unit list is too noisy

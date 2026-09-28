@@ -76,6 +76,8 @@ const BITS_PACKS = [
   { sku: "starchrom500",  bits: 25,  starchrom: 500 },
   { sku: "starchrom1000", bits: 50,  starchrom: 1000 },
   { sku: "starchrom2000", bits: 100, starchrom: 2000 },
+  // raises the most Securement Units you can hold (ECONOMY.unitCap) by 5, permanently
+  { sku: "pods5",         bits: 50,  capacity: 5 },
 ];
 
 module.exports = { TIERS, ASSIGN, VARIANT, UNITS, ECONOMY, GLOVES, BITS_PACKS, rarityOf, unitKey };

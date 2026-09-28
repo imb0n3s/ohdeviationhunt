@@ -168,12 +168,12 @@ function mount(app) {
       let credited = false, player;
       db.tx(() => {
         const p = game.loadPlayer(row.user_id, row.login, row.display);
-        credited = db.q.addBitsTx.run(d.transactionId, row.user_id, pack.sku, pack.bits, pack.starchrom, jwt.channel_id || null, Date.now()).changes === 1;
-        if (credited) { p.starchrom += pack.starchrom; game.savePlayer(p); }
+        credited = db.q.addBitsTx.run(d.transactionId, row.user_id, pack.sku, pack.bits, pack.starchrom || 0, jwt.channel_id || null, Date.now()).changes === 1;
+        if (credited) { p.starchrom += pack.starchrom || 0; p.extra_cap = (p.extra_cap || 0) + (pack.capacity || 0); game.savePlayer(p); }
         player = playerInfo(p);
       })();
       console.log(`[ext] bits ${credited ? "credited" : "duplicate"}: ${row.login} ${pack.sku} (${pack.bits} bits) tx=${d.transactionId}`);
-      res.json({ ok: true, credited, starchrom: pack.starchrom, player });
+      res.json({ ok: true, credited, starchrom: pack.starchrom || 0, capacity: pack.capacity || 0, player });
     } catch (e) {
       if (e.needsIdentity) return res.status(403).json({ error: "needs_identity" });
       console.warn(`[ext] bits failed ${e.status || 500}: ${e.message}`);

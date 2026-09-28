@@ -26,10 +26,10 @@
 - Bits: panel Shop sells Starchrom packs for Bits (rarity.js BITS_PACKS, 5 Bits = 100 Starchrom; receipts verified at
   POST /ext/bits/complete, one credit per transactionId in bits_tx). Hidden until Twitch Bits is on. TO SWITCH ON (after B
   finishes Monetization onboarding): Local Test → Monetization tab → "Bits enabled" → add one product per pack with the
-  SAME sku + Bits amount (starchrom100/5, starchrom500/25, starchrom1000/50, starchrom2000/100), In Development = No,
+  SAME sku + Bits amount (starchrom100/5, starchrom500/25, starchrom1000/50, starchrom2000/100, pods5/50), In Development = No,
   Save All → back to Hosted Test (reload/confirm) → add Bits to the wiki page.
   B's call (2026-09-28): DON'T switch Bits on until it takes real Bits — i.e. after the extension is
   approved/released (in Local/Hosted Test Twitch makes Bits purchases free). Onboarding was submitted 2026-09-28.
-- Unit cap: ECONOMY.unitCap = 100 Securement Units (+ players.extra_cap). B wants extra capacity sold as
-  blocks of Securement Pods for 50 Bits each once Bits can take real Bits (block size not decided yet — ask B).
-  Add it as a BITS_PACKS-style product that raises extra_cap, same receipt flow as /ext/bits/complete.
+- Unit cap: ECONOMY.unitCap = 100 Securement Units (+ players.extra_cap). Extra room is sold for Bits:
+  pods5 = +5 capacity for 50 Bits (in BITS_PACKS; decided by B 2026-09-28). When switching Bits on, the Twitch
+  products are: starchrom100/5, starchrom500/25, starchrom1000/50, starchrom2000/100 AND pods5/50.

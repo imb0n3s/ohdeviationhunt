@@ -238,10 +238,10 @@
   function bitsHtml() {
     var packs = (bag.bitsPacks || []).filter(function (x) { return bitsProducts[x.sku]; });
     if (!bitsOn || !packs.length) return "";
-    return '<div class="sect">Starchrom with Bits</div><div class="item bits"><div class="id">5 Bits = 100 Starchrom. Bits used here support the streamer.</div><div class="packs">' +
+    return '<div class="sect">Starchrom with Bits</div><div class="item bits"><div class="id">5 Bits = 100 Starchrom · 50 Bits = room for 5 more Securement Units (permanent). Bits used here support the streamer.</div><div class="packs">' +
       packs.map(function (x) {
         var cost = bitsProducts[x.sku].cost && bitsProducts[x.sku].cost.amount || x.bits;
-        return '<button class="btn bitsbuy" data-sku="' + esc(x.sku) + '"' + (busy ? " disabled" : "") + '><b>' + money(x.starchrom) + '</b> Starchrom<span>' + cost + ' Bits</span></button>';
+        return '<button class="btn bitsbuy" data-sku="' + esc(x.sku) + '"' + (busy ? " disabled" : "") + '><b>' + (x.capacity ? "+" + x.capacity : money(x.starchrom)) + '</b> ' + (x.capacity ? "Securement Pod space" : "Starchrom") + '<span>' + cost + ' Bits</span></button>';
       }).join("") + '</div></div>';
   }
   function buyBits(sku) {
@@ -266,7 +266,7 @@
           busy = false;
           if (res.j.error === "wrong_user") return;
           if (res.j.player) bag.player = res.j.player;
-          notice = res.ok ? { kind: "ok", text: "+" + money(res.j.starchrom) + " Starchrom — thanks for the Bits!" } : { kind: "err", text: "Your Bits went through but the Starchrom didn’t arrive yet. Refresh the panel; if it’s still missing, tell the streamer." };
+          notice = res.ok ? { kind: "ok", text: (res.j.capacity ? "+" + res.j.capacity + " Securement Pod space" : "+" + money(res.j.starchrom) + " Starchrom") + " — thanks for the Bits!" } : { kind: "err", text: "Your Bits went through but the Starchrom didn’t arrive yet. Refresh the panel; if it’s still missing, tell the streamer." };
           whoLine(); if (view.page === "shop") renderShop();
         })
         .catch(function () { busy = false; notice = { kind: "err", text: "Couldn’t reach the game to add your Starchrom. Refresh the panel in a minute." }; renderShop(); });

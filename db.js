@@ -144,7 +144,7 @@ const q = {
   setDailyStream: db.prepare(`UPDATE players SET daily_channel=?, daily_stream=? WHERE user_id=?`),
   // players whose next hourly free unit is due (eligibility is checked in game.js)
   dueHourly: db.prepare(`SELECT * FROM players WHERE active_stream IS NOT NULL AND last_unit_at<=?`),
-  savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at, gloves=@gloves WHERE user_id=@user_id`),
+  savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at, gloves=@gloves, extra_cap=@extra_cap WHERE user_id=@user_id`),
   countPlayers: db.prepare(`SELECT COUNT(*) AS n FROM players`),
 
   addCatch: db.prepare(`INSERT INTO catches (user_id, deviation, variant, kind, count, first_at, first_channel) VALUES (?, ?, ?, ?, 1, ?, ?)
