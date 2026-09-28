@@ -225,8 +225,8 @@ class Spawns {
     this.persist(bid);
     const left = p.units[unit];
     const leftTxt = `${left} Securement Unit${left === 1 ? "" : "s"} left`;
-    if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}. 🎯 Unit thrown at the ${spawnName(s)} — you have ${leftTxt}. Type !daily for more, plus 1 free every hour this stream. Results when time runs out!`;
-    return `@${display} 🎯 Unit thrown at the ${spawnName(s)} — you have ${leftTxt}. Results when time runs out!`;
+    if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}. 🎯 Unit thrown at the ${spawnName(s)} — you have ${leftTxt} (you get it back if it breaks free). Type !daily for more, plus 1 free every hour this stream. Results when time runs out!`;
+    return `@${display} 🎯 Unit thrown at the ${spawnName(s)} — you have ${leftTxt}. If it breaks free you get the unit back. Results when time runs out!`;
   }
 
   async resolve(bid) {
@@ -256,6 +256,7 @@ class Spawns {
           if (!had) firsts.push(a.display);
           caught.push(`${a.display} [${ratingTag(sp)}]`);
         } else {
+          p.units[a.unit] = (p.units[a.unit] || 0) + 1; // a miss gives the unit back
           p.starchrom += ECONOMY.escapeSalvage;
           escaped.push(a.display);
         }
@@ -270,8 +271,9 @@ class Spawns {
     if (caught.length) {
       msg = `🔒 ${name} secured by ${list(caught, 7)}! +${reward} ${SC} each.`;
       if (firsts.length) msg += ` 📖 New entry for ${list(firsts, 8)} (+${ECONOMY.newSpeciesBonus}).`;
+      if (escaped.length) msg += ` It broke free from ${list(escaped, 6)} — Securement Unit returned.`;
     } else {
-      msg = `💥 ${name} got away! Better luck next time.`;
+      msg = `💥 ${name} got away from ${list(escaped, 8)}! Securement Unit${escaped.length === 1 ? "" : "s"} returned — better luck next time.`;
     }
     msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !deviationbag to see your collection`;
     return this.send(bid, msg);
@@ -470,4 +472,19 @@ function top(baseUrl) {
   return `🏆 Top Metas: ${rows.map((r, i) => `${i + 1}. ${r.display} ${r.species} dev${r.variants ? ` +${r.variants}✨` : ""}`).join(" · ")} — ${baseUrl}/top`;
 }
 
-module.exports = { hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+// One-time make-good: before misses refunded the unit, give back one unit per past miss.
+// misses = throws - catches (only safe when the player never scrapped/destroyed, i.e. unique == total).
+function refundPastMisses(login, key) {
+  if (db.q.getSetting.get(key)) return null;
+  const row = db.q.getPlayerByLogin.get(login);
+  if (!row) return null;
+  const p = loadPlayer(row.user_id);
+  const total = db.q.countCatchesFor.get(row.user_id).n;
+  const misses = Math.max(0, p.attempts - total);
+  p.units.standard = (p.units.standard || 0) + misses;
+  savePlayer(p);
+  db.q.setSetting.run(key, String(misses));
+  return { login, attempts: p.attempts, caught: total, refunded: misses, units: p.units.standard };
+}
+
+module.exports = { refundPastMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

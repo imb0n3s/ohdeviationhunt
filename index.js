@@ -63,7 +63,8 @@ async function main() {
   setInterval(pool.refreshLive, cfg.LIVE_POLL_SECONDS * 1000).unref();
   setInterval(() => spawns.tick(), 15 * 1000).unref();
   // hourly free Securement Units (+ chat notice) for people who did !daily in a live stream
-  const { unitNotices, setStreamLookup } = require("./game");
+  const { unitNotices, setStreamLookup, refundPastMisses } = require("./game");
+  try { const r = refundPastMisses("luna_raventhorn", "refund-misses:luna_raventhorn"); if (r) console.log("[refund]", JSON.stringify(r)); } catch (e) { console.error("[refund]", e.message); }
   setStreamLookup((ch) => (spawns.live.has(ch) && spawns.streamIds?.get(ch)) || null);
   setInterval(() => {
     try {

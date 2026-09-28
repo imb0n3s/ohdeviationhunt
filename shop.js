@@ -10,7 +10,7 @@ const ITEMS = [
   {
     id: "unit",
     name: "Securement Unit",
-    desc: "Throw one with !secure to try to catch a deviation spotted in the wild. Used up on every throw.",
+    desc: "Throw one with !secure to try to catch a deviation spotted in the wild. Used up when you catch one; returned if it breaks free.",
     price: UNITS.standard.price,
     grants: { units: { standard: 1 } },
     maxQty: 100,

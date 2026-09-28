@@ -162,6 +162,7 @@ const q = {
   latestSpecimen: db.prepare(`SELECT * FROM specimens WHERE user_id=? ORDER BY id DESC LIMIT 1`),
   deleteSpecimen: db.prepare(`DELETE FROM specimens WHERE id=?`),
   getSpecimen: db.prepare(`SELECT * FROM specimens WHERE id=? AND user_id=?`),
+  countCatchesFor: db.prepare(`SELECT COALESCE(SUM(count),0) AS n FROM catches WHERE user_id=?`),
   countDeviation: db.prepare(`SELECT COALESCE(SUM(count),0) AS n FROM catches WHERE user_id=? AND deviation=?`),
   decCatch: db.prepare(`UPDATE catches SET count=count-1 WHERE user_id=? AND deviation=? AND variant=?`),
   dropEmptyCatch: db.prepare(`DELETE FROM catches WHERE user_id=? AND deviation=? AND variant=? AND count<=0`),

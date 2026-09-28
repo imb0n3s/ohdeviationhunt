@@ -23,7 +23,7 @@
 # When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
 # Check your collection any time with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!deviationbag</nowiki></span> or on your own page: <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>https://deviationhunt.ohwikiguide.com/u/</nowiki>''yourname''</span>
 
-Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> signs you up automatically — you start with '''5 Securement Units''' and '''200 Starchrom'''. Every <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> uses one Securement Unit whether it catches or not, and you get one throw per spawn.
+Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> signs you up automatically — you start with '''5 Securement Units''' and '''200 Starchrom'''. Every <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> uses one Securement Unit, but if the deviation breaks free you get that unit back. You get one throw per spawn.
 </div>
 </div>
 
@@ -105,7 +105,7 @@ Securement Units are the only thing you need to catch deviations — there is on
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Description
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Price
 |-
-| '''Securement Unit''' || Catches one deviation. Used up on every <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span>, caught or not. || 500 Starchrom
+| '''Securement Unit''' || Catches one deviation. Used up when <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> catches; returned if it breaks free. || 500 Starchrom
 |}
 
 '''Ways to get Securement Units'''
@@ -146,7 +146,7 @@ Starchrom is earned by securing deviations and spent on Securement Units.
 |-
 | First time you secure a deviation (or a new variant of it) || +100 bonus
 |-
-| A throw that misses || +3 salvage
+| A throw that misses || +3 salvage (and your Securement Unit back)
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || +100
 |-
@@ -324,7 +324,7 @@ To remove it, type <span style="background:#131c27; color:#7dd3fc; border:1px so
 
 '''Q: I typed !secure and the bot didn't answer.'''<br>A: That's normal — the bot stays quiet so chat isn't spammed. Results for everyone are posted when the 90-second window ends. It only replies right away if you're out of units.
 
-'''Q: Why wasn't my name in the result?'''<br>A: Only the people who secured it are listed. If your name isn't there, it broke free from your unit (you still get +3 Starchrom).
+'''Q: Why wasn't my name in the result?'''<br>A: The result names who secured it and who it broke free from. If it broke free from you, your Securement Unit is returned and you get +3 Starchrom.
 
 '''Q: I'm out of Securement Units.'''<br>A: Claim <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> during a live stream: you get 1 right away and 1 free every hour for the rest of the day while you're in a live stream. Or <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy <amount></nowiki></span> for 500 Starchrom each. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!units</nowiki></span> shows when the next free one arrives.
 
