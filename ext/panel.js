@@ -76,7 +76,7 @@
     var pct = Math.round(s.unique / s.all * 100);
     el('<div class="stats"><div class="stat"><b>' + s.unique + '/' + s.all + '</b>deviations</div>' +
        '<div class="stat"><b>' + s.variants + '</b>variants &amp; skins</div>' +
-       '<div class="stat"><b>' + s.total + '</b>secured</div></div>' +
+       '<div class="stat"><b>' + s.total + (bag.player && bag.player.unitCap ? '<small>/' + bag.player.unitCap + '</small>' : '') + '</b>secured</div></div>' +
        '<div class="bar"><i id="barfill"></i></div>' + gridHtml() +
        (bag.page ? '<footer><a href="' + esc(bag.page) + '" target="_blank" rel="noopener">Open my full collection ↗</a></footer>' : ""));
     document.getElementById("barfill").style.width = pct + "%"; // set via CSSOM (Twitch CSP blocks inline styles)
