@@ -286,7 +286,7 @@ const dailyReady = (userId) => !dailyToday(userId);
 
 function daily(userId, login, display, bid) {
   const stream = bid ? streamOf(bid) : null;
-  if (!stream) return `@${display} !daily only works while the stream is live — grab it next time the streamer is on.`;
+  if (!stream) return `@${display} !daily only works while the stream is live. If the stream just started, Twitch can take a minute or two to show it as live — try !daily again shortly.`;
   const p = loadPlayer(userId, login, display);
   if (!dailyReady(userId)) {
     return `@${display} you already claimed today's !daily — it resets at midnight Central (in ${untilReset()}).${hourlyOn(p) ? ` Next free Securement Unit in ${nextUnitIn(p)}.` : ""}`;

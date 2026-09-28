@@ -27,10 +27,12 @@ async function main() {
   spawns.restore();
 
   // Which joined channels are live right now? Helix /streams takes up to 100 ids per call.
-  let polling = false;
-  pool.refreshLive = async () => {
-    if (polling || !db.getBotAccount()) return;
-    polling = true;
+  // returns the in-flight check if one is already running, so callers can wait for fresh status
+  let polling = null;
+  pool.refreshLive = () => {
+    if (polling) return polling;
+    if (!db.getBotAccount()) return Promise.resolve();
+    polling = (async () => {
     try {
       const ids = db.listEnabledChannels().map((c) => c.broadcaster_id);
       const live = new Set(), streams = new Map(), info = new Map();
@@ -45,7 +47,9 @@ async function main() {
       spawns.streamInfo = info;
       for (const id of [...spawns.live]) if (!ids.includes(id)) spawns.setLive(id, false);
     } catch (e) { console.error("[live] poll failed:", e.message); }
-    finally { polling = false; }
+    finally { polling = null; }
+    })();
+    return polling;
   };
 
 

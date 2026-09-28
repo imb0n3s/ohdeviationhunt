@@ -22,7 +22,7 @@ const cfg = {
   SPAWN_INTERVAL_MIN: Number(process.env.SPAWN_INTERVAL_MIN || 7),  // default per channel; mods can change it
   SPAWN_WINDOW_SECONDS: Number(process.env.SPAWN_WINDOW_SECONDS || 90),
   ACTIVITY_WINDOW_MIN: Number(process.env.ACTIVITY_WINDOW_MIN || 10), // someone must have chatted this recently
-  LIVE_POLL_SECONDS: Number(process.env.LIVE_POLL_SECONDS || 120),
+  LIVE_POLL_SECONDS: Number(process.env.LIVE_POLL_SECONDS || 60),
   SPAWN_OFFLINE: process.env.SPAWN_OFFLINE === "1",
   // PAUSED=1 stops all spawns and game commands (only !join/!leave and a "paused" note on !hunt)
   PAUSED: process.env.PAUSED === "1",
