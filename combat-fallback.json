@@ -3,7 +3,7 @@
   "id": "artisanstouch",
   "name": "Artisan's Touch",
   "category": "crafting",
-  "rarity": "common",
+  "rarity": "epic",
   "img": "https://ohwikiguide.com/images/3/34/Deviation_Artisans_Touch.png",
   "fn": "Repairs the least durable gear you equip. The item disappears after use and only applies to the gear that you crafted.",
   "drops": [
@@ -48,7 +48,7 @@
   "id": "atomicsnail",
   "name": "Atomic Snail",
   "category": "crafting",
-  "rarity": "uncommon",
+  "rarity": "epic",
   "img": "https://ohwikiguide.com/images/2/2a/Deviation_Atomic_Snail.png",
   "fn": "Produces special materials used to craft Whim potions. Enables the creation of the Aero Leap potion, which allows a short air dash while airborne.",
   "drops": [
@@ -88,7 +88,7 @@
   "id": "bravegeorge",
   "name": "Brave George",
   "category": "combat",
-  "rarity": "legendary",
+  "rarity": "epic",
   "img": "https://ohwikiguide.com/images/c/c7/Deviation_Brave_George.png",
   "fn": "A loyal companion for Metas",
   "drops": [
@@ -252,7 +252,7 @@
   "id": "directorfox",
   "name": "Director Fox",
   "category": "territory",
-  "rarity": "uncommon",
+  "rarity": "rare",
   "img": "https://ohwikiguide.com/images/c/c6/Deviation_Director_Fox.png",
   "fn": "Working in your territory helps tame, grow, and breed animals",
   "drops": [
@@ -286,7 +286,7 @@
   "id": "doctorraven",
   "name": "Doctor Raven",
   "category": "territory",
-  "rarity": "uncommon",
+  "rarity": "rare",
   "img": "https://ohwikiguide.com/images/3/31/Deviation_Doctor_Raven.png",
   "fn": "Work in the Territory to improve Supplies Workbench efficiency. Crafted treatments will have Bonus Effect",
   "drops": [
@@ -300,7 +300,7 @@
   "id": "drteddy",
   "name": "Dr. Teddy",
   "category": "combat",
-  "rarity": "common",
+  "rarity": "epic",
   "img": "https://ohwikiguide.com/images/f/fa/Deviation_Dr_Teddy.png",
   "fn": "Can participate in combat. Will heal or rescue fallen Metas.",
   "drops": [
@@ -340,7 +340,7 @@
   "id": "dreamcatcher",
   "name": "Dreamcatcher",
   "category": "crafting",
-  "rarity": "uncommon",
+  "rarity": "common",
   "img": "https://ohwikiguide.com/images/5/56/Deviation_Dreamcatcher.png",
   "fn": "When in danger, spits a spider web to restrain your enemies when you roll past them",
   "drops": [
@@ -384,7 +384,7 @@
   "id": "enchantingvoid",
   "name": "Enchanting Void",
   "category": "combat",
-  "rarity": "uncommon",
+  "rarity": "common",
   "img": "https://ohwikiguide.com/images/1/18/Deviation_Enchanting_Void.png",
   "fn": "Can participate in combat to increase its master's Melee DMG",
   "drops": [
@@ -454,7 +454,7 @@
   "id": "festeringgel",
   "name": "Festering Gel",
   "category": "combat",
-  "rarity": "uncommon",
+  "rarity": "common",
   "img": "https://ohwikiguide.com/images/8/89/Deviation_Festering_Gel.png",
   "fn": "Can participate in combat to transform into Shelter and block enemy attacks.",
   "drops": [
@@ -588,7 +588,7 @@
   "id": "gingerbreadhouse",
   "name": "Gingerbread House",
   "category": "crafting",
-  "rarity": "uncommon",
+  "rarity": "common",
   "img": "https://ohwikiguide.com/images/b/b8/Deviation_Gingerbread_House.png",
   "fn": "Changes into any object in the scene after use",
   "drops": [
@@ -762,7 +762,7 @@
   "id": "icepot",
   "name": "Ice Pot",
   "category": "crafting",
-  "rarity": "common",
+  "rarity": "rare",
   "img": "https://ohwikiguide.com/images/7/7f/Deviation_Ice_Pot.png",
   "fn": "Produces a magical adhesive ice block",
   "drops": [
@@ -776,7 +776,7 @@
   "id": "invinciblesun",
   "name": "Invincible Sun",
   "category": "combat",
-  "rarity": "rare",
+  "rarity": "epic",
   "img": "https://ohwikiguide.com/images/5/5c/Deviation_Invincible_Sun.png",
   "fn": "Can participate in combat to periodically release blazing energy rays, which attack all nearby enemies, inflicting continuous Burn DMG",
   "drops": [
@@ -851,7 +851,7 @@
   "id": "lonewolfwhisper",
   "name": "Lonewolf Whisper",
   "category": "combat",
-  "rarity": "rare",
+  "rarity": "epic",
   "img": "https://ohwikiguide.com/images/0/02/Deviation_Lonewolfs_Whisper.png",
   "fn": "Can participate in combat. Will transform into a black wolf and attack enemies",
   "drops": [
@@ -1310,7 +1310,7 @@
   "id": "rebecca",
   "name": "Rebecca",
   "category": "territory",
-  "rarity": "rare",
+  "rarity": "legendary",
   "img": "https://ohwikiguide.com/images/2/2b/Deviation_Rebecca.png",
   "fn": "Can summon the avatar of \"her\" to comfort and soothe other Deviations",
   "drops": [
@@ -1405,7 +1405,7 @@
   "id": "soulsummoner",
   "name": "Soul Summoner",
   "category": "combat",
-  "rarity": "legendary",
+  "rarity": "epic",
   "img": "https://ohwikiguide.com/images/4/4a/Deviation_Soul_Summoner.png",
   "fn": "Can participate in combat to weaken enemies with cursed arrows, increasing the Weapon DMG they receive...",
   "drops": [
@@ -1483,7 +1483,7 @@
   "id": "thedigbyboy",
   "name": "The Digby Boy",
   "category": "territory",
-  "rarity": "rare",
+  "rarity": "common",
   "img": "https://ohwikiguide.com/images/5/5f/Deviation_The_Digby_Boy.png",
   "fn": "Gathers Ore",
   "drops": [
@@ -1543,7 +1543,7 @@
   "id": "upperworldspawn",
   "name": "Upper World Spawn",
   "category": "crafting",
-  "rarity": "uncommon",
+  "rarity": "common",
   "img": "https://ohwikiguide.com/images/1/1e/Deviation_Upper_World_Spawn.png",
   "fn": "Produces special amterials that can be used to craft Tactical Items. Using the item will grant the user a short period of immunity to all damage while losing the ability to move.",
   "drops": [
@@ -1639,7 +1639,7 @@
   "id": "zapamander",
   "name": "Zapamander",
   "category": "combat",
-  "rarity": "uncommon",
+  "rarity": "rare",
   "img": "https://ohwikiguide.com/images/2/25/Deviation_Zapamander.png",
   "fn": "Can participate in combat to summon thunderclouds to strike enemies and enhance electrical damage",
   "drops": [
@@ -1699,7 +1699,7 @@
   "id": "zenopurifier",
   "name": "Zeno-Purifier",
   "category": "combat",
-  "rarity": "epic",
+  "rarity": "rare",
   "img": "https://ohwikiguide.com/images/c/c9/Deviation_Zeno-Purifier.png",
   "fn": "Attacks enemies, gives player melee teleport",
   "drops": [
