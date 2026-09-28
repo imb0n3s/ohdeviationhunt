@@ -28,8 +28,8 @@ const ASSIGN = {
 
 // A spawn can be a Variation (from the wiki's Variations tab) or a Skin — the game's "shinies".
 const VARIANT = {
-  variation: { chance: 1 / 12, catchMult: 0.85, rewardMult: 2, label: "Variation" },
-  // skinned versions are always Legendary with a flat 9% capture rate
+  // Every variation and skin is Legendary, whatever the base deviation's rarity.
+  variation: { chance: 1 / 12, catch: 0.12, rarity: "legendary", rewardMult: 1, label: "Variation" },
   skin:      { chance: 1 / 40, catch: 0.09, rarity: "legendary", rewardMult: 1, label: "Skin" },
 };
 

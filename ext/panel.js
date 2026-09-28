@@ -171,7 +171,7 @@
     if (d.count > specs.length) html += '<div class="hint left">' + (d.count - specs.length) + ' older catch' + (d.count - specs.length > 1 ? "es" : "") + ' from before ratings existed ' + (d.count - specs.length > 1 ? "have" : "has") + ' no ratings or traits.</div>';
     if (d.variantsTotal) {
       var got = caughtVariants(d);
-      html += '<h3>Variants &amp; skins (' + got.length + '/' + d.variantsTotal + ' caught)</h3><div class="chips">' +
+      html += '<h3>Variants &amp; skins (' + got.length + '/' + d.variantsTotal + ' caught) · <span style="color:#fbbf24">all Legendary</span></h3><div class="chips">' +
         d.variants.map(function (v) {
           return '<span class="' + (v.owned ? "have " + v.kind : "") + '" title="' + (v.kind === "skin" ? "Skin" : "Variation") + '">' + (v.owned ? "✨ " : "") + esc(v.name) + '</span>';
         }).join("") + '</div>';

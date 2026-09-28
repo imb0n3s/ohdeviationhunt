@@ -138,8 +138,8 @@ out.push(box("Currency", SC, `
 ${SC} is earned by securing deviations and spent on throws (${ECONOMY.throwCost} per ${cmd("!secure")}) and Securement Units.
 ${table(["How", SC], [
   ["Securing a deviation", Object.entries(TIERS).map(([k, t]) => `${tierTag(k)} ${t.reward}`).join(" · ")],
-  ["Securing a Variation", `×${VARIANT.variation.rewardMult} the normal reward`],
-  ["Securing a Skin", `${skinReward}`],
+  ["Securing a Variation (always Legendary)", `${TIERS[VARIANT.variation.rarity].reward * VARIANT.variation.rewardMult}`],
+  ["Securing a Skin (always Legendary)", `${skinReward}`],
   ["First time you secure a deviation (or a new variant of it)", `+${ECONOMY.newSpeciesBonus} bonus`],
   [cmd("!daily"), `+${ECONOMY.daily.starchrom}`],
   [cmd("!scrap"), `${pct(ECONOMY.scrapValue)} of the catch reward per duplicate`],
@@ -148,14 +148,15 @@ ${table(["How", SC], [
 `));
 
 const rarityRows = Object.entries(TIERS).map(([k, t]) => [
-  tierTag(k), pct(t.weight / totalWeight), pct(t.catch), pct(t.catch * VARIANT.variation.catchMult), `${t.reward}`, `${(byTier[k] || []).length}`,
+  tierTag(k), pct(t.weight / totalWeight), pct(t.catch), `${t.reward}`, `${(byTier[k] || []).length}`,
 ]);
 out.push(box("Odds", "Spawn Rates & Capture Rates", `
 Each spawn first rolls a rarity, then a deviation of that rarity. Everyone who throws gets their own roll — any number of people can secure the same deviation.
-${table(["Rarity", "Spawn chance", "Capture rate", "Capture rate (Variation)", `${SC} reward`, "Deviations"], rarityRows)}
+${table(["Rarity", "Spawn chance", "Capture rate", `${SC} reward`, "Deviations"], rarityRows)}
 
-* '''Variations''' spawn about ${pct(VARIANT.variation.chance)} of the time (on deviations that have them). They are ${pct(1 - VARIANT.variation.catchMult)} harder to secure and pay ×${VARIANT.variation.rewardMult} ${SC}.
-* '''Skins''' spawn about ${pct(VARIANT.skin.chance)} of the time (on deviations that have them). Every skin counts as ${tierTag("legendary")} with a flat '''${pct(VARIANT.skin.catch)}''' capture rate.
+* '''Every Variation and Skin is ${tierTag("legendary")}''', no matter the rarity of the deviation it belongs to — a Common deviation's variations and skins are Legendary too.
+* '''Variations''' spawn about ${pct(VARIANT.variation.chance)} of the time (on deviations that have them), with a flat '''${pct(VARIANT.variation.catch)}''' capture rate and ${TIERS[VARIANT.variation.rarity].reward * VARIANT.variation.rewardMult} ${SC}.
+* '''Skins''' spawn about ${pct(VARIANT.skin.chance)} of the time (on deviations that have them), with a flat '''${pct(VARIANT.skin.catch)}''' capture rate and ${skinReward} ${SC}.
 * Capture rates never go above ${pct(ECONOMY.maxCatchChance)}.
 `));
 

@@ -151,9 +151,9 @@ Starchrom is earned by securing deviations and spent on throws (10 per <span sty
 |-
 | Securing a deviation || <span style="color:#9fb0c0; font-weight:800;">Common</span> 10 · <span style="color:#4ade80; font-weight:800;">Uncommon</span> 20 · <span style="color:#38bdf8; font-weight:800;">Rare</span> 40 · <span style="color:#c084fc; font-weight:800;">Epic</span> 80 · <span style="color:#fbbf24; font-weight:800;">Legendary</span> 200
 |-
-| Securing a Variation || ×2 the normal reward
+| Securing a Variation (always Legendary) || 200
 |-
-| Securing a Skin || 200
+| Securing a Skin (always Legendary) || 200
 |-
 | First time you secure a deviation (or a new variant of it) || +100 bonus
 |-
@@ -178,23 +178,23 @@ Each spawn first rolls a rarity, then a deviation of that rarity. Everyone who t
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Rarity
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Spawn chance
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Capture rate
-! style="background:#131c27; color:#e6edf3; text-align:left;" | Capture rate (Variation)
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Starchrom reward
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Deviations
 |-
-| <span style="color:#9fb0c0; font-weight:800;">Common</span> || 40% || 70% || 59.5% || 10 || 26
+| <span style="color:#9fb0c0; font-weight:800;">Common</span> || 40% || 70% || 10 || 26
 |-
-| <span style="color:#4ade80; font-weight:800;">Uncommon</span> || 28% || 55% || 46.8% || 20 || 19
+| <span style="color:#4ade80; font-weight:800;">Uncommon</span> || 28% || 55% || 20 || 19
 |-
-| <span style="color:#38bdf8; font-weight:800;">Rare</span> || 18% || 40% || 34% || 40 || 9
+| <span style="color:#38bdf8; font-weight:800;">Rare</span> || 18% || 40% || 40 || 9
 |-
-| <span style="color:#c084fc; font-weight:800;">Epic</span> || 10% || 25% || 21.3% || 80 || 4
+| <span style="color:#c084fc; font-weight:800;">Epic</span> || 10% || 25% || 80 || 4
 |-
-| <span style="color:#fbbf24; font-weight:800;">Legendary</span> || 4% || 12% || 10.2% || 200 || 3
+| <span style="color:#fbbf24; font-weight:800;">Legendary</span> || 4% || 12% || 200 || 3
 |}
 
-* '''Variations''' spawn about 8.3% of the time (on deviations that have them). They are 15% harder to secure and pay ×2 Starchrom.
-* '''Skins''' spawn about 2.5% of the time (on deviations that have them). Every skin counts as <span style="color:#fbbf24; font-weight:800;">Legendary</span> with a flat '''9%''' capture rate.
+* '''Every Variation and Skin is <span style="color:#fbbf24; font-weight:800;">Legendary</span>''', no matter the rarity of the deviation it belongs to — a Common deviation's variations and skins are Legendary too.
+* '''Variations''' spawn about 8.3% of the time (on deviations that have them), with a flat '''12%''' capture rate and 200 Starchrom.
+* '''Skins''' spawn about 2.5% of the time (on deviations that have them), with a flat '''9%''' capture rate and 200 Starchrom.
 * Capture rates never go above 95%.
 </div>
 </div>

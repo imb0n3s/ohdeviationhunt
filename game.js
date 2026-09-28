@@ -112,21 +112,21 @@ function bestGlove(p) {
 }
 
 function catchChance(s, unit, bonus = 0) {
-  if (s.variant?.kind === "skin") return Math.min(ECONOMY.maxCatchChance, VARIANT.skin.catch + bonus);
-  let c = TIERS[s.dev.rarity].catch * UNITS[unit].mult;
-  if (s.variant) c *= VARIANT[s.variant.kind].catchMult;
+  // variations and skins are always Legendary with their own flat capture rate
+  const v = s.variant && VARIANT[s.variant.kind];
+  if (v) return Math.min(ECONOMY.maxCatchChance, v.catch + bonus);
+  const c = TIERS[s.dev.rarity].catch * UNITS[unit].mult;
   return Math.min(ECONOMY.maxCatchChance, c + bonus);
 }
 
 function rewardFor(s) {
-  if (s.variant?.kind === "skin") return TIERS[VARIANT.skin.rarity].reward * VARIANT.skin.rewardMult;
-  let r = TIERS[s.dev.rarity].reward;
-  if (s.variant) r *= VARIANT[s.variant.kind].rewardMult;
-  return r;
+  const v = s.variant && VARIANT[s.variant.kind];
+  if (v) return TIERS[v.rarity].reward * v.rewardMult;
+  return TIERS[s.dev.rarity].reward;
 }
 
 function spawnAnnouncement(s) {
-  const v = s.variant ? ` ✨ ${VARIANT[s.variant.kind].label.toUpperCase()}: ${s.variant.name}!` : "";
+  const v = s.variant ? ` ✨ LEGENDARY ${VARIANT[s.variant.kind].label.toUpperCase()}: ${s.variant.name}!` : "";
   return `👀 A ${s.dev.name} has been spotted in the wild!${v} Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`;
 }
 
