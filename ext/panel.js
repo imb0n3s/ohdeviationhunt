@@ -51,6 +51,8 @@
     hourly = p && p.hourly || null;
     if (p && p.now) skew = p.now - Date.now();
     tickTimer();
+    var mp = document.getElementById("mypage");
+    if (mp) { if (p && bag.page) { mp.href = bag.page; mp.hidden = false; } else mp.hidden = true; }
     who.textContent = p ? p.display + " · " + p.starchrom.toLocaleString() + " Starchrom · " + p.units + " Securement Unit" + (p.units === 1 ? "" : "s") : "";
   }
 
