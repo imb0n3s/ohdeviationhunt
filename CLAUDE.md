@@ -18,3 +18,8 @@
   Paths = /*.js, /*.json, /Dockerfile (what the Dockerfile copies), so docs/, scripts/, test/, ext/
   and *.md pushes don't redeploy. A NEW server file outside the repo root would need a new pattern.
   (Negation patterns like !/docs/** broke detection — don't use them.) Batch server changes.
+- Twitch panel testers: while the extension is in Hosted Test, only allowlisted accounts see the panel.
+  B wants EVERY player on the Testing Account Allowlist. Each session: compare
+  https://deviationhunt.ohwikiguide.com/api/players with docs/tester-allowlist.txt, add anyone new in the
+  console (Access tab — only editable in Local Test: move to Local Test, add, Save, reload to verify, move
+  back to Hosted Test, reload and confirm), then update docs/tester-allowlist.txt.

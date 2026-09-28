@@ -262,6 +262,8 @@ function createApp(pool) {
     res.send(collectionPage(p));
   });
   app.get("/health", (req, res) => res.json({ ok: true, channels: pool.channelCount, botSetUp: !!db.getBotAccount(), data: data.info() }));
+  // every player login (public anyway via /u/<login>) — used to keep the Twitch panel tester allowlist in sync
+  app.get("/api/players", (req, res) => res.json(db.q.playerLogins.all().map((r) => r.login)));
   app.get("/api/stats", (req, res) => res.json({ channels: db.countChannels(), players: db.countPlayers(), catches: db.totalCatches(), spawns: db.totalSpawns(), starchromSpent: db.starchromSpent() }));
 
   const cookie = (state) => `dh_state=${state}; Path=/auth; HttpOnly; SameSite=Lax; Max-Age=600${cfg.BASE_URL.startsWith("https") ? "; Secure" : ""}`;

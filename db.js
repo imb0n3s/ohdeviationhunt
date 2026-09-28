@@ -129,6 +129,7 @@ const q = {
 
   getPlayer: db.prepare(`SELECT * FROM players WHERE user_id=?`),
   allPlayers: db.prepare(`SELECT user_id FROM players`),
+  playerLogins: db.prepare(`SELECT login, created_at FROM players ORDER BY created_at`),
   getPlayerByLogin: db.prepare(`SELECT * FROM players WHERE login=?`),
   insertPlayer: db.prepare(`INSERT INTO players (user_id, login, display, starchrom, units, created_at, last_unit_at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
   touchPlayer: db.prepare(`UPDATE players SET login=?, display=? WHERE user_id=?`),
