@@ -223,7 +223,10 @@ class Spawns {
     savePlayer(p);
     s.attempts.set(userId, { login, display, unit, isNew: p.isNew });
     this.persist(bid);
-    return p.isNew ? `@${display} welcome, Meta! You start with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC} — type !daily for more, plus 1 free every hour this stream. Unit thrown — results in a few seconds!` : null;
+    const left = p.units[unit];
+    const leftTxt = `${left} Securement Unit${left === 1 ? "" : "s"} left`;
+    if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}. 🎯 Unit thrown at the ${spawnName(s)} — you have ${leftTxt}. Type !daily for more, plus 1 free every hour this stream. Results when time runs out!`;
+    return `@${display} 🎯 Unit thrown at the ${spawnName(s)} — you have ${leftTxt}. Results when time runs out!`;
   }
 
   async resolve(bid) {

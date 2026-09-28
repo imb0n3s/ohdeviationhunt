@@ -79,7 +79,7 @@ out.push(`<div style="max-width:1000px; margin:0 auto;">
 
 out.push(box("Start", "How to Play", `
 # Watch a stream that has '''${BOT}''' in chat — [${URL}/channels see every channel running it].
-# When the bot posts ''"👀 A … has been spotted in the wild!"'', type ${cmd("!secure")} within '''${cfg.SPAWN_WINDOW_SECONDS} seconds'''.
+# When the bot posts ''"👀 A … has been spotted in the wild!"'', type ${cmd("!secure")} within '''${cfg.SPAWN_WINDOW_SECONDS} seconds'''. The bot replies with how many Securement Units you have left after that throw.
 # When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
 # Check your collection any time with ${cmd("!deviationbag")} or on your own page: ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)}
 
