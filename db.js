@@ -97,6 +97,10 @@ db.prepare(`UPDATE players SET last_unit_at=? WHERE last_unit_at=0`).run(Date.no
 // where and when each player last played (for the free-unit chat notices)
 try { db.exec(`ALTER TABLE players ADD COLUMN last_channel TEXT`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN last_active_at INTEGER NOT NULL DEFAULT 0`); } catch {}
+// the channel + stream (Twitch stream id) where the player last claimed !daily: hourly free
+// units only run while that same stream is live
+try { db.exec(`ALTER TABLE players ADD COLUMN daily_channel TEXT`); } catch {}
+try { db.exec(`ALTER TABLE players ADD COLUMN daily_stream TEXT`); } catch {}
 
 const q = {
   upsertChannel: db.prepare(`INSERT INTO channels (broadcaster_id, login, display_name, joined_at, joined_via, enabled)
@@ -124,8 +128,9 @@ const q = {
   insertPlayer: db.prepare(`INSERT INTO players (user_id, login, display, starchrom, units, created_at, last_unit_at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
   touchPlayer: db.prepare(`UPDATE players SET login=?, display=? WHERE user_id=?`),
   touchActive: db.prepare(`UPDATE players SET last_channel=?, last_active_at=? WHERE user_id=?`),
-  // players who played recently and whose next free unit is due
-  dueActive: db.prepare(`SELECT * FROM players WHERE last_active_at>? AND last_unit_at<=? AND last_channel IS NOT NULL`),
+  setDailyStream: db.prepare(`UPDATE players SET daily_channel=?, daily_stream=? WHERE user_id=?`),
+  // players with an hourly clock running (did !daily in some stream) whose next free unit is due
+  dueHourly: db.prepare(`SELECT * FROM players WHERE daily_stream IS NOT NULL AND last_unit_at<=?`),
   savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at WHERE user_id=@user_id`),
   countPlayers: db.prepare(`SELECT COUNT(*) AS n FROM players`),
 

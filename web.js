@@ -117,7 +117,7 @@ ${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones [Skill 4/5 · Activi
 <div class="card"><table><tr><th>Rarity</th><th>Spawn weight</th><th>Capture rate</th><th>Reward</th></tr>
 ${Object.values(TIERS).map((t) => `<tr><td style="color:${t.color};font-weight:600">${t.label}</td><td>${t.weight}%</td><td>${Math.round(t.catch * 100)}%</td><td>${t.reward} Starchrom</td></tr>`).join("")}
 <tr><td style="color:${TIERS.legendary.color};font-weight:600">Skin (Legendary)</td><td>1 in ${Math.round(1 / VARIANT.skin.chance)}</td><td>${Math.round(VARIANT.skin.catch * 100)}%</td><td>${TIERS.legendary.reward} Starchrom</td></tr></table>
-<p>Everyone starts with ${ECONOMY.starterUnits.standard} Securement Units. Every throw uses one; you get ${ECONOMY.hourlyUnits} free every hour, ${ECONOMY.daily.units.standard} from <kbd>!daily</kbd>, or buy more for ${fmt(UNITS.standard.price)} Starchrom each. About 1 in ${Math.round(1 / VARIANT.variation.chance)} spawns is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward, a little harder to catch) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b>, which is always Legendary with a ${Math.round(VARIANT.skin.catch * 100)}% capture rate. Every deviation you secure is its own specimen with <b>Skill Rating 1–5</b> and <b>Activity Rating 1–5</b> (5 is rare; a perfect 5/5 gets a ⭐) and three traits rolled by the rules on the wiki's <a href="${esc(cfg.WIKI_BASE)}/Deviation_Trait_Page">Deviation Trait Page</a>: Slot 1 is a Global trait or that deviation's own trait, Slot 2 is a combat, crafting or territory trait matching the deviation's type (deviation-specific ones only on their own deviation, and variant-specific ones like Grumpy Bulb's Violet Robe only on that variant), Slot 3 is a fused trait. <kbd>!scrap</kbd> keeps your best Skill + Activity specimen of each. First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. Missed throws still salvage ${ECONOMY.escapeSalvage} Starchrom.</p></div>`);
+<p>Everyone starts with ${ECONOMY.starterUnits.standard} Securement Units. Every throw uses one; <kbd>!daily</kbd> gives ${ECONOMY.daily.units.standard} and turns on ${ECONOMY.hourlyUnits} free every hour for the rest of that live stream, or buy more for ${fmt(UNITS.standard.price)} Starchrom each. About 1 in ${Math.round(1 / VARIANT.variation.chance)} spawns is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward, a little harder to catch) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b>, which is always Legendary with a ${Math.round(VARIANT.skin.catch * 100)}% capture rate. Every deviation you secure is its own specimen with <b>Skill Rating 1–5</b> and <b>Activity Rating 1–5</b> (5 is rare; a perfect 5/5 gets a ⭐) and three traits rolled by the rules on the wiki's <a href="${esc(cfg.WIKI_BASE)}/Deviation_Trait_Page">Deviation Trait Page</a>: Slot 1 is a Global trait or that deviation's own trait, Slot 2 is a combat, crafting or territory trait matching the deviation's type (deviation-specific ones only on their own deviation, and variant-specific ones like Grumpy Bulb's Violet Robe only on that variant), Slot 3 is a fused trait. <kbd>!scrap</kbd> keeps your best Skill + Activity specimen of each. First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. Missed throws still salvage ${ECONOMY.escapeSalvage} Starchrom.</p></div>`);
 }
 
 function collectionPage(p) {
@@ -139,7 +139,7 @@ function collectionPage(p) {
   const all = data.all();
   const totalVariants = all.reduce((s, d) => s + d.variants.length, 0);
   const pct = all.length ? Math.round((c.species / all.length) * 100) : 0;
-  const live = game.loadPlayer(p.user_id, p.login, p.display); // pays out any hourly free units that are due
+  const live = game.loadPlayer(p.user_id, p.login, p.display);
   const units = live.units;
   const cardFor = (d) => {
     const h = have.get(d.id);
@@ -159,7 +159,7 @@ function collectionPage(p) {
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${fmt(c.total)}</b>secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
 <p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
-<p>Securement Units: <b>${units.standard || 0}</b> · next free unit in ${game.nextUnitIn(live)} (1 every hour, no cap)</p>
+<p>Securement Units: <b>${units.standard || 0}</b> · next free unit: ${game.nextUnitIn(live)} (1 every hour during a live stream you've done <kbd>!daily</kbd> in)</p>
 ${cards}`);
 }
 

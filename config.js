@@ -21,9 +21,6 @@ const cfg = {
   // Spawns
   SPAWN_INTERVAL_MIN: Number(process.env.SPAWN_INTERVAL_MIN || 7),  // default per channel; mods can change it
   SPAWN_WINDOW_SECONDS: Number(process.env.SPAWN_WINDOW_SECONDS || 90),
-  // chat notice when a player's hourly free unit arrives: only for people who played in that
-  // channel within this many minutes (0 turns the notices off)
-  UNIT_NOTICE_ACTIVE_MIN: Number(process.env.UNIT_NOTICE_ACTIVE_MIN ?? 120),
   ACTIVITY_WINDOW_MIN: Number(process.env.ACTIVITY_WINDOW_MIN || 10), // someone must have chatted this recently
   LIVE_POLL_SECONDS: Number(process.env.LIVE_POLL_SECONDS || 120),
   SPAWN_OFFLINE: process.env.SPAWN_OFFLINE === "1",

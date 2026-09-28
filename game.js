@@ -24,18 +24,18 @@ function loadPlayer(userId, login, display) {
   p.units = JSON.parse(p.units || "{}");
   // older saves had Advanced/Elite/Anomaly units: fold them into plain Securement Units
   for (const k of ["advanced", "elite", "anomaly"]) if (p.units[k]) { p.units.standard = (p.units.standard || 0) + p.units[k]; delete p.units[k]; }
-  // +1 free Securement Unit for every full hour since the last one (no cap)
-  const hours = Math.floor((Date.now() - (p.last_unit_at || Date.now())) / HOUR);
-  if (hours > 0) {
-    p.units.standard = (p.units.standard || 0) + hours * ECONOMY.hourlyUnits;
-    p.last_unit_at += hours * HOUR;
-    savePlayer(p);
-  }
   return p;
 }
 
 const HOUR = 3600 * 1000;
+// Hourly free units run only while the stream the player did !daily in is still live.
+// index.js tells us each live channel's current Twitch stream id.
+let streamOf = () => null;
+function setStreamLookup(fn) { streamOf = fn; }
+const hourlyOn = (p) => !!p.daily_stream && streamOf(p.daily_channel) === p.daily_stream;
+
 function nextUnitIn(p) {
+  if (!hourlyOn(p)) return "after !daily";
   const ms = (p.last_unit_at || Date.now()) + HOUR - Date.now();
   return `${Math.max(1, Math.ceil(ms / 60000))}m`;
 }
@@ -203,14 +203,14 @@ class Spawns {
     const unit = "standard";
     const p = loadPlayer(userId, login, display);
     if (!(p.units.standard > 0)) {
-      return warn(`@${display} you're out of Securement Units. You get 1 free every hour (next in ${nextUnitIn(p)}), 1 from !daily, or !buy <amount> for ${fmt(UNITS.standard.price)} ${SC} each (you have ${fmt(p.starchrom)}).`);
+      return warn(`@${display} you're out of Securement Units. ${hourlyOn(p) ? `Your next free one arrives in ${nextUnitIn(p)}` : p.last_daily + ECONOMY.dailyCooldownHours * HOUR <= Date.now() ? "Claim !daily for 1 now plus 1 free every hour while this stream is live" : "Your !daily isn't ready yet"}, or !buy <amount> for ${fmt(UNITS.standard.price)} ${SC} each (you have ${fmt(p.starchrom)}).`);
     }
     p.units[unit] -= 1;
     p.attempts += 1;
     savePlayer(p);
     s.attempts.set(userId, { login, display, unit, isNew: p.isNew });
     this.persist(bid);
-    return p.isNew ? `@${display} welcome, Meta! You start with ${ECONOMY.starterUnits.standard} Securement Units (+1 free every hour) and ${ECONOMY.starterStarchrom} ${SC}. Unit thrown — results in a few seconds!` : null;
+    return p.isNew ? `@${display} welcome, Meta! You start with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC} — type !daily for more, plus 1 free every hour this stream. Unit thrown — results in a few seconds!` : null;
   }
 
   async resolve(bid) {
@@ -269,24 +269,28 @@ class Spawns {
 
 // ---------------- other commands ----------------
 
-function daily(userId, login, display) {
+function daily(userId, login, display, bid) {
   const p = loadPlayer(userId, login, display);
   const wait = p.last_daily + ECONOMY.dailyCooldownHours * 3600 * 1000 - Date.now();
   if (wait > 0) {
-    const h = Math.floor(wait / 3600000), m = Math.ceil((wait % 3600000) / 60000);
+    const mins = Math.ceil(wait / 60000), h = Math.floor(mins / 60), m = mins % 60;
     return `@${display} your daily supply drop is on its way — come back in ${h ? `${h}h ` : ""}${m}m.`;
   }
   p.last_daily = Date.now();
   p.starchrom += ECONOMY.daily.starchrom;
   const got = [];
   for (const [k, n] of Object.entries(ECONOMY.daily.units)) { p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
+  const stream = bid ? streamOf(bid) : null;
+  p.last_unit_at = Date.now();          // first free hourly unit comes an hour after !daily
   savePlayer(p);
-  return `@${display} 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}! ${bagText(p)}`;
+  db.q.setDailyStream.run(stream ? bid : null, stream, userId);
+  const hourly = stream ? " You'll get 1 free Securement Unit every hour while this stream is live." : " (Free hourly units only run during a live stream — claim !daily while the streamer is live next time.)";
+  return `@${display} 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}!${hourly} ${bagText(p)}`;
 }
 
 function shop() {
   const items = shopCatalog.ITEMS.map((i) => `${i.name}: ${fmt(i.price)} ${SC}`).join(" · ");
-  return `🛒 ${items} — buy with !buy <amount> (or in the Deviation Bag panel's Shop tab). You also get 1 free Securement Unit every hour and 1 from !daily.`;
+  return `🛒 ${items} — buy with !buy <amount> (or in the Deviation Bag panel's Shop tab). !daily gives 1, and turns on 1 free every hour for the rest of that stream.`;
 }
 
 // !buy 3  /  !buy unit 3  — defaults to Securement Units
@@ -324,23 +328,23 @@ function destroySpecimen(userId, specimenId) {
   return { ok: true, gained: ECONOMY.destroyValue, units: ECONOMY.destroyUnits, deviation: sp.deviation, p };
 }
 
-// ---------------- free-unit chat notices ----------------
-// Once a minute: anyone who played in a live channel recently and whose hourly free unit is due
-// gets it paid out now and is mentioned in that channel's chat. One message per channel,
-// split if it gets long. People who aren't playing get their units silently, as before.
-function unitNotices(isLive, now = Date.now()) {
-  if (!cfg.UNIT_NOTICE_ACTIVE_MIN || cfg.PAUSED) return [];
-  const rows = db.q.dueActive.all(now - cfg.UNIT_NOTICE_ACTIVE_MIN * 60 * 1000, now - HOUR);
+// ---------------- hourly free units ----------------
+// Once a minute: players who did !daily in a stream that is still live get 1 free Securement
+// Unit per hour since their !daily, and the bot says so in that channel. One message per
+// channel, split if it gets long. Nobody else gets hourly units.
+function unitNotices(now = Date.now()) {
+  if (cfg.PAUSED) return [];
   const byChannel = new Map();
-  for (const row of rows) {
-    const ch = row.last_channel;
-    if (!isLive(ch) || !db.getChannel(ch)?.enabled) continue;
-    const before = JSON.parse(row.units || "{}").standard || 0;
-    const p = loadPlayer(row.user_id, row.login, row.display); // pays out what's due
-    const got = (p.units.standard || 0) - before;
-    if (got <= 0) continue;
+  for (const row of db.q.dueHourly.all(now - HOUR)) {
+    const ch = row.daily_channel;
+    if (!ch || streamOf(ch) !== row.daily_stream || !db.getChannel(ch)?.enabled) continue;
+    const p = loadPlayer(row.user_id, row.login, row.display);
+    p.units.standard = (p.units.standard || 0) + ECONOMY.hourlyUnits;
+    // normally step exactly one hour; after a long gap (bot restart) restart the clock from now
+    p.last_unit_at = now - p.last_unit_at > 2 * HOUR ? now : p.last_unit_at + HOUR;
+    savePlayer(p);
     if (!byChannel.has(ch)) byChannel.set(ch, []);
-    byChannel.get(ch).push({ name: `@${p.display}`, got });
+    byChannel.get(ch).push({ name: `@${p.display}`, got: ECONOMY.hourlyUnits });
   }
   // "🎁 @luna acquired a Securement Unit!" / "🎁 @luna, @bob acquired a Securement Unit!"
   const out = [];
@@ -362,7 +366,7 @@ function unitNotices(isLive, now = Date.now()) {
 
 function inventory(userId, login, display) {
   const p = loadPlayer(userId, login, display);
-  return `@${display} ${unitsText(p)}`;
+  return `@${display} ${unitsText(p)} · next free unit: ${nextUnitIn(p)}`;
 }
 
 function collectionSummary(userId) {
@@ -439,4 +443,4 @@ function top(baseUrl) {
   return `🏆 Top Metas: ${rows.map((r, i) => `${i + 1}. ${r.display} ${r.species} dev${r.variants ? ` +${r.variants}✨` : ""}`).join(" · ")} — ${baseUrl}/top`;
 }
 
-module.exports = { unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

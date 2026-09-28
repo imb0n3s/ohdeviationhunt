@@ -28,14 +28,15 @@ async function main() {
     polling = true;
     try {
       const ids = db.listEnabledChannels().map((c) => c.broadcaster_id);
-      const live = new Set();
+      const live = new Set(), streams = new Map();
       for (let i = 0; i < ids.length; i += 100) {
         const u = ids.slice(i, i + 100);
         const qs = u.map((id) => `user_id=${id}`).join("&");
         const r = await twitch.helix("GET", `/streams?first=100&${qs}`, { as: "app" });
-        for (const s of r.data || []) live.add(s.user_id);
+        for (const s of r.data || []) { live.add(s.user_id); streams.set(s.user_id, s.id); }
       }
       for (const id of ids) spawns.setLive(id, live.has(id));
+      spawns.streamIds = streams;
       for (const id of [...spawns.live]) if (!ids.includes(id)) spawns.setLive(id, false);
     } catch (e) { console.error("[live] poll failed:", e.message); }
     finally { polling = false; }
@@ -53,11 +54,12 @@ async function main() {
   pool.refreshLive();
   setInterval(pool.refreshLive, cfg.LIVE_POLL_SECONDS * 1000).unref();
   setInterval(() => spawns.tick(), 15 * 1000).unref();
-  // hourly free Securement Unit notices for people who are playing
-  const { unitNotices } = require("./game");
+  // hourly free Securement Units (+ chat notice) for people who did !daily in a live stream
+  const { unitNotices, setStreamLookup } = require("./game");
+  setStreamLookup((ch) => (spawns.live.has(ch) && spawns.streamIds?.get(ch)) || null);
   setInterval(() => {
     try {
-      for (const [ch, msg] of unitNotices((id) => spawns.live.has(id))) pool.send(ch, msg);
+      for (const [ch, msg] of unitNotices()) pool.send(ch, msg);
     } catch (e) { console.error("[units] notice failed:", e.message); }
   }, 60 * 1000).unref();
 }

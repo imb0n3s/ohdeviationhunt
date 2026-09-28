@@ -41,7 +41,7 @@ function verifyExtJwt(token) {
   return payload; // { user_id?, opaque_user_id, channel_id, role, ... }
 }
 
-// balances the panel shows (loadPlayer also pays out any hourly free units that are due)
+// balances the panel shows
 const playerInfo = (p) => ({ login: p.login, display: p.display, starchrom: p.starchrom, units: p.units.standard || 0, nextUnitIn: game.nextUnitIn(p) });
 
 const specView = (x, d) => ({

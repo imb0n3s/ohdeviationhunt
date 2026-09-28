@@ -107,7 +107,7 @@ function makeHandler(pool, spawns) {
       case "!units": case "!inv": return reply(game.inventory(uid, login, name));
       case "!shop": return reply(game.shop());
       case "!buy": return reply(game.buy(uid, login, name, args));
-      case "!daily": return reply(game.daily(uid, login, name));
+      case "!daily": return reply(game.daily(uid, login, name, bid));
       case "!deviationbag": {
         if (args[0]) { // !deviationbag someone
           const other = db.q.getPlayerByLogin.get(args[0].replace(/^@/, "").toLowerCase());
