@@ -28,3 +28,5 @@
   finishes Monetization onboarding): Local Test → Monetization tab → "Bits enabled" → add one product per pack with the
   SAME sku + Bits amount (starchrom100/5, starchrom500/25, starchrom1000/50, starchrom2000/100), In Development = No,
   Save All → back to Hosted Test (reload/confirm) → add Bits to the wiki page.
+  B's call (2026-09-28): DON'T switch Bits on until it takes real Bits — i.e. after the extension is
+  approved/released (in Local/Hosted Test Twitch makes Bits purchases free). Onboarding was submitted 2026-09-28.
