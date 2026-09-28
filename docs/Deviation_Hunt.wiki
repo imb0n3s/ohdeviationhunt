@@ -45,7 +45,7 @@ Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy <amount></nowiki></span> || Buy Securement Units for 500 Starchrom each, e.g. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy 2</nowiki></span>.
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || Claim your daily supply drop: +100 Starchrom and 1 Securement Unit, and turn on 1 free Securement Unit every hour for the rest of that live stream. '''Once per stream''' — you can claim it again in every new stream you watch.
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || Claim your daily supply drop: +100 Starchrom and 1 Securement Unit, and turn on 1 free Securement Unit every hour for the rest of that live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!deviationbag [name]</nowiki></span> || Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.
 |-
@@ -112,9 +112,9 @@ Securement Units are the only thing you need to catch deviations — there is on
 |-
 | Starting supply || 5 units
 |-
-| Free hourly unit || +1 unit every hour — '''only after you claim <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> during a live stream''', and only while that same stream stays live. The bot tells you in chat each time one arrives. Hourly units only run in '''one stream at a time''': claiming <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> in another stream moves them there.
+| Free hourly unit || +1 unit every hour — '''only after you claim <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> during a live stream''', and only while that same stream stays live. The bot tells you in chat each time one arrives. Hourly units only run in '''one stream''': the one you claimed today's <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> in.
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || +1 unit, once per live stream
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || +1 unit, once a day (resets at midnight Central)
 |-
 | Destroying an extra specimen in the Twitch panel || +1 unit (plus 500 Starchrom)
 |-

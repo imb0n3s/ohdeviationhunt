@@ -203,7 +203,7 @@ class Spawns {
     const unit = "standard";
     const p = loadPlayer(userId, login, display);
     if (!(p.units.standard > 0)) {
-      return warn(`@${display} you're out of Securement Units. ${hourlyOn(p) ? `Your next free one arrives in ${nextUnitIn(p)}` : !db.q.hasDaily.get(userId, streamOf(bid) || "") ? "Claim !daily for 1 now plus 1 free every hour while this stream is live" : "You've already claimed !daily this stream"}, or !buy <amount> for ${fmt(UNITS.standard.price)} ${SC} each (you have ${fmt(p.starchrom)}).`);
+      return warn(`@${display} you're out of Securement Units. ${hourlyOn(p) ? `Your next free one arrives in ${nextUnitIn(p)}` : dailyReady(userId) ? "Claim !daily for 1 now plus 1 free every hour while this stream is live" : `Your !daily resets at midnight Central (in ${untilReset()})`}, or !buy <amount> for ${fmt(UNITS.standard.price)} ${SC} each (you have ${fmt(p.starchrom)}).`);
     }
     p.units[unit] -= 1;
     p.attempts += 1;
@@ -269,14 +269,22 @@ class Spawns {
 
 // ---------------- other commands ----------------
 
-// !daily: once per Twitch stream (any channel running the game). It also switches the player's
-// hourly free units to this stream — hourly units only ever run in one stream at a time.
+// !daily: once per day (resets at midnight Central), and only during a live stream. It also
+// points the player's hourly free units at that stream — they only ever run in one stream.
+const dayKey = (ms) => new Date(ms).toLocaleDateString("en-CA", { timeZone: ECONOMY.dailyResetTz });
+function untilReset(now = Date.now()) {
+  const t = new Date(now).toLocaleTimeString("en-GB", { timeZone: ECONOMY.dailyResetTz, hour12: false }).split(":").map(Number);
+  const mins = Math.max(1, Math.ceil((24 * 3600 - (t[0] % 24) * 3600 - t[1] * 60 - t[2]) / 60));
+  return `${Math.floor(mins / 60) ? `${Math.floor(mins / 60)}h ` : ""}${mins % 60}m`;
+}
+const dailyReady = (userId) => { const last = db.q.lastDaily.get(userId)?.at; return !last || dayKey(last) !== dayKey(Date.now()); };
+
 function daily(userId, login, display, bid) {
   const stream = bid ? streamOf(bid) : null;
   if (!stream) return `@${display} !daily only works while the stream is live — grab it next time the streamer is on.`;
   const p = loadPlayer(userId, login, display);
-  if (db.q.hasDaily.get(userId, stream)) {
-    return `@${display} you already claimed !daily this stream. ${hourlyOn(p) && p.daily_stream === stream ? `Next free Securement Unit in ${nextUnitIn(p)}.` : "You can claim it again in the next stream you watch."}`;
+  if (!dailyReady(userId)) {
+    return `@${display} you already claimed today's !daily — it resets at midnight Central (in ${untilReset()}).${hourlyOn(p) ? ` Next free Securement Unit in ${nextUnitIn(p)}.` : ""}`;
   }
   const moved = hourlyOn(p) && p.daily_channel !== bid;
   p.last_daily = Date.now();

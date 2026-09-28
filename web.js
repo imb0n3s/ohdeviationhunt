@@ -103,7 +103,7 @@ ${esc(botName)}: 🔒 Lonewolf Whisper secured by metabones [Skill 4/5 · Activi
 <div class="card">
 <p><kbd>!secure</kbd> — throw a Securement Unit at the loose deviation (one throw per spawn). <kbd>!catch</kbd> works too.</p>
 <p><kbd>!units</kbd> — your Starchrom and Units · <kbd>!shop</kbd> — prices · <kbd>!buy 5</kbd> — buy Securement Units</p>
-<p><kbd>!daily</kbd> — free supply drop (+${ECONOMY.daily.starchrom} Starchrom and ${ECONOMY.daily.units.standard} Securement Unit), once per live stream, plus ${ECONOMY.hourlyUnits} free Securement Unit every hour for the rest of that stream</p>
+<p><kbd>!daily</kbd> — free supply drop (+${ECONOMY.daily.starchrom} Starchrom and ${ECONOMY.daily.units.standard} Securement Unit), once a day (resets at midnight Central) during a live stream, plus ${ECONOMY.hourlyUnits} free Securement Unit every hour for the rest of that stream</p>
 <p><kbd>!deviationbag</kbd> — your Deviation Bag and collection link · <kbd>!deviationbag name</kbd> — someone else's · <kbd>!scrap</kbd> — turn duplicates into Starchrom</p>
 <p><kbd>!traits</kbd> — your latest catch's Skill Rating, Activity Rating and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
 <p><kbd>!dev behemoth</kbd> — what a deviation does and where it drops · <kbd>!hunttop</kbd> — leaderboard · <kbd>!hunt</kbd> — help</p>
