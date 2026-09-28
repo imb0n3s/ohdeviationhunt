@@ -93,7 +93,7 @@ out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!shop"), `Show what the shop sells and the prices. The Securement Pods panel has the same shop in its '''Shop''' tab.`],
   [cmd("!buy <amount>"), `Buy Securement Units for ${fmt(unitPrice)} ${SC} each, e.g. ${cmd("!buy 2")}.`],
   [cmd("!daily"), `Claim your daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${ECONOMY.daily.units.standard} Securement Unit, and turn on ${ECONOMY.hourlyUnits} free Securement Unit every hour for the rest of the day while you're in a live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream.`],
-  [cmd("!pods [name]"), `Also works as ${cmd("!deviationbag")}. Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.`],
+  [cmd("!pods [name]"), `Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.`],
   [cmd("!traits <deviation>"), `Skill Rating, Activity Rating and all three traits of your best specimen of that deviation. Also ${cmd("!stats")}.`],
   [cmd("!dev <deviation>"), `Info about a deviation: what it does, its variations and skins, and a wiki link.`],
   [cmd("!scrap"), `Recycle every duplicate for ${SC} (${pct(ECONOMY.scrapValue)} of its catch reward). You keep the specimen with the best Skill + Activity Rating of each deviation. Variations and skins are '''never''' scrapped.`],

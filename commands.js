@@ -97,7 +97,7 @@ function makeHandler(pool, spawns) {
     }
 
     // ---- everything else: light per-user cooldown ----
-    const GAME_CMDS = ["!starchrom", "!sc", "!units", "!inv", "!shop", "!buy", "!daily", "!deviationbag", "!pods", "!scrap", "!dev", "!hunttop", "!leaderboard", "!traits", "!stats"];
+    const GAME_CMDS = ["!starchrom", "!sc", "!units", "!inv", "!shop", "!buy", "!daily", "!pods", "!scrap", "!dev", "!hunttop", "!leaderboard", "!traits", "!stats"];
     if (!GAME_CMDS.includes(cmd)) return;
     const key = `${bid}:${uid}:${cmd}`;
     if (!isModOrOwner(ev) && Date.now() - (lastReply.get(key) || 0) < USER_CD) return;
@@ -115,9 +115,8 @@ function makeHandler(pool, spawns) {
         if (!(spawns.live.has(bid) && spawns.streamIds?.get(bid))) await pool.refreshLive?.();
         return reply(game.daily(uid, login, name, bid));
       }
-      case "!pods":
-      case "!deviationbag": {
-        if (args[0]) { // !deviationbag someone
+      case "!pods": {
+        if (args[0]) { // !pods someone
           const other = db.q.getPlayerByLogin.get(args[0].replace(/^@/, "").toLowerCase());
           if (!other) return reply(`@${name} I don't know ${args[0]} yet.`);
           return reply(game.dex(other.user_id, other.login, other.display, cfg.BASE_URL).replace(/^@\S+/, other.display + "'s"));

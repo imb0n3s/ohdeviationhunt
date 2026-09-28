@@ -281,7 +281,7 @@ function commandsPage() {
 ${table([
     row("!daily", `Start here. Once a day (resets at midnight Central) while the stream is live: +${E.daily.starchrom} Starchrom and ${E.daily.units.standard} Securement Unit, and it turns on 1 free Securement Unit every hour you play in a live stream for the rest of the day.`),
     row("!secure", `Throw at the deviation that's spotted in the wild (you have ${cfg.SPAWN_WINDOW_SECONDS} seconds). Costs ${E.throwCost} Starchrom and needs an empty Securement Unit; if you catch it, it lives in that unit. One throw per spawn. Also <kbd>!catch</kbd>.`),
-    row("!pods", `Your Securement Pods: how many deviations, variants &amp; skins you've secured, plus a link to your collection page. Add a name (<kbd>!pods luna_raventhorn</kbd>) to see someone else's. Also <kbd>!deviationbag</kbd>.`),
+    row("!pods", `Your Securement Pods: how many deviations, variants &amp; skins you've secured, plus a link to your collection page. Add a name (<kbd>!pods luna_raventhorn</kbd>) to see someone else's.`),
     row("!starchrom", `How much Starchrom you have. Also <kbd>!sc</kbd>.`),
     row("!units", `Your Starchrom, Securement Units and when your next free hourly unit arrives. Also <kbd>!inv</kbd>.`),
     row("!shop", `What the shop sells: Securement Units (${fmt(UNITS.standard.price)} Starchrom each) and Gloves — ${glovesTxt}.`),
