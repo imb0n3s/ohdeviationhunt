@@ -39,6 +39,13 @@ function setStreamLookup(fn) { streamOf = fn; }
 // "current stream", so watching several streams never earns more; switching streams keeps the timer.
 const hourlyOn = (p) => dailyToday(p.user_id) && !!p.active_stream && streamOf(p.last_channel) === p.active_stream;
 
+// for the panel: is the hourly timer running, and when does the next free unit land?
+function hourlyStatus(p) {
+  if (!dailyToday(p.user_id)) return { state: "needs_daily" };
+  if (!hourlyOn(p)) return { state: "paused" };
+  return { state: "running", at: (p.last_unit_at || Date.now()) + HOUR };
+}
+
 function nextUnitIn(p) {
   if (!dailyToday(p.user_id)) return "after !daily";
   if (!hourlyOn(p)) return "in a live stream";
@@ -460,4 +467,4 @@ function top(baseUrl) {
   return `🏆 Top Metas: ${rows.map((r, i) => `${i + 1}. ${r.display} ${r.species} dev${r.variants ? ` +${r.variants}✨` : ""}`).join(" · ")} — ${baseUrl}/top`;
 }
 
-module.exports = { setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

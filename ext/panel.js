@@ -28,8 +28,29 @@
     document.getElementById("share").onclick = function () { window.Twitch.ext.actions.requestIdShare(); };
   }
 
+  // ---------- free hourly Securement Unit countdown (under the name) ----------
+  var timerEl = document.getElementById("timer"), hourly = null, skew = 0, refetchAt = 0;
+  function tickTimer() {
+    if (!hourly) { timerEl.textContent = ""; timerEl.className = "timer"; return; }
+    if (hourly.state === "needs_daily") { timerEl.textContent = "🎁 Type !daily in a live stream to start free hourly Securement Units"; timerEl.className = "timer idle"; return; }
+    if (hourly.state === "paused") { timerEl.textContent = "🎁 Free unit timer paused — use a game command in a live stream to resume"; timerEl.className = "timer idle"; return; }
+    var left = Math.max(0, Math.ceil((hourly.at - (Date.now() + skew)) / 1000));
+    if (left <= 0) {
+      timerEl.textContent = "🎁 Free Securement Unit arriving…"; timerEl.className = "timer soon";
+      if (Date.now() > refetchAt && !busy) { refetchAt = Date.now() + 20000; setTimeout(load, 5000); } // the server pays it within a minute
+      return;
+    }
+    var m = Math.floor(left / 60), sec = left % 60;
+    timerEl.innerHTML = '🎁 Free Securement Unit in <b>' + m + ':' + (sec < 10 ? "0" : "") + sec + '</b>';
+    timerEl.className = "timer" + (left <= 60 ? " soon" : "");
+  }
+  setInterval(tickTimer, 1000);
+
   function whoLine() {
     var p = bag && bag.player;
+    hourly = p && p.hourly || null;
+    if (p && p.now) skew = p.now - Date.now();
+    tickTimer();
     who.textContent = p ? p.display + " · " + p.starchrom.toLocaleString() + " Starchrom · " + p.units + " Securement Unit" + (p.units === 1 ? "" : "s") : "";
   }
 

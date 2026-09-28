@@ -102,3 +102,9 @@ footer a { color:var(--accent); font-size:12px; }
 
 .trait.empty { opacity:.5; }
 .trait.empty .h { font-weight:600; font-style:italic; color:var(--muted); }
+
+/* free-unit countdown under the name */
+.timer { font-size:12px; color:var(--muted); margin-top:3px; min-height:15px; }
+.timer b { color:var(--accent); font-variant-numeric:tabular-nums; }
+.timer.soon, .timer.soon b { color:#4ade80; }
+.timer.idle { font-size:11px; }
