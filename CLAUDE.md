@@ -14,5 +14,7 @@
   deviationhunt -> wlw9g11p.up.railway.app, DNS only). BASE_URL env is set to it. The old
   *.up.railway.app address 301-redirects pages; /ext, /auth, /health still answer there.
   Twitch app redirect URLs and the extension allowlists include both addresses.
-- Every deploy restarts the server (~30-60s offline; the volume prevents overlap). Railway Watch
-  Paths skip deploys for docs/, scripts/, test/, ext/ and *.md changes. Batch server changes.
+- Every deploy restarts the server (a few seconds offline; the volume prevents overlap). Railway Watch
+  Paths = /*.js, /*.json, /Dockerfile (what the Dockerfile copies), so docs/, scripts/, test/, ext/
+  and *.md pushes don't redeploy. A NEW server file outside the repo root would need a new pattern.
+  (Negation patterns like !/docs/** broke detection — don't use them.) Batch server changes.
