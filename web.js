@@ -1,6 +1,7 @@
 // web.js — public site: landing + "Add to my channel", collection pages, leaderboard,
 // OAuth callback, /setup for the bot account, /admin, /health
 const express = require("express");
+const shop = require("./shop");
 const crypto = require("crypto");
 const cfg = require("./config");
 const db = require("./db");
@@ -23,6 +24,16 @@ function verify(state) {
   const d = JSON.parse(Buffer.from(body, "base64url").toString());
   return Date.now() - d.ts > 10 * 60 * 1000 ? null : d;
 }
+// signed-in viewer (Twitch login, no permissions) — only used to let players shop from their own page
+const SESSION_DAYS = 30;
+const sessionCookie = (v, maxAge) => `dh_user=${v}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${cfg.BASE_URL.startsWith("https") ? "; Secure" : ""}`;
+function viewerOf(req) {
+  const [body, mac] = String(getCookie(req, "dh_user") || "").split(".");
+  if (!body || !mac) return null;
+  const expect = crypto.createHmac("sha256", cfg.SESSION_SECRET).update(body).digest("base64url");
+  if (mac.length !== expect.length || !crypto.timingSafeEqual(Buffer.from(mac), Buffer.from(expect))) return null;
+  try { const d = JSON.parse(Buffer.from(body, "base64url").toString()); return d.purpose === "session" && d.exp > Date.now() ? d : null; } catch { return null; }
+}
 const getCookie = (req, name) => (req.headers.cookie || "").split(";").map((c) => c.trim().split("=")).find(([k]) => k === name)?.[1];
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const fmt = (n) => Number(n).toLocaleString("en-US");
@@ -39,6 +50,15 @@ p{color:var(--muted)}.card{background:var(--card);border-radius:12px;padding:18p
 .btn{display:inline-block;padding:13px 24px;border-radius:10px;font-weight:600;text-decoration:none;color:#fff;background:var(--twitch);margin:4px 6px 4px 0}
 .btn.secondary{background:transparent;border:1px solid var(--muted);color:var(--text)}.btn:hover{filter:brightness(1.1)}
 code,kbd{background:#0b1016;padding:2px 7px;border-radius:5px;color:#c9e7ff;font-size:.93em}
+.shopbox{scroll-margin-top:16px}.shophead{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;margin-bottom:10px}.shophead b{font-size:1.15rem;color:var(--text)}.shophead span{color:var(--text)}
+.muted{color:var(--muted);font-size:.9em}.btn.sm{padding:7px 14px;font-size:.9rem;margin:0 4px}
+.shopgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.si{display:flex;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px}.si img{width:64px;height:64px;object-fit:cover;border-radius:8px;flex:none}
+.si.glove{border-color:var(--gc);box-shadow:inset 3px 0 0 var(--gc)}.si.glove .sn{color:var(--gc)}.sb{flex:1;min-width:0}.sn{font-weight:700;color:var(--text)}.sd{color:var(--muted);font-size:.85rem;margin:2px 0 8px}
+.rar{font-size:.65rem;font-weight:800;text-transform:uppercase;padding:1px 6px;border-radius:99px;background:var(--gc);color:#0d1319;vertical-align:middle}
+.si form{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.si input[type=number]{width:64px;padding:7px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.si button{padding:8px 14px;border-radius:8px;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}.si button:disabled{background:var(--card);color:var(--muted);cursor:default}.si button.owned{background:transparent;border:1px solid var(--gc);color:var(--gc)}
+.note{padding:8px 12px;border-radius:8px;margin-bottom:10px;font-weight:600}.note.ok{background:#14532d;color:#bbf7d0}.note.err{background:#7f1d1d;color:#fecaca}
 .stats{display:flex;gap:12px;flex-wrap:wrap}.stat{flex:1;min-width:130px;background:var(--card);border-radius:12px;padding:14px;text-align:center;color:var(--muted)}
 .stat b{display:block;font-size:1.9rem;color:var(--accent)}
 .chat{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;white-space:pre-wrap;color:#dfe8f0;overflow-wrap:anywhere}
@@ -178,7 +198,7 @@ ${Object.values(TIERS).map((t) => `<tr><td style="color:${t.color};font-weight:6
 <p>Everyone starts with ${ECONOMY.starterUnits.standard} Securement Units. Every <kbd>!secure</kbd> throw costs ${ECONOMY.throwCost} Starchrom, and a Securement Unit is only used when you catch something — that's where the deviation lives. Get more units: <kbd>!daily</kbd> gives ${ECONOMY.daily.units.standard} and turns on ${ECONOMY.hourlyUnits} free every hour for the rest of that live stream, or buy more for ${fmt(UNITS.standard.price)} Starchrom each. About 1 in ${Math.round(1 / VARIANT.variation.chance)} spawns is a <b>Variation</b> (×${VARIANT.variation.rewardMult} reward, a little harder to catch) and 1 in ${Math.round(1 / VARIANT.skin.chance)} is a <b>Skin</b>, which is always Legendary with a ${Math.round(VARIANT.skin.catch * 100)}% capture rate. Every deviation you secure is its own specimen with <b>Skill Rating 1–5</b> and <b>Activity Rating 1–5</b> (5 is rare; a perfect 5/5 gets a ⭐) and three traits rolled by the rules on the wiki's <a href="${esc(cfg.WIKI_BASE)}/Deviation_Trait_Page">Deviation Trait Page</a>: Slot 1 is a Global trait or that deviation's own trait, Slot 2 is a combat, crafting or territory trait matching the deviation's type (deviation-specific ones only on their own deviation, and variant-specific ones like Grumpy Bulb's Violet Robe only on that variant), Slot 3 is a fused trait. <kbd>!scrap</kbd> keeps your best Skill + Activity specimen of each. First time you secure something: +${ECONOMY.newSpeciesBonus} bonus. A throw that misses costs only the ${ECONOMY.throwCost} Starchrom.</p></div>`);
 }
 
-function collectionPage(p) {
+function collectionPage(p, viewer, msg) {
   const c = game.collectionSummary(p.user_id);
   const have = new Map(); // dev -> { count, variants:Set }
   for (const r of c.rows) {
@@ -217,8 +237,35 @@ function collectionPage(p) {
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${fmt(c.total)}</b>secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
 <p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
+<div id="shop">${webShop(p, live, viewer, msg)}</div>
 <p>Securement Units: <b>${units.standard || 0}</b>${(() => { const g = game.bestGlove(live); return g ? ` · 🧤 <b style="color:${g.color}">${esc(g.name)}</b> (+${Math.round(g.bonus * 100)}% catch)` : ""; })()} · next free unit: ${game.nextUnitIn(live)} (1 every hour while you're in a live stream, after today's <kbd>!daily</kbd>)</p>
 ${cards}`);
+}
+
+// ---------- shop on your own collection page ----------
+const IMG_BASE = "https://raw.githubusercontent.com/imb0n3s/ohdeviationhunt/main/ext/";
+const SHOP_MSG = {
+  not_enough: "Not enough Starchrom for that.", owned: "You already own those gloves.", outclassed: "You already wear better gloves.",
+  bad_qty: "Pick an amount between 1 and 100.", unknown_item: "That item isn't sold here.", signin: "Sign in with Twitch as the owner of this page to shop.",
+};
+function webShop(p, live, viewer, msg) {
+  const note = msg ? `<div class="note ${msg.ok ? "ok" : "err"}">${esc(msg.text)}</div>` : "";
+  if (!viewer) return `<div class="card shopbox">${note}<b>🛒 Shop</b> — is this your page? <a class="btn sm" href="/login?next=${encodeURIComponent("/u/" + p.login)}">Sign in with Twitch</a> to spend your Starchrom on Securement Units and Gloves. <span class="muted">(Only confirms who you are — no permissions.)</span></div>`;
+  if (viewer.uid !== p.user_id) return `<div class="card shopbox">${note}Signed in as <b>${esc(viewer.login)}</b> · <a href="/u/${esc(viewer.login)}">go to your Securement Pods</a> to shop · <a href="/logout?next=${encodeURIComponent("/u/" + p.login)}">sign out</a></div>`;
+  const best = game.bestGlove(live);
+  const form = (it, inner) => `<form method="post" action="/u/${esc(p.login)}/buy"><input type="hidden" name="item" value="${esc(it.id)}">${inner}</form>`;
+  const items = shop.ITEMS.map((it) => {
+    if (it.kind === "gloves") {
+      const owned = (live.gloves || []).includes(it.glove), outclassed = !owned && best && best.bonus > it.bonus;
+      const btn = owned ? `<button disabled class="owned">✓ Owned${best && best.id === it.glove ? " · active" : ""}</button>`
+        : outclassed ? `<button disabled class="owned">You wear better gloves</button>`
+        : `<button ${live.starchrom < it.price ? "disabled" : ""}>${live.starchrom < it.price ? `Need ${fmt(it.price - live.starchrom)} more` : `Buy for ${fmt(it.price)}`}</button>`;
+      return `<div class="si glove" style="--gc:${esc(it.color)}"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)} <span class="rar">${esc(it.rarity)}</span></div><div class="sd">+${Math.round(it.bonus * 100)}% catch chance on every throw · ${fmt(it.price)} Starchrom · yours forever</div>${form(it, btn)}</div></div>`;
+    }
+    const max = Math.max(1, Math.min(it.maxQty, Math.floor(live.starchrom / it.price)));
+    return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div>${form(it, `<input type="number" name="qty" min="1" max="${it.maxQty}" value="1"><button ${live.starchrom < it.price ? "disabled" : ""}>${live.starchrom < it.price ? `Need ${fmt(it.price - live.starchrom)} more` : "Buy"}</button> <span class="muted">you can afford ${live.starchrom < it.price ? 0 : max}</span>`)}</div></div>`;
+  }).join("");
+  return `<div class="card shopbox">${note}<div class="shophead"><b>🛒 Shop</b><span>${fmt(live.starchrom)} Starchrom · ${live.units.standard || 0} Securement Units</span><span class="muted">Signed in as ${esc(viewer.login)} · <a href="/logout?next=${encodeURIComponent("/u/" + p.login)}">sign out</a></span></div><div class="shopgrid">${items}</div></div>`;
 }
 
 function dexPage() {
@@ -259,7 +306,45 @@ function createApp(pool) {
   app.get("/u/:login", (req, res) => {
     const p = db.q.getPlayerByLogin.get(String(req.params.login).toLowerCase());
     if (!p) return res.status(404).send(simple("Not found", "No Securement Pods yet", `${esc(req.params.login)} hasn't secured anything yet. Catch one with <kbd>!secure</kbd> in any channel running ${esc(cfg.BOT_NAME)}.`));
-    res.send(collectionPage(p));
+    const code = String(req.query.shop || "");
+    let msg = null;
+    if (code.startsWith("ok:")) { const [, id, n] = code.split(":"); const it = shop.find(id); if (it) msg = { ok: true, text: `Bought ${it.kind === "gloves" ? it.name : `${n} ${it.name}${Number(n) > 1 ? "s" : ""}`}!` }; }
+    else if (SHOP_MSG[code]) msg = { ok: false, text: SHOP_MSG[code] };
+    res.set("Cache-Control", "no-store");
+    res.send(collectionPage(p, viewerOf(req), msg));
+  });
+
+  // buy from your own collection page (signed-in owner only; same-site form posts only)
+  app.post("/u/:login/buy", express.urlencoded({ extended: false, limit: "2kb" }), (req, res) => {
+    const login = String(req.params.login).toLowerCase();
+    const back = (code) => res.redirect(303, `/u/${encodeURIComponent(login)}?shop=${encodeURIComponent(code)}#shop`);
+    const origin = req.get("origin") || req.get("referer") || "";
+    if (origin && !origin.startsWith(cfg.BASE_URL)) return res.status(403).send("forbidden");
+    const viewer = viewerOf(req);
+    const row = db.q.getPlayerByLogin.get(login);
+    if (!row) return res.status(404).send("not found");
+    if (!viewer || viewer.uid !== row.user_id) return back("signin");
+    let r;
+    db.tx(() => {
+      const p = game.loadPlayer(row.user_id, row.login, row.display);
+      r = shop.purchase(p, req.body.item, req.body.qty || 1);
+      if (r.ok) game.savePlayer(p);
+    })();
+    if (!r.ok) return back(r.error);
+    console.log(`[web] ${row.login} bought ${r.qty}x ${r.item.id} for ${r.cost}`);
+    back(`ok:${r.item.id}:${r.qty}`);
+  });
+
+  app.get("/login", (req, res) => {
+    const next = /^\/u\/[a-z0-9_]{1,40}$/i.test(String(req.query.next || "")) ? req.query.next : "/";
+    const state = sign({ purpose: "viewer", next, nonce: crypto.randomBytes(8).toString("hex"), ts: Date.now() });
+    res.setHeader("Set-Cookie", cookie(state));
+    res.redirect(twitch.authorizeUrl({ scopes: [], state }));
+  });
+  app.get("/logout", (req, res) => {
+    const next = /^\/u\/[a-z0-9_]{1,40}$/i.test(String(req.query.next || "")) ? req.query.next : "/";
+    res.setHeader("Set-Cookie", sessionCookie("", 0));
+    res.redirect(next);
   });
   app.get("/health", (req, res) => res.json({ ok: true, channels: pool.channelCount, botSetUp: !!db.getBotAccount(), data: data.info() }));
   // every player login (public anyway via /u/<login>) — used to keep the Twitch panel tester allowlist in sync
@@ -294,6 +379,12 @@ function createApp(pool) {
       const tok = await twitch.exchangeCode(req.query.code);
       const user = await twitch.getUser(tok.access_token);
 
+      if (state.purpose === "viewer") {
+        const v = sign({ purpose: "session", uid: user.id, login: user.login, exp: Date.now() + SESSION_DAYS * 864e5, ts: Date.now() });
+        res.setHeader("Set-Cookie", sessionCookie(v, SESSION_DAYS * 86400));
+        const hasPlayer = !!db.q.getPlayer.get(user.id);
+        return res.redirect(hasPlayer ? `/u/${encodeURIComponent(user.login)}#shop` : (state.next || "/"));
+      }
       if (state.purpose === "bot") {
         const wasSetUp = !!db.getBotAccount();
         db.saveBotAccount({ user_id: user.id, login: user.login, access_token: tok.access_token, refresh_token: tok.refresh_token, expires_at: Date.now() + tok.expires_in * 1000 });
