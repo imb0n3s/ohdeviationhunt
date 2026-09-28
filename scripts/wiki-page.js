@@ -89,6 +89,7 @@ Your first ${cmd("!secure")} signs you up automatically — you start with '''${
 out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!secure"), `Throw at the deviation that's loose in chat (${ECONOMY.throwCost} ${SC}; a catch goes into one of your Securement Units). Also works as ${cmd("!catch")}. One throw per person per spawn.`],
   [cmd("!units"), `Show your Securement Units, ${SC}, and when your next free unit arrives. Also ${cmd("!inv")}.`],
+  [cmd("!starchrom"), `Shows how much ${SC} you have. Also works as ${cmd("!sc")}.`],
   [cmd("!shop"), `Show what the shop sells and the prices. The Securement Pods panel has the same shop in its '''Shop''' tab.`],
   [cmd("!buy <amount>"), `Buy Securement Units for ${fmt(unitPrice)} ${SC} each, e.g. ${cmd("!buy 2")}.`],
   [cmd("!daily"), `Claim your daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${ECONOMY.daily.units.standard} Securement Unit, and turn on ${ECONOMY.hourlyUnits} free Securement Unit every hour for the rest of the day while you're in a live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream.`],

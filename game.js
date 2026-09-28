@@ -425,6 +425,12 @@ function inventory(userId, login, display) {
   return `@${display} ${unitsText(p)} · next free unit: ${nextUnitIn(p)}`;
 }
 
+// !starchrom — just your balance
+function starchromText(userId, login, display) {
+  const p = loadPlayer(userId, login, display);
+  return `@${display} 💠 you have ${fmt(p.starchrom)} ${SC}. Throws cost ${ECONOMY.throwCost} each — !shop to spend it, !daily for +${ECONOMY.daily.starchrom}.`;
+}
+
 function collectionSummary(userId) {
   const rows = db.q.listCatches.all(userId);
   const species = new Set(rows.map((r) => r.deviation));
@@ -519,4 +525,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

@@ -10,7 +10,7 @@ function isModOrOwner(ev) {
   return ev.chatter_user_id === ev.broadcaster_user_id || (ev.badges || []).some((b) => b.set_id === "moderator" || b.set_id === "broadcaster");
 }
 
-const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations appear in the wild while the stream is live — type !secure to catch them. !units · !shop · !buy <n> · !daily · !pods · !scrap · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
+const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations appear in the wild while the stream is live — type !secure to catch them. !starchrom · !units · !shop · !buy <n> · !daily · !pods · !scrap · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
 
 function makeHandler(pool, spawns) {
   const botId = () => db.getBotAccount()?.user_id;
@@ -97,7 +97,7 @@ function makeHandler(pool, spawns) {
     }
 
     // ---- everything else: light per-user cooldown ----
-    const GAME_CMDS = ["!units", "!inv", "!shop", "!buy", "!daily", "!deviationbag", "!pods", "!scrap", "!dev", "!hunttop", "!leaderboard", "!traits", "!stats"];
+    const GAME_CMDS = ["!starchrom", "!sc", "!units", "!inv", "!shop", "!buy", "!daily", "!deviationbag", "!pods", "!scrap", "!dev", "!hunttop", "!leaderboard", "!traits", "!stats"];
     if (!GAME_CMDS.includes(cmd)) return;
     const key = `${bid}:${uid}:${cmd}`;
     if (!isModOrOwner(ev) && Date.now() - (lastReply.get(key) || 0) < USER_CD) return;
@@ -106,6 +106,7 @@ function makeHandler(pool, spawns) {
     played();
     try {
     switch (cmd) {
+      case "!starchrom": case "!sc": return reply(game.starchromText(uid, login, name));
       case "!units": case "!inv": return reply(game.inventory(uid, login, name));
       case "!shop": return reply(game.shop());
       case "!buy": return reply(game.buy(uid, login, name, args));
