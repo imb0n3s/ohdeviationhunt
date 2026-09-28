@@ -107,6 +107,7 @@ ${table(["Command", "Effect"], [
   [cmd("!hunt interval <minutes>"), `How often deviations appear while you're live (2–120 minutes, default ${cfg.SPAWN_INTERVAL_MIN}).`],
   [cmd("!hunt off") + " / " + cmd("!hunt on"), "Pause or resume spawns. Other commands keep working."],
   [cmd("!hunt status"), "Live status, spawn timer, what's loose, and this channel's spawn/catch totals."],
+  [cmd("!hunt obs"), "Posts your channel's OBS Source link (see Add Deviation Hunt to Your Channel)."],
   [cmd("!hunt leave"), "Remove the bot from your channel."],
   [cmd("!hunt help"), "List the mod commands in chat."],
 ])}
@@ -200,6 +201,8 @@ out.push(box("Streamers", "Add Deviation Hunt to Your Channel", `
 # Go to [${URL} ${URL.replace(/^https?:\/\//, "")}] and click '''Add to my channel''' (sign in with Twitch). Or type ${cmd("!join")} in [https://www.twitch.tv/${BOT} ${BOT}'s chat].
 # If the bot says it needs permission, type ${cmd(`/mod ${BOT}`)} in your chat and try again.
 # That's it. Deviations appear about every '''${cfg.SPAWN_INTERVAL_MIN} minutes''' while you're '''live''' and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes. Change the timer with ${cmd("!hunt interval <minutes>")}.
+
+'''OBS Source (optional):''' type ${cmd("!hunt obs")} in your chat to get your channel's link, then in OBS add a '''Browser''' source with it (600 × 600). While a deviation can be caught it shows its picture, name, variation or skin and a countdown; it disappears when the deviation is secured or gets away. Add ${code("?demo=1")} to the link while positioning it.
 
 To remove it, type ${cmd("!hunt leave")} in your chat or ${cmd("!leave")} in ${BOT}'s chat.
 `));

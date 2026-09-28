@@ -83,6 +83,8 @@ Only the broadcaster and moderators can use these.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt status</nowiki></span> || Live status, spawn timer, what's loose, and this channel's spawn/catch totals.
 |-
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt obs</nowiki></span> || Posts your channel's OBS Source link (see Add Deviation Hunt to Your Channel).
+|-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt leave</nowiki></span> || Remove the bot from your channel.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt help</nowiki></span> || List the mod commands in chat.
@@ -304,6 +306,8 @@ Your collection is tied to your Twitch account, not to a channel — everything 
 # Go to [https://deviationhunt.ohwikiguide.com deviationhunt.ohwikiguide.com] and click '''Add to my channel''' (sign in with Twitch). Or type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!join</nowiki></span> in [https://www.twitch.tv/ohdeviationhunt ohdeviationhunt's chat].
 # If the bot says it needs permission, type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>/mod ohdeviationhunt</nowiki></span> in your chat and try again.
 # That's it. Deviations appear about every '''7 minutes''' while you're '''live''' and someone has chatted in the last 10 minutes. Change the timer with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt interval <minutes></nowiki></span>.
+
+'''OBS Source (optional):''' type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt obs</nowiki></span> in your chat to get your channel's link, then in OBS add a '''Browser''' source with it (600 × 600). While a deviation can be caught it shows its picture, name, variation or skin and a countdown; it disappears when the deviation is secured or gets away. Add <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;">?demo=1</span> to the link while positioning it.
 
 To remove it, type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt leave</nowiki></span> in your chat or <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!leave</nowiki></span> in ohdeviationhunt's chat.
 </div>
