@@ -9,7 +9,7 @@ const twitch = require("./twitch");
 const data = require("./data");
 const game = require("./game");
 const traits = require("./traits");
-const { TIERS, UNITS, VARIANT, ECONOMY } = require("./rarity");
+const { TIERS, UNITS, VARIANT, ECONOMY, GLOVES, rarityOf } = require("./rarity");
 
 // ---------- signed OAuth state ----------
 function sign(d) {
@@ -63,7 +63,7 @@ code,kbd{background:#0b1016;padding:2px 7px;border-radius:5px;color:#c9e7ff;font
 @media(max-width:600px){.cmds td{display:block;border:0;padding:4px 0}.cmds tr{display:block;padding:8px 0;border-bottom:1px solid var(--line)}}
 .stats{display:flex;gap:12px;flex-wrap:wrap}.stat{flex:1;min-width:130px;background:var(--card);border-radius:12px;padding:14px;text-align:center;color:var(--muted)}
 .stat b{display:block;font-size:1.9rem;color:var(--accent)}
-.chat{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;white-space:pre-wrap;color:#dfe8f0;overflow-wrap:anywhere}
+.chat{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;color:#dfe8f0;overflow-wrap:anywhere;background:#0e0e10;border-radius:8px;padding:.6em .8em}.chat .cl{padding:.18em 0;line-height:1.45}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .dev{background:var(--card);border-radius:12px;padding:10px;text-align:center;border:2px solid transparent;position:relative}
 .dev img{width:100%;aspect-ratio:1;object-fit:contain;display:block}
@@ -105,6 +105,39 @@ const sections = (all, card) => Object.keys(CAT_LABEL).map((c) => {
   const list = all.filter((d) => (d.category || "combat") === c);
   return list.length ? `<h2>${CAT_LABEL[c]} <span style="color:var(--muted);font-weight:400">(${list.length})</span></h2><div class="grid">${list.map(card).join("")}</div>` : "";
 }).join("");
+// Example chat on the homepage — built from the live balance numbers so it never goes stale.
+function chatExamples(botName) {
+  const W = cfg.SPAWN_WINDOW_SECONDS, T = ECONOMY.throwCost;
+  const colors = { viewer42: "#ff7f50", metabones: "#1e90ff", nightowl: "#9acd32" };
+  const line = (who, text) => `<div class="cl"><b style="color:${who === botName ? "#a970ff" : colors[who] || "#dfe8f0"}">${esc(who)}</b>: ${esc(text)}</div>`;
+  const bot = (t) => line(botName, t);
+  const thr = (who, dev, left, pods, glove) => bot(`@${who} 🎯 Threw at the ${dev} (−${T} Starchrom, Left: ${fmt(left)}). You'll have ${pods} Securement Pod${pods === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}%` : ""}`);
+  const spawn = (dev, v) => bot(`👀 A ${dev} has been spotted in the wild!${v ? ` ✨ LEGENDARY ${v.toUpperCase()}!` : ""} Type !secure within ${W}s to catch it.`);
+  const rew = (r) => TIERS[r].reward;
+  const glove = GLOVES.find((g) => g.id === "bbq");
+  const ex = (title, note, lines) => `<div class="card"><h3 style="margin:0 0 .3em">${title}</h3><p class="muted" style="margin:0 0 .6em">${note}</p><div class="chat">${lines.join("")}</div></div>`;
+  return [
+    ex("Someone secures it", `Everyone who types <kbd>!secure</kbd> gets their own roll. Each person who catches it gets their own specimen, shown as Skill/Activity rating.`, [
+      spawn("Grumpy Bulb"),
+      line("viewer42", "!secure"), thr("viewer42", "Grumpy Bulb", 480, 7),
+      line("metabones", "!secure"), thr("metabones", "Grumpy Bulb", 2310, 23, glove),
+      line("nightowl", "!secure"), thr("nightowl", "Grumpy Bulb", 95, 2),
+      bot(`🔒 Grumpy Bulb secured a 3/2 by metabones, a 5/5 ⭐ by viewer42! +${rew(rarityOf("Grumpy Bulb"))} Starchrom each. 📖 New entry for viewer42 (+${ECONOMY.newSpeciesBonus}). It broke free from nightowl. | !traits grumpybulb for traits`),
+    ]),
+    ex("Nobody catches it", `If every throw misses, it gets away. You only lose the ${T} Starchrom for the throw — your Securement Pod stays empty for next time.`, [
+      spawn("Lonewolf Whisper"),
+      line("viewer42", "!secure"), thr("viewer42", "Lonewolf Whisper", 470, 7),
+      line("nightowl", "!secure"), thr("nightowl", "Lonewolf Whisper", 85, 2),
+      bot(`💥 Lonewolf Whisper got away from viewer42, nightowl! Better luck next time. | !pods to see your collection`),
+    ]),
+    ex("A Variation or Skin shows up", `Every Variation and Skin is Legendary, no matter the deviation's usual rarity — harder to catch, worth ${rew("legendary")} Starchrom.`, [
+      bot(`👀 A Lonewolf Whisper has been spotted in the wild! ✨ LEGENDARY VARIATION: Lunar Oracle! Type !secure within ${W}s to catch it.`),
+      line("metabones", "!secure"), thr("metabones", "Lonewolf Whisper — Lunar Oracle", 2300, 23, glove),
+      bot(`🔒 Lonewolf Whisper — Lunar Oracle secured a 4/4 by metabones! +${rew("legendary")} Starchrom each. 📖 New entry for metabones (+${ECONOMY.newSpeciesBonus}). | !traits lonewolfwhisper for traits`),
+    ]),
+  ].join("\n");
+}
+
 const tierTag = (r) => `<div class="t" style="color:${TIERS[r].color}">${TIERS[r].label}</div>`;
 
 
@@ -174,10 +207,7 @@ ${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels �
 <form class="find" action="/u" method="get"><input name="login" placeholder="Twitch username" aria-label="Twitch username"><button>View</button></form>
 
 <h2>What it looks like</h2>
-<div class="card chat">${esc(botName)}: 👀 A Lonewolf Whisper has been spotted in the wild! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.
-viewer42: !secure
-metabones: !secure
-${esc(botName)}: 🔒 Lonewolf Whisper secured a 4/2 by metabones! +40 Starchrom each. 📖 New entry for metabones (+100). | !traits lonewolfwhisper for traits</div>
+${chatExamples(botName)}
 
 <h2>Viewer commands</h2>
 <div class="card">
