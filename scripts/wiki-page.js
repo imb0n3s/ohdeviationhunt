@@ -5,7 +5,7 @@
 //
 // Re-run and re-publish whenever rarity.js, config.js, traits.js or the commands change.
 for (const k of ["TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET", "ADMIN_KEY", "SESSION_SECRET"]) process.env[k] ||= "wiki"; // config.js needs them; unused here
-process.env.BASE_URL ||= "https://ohdeviationhunt-production.up.railway.app";
+process.env.BASE_URL ||= "https://deviationhunt.ohwikiguide.com";
 const path = require("path");
 const cfg = require("../config");
 const { TIERS, VARIANT, UNITS, ECONOMY, rarityOf } = require("../rarity");

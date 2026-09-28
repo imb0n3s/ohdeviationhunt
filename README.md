@@ -45,7 +45,7 @@ Test locally with `npm test` (simulated chat).
 extension secret from the Twitch dev console, base64) and returns the viewer's global bag.
 Viewers share their identity once (Twitch requirement). Upload `ext/` zipped (`npm run zip:ext`)
 as the extension's assets. Console settings: Panel view, panel height 500, identity linking on,
-URL fetching allowlist `https://ohdeviationhunt-production.up.railway.app`, image allowlist
+URL fetching allowlist `https://deviationhunt.ohwikiguide.com` (and the old `https://ohdeviationhunt-production.up.railway.app`), image allowlist
 `https://ohwikiguide.com`.
 
 ## Wiki guide

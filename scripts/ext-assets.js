@@ -57,7 +57,7 @@ function sampleBag() {
   return {
     player: { login: "meta_hunter", display: "Meta_Hunter", starchrom: 1840, units: 7 },
     stats: { unique: owned.length, total: owned.reduce((s, d) => s + d.count, 0), variants: owned.filter((d) => d.variantsOwned.length).length, all: devs.length, allVariants: devs.reduce((s, d) => s + d.variants.length, 0) },
-    page: "https://ohdeviationhunt-production.up.railway.app/u/meta_hunter",
+    page: "https://deviationhunt.ohwikiguide.com/u/meta_hunter",
     deviations,
   };
 }

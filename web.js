@@ -236,6 +236,15 @@ function createApp(pool) {
   app.set("trust proxy", 1);
   app.disable("x-powered-by");
 
+  // Old links on the Railway address (e.g. in past chat messages) forward to the real site.
+  // The panel API (/ext), Twitch login (/auth) and /health keep answering on both addresses.
+  app.use((req, res, next) => {
+    const host = String(req.headers.host || "");
+    if (host.endsWith(".up.railway.app") && !cfg.BASE_URL.includes(host) && req.method === "GET" && !/^\/(ext|auth|health|setup|admin)\b/.test(req.path)) {
+      return res.redirect(301, cfg.BASE_URL + req.originalUrl);
+    }
+    next();
+  });
   require("./extension").mount(app);
   app.get("/", async (req, res) => { await refreshAvatars(); res.send(landing(pool)); });
   app.get("/channels", async (req, res) => { await refreshAvatars(); res.send(channelsPage(pool)); });

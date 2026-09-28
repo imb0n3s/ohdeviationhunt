@@ -2,7 +2,7 @@
 = Deviation Hunt — Privacy Notice =
 ''Last updated: 27 September 2026''
 
-This notice covers '''Deviation Hunt''': the Twitch chat bot (<code>ohdeviationhunt</code>), its website (ohdeviationhunt-production.up.railway.app) and the '''Deviation Hunt''' Twitch panel extension. It is a fan-made game for Once Human players ([[Deviation_Hunt|game guide]]) run by Once Human Guide (ohwikiguide.com), and is not affiliated with Starry Studio or NetEase.
+This notice covers '''Deviation Hunt''': the Twitch chat bot (<code>ohdeviationhunt</code>), its website (deviationhunt.ohwikiguide.com) and the '''Deviation Hunt''' Twitch panel extension. It is a fan-made game for Once Human players ([[Deviation_Hunt|game guide]]) run by Once Human Guide (ohwikiguide.com), and is not affiliated with Starry Studio or NetEase.
 
 == What we collect ==
 '''Players''' — when you use a game command such as <code>!secure</code> in a channel running Deviation Hunt, we store:

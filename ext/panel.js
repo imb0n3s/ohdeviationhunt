@@ -1,7 +1,7 @@
 // panel.js — Deviation Bag panel. Shows the viewer's own collection (same on every channel).
 (function () {
   "use strict";
-  var API = window.DH_API || "https://ohdeviationhunt-production.up.railway.app";
+  var API = window.DH_API || "https://deviationhunt.ohwikiguide.com";
   var app = document.getElementById("app");
   var who = document.getElementById("who");
   var token = null, bag = null, view = { page: "bag", cat: "all", ownedOnly: false, open: null }, cart = {}, notice = null, busy = false;
