@@ -151,6 +151,7 @@ function mount(app) {
       })();
       if (!result.ok) return res.status(400).json({ error: result.error, max: result.max, cost: result.cost, player: result.player });
       console.log(`[ext] ${row.login} bought ${result.qty}x ${result.item.id} for ${result.cost}`);
+      try { game.announcePurchase(row.user_id, result.item, result.qty); } catch (e) { console.warn("[ext] announce failed:", e.message); }
       res.json({ ok: true, item: result.item.id, qty: result.qty, cost: result.cost, player: result.player });
     } catch (e) {
       if (e.needsIdentity) return res.status(403).json({ error: "needs_identity" });

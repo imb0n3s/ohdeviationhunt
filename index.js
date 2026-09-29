@@ -63,7 +63,8 @@ async function main() {
   setInterval(pool.refreshLive, cfg.LIVE_POLL_SECONDS * 1000).unref();
   setInterval(() => spawns.tick(), 15 * 1000).unref();
   // hourly free Securement Units (+ chat notice) for people who did !daily in a live stream
-  const { unitNotices, setStreamLookup, refundAllMisses } = require("./game");
+  const { unitNotices, setStreamLookup, refundAllMisses, setAnnouncer } = require("./game");
+  setAnnouncer((ch, text) => pool.send(ch, text));
   try { const r = refundAllMisses("refund-misses:all-v1", { luna_raventhorn: 7 }); if (r) console.log("[refund] missed-throw units returned:", r.join(" ") || "none"); } catch (e) { console.error("[refund]", e.message); }
   setStreamLookup((ch) => (spawns.live.has(ch) && spawns.streamIds?.get(ch)) || null);
   setInterval(() => {

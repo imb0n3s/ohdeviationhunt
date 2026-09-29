@@ -35,6 +35,20 @@ let streamOf = () => null;
 const dayKey = (ms) => new Date(ms).toLocaleDateString("en-CA", { timeZone: ECONOMY.dailyResetTz });
 function dailyToday(userId) { const last = db.q.lastDaily.get(userId)?.at; return !!last && dayKey(last) === dayKey(Date.now()); }
 function setStreamLookup(fn) { streamOf = fn; }
+let announce = () => {};
+function setAnnouncer(fn) { announce = fn; }
+
+// Shop purchases made in the Twitch panel or on the website (not Securement Units) get a shout-out
+// in the chat the buyer is playing in right now — the channel of their last game command, only while it's live.
+function announcePurchase(userId, item, qty = 1) {
+  if (!item || item.id === "unit" || item.kind === "units") return false;
+  const row = db.q.getPlayer.get(userId);
+  const ch = row?.last_channel;
+  if (!ch || !streamOf(ch) || !db.getChannel(ch)?.enabled) return false;
+  const what = item.kind === "gloves" ? `${item.name} (+${Math.round((item.bonus || 0) * 100)}% capture on every throw)` : `${qty > 1 ? `${qty}× ` : ""}${item.name}`;
+  announce(ch, `🛒 @${row.display} just bought ${what} from the Shop! ${item.kind === "gloves" ? "🧤" : "🎉"}`);
+  return true;
+}
 // Hourly free units run while the player (a) has claimed today's !daily and (b) is in a live
 // stream: the channel of their latest game command, during that same broadcast. It's a single
 // "current stream", so watching several streams never earns more; switching streams keeps the timer.
@@ -521,4 +535,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

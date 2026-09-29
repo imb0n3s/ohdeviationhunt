@@ -12,11 +12,15 @@ const sign = (d) => { const b = Buffer.from(JSON.stringify(d)).toString("base64u
   game.loadPlayer("B", "bob", "Bob");
   const sess = (uid, login) => "dh_user=" + sign({ purpose: "session", uid, login, exp: Date.now() + 1e6, ts: Date.now() });
   const buy = (cookie, body, login = "alice") => fetch(`${base}/u/${login}/buy`, { method: "POST", redirect: "manual", headers: { "Content-Type": "application/x-www-form-urlencoded", ...(cookie ? { Cookie: cookie } : {}) }, body: new URLSearchParams(body) });
+  const said = []; game.setAnnouncer((ch, t) => said.push([ch, t])); game.setStreamLookup((ch) => (ch === "CH" ? "live1" : null));
+  require("../db").addChannel({ broadcaster_id: "CH", login: "ch", display_name: "CH", joined_via: "test" });
+  require("../db").q.touchActive.run("CH", Date.now(), "live1", "A");
   let r = await buy(null, { item: "unit", qty: "2" }); assert.match(r.headers.get("location"), /shop=signin/); console.log("signed out → sign in first");
   r = await buy(sess("B", "bob"), { item: "unit", qty: "2" }); assert.match(r.headers.get("location"), /shop=signin/); console.log("someone else → refused");
   r = await buy(sess("A", "alice"), { item: "unit", qty: "2" }); assert.match(r.headers.get("location"), /shop=ok%3Aunit%3A2/);
   assert.equal(game.loadPlayer("A").starchrom, 11000); console.log("owner bought 2 units");
   r = await buy(sess("A", "alice"), { item: "saviorgloves" }); assert.equal(game.loadPlayer("A").starchrom, 1000);
+  assert.equal(said.length, 1); assert.equal(said[0][0], "CH"); assert.match(said[0][1], /@Alice just bought Savior Gloves \(\+9% capture/); console.log("announced:", said[0][1]);
   r = await buy(sess("A", "alice"), { item: "bbqgloves" }); assert.match(r.headers.get("location"), /outclassed/);
   r = await fetch(`${base}/u/alice/buy`, { method: "POST", redirect: "manual", headers: { Origin: "https://evil.example", Cookie: sess("A", "alice"), "Content-Type": "application/x-www-form-urlencoded" }, body: "item=unit&qty=1" });
   assert.equal(r.status, 403); console.log("cross-site post blocked");

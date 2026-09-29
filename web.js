@@ -425,6 +425,7 @@ function createApp(pool) {
     })();
     if (!r.ok) return back(r.error);
     console.log(`[web] ${row.login} bought ${r.qty}x ${r.item.id} for ${r.cost}`);
+    try { game.announcePurchase(row.user_id, r.item, r.qty); } catch (e) { console.warn("[web] announce failed:", e.message); }
     back(`ok:${r.item.id}:${r.qty}`);
   });
 
