@@ -19,14 +19,14 @@ play("3", "CH"); backdate("3", 3 * H);                   // playing but no !dail
 assert.equal(game.unitNotices().length, 0);               // under an hour
 backdate("1", H + 60e3); backdate("2", H + 60e3);
 let n = game.unitNotices(); console.log(n);
-assert.deepEqual(n, [["CH", "🎁 @Luna, @Bob acquired an hourly Securement Unit and 25 Starchrom! 🎁"]]);
+assert.deepEqual(n, [["CH", "🎁 @Luna, @Bob acquired an hourly Securement Unit and 15 Starchrom! 🎁"]]);
 const u1 = units("1");
 const sc1 = game.loadPlayer("1").starchrom;
-// pods full: the hour still pays 25 Starchrom, no unit
+// pods full: the hour still pays 15 Starchrom, no unit
 { const p = game.loadPlayer("2"); p.extra_cap = -(game.unitCap(p) - game.podsUsed(p)); game.savePlayer(p);
   const sc = p.starchrom, u = p.units.standard; backdate("2", H + 60e3); play("1", "CH");
-  n = game.unitNotices(); assert.deepEqual(n, [["CH", "🎁 @Bob acquired an hourly 25 Starchrom! (Securement Pods full, so no unit) 🎁"]]);
-  assert.equal(game.loadPlayer("2").starchrom, sc + 25); assert.equal(units("2"), u);
+  n = game.unitNotices(); assert.deepEqual(n, [["CH", "🎁 @Bob acquired an hourly 15 Starchrom! (Securement Pods full, so no unit) 🎁"]]);
+  assert.equal(game.loadPlayer("2").starchrom, sc + 15); assert.equal(units("2"), u);
   const q = game.loadPlayer("2"); q.extra_cap = 0; game.savePlayer(q); }
 
 // Luna moves to another stream 40 min into her next hour: the timer keeps running, notice goes there
@@ -34,8 +34,8 @@ backdate("1", 40 * 60e3); play("1", "CH2");
 assert.equal(game.unitNotices().length, 0);
 backdate("1", 21 * 60e3);
 n = game.unitNotices(); console.log(n);
-assert.deepEqual(n, [["CH2", "🎁 @Luna acquired an hourly Securement Unit and 25 Starchrom! 🎁"]]);   // one unit, in ONE stream only
-assert.equal(units("1"), u1 + 1); assert.equal(game.loadPlayer("1").starchrom, sc1 + 25);
+assert.deepEqual(n, [["CH2", "🎁 @Luna acquired an hourly Securement Unit and 15 Starchrom! 🎁"]]);   // one unit, in ONE stream only
+assert.equal(units("1"), u1 + 1); assert.equal(game.loadPlayer("1").starchrom, sc1 + 15);
 
 // "watching" two streams: whichever she played in last is the only one that counts
 play("1", "CH"); backdate("1", H + 60e3);
