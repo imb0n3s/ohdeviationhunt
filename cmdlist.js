@@ -10,7 +10,7 @@ function commandSections() {
   const gloves = shop.ITEMS.filter((i) => i.kind === "gloves").map((i) => `${i.name} +${Math.round(i.bonus * 100)}% (${fmt(i.price)})`).join(" · ");
   return [
     { id: "viewer", title: "Viewer commands", rows: [
-      ["!daily", `Start here. Once a day (resets at midnight Central) while the stream is live: +${E.daily.starchrom} Starchrom and ${E.daily.units.standard} Securement Unit, and it turns on 1 free Securement Unit every hour you play in a live stream for the rest of the day.`],
+      ["!daily", `Start here. Once a day (resets at midnight Central) while the stream is live: +${E.daily.starchrom} Starchrom and ${E.daily.units.standard} Securement Unit, and it turns on 1 free Securement Unit + ${E.hourlyStarchrom} Starchrom every hour you play in a live stream for the rest of the day.`],
       ["!secure", `Throw at the deviation that's spotted in the wild (you have ${cfg.SPAWN_WINDOW_SECONDS} seconds). Costs ${E.throwCost} Starchrom and needs an empty Securement Unit; if you catch it, it lives in that unit. One throw per spawn. Also \`!catch\`.`],
       ["!pods", "Your Securement Pods: how many deviations, variants & skins you've secured, plus a link to your collection page. Add a name (`!pods luna_raventhorn`) to see someone else's."],
       ["!starchrom", "How much Starchrom you have. Also `!sc`."],

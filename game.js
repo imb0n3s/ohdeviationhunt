@@ -396,19 +396,21 @@ function unitNotices(now = Date.now()) {
     // away for a while (not in any live stream)? start a fresh hour instead of paying for the gap
     if (now - p.last_unit_at > 2 * HOUR) { p.last_unit_at = now; savePlayer(p); continue; }
     p.last_unit_at += HOUR;
-    if (!unitRoom(p)) { savePlayer(p); continue; } // full at the cap: the hour passes quietly
-    p.units.standard = (p.units.standard || 0) + Math.min(ECONOMY.hourlyUnits, unitRoom(p));
+    const got = Math.min(ECONOMY.hourlyUnits, unitRoom(p)); // full at the cap: Starchrom only
+    p.units.standard = (p.units.standard || 0) + got;
+    p.starchrom += ECONOMY.hourlyStarchrom;
     savePlayer(p);
     if (!byChannel.has(ch)) byChannel.set(ch, []);
-    byChannel.get(ch).push({ name: `@${p.display}`, got: ECONOMY.hourlyUnits });
+    byChannel.get(ch).push({ name: `@${p.display}`, got });
   }
-  // "🎁 @luna acquired an hourly Securement Unit! 🎁" / "🎁 @luna, @bob acquired an hourly Securement Unit! 🎁"
+  // "🎁 @luna, @bob acquired an hourly Securement Unit and 25 Starchrom! 🎁"
   const out = [];
   for (const [ch, list] of byChannel) {
     const groups = new Map();
     for (const x of list) { if (!groups.has(x.got)) groups.set(x.got, []); groups.get(x.got).push(x.name); }
     for (const [got, names] of groups) {
-      const tail = got === 1 ? " acquired an hourly Securement Unit! 🎁" : ` acquired ${got} hourly Securement Units! 🎁`;
+      const sc = `${ECONOMY.hourlyStarchrom} ${SC}`;
+      const tail = got === 0 ? ` acquired an hourly ${sc}! (Securement Pods full, so no unit) 🎁` : got === 1 ? ` acquired an hourly Securement Unit and ${sc}! 🎁` : ` acquired ${got} hourly Securement Units and ${sc}! 🎁`;
       let batch = [];
       for (const n of names) {
         if (batch.length && ("🎁 " + [...batch, n].join(", ") + tail).length > 450) { out.push([ch, "🎁 " + batch.join(", ") + tail]); batch = []; }

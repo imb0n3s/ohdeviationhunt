@@ -48,7 +48,7 @@ Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy <amount></nowiki></span> || Buy Securement Units for 500 Starchrom each, e.g. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy 2</nowiki></span>.
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || Claim your daily supply drop: +100 Starchrom and 1 Securement Unit, and turn on 1 free Securement Unit every hour for the rest of the day while you're in a live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream.
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || Claim your daily supply drop: +100 Starchrom and 1 Securement Unit, and turn on 1 free Securement Unit + 25 Starchrom every hour for the rest of the day while you're in a live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!pods [name]</nowiki></span> || Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.
 |-
@@ -126,7 +126,7 @@ Gloves don't stack — only your best pair counts, so you can't buy a pair weake
 |-
 | Starting supply || 5 units
 |-
-| Free hourly unit || +1 unit every hour after you claim today's <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span>, while you're in a live stream running the game (the one where you last used a game command). '''One stream at a time''' — watching several doesn't earn more, and the timer keeps running when you switch streams. The bot tells you in chat each time one arrives.
+| Free hourly unit || +1 unit every hour after you claim today's <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span>, while you're in a live stream running the game (the one where you last used a game command). '''One stream at a time''' — watching several doesn't earn more, and the timer keeps running when you switch streams. Each one comes with '''+25 Starchrom''' (you still get the Starchrom if your pods are full). The bot tells you in chat each time one arrives.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || +1 unit, once a day (resets at midnight Central)
 |-
@@ -158,6 +158,8 @@ Starchrom is earned by securing deviations and spent on throws (10 per <span sty
 | First time you secure a deviation (or a new variant of it) || +100 bonus
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || +100
+|-
+| Every hour after !daily, while you're in a live stream || +25 (with your free Securement Unit)
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!scrap</nowiki></span> || 50% of the catch reward per duplicate
 |-

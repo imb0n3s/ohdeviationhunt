@@ -65,6 +65,7 @@ const UNITS = {
 const ECONOMY = {
   starterStarchrom: 200,
   starterUnits: { standard: 5 },
+  hourlyStarchrom: 25,      // Starchrom that comes with each hourly unit (paid even when your pods are full)
   hourlyUnits: 1,            // free Securement Units every hour, only while the stream you did !daily in is live (no cap)
   daily: { starchrom: 100, units: { standard: 1 } },
   dailyResetTz: "America/Chicago", // !daily resets at midnight in this time zone

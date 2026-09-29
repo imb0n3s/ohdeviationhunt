@@ -92,7 +92,7 @@ out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!starchrom"), `Shows how much ${SC} you have. Also works as ${cmd("!sc")}.`],
   [cmd("!shop"), `Show what the shop sells and the prices. The Securement Pods panel has the same shop in its '''Shop''' tab.`],
   [cmd("!buy <amount>"), `Buy Securement Units for ${fmt(unitPrice)} ${SC} each, e.g. ${cmd("!buy 2")}.`],
-  [cmd("!daily"), `Claim your daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${ECONOMY.daily.units.standard} Securement Unit, and turn on ${ECONOMY.hourlyUnits} free Securement Unit every hour for the rest of the day while you're in a live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream.`],
+  [cmd("!daily"), `Claim your daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${ECONOMY.daily.units.standard} Securement Unit, and turn on ${ECONOMY.hourlyUnits} free Securement Unit + ${ECONOMY.hourlyStarchrom} ${SC} every hour for the rest of the day while you're in a live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream.`],
   [cmd("!pods [name]"), `Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.`],
   [cmd("!traits <deviation>"), `Skill Rating, Activity Rating and all three traits of your best specimen of that deviation. Also ${cmd("!stats")}.`],
   [cmd("!dev <deviation>"), `Info about a deviation: what it does, its variations and skins, and a wiki link.`],
@@ -127,7 +127,7 @@ Gloves don't stack — only your best pair counts, so you can't buy a pair weake
 '''Ways to get Securement Units'''
 ${table(["Source", "Amount"], [
   ["Starting supply", `${ECONOMY.starterUnits.standard} units`],
-  ["Free hourly unit", `+${ECONOMY.hourlyUnits} unit every hour after you claim today's ${cmd("!daily")}, while you're in a live stream running the game (the one where you last used a game command). '''One stream at a time''' — watching several doesn't earn more, and the timer keeps running when you switch streams. The bot tells you in chat each time one arrives.`],
+  ["Free hourly unit", `+${ECONOMY.hourlyUnits} unit every hour after you claim today's ${cmd("!daily")}, while you're in a live stream running the game (the one where you last used a game command). '''One stream at a time''' — watching several doesn't earn more, and the timer keeps running when you switch streams. Each one comes with '''+${ECONOMY.hourlyStarchrom} ${SC}''' (you still get the ${SC} if your pods are full). The bot tells you in chat each time one arrives.`],
   [cmd("!daily"), `+${ECONOMY.daily.units.standard} unit, once a day (resets at midnight Central)`],
   ["Destroying an extra specimen in the Twitch panel", `+${ECONOMY.destroyUnits} unit (plus ${fmt(ECONOMY.destroyValue)} ${SC})`],
   [cmd("!buy <amount>") + " or the panel's '''Shop''' tab", `${fmt(unitPrice)} ${SC} each`],
@@ -142,6 +142,7 @@ ${table(["How", SC], [
   ["Securing a Skin (always Legendary)", `${skinReward}`],
   ["First time you secure a deviation (or a new variant of it)", `+${ECONOMY.newSpeciesBonus} bonus`],
   [cmd("!daily"), `+${ECONOMY.daily.starchrom}`],
+  ["Every hour after !daily, while you're in a live stream", `+${ECONOMY.hourlyStarchrom} (with your free Securement Unit)`],
   [cmd("!scrap"), `${pct(ECONOMY.scrapValue)} of the catch reward per duplicate`],
   ["Destroying an extra specimen in the Twitch panel", `+${fmt(ECONOMY.destroyValue)} each, plus ${ECONOMY.destroyUnits} Securement Unit back (only while you own more than one)`],
 ])}
