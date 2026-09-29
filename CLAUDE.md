@@ -28,7 +28,8 @@
   finishes Monetization onboarding): Local Test → Monetization tab → "Bits enabled" → add one product per pack with the
   SAME sku + Bits amount (starchrom20/5, starchrom100/25, starchrom200/50, starchrom400/100, starchrom2000/500, starchrom10000/2500, pods5/50), In Development = No,
   Save All → back to Hosted Test (reload/confirm) → add Bits to the wiki page.
-  B's call (2026-09-28): DON'T switch Bits on until it takes real Bits — i.e. after the extension is
+  Server kill switch: Bits are refused unless Railway env BITS_ENABLED=1 (unset = off; packs hidden, /ext/bits/complete → 403) —
+  set it only when switching Bits on. B's call (2026-09-28): DON'T switch Bits on until it takes real Bits — i.e. after the extension is
   approved/released (in Local/Hosted Test Twitch makes Bits purchases free). Onboarding was submitted 2026-09-28.
 - Pod cap: ECONOMY.unitCap = 100 Securement Pods = caught deviations + empty Securement Units (+ players.extra_cap). Extra room is sold for Bits:
   pods5 = +5 capacity for 50 Bits (in BITS_PACKS; decided by B 2026-09-28). When switching Bits on, the Twitch

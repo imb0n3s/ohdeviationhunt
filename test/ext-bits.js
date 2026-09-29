@@ -1,6 +1,6 @@
 // node test/ext-bits.js — Bits receipt → Starchrom, once per transaction
 const secret = Buffer.from("testsecret-testsecret-testsecret").toString("base64");
-Object.assign(process.env, { TWITCH_CLIENT_ID: "x", TWITCH_CLIENT_SECRET: "x", ADMIN_KEY: "x", DATA_DIR: "/tmp/dhtest-bits", EXT_SECRET: secret });
+Object.assign(process.env, { TWITCH_CLIENT_ID: "x", TWITCH_CLIENT_SECRET: "x", ADMIN_KEY: "x", DATA_DIR: "/tmp/dhtest-bits", EXT_SECRET: secret, BITS_ENABLED: "1" });
 require("fs").rmSync("/tmp/dhtest-bits", { recursive: true, force: true }); require("fs").mkdirSync("/tmp/dhtest-bits", { recursive: true });
 const crypto = require("crypto"), express = require("express"), assert = require("assert");
 const ext = require("../extension"), game = require("../game");

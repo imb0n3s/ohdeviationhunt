@@ -86,7 +86,7 @@ function bagFor(userId) {
   return {
     player: p ? playerInfo(game.loadPlayer(p.user_id, p.login, p.display)) : null,
     shop: shop.catalog(),
-    bitsPacks: BITS_PACKS,
+    bitsPacks: cfg.BITS_ENABLED ? BITS_PACKS : [],
     destroyValue: require("./rarity").ECONOMY.destroyValue,
     destroyUnits: require("./rarity").ECONOMY.destroyUnits,
     stats: { unique: summary.species, total: summary.total, variants: summary.variants, all: all.length, allVariants: all.reduce((s, d) => s + d.variants.length, 0),
@@ -162,6 +162,7 @@ function mount(app) {
 
   // Bits purchase: the panel sends Twitch's signed transaction receipt after useBits() completes.
   app.post("/ext/bits/complete", express.json({ limit: "8kb" }), (req, res) => {
+    if (!cfg.BITS_ENABLED) return res.status(403).json({ error: "bits_disabled" });
     try {
       const jwt = auth(req);
       const receipt = verifyExtJwt(req.body?.receipt);

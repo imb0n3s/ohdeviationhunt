@@ -26,6 +26,8 @@ const cfg = {
   SPAWN_OFFLINE: process.env.SPAWN_OFFLINE === "1",
   // PAUSED=1 stops all spawns and game commands (only !join/!leave and a "paused" note on !hunt)
   PAUSED: process.env.PAUSED === "1",
+  // Bits purchases stay OFF until the extension is approved/released (B's call). Set BITS_ENABLED=1 on Railway to allow them.
+  BITS_ENABLED: process.env.BITS_ENABLED === "1",
   // Twitch extension (Securement Pods panel): the extension secret from the dev console, base64
   // one or more extension secrets (comma/space separated) so key rotation never breaks the panel
   EXT_SECRETS: (process.env.EXT_SECRET || "").split(/[\s,]+/).map((x) => x.trim().replace(/^["']|["']$/g, "")).filter(Boolean),
