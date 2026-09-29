@@ -55,8 +55,8 @@ const VARIANT = {
   // Every variation and skin is Legendary, whatever the base deviation's rarity.
   variation: { chance: 1 / 12, catch: 0.12, rarity: "legendary", rewardMult: 1, label: "Variation" },
   skin:      { chance: 1 / 40, catch: 0.09, rarity: "legendary", rewardMult: 1, label: "Skin" },
-  // the Chaos variation (Mini Wonder, Mr. Wish, Snowsprite, Zeno-Purifier): 1 in 375 of ALL spawns, 2.5% capture
-  chaos:     { chance: 1 / 375, catch: 0.025, rarity: "legendary", rewardMult: 1, label: "Chaos Variation", names: ["Chaos"] },
+  // the Chaos variation (Mini Wonder, Mr. Wish, Snowsprite, Zeno-Purifier): 1 in 750 of ALL spawns, 2.5% capture
+  chaos:     { chance: 1 / 750, catch: 0.025, rarity: "legendary", rewardMult: 1, label: "Chaos Variation", names: ["Chaos"] },
 };
 // which rule a spawned/caught variant follows
 const isChaos = (v) => !!v && VARIANT.chaos.names.some((n) => n.toLowerCase() === String(v.name || v).toLowerCase());

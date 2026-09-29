@@ -134,12 +134,32 @@
   "combat": {
    "slot1": [
     {
-     "key": "butterfly",
-     "name": "Butterfly",
+     "key": "bf_glistening",
+     "name": "Weakspot Master - Glistening Blue",
      "minLevel": null,
      "maxLevel": null,
      "effects": [
-      "Butterfly's Emissary - Ancient Scroll: It gains Max Energy (Skill) +40%"
+      "Hitting a Weakspot increases Secured by 1 additional point. Cooldown of 3s"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "bf_ancient",
+     "name": "Ancient Scroll",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Max Energy +40%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "bf_starry",
+     "name": "Praise the Moon - Starry Night",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "Deal +6% Weapon & Status DMG at night. Effect is halved during daytime"
      ],
      "fuse": null
     },
@@ -297,26 +317,6 @@
      "maxLevel": null,
      "effects": [
       "Syncing with it grants Max Load +15, Movement Speed -5%"
-     ],
-     "fuse": null
-    },
-    {
-     "key": "glistening_blue",
-     "name": "Weakspot Master - Glistening Blue",
-     "minLevel": null,
-     "maxLevel": null,
-     "effects": [
-      "When synced, hitting a Weakspot increases Deviation Power (Skill) by 1. Cooldown: 3s"
-     ],
-     "fuse": null
-    },
-    {
-     "key": "starry_night",
-     "name": "Praise the Moon - Starry Night",
-     "minLevel": null,
-     "maxLevel": null,
-     "effects": [
-      "When synced you deal 6% more damage (both Weapon DMG and Status DMG) at night. Effect is reduced by half during the day"
      ],
      "fuse": null
     },
@@ -1712,29 +1712,61 @@
   }
  },
  "slot1ForDev": {
-  "Butterfly Emissary": "butterfly",
-  "By-the-Wind": "by_the_wind",
-  "Dr. Teddy": "dr_teddy",
-  "Festering Gel": "festering_gel",
-  "Grumpy Bulb": "grumpy_bulb",
-  "Invincible Sun": "invincible_sun",
-  "Lonewolf Whisper": "lonewolf_whisper",
-  "Mini Wonder": "mini_wonder",
-  "Polar Jelly": "polar_jellyfish",
-  "Shattered Maiden": "shattered_maiden",
-  "Snowsprite": "snowsprite",
-  "Voodoo Doll": "voodoo_doll",
-  "Whalepup": "whalepup",
-  "ZapCam": "zapcam",
-  "Atomic Snail": "atomic_snail",
-  "Space Turner": "space_turner",
-  "Growshroom": "opt_extra_large"
+  "Butterfly Emissary": [
+   "bf_glistening",
+   "bf_ancient",
+   "bf_starry"
+  ],
+  "By-the-Wind": [
+   "by_the_wind"
+  ],
+  "Dr. Teddy": [
+   "dr_teddy"
+  ],
+  "Festering Gel": [
+   "festering_gel"
+  ],
+  "Grumpy Bulb": [
+   "grumpy_bulb"
+  ],
+  "Invincible Sun": [
+   "invincible_sun"
+  ],
+  "Lonewolf Whisper": [
+   "lonewolf_whisper"
+  ],
+  "Mini Wonder": [
+   "mini_wonder"
+  ],
+  "Polar Jelly": [
+   "polar_jellyfish"
+  ],
+  "Shattered Maiden": [
+   "shattered_maiden"
+  ],
+  "Snowsprite": [
+   "snowsprite"
+  ],
+  "Voodoo Doll": [
+   "voodoo_doll"
+  ],
+  "Whalepup": [
+   "whalepup"
+  ],
+  "ZapCam": [
+   "zapcam"
+  ],
+  "Atomic Snail": [
+   "atomic_snail"
+  ],
+  "Space Turner": [
+   "space_turner"
+  ],
+  "Growshroom": [
+   "opt_extra_large"
+  ]
  },
  "slot2ForDev": {
-  "Butterfly Emissary": [
-   "glistening_blue",
-   "starry_night"
-  ],
   "Enchanting Void": [
    "enchanting_void"
   ],
