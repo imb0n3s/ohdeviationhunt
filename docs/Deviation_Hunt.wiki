@@ -124,7 +124,7 @@ Gloves don't stack — only your best pair counts, so you can't buy a pair weake
 |-
 | Starting supply || 5 units
 |-
-| Free hourly unit || +1 unit every hour after you claim today's <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span>, while you're in a live stream running the game (the one where you last used a game command). '''One stream at a time''' — watching several doesn't earn more, and the timer keeps running when you switch streams. Each one comes with '''+15 Starchrom''' (you still get the Starchrom if your pods are full). The bot tells you in chat each time one arrives.
+| Free hourly unit || +1 unit every hour after you claim today's <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span>, while you're in a live stream running the game (the one where you last used a game command). '''One stream at a time''' — watching several doesn't earn more, and the timer keeps running when you switch streams. Each one comes with '''+15 Starchrom''' (you still get the Starchrom if your pods are full). The bot tells you in chat each time one arrives, along with how many Securement Units and  you now have.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || +1 unit, once a day (resets at midnight Central)
 |-

@@ -401,23 +401,27 @@ function unitNotices(now = Date.now()) {
     p.starchrom += ECONOMY.hourlyStarchrom;
     savePlayer(p);
     if (!byChannel.has(ch)) byChannel.set(ch, []);
-    byChannel.get(ch).push({ name: `@${p.display}`, got });
+    byChannel.get(ch).push({ name: `@${p.display}`, got, units: p.units.standard || 0, starchrom: p.starchrom });
   }
-  // "🎁 @luna, @bob acquired an hourly Securement Unit and 25 Starchrom! 🎁"
+  // one player:  "🎁 @luna acquired an hourly Securement Unit and 15 Starchrom! You now have 8 Securement Units and 1,240 Starchrom. 🎁"
+  // several at once: "🎁 Hourly gift (+1 Securement Unit, +15 Starchrom): @luna now 8 units · 1,240 Starchrom | @bob now 3 units · 95 Starchrom 🎁"
+  const sc = `${ECONOMY.hourlyStarchrom} ${SC}`;
+  const unitsTxt = (n) => `${fmt(n)} Securement Unit${n === 1 ? "" : "s"}`;
+  const one = (x) => x.got
+    ? `🎁 ${x.name} acquired ${x.got === 1 ? "an hourly Securement Unit" : `${x.got} hourly Securement Units`} and ${sc}! You now have ${unitsTxt(x.units)} and ${fmt(x.starchrom)} ${SC}. 🎁`
+    : `🎁 ${x.name} acquired an hourly ${sc}! (Securement Pods full, so no unit) You now have ${fmt(x.starchrom)} ${SC}. 🎁`;
+  const short = (x) => `${x.name} now ${fmt(x.units)} unit${x.units === 1 ? "" : "s"} · ${fmt(x.starchrom)} ${SC}${x.got ? "" : " (pods full, no unit)"}`;
+  const head = `🎁 Hourly gift (+${ECONOMY.hourlyUnits} Securement Unit, +${sc}): `;
   const out = [];
   for (const [ch, list] of byChannel) {
-    const groups = new Map();
-    for (const x of list) { if (!groups.has(x.got)) groups.set(x.got, []); groups.get(x.got).push(x.name); }
-    for (const [got, names] of groups) {
-      const sc = `${ECONOMY.hourlyStarchrom} ${SC}`;
-      const tail = got === 0 ? ` acquired an hourly ${sc}! (Securement Pods full, so no unit) 🎁` : got === 1 ? ` acquired an hourly Securement Unit and ${sc}! 🎁` : ` acquired ${got} hourly Securement Units and ${sc}! 🎁`;
-      let batch = [];
-      for (const n of names) {
-        if (batch.length && ("🎁 " + [...batch, n].join(", ") + tail).length > 450) { out.push([ch, "🎁 " + batch.join(", ") + tail]); batch = []; }
-        batch.push(n);
-      }
-      if (batch.length) out.push([ch, "🎁 " + batch.join(", ") + tail]);
+    if (list.length === 1) { out.push([ch, one(list[0])]); continue; }
+    let batch = [];
+    const flush = () => { out.push([ch, batch.length === 1 ? one(batch[0]) : head + batch.map(short).join(" | ") + " 🎁"]); batch = []; };
+    for (const x of list) {
+      if (batch.length && (head + [...batch, x].map(short).join(" | ") + " 🎁").length > 450) flush();
+      batch.push(x);
     }
+    if (batch.length) flush();
   }
   return out; // [[channelId, message], ...]
 }

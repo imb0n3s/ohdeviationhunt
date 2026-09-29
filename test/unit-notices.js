@@ -19,13 +19,13 @@ play("3", "CH"); backdate("3", 3 * H);                   // playing but no !dail
 assert.equal(game.unitNotices().length, 0);               // under an hour
 backdate("1", H + 60e3); backdate("2", H + 60e3);
 let n = game.unitNotices(); console.log(n);
-assert.deepEqual(n, [["CH", "🎁 @Luna, @Bob acquired an hourly Securement Unit and 15 Starchrom! 🎁"]]);
+assert.deepEqual(n, [["CH", "🎁 Hourly gift (+1 Securement Unit, +15 Starchrom): @Luna now 7 units · 315 Starchrom | @Bob now 7 units · 315 Starchrom 🎁"]]);
 const u1 = units("1");
 const sc1 = game.loadPlayer("1").starchrom;
 // pods full: the hour still pays 15 Starchrom, no unit
 { const p = game.loadPlayer("2"); p.extra_cap = -(game.unitCap(p) - game.podsUsed(p)); game.savePlayer(p);
   const sc = p.starchrom, u = p.units.standard; backdate("2", H + 60e3); play("1", "CH");
-  n = game.unitNotices(); assert.deepEqual(n, [["CH", "🎁 @Bob acquired an hourly 15 Starchrom! (Securement Pods full, so no unit) 🎁"]]);
+  n = game.unitNotices(); assert.match(n[0][1], /^🎁 @Bob acquired an hourly 15 Starchrom! \(Securement Pods full, so no unit\) You now have [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1);
   assert.equal(game.loadPlayer("2").starchrom, sc + 15); assert.equal(units("2"), u);
   const q = game.loadPlayer("2"); q.extra_cap = 0; game.savePlayer(q); }
 
@@ -34,7 +34,7 @@ backdate("1", 40 * 60e3); play("1", "CH2");
 assert.equal(game.unitNotices().length, 0);
 backdate("1", 21 * 60e3);
 n = game.unitNotices(); console.log(n);
-assert.deepEqual(n, [["CH2", "🎁 @Luna acquired an hourly Securement Unit and 15 Starchrom! 🎁"]]);   // one unit, in ONE stream only
+assert.match(n[0][1], /^🎁 @Luna acquired an hourly Securement Unit and 15 Starchrom! You now have \d+ Securement Units and [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1); assert.equal(n[0][0], "CH2");   // one unit, in ONE stream only
 assert.equal(units("1"), u1 + 1); assert.equal(game.loadPlayer("1").starchrom, sc1 + 15);
 
 // "watching" two streams: whichever she played in last is the only one that counts
