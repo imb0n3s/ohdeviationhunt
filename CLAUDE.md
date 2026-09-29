@@ -33,8 +33,6 @@
 - Pod cap: ECONOMY.unitCap = 100 Securement Pods = caught deviations + empty Securement Units (+ players.extra_cap). Extra room is sold for Bits:
   pods5 = +5 capacity for 50 Bits (in BITS_PACKS; decided by B 2026-09-28). When switching Bits on, the Twitch
   products are: starchrom20/5, starchrom100/25, starchrom200/50, starchrom400/100, starchrom2000/500, starchrom10000/2500 AND pods5/50.
-- B's call (2026-09-29): keep the extension in LOCAL TEST during testing (until B says otherwise) so testers can be
-  added any time. Local Test loads the panel from Asset Hosting → Testing Base URI = https://deviationhunt.ohwikiguide.com/panel/
-  (web.js serves ext/ at /panel; the Dockerfile copies ext/). So panel changes go live on the next Railway deploy — no zip
-  upload needed while in Local Test — but ext/ is not a Railway watch path: a push that only touches ext/ won't redeploy
-  (ship it with a root .js change, or B adds /ext/** to Watch Paths). Keep the zip in docs/ext-assets/ current for Hosted Test/review.
+- B's call (2026-09-29): keep the extension in HOSTED TEST; only go to Local Test briefly to add testers / upload, then
+  straight back (reload + confirm). In Local Test the panel is blank for everyone. (web.js also serves ext/ at /panel —
+  unused for now; it would let Local Test work if Asset Hosting → Testing Base URI pointed at <BASE_URL>/panel/.)
