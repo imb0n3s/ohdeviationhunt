@@ -235,10 +235,11 @@ class Spawns {
     }
   }
 
-  async spawn(bid, forced) {
+  // pick: optional deviation (from !hunt spawn <name>) — spawns that one, no variant
+  async spawn(bid, forced, pick = null) {
     if (cfg.PAUSED) return { error: "paused" };
     if (this.active.has(bid)) return { error: "already" };
-    const s = rollSpawn();
+    const s = pick ? { dev: pick, variant: null } : rollSpawn();
     if (s) s.legendary = traits.rollLegendary(s.dev.name, s.dev.category); // hidden 1-in-400 Legendary trait, never announced
     if (!s) return { error: "nodata" };
     s.attempts = new Map();

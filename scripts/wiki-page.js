@@ -103,7 +103,7 @@ out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
 out.push(box("Mods", "Streamer & Moderator Commands", `
 Only the broadcaster and moderators can use these.
 ${table(["Command", "Effect"], [
-  [cmd("!hunt spawn"), "Spawn a deviation right now."],
+  [cmd("!hunt spawn [deviation]"), `Spawn a deviation right now. Add a name (${cmd("!hunt spawn pyro dino")}) to release that one.`],
   [cmd("!hunt interval <minutes>"), `How often deviations appear while you're live (2–120 minutes, default ${cfg.SPAWN_INTERVAL_MIN}).`],
   [cmd("!hunt off") + " / " + cmd("!hunt on"), "Pause or resume spawns. Other commands keep working."],
   [cmd("!hunt status"), "Live status, spawn timer, what's loose, and this channel's spawn/catch totals."],

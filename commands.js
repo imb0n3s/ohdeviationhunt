@@ -2,6 +2,7 @@
 const cfg = require("./config");
 const db = require("./db");
 const game = require("./game");
+const data = require("./data");
 
 const lastReply = new Map(); // `${bid}:${user}:${cmd}` -> ts, stops one viewer spamming the bot
 const USER_CD = 5000;
@@ -66,7 +67,11 @@ function makeHandler(pool, spawns) {
       const sub = (args[0] || "").toLowerCase();
       const mod = isModOrOwner(ev);
       if (mod && sub === "spawn") {
-        const r = await spawns.spawn(bid, true);
+        // !hunt spawn <deviation> releases that one (normal version); plain !hunt spawn is random
+        const want = args.slice(1).join(" ").trim();
+        const pick = want ? data.find(want) : null;
+        if (want && !pick) return reply(`No deviation called "${want}". Try a name like "pyro dino".`);
+        const r = await spawns.spawn(bid, true, pick);
         if (r.error === "already") return reply("A deviation is already loose — secure it first!");
         return;
       }

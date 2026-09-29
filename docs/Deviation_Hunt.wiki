@@ -75,7 +75,7 @@ Only the broadcaster and moderators can use these.
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Command
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Effect
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt spawn</nowiki></span> || Spawn a deviation right now.
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt spawn [deviation]</nowiki></span> || Spawn a deviation right now. Add a name (<span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt spawn pyro dino</nowiki></span>) to release that one.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt interval <minutes></nowiki></span> || How often deviations appear while you're live (2–120 minutes, default 7).
 |-

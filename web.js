@@ -251,7 +251,7 @@ ${chatExamples(botName)}
 </div>
 <h2>Streamer & mod commands</h2>
 <div class="card">
-<p><kbd>!hunt spawn</kbd> — release one right now · <kbd>!hunt interval 10</kbd> — minutes between spawns (default ${cfg.SPAWN_INTERVAL_MIN}) · <kbd>!hunt off</kbd> / <kbd>!hunt on</kbd> · <kbd>!hunt status</kbd> · <kbd>!hunt leave</kbd></p>
+<p><kbd>!hunt spawn</kbd> — release one right now (<kbd>!hunt spawn pyro dino</kbd> for a specific one) · <kbd>!hunt interval 10</kbd> — minutes between spawns (default ${cfg.SPAWN_INTERVAL_MIN}) · <kbd>!hunt off</kbd> / <kbd>!hunt on</kbd> · <kbd>!hunt status</kbd> · <kbd>!hunt leave</kbd></p>
 <p>Deviations only appear while your stream is live and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes.</p>
 </div>
 <h2>How catching works</h2>
