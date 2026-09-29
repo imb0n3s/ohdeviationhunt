@@ -128,7 +128,7 @@ Gloves don't stack — only your best pair counts, so you can't buy a pair weake
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || +1 unit, once a day (resets at midnight Central)
 |-
-| Scrapping an extra specimen in the Twitch panel || +1 unit (plus 500 Starchrom)
+| Scrapping an extra specimen (Twitch panel or your collection page) || +1 unit (plus 500 Starchrom)
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy <amount></nowiki></span> or the panel's '''Shop''' tab || 500 Starchrom each
 |}
@@ -159,7 +159,7 @@ Starchrom is earned by securing deviations and spent on throws (10 per <span sty
 |-
 | Every hour after !daily, while you're in a live stream || +15 (with your free Securement Unit)
 |-
-| Scrapping an extra specimen in the Twitch panel || +500 each, plus 1 Securement Unit back (only while you own more than one)
+| Scrapping an extra specimen (Twitch panel or your collection page) || +500 each, plus 1 Securement Unit back (only while you own more than one)
 |}
 </div>
 </div>
@@ -259,7 +259,7 @@ Every deviation you secure is its own specimen with two ratings from 1 to 5 — 
 | Chance || 30% || 28% || 22% || 13% || 7%
 |}
 
-A 5/5 specimen gets a ⭐ in chat. Catch the same deviation again to hunt for better ratings, then scrap the ones you don't want in the Twitch panel.
+A 5/5 specimen gets a ⭐ in chat. Catch the same deviation again to hunt for better ratings, then scrap the ones you don't want in the Twitch panel or on your collection page (signed in with Twitch).
 </div>
 </div>
 

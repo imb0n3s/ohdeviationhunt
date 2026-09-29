@@ -69,6 +69,12 @@ code,kbd{background:#0b1016;padding:2px 7px;border-radius:5px;color:#c9e7ff;font
 .obsframe iframe{position:absolute;top:0;left:0;width:600px;height:600px;border:0;transform-origin:0 0;background:transparent}
 .chat .cl{padding:.18em 0;line-height:1.45}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.xtra{margin-top:8px;text-align:left;font-size:.78rem}.xtra summary{cursor:pointer;color:#f87171;font-weight:700;text-align:center;padding:4px;border:1px solid #7f1d1d;border-radius:8px}
+.xh{margin:6px 0;font-size:.72rem}.xs{background:#0b1016;border-radius:8px;padding:6px 8px;margin:6px 0}.xs.best{box-shadow:0 0 0 1px var(--accent)}
+.xr b{color:#fde68a}.bt{background:var(--accent);color:#04121c;border-radius:99px;padding:0 6px;font-size:.65rem;font-weight:800;margin-left:4px}
+.xv{color:#fde68a;font-size:.7rem}.xt{color:var(--muted);font-size:.7rem;margin:2px 0 4px}
+.xb{width:100%;background:transparent;color:#f87171;border:1px solid #7f1d1d;border-radius:6px;padding:3px;font-weight:700;cursor:pointer}.xb:hover{background:#3b0d0d}
+.snote{margin-top:8px;font-size:.78rem;font-weight:700;padding:5px;border-radius:8px}.snote.ok{background:#052e1a;color:#86efac}.snote.err{background:#3b0d0d;color:#fca5a5}
 .dev{background:var(--card);border-radius:12px;padding:10px;text-align:center;border:2px solid transparent;position:relative}
 .dev img{width:100%;aspect-ratio:1;object-fit:contain;display:block}
 .dev .n{font-weight:600;font-size:.92rem;margin-top:6px}.dev .t{font-size:.78rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase}
@@ -221,7 +227,7 @@ ${chatExamples(botName)}
 <p><kbd>!units</kbd> — your Starchrom and Units · <kbd>!shop</kbd> — prices · <kbd>!buy 5</kbd> — buy Securement Units</p>
 <p><kbd>!daily</kbd> — free supply drop (+${ECONOMY.daily.starchrom} Starchrom and ${ECONOMY.daily.units.standard} Securement Unit), once a day (resets at midnight Central) during a live stream, plus ${ECONOMY.hourlyUnits} free Securement Unit and ${ECONOMY.hourlyStarchrom} Starchrom every hour for the rest of the day while you're in a live stream</p>
 <p><kbd>!pods</kbd> — your Securement Pods and collection link · <kbd>!pods name</kbd> — someone else's</p>
-<p><b>Scrapping</b> is done in the Securement Pods panel under the stream: click a deviation and scrap the extra you don't want for ${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit (you always keep at least one).</p>
+<p><b>Scrapping</b> is done in the Securement Pods panel under the stream, or on your own collection page when you're signed in with Twitch (<b>Scrap extras</b> on a card): pick a deviation and scrap the extra you don't want for ${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit (you always keep at least one).</p>
 <p><kbd>!traits</kbd> — your latest catch's Skill Rating, Activity Rating and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
 <p><kbd>!dev behemoth</kbd> — what a deviation does and where it drops · <kbd>!hunttop</kbd> — leaderboard · <kbd>!hunt</kbd> — help</p>
 </div>
@@ -249,7 +255,11 @@ function collectionPage(p, viewer, msg) {
   }
   const best = new Map(); // dev -> best specimen (query is already ordered best-first)
   const specCount = new Map();
+  const specsOf = new Map(); // dev -> every specimen
+  const owner = !!viewer && viewer.uid === p.user_id;
   for (const sp of db.q.userSpecimens.all(p.user_id)) {
+    if (!specsOf.has(sp.deviation)) specsOf.set(sp.deviation, []);
+    specsOf.get(sp.deviation).push(sp);
     const cur = best.get(sp.deviation);
     if (!cur || sp.power + sp.mood > cur.power + cur.mood) best.set(sp.deviation, sp);
     specCount.set(sp.deviation, (specCount.get(sp.deviation) || 0) + 1);
@@ -272,11 +282,16 @@ function collectionPage(p, viewer, msg) {
     const sp = best.get(d.id);
     const spHtml = sp ? `<div class="sp"><div class="pm"><span title="Skill Rating (Deviant Power)">Skill ${sp.power}/5</span><span title="Activity Rating (Mood)">Activity ${sp.mood}/5</span></div>
 <ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => (key ? `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant, d.category))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant, d.category))}</li>` : `<li class="empty"><b>${slot}</b>Empty slot</li>`)).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
-    return `<div class="dev ${h ? "" : "missing"}${shiny}">${h ? `<span class="c">×${h.count}</span>` : ""}${gotVars.filter((v) => v.kind === "variation").length ? `<span class="vb" title="Variations secured">✨ ${gotVars.filter((v) => v.kind === "variation").length}</span>` : ""}${gotVars.filter((v) => v.kind === "skin").length ? `<span class="vb sk" title="Skins secured">✨ ${gotVars.filter((v) => v.kind === "skin").length}</span>` : ""}<img loading="lazy" src="${esc((top && top.img) || d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${top ? `<div class="vn">✨ ${top.kind === "skin" ? "Skin" : "Variation"}: ${esc(top.name)}</div>` : ""}${tierTag(d.rarity)}${d.variants.length ? `<div class="t" style="color:${TIERS.legendary.color};font-size:.8em">variations &amp; skins: Legendary</div>` : ""}${spHtml}${h ? vars : ""}</div>`;
+    // signed-in owner: scrap any extra specimen (you always keep at least one)
+    const mine = (specsOf.get(d.id) || []).slice().sort((a, b) => (b.power + b.mood) - (a.power + a.mood) || b.power - a.power || b.id - a.id);
+    const note = msg && msg.dev === d.id ? `<div class="snote ${msg.ok ? "ok" : "err"}">${esc(msg.text)}</div>` : "";
+    const reward = `${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit`;
+    const scrapHtml = owner && h && h.count > 1 && mine.length ? `<details class="xtra"${note ? " open" : ""}><summary>Scrap extras (${mine.length})</summary><p class="xh">Scrap one for <b>${reward}</b>. You always keep at least one.</p>${mine.map((x, i) => `<div class="xs${i === 0 ? " best" : ""}"><div class="xr"><b>${x.power}/${x.mood}</b>${x.power === 5 && x.mood === 5 ? " ⭐" : ""} Skill/Activity${i === 0 ? ' <span class="bt">Best</span>' : ""}</div>${x.variant ? `<div class="xv">✨ ${esc(x.variant)}</div>` : ""}<div class="xt">${[[1, x.t1, x.t1_level], [2, x.t2], [3, x.t3]].map(([slot, key, lvl]) => key ? esc(traits.traitName(slot, key, lvl, x.variant, d.category)) : "—").join(" · ")}</div><form method="post" action="/u/${esc(p.login)}/scrap" onsubmit="return confirm('Scrap this ${esc(d.name).replace(/'/g, "")} (${x.power}/${x.mood}) for ${reward}?')"><input type="hidden" name="id" value="${x.id}"><button class="xb">Scrap</button></form></div>`).join("")}</details>` : "";
+    return `<div class="dev ${h ? "" : "missing"}${shiny}" id="d-${esc(d.id)}">${h ? `<span class="c">×${h.count}</span>` : ""}${gotVars.filter((v) => v.kind === "variation").length ? `<span class="vb" title="Variations secured">✨ ${gotVars.filter((v) => v.kind === "variation").length}</span>` : ""}${gotVars.filter((v) => v.kind === "skin").length ? `<span class="vb sk" title="Skins secured">✨ ${gotVars.filter((v) => v.kind === "skin").length}</span>` : ""}<img loading="lazy" src="${esc((top && top.img) || d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${top ? `<div class="vn">✨ ${top.kind === "skin" ? "Skin" : "Variation"}: ${esc(top.name)}</div>` : ""}${tierTag(d.rarity)}${d.variants.length ? `<div class="t" style="color:${TIERS.legendary.color};font-size:.8em">variations &amp; skins: Legendary</div>` : ""}${spHtml}${h ? vars : ""}${note}${scrapHtml}</div>`;
   };
   const cards = sections(all, cardFor);
   return page(`${p.display}'s Securement Pods`, `
-<h1>${esc(p.display)}'s Securement Pods</h1>
+<h1>${esc(p.display)}'s Securement Pods</h1>${msg && msg.scrap && !msg.dev ? `<div class="snote err">${esc(msg.text)}</div>` : ""}
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variations}/${totalOf("variation")}</b>variations</div><div class="stat"><b style="color:#f0abfc">${c.skins}/${totalOf("skin")}</b>skins</div><div class="stat"><b>${game.podsUsed(live)}/${game.unitCap(live)}</b>Securement Pods · ${fmt(c.total)} secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
 <p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
@@ -292,7 +307,7 @@ const SHOP_MSG = {
   bad_qty: "Pick an amount between 1 and 100.", full: "Your Securement Pods are full.", too_many: "That would go over your Securement Pod limit.", unknown_item: "That item isn't sold here.", signin: "Sign in with Twitch as the owner of this page to shop.",
 };
 function webShop(p, live, viewer, msg) {
-  const note = msg ? `<div class="note ${msg.ok ? "ok" : "err"}">${esc(msg.text)}</div>` : "";
+  const note = msg && !msg.scrap ? `<div class="note ${msg.ok ? "ok" : "err"}">${esc(msg.text)}</div>` : "";
   if (!viewer) return `<div class="card shopbox">${note}<b>🛒 Shop</b> — is this your page? <a class="btn sm" href="/login?next=${encodeURIComponent("/u/" + p.login)}">Sign in with Twitch</a> to spend your Starchrom on Securement Units and Gloves. <span class="muted">(Only confirms who you are — no permissions.)</span></div>`;
   if (viewer.uid !== p.user_id) return `<div class="card shopbox">${note}Signed in as <b>${esc(viewer.login)}</b> · <a href="/u/${esc(viewer.login)}">go to your Securement Pods</a> to shop · <a href="/logout?next=${encodeURIComponent("/u/" + p.login)}">sign out</a></div>`;
   const best = game.bestGlove(live);
@@ -364,6 +379,12 @@ function createApp(pool) {
     let msg = null;
     if (code.startsWith("ok:")) { const [, id, n] = code.split(":"); const it = shop.find(id); if (it) msg = { ok: true, text: `Bought ${it.kind === "gloves" ? it.name : `${n} ${it.name}${Number(n) > 1 ? "s" : ""}`}!` }; }
     else if (SHOP_MSG[code]) msg = { ok: false, text: SHOP_MSG[code] };
+    const sc = String(req.query.scrap || "");
+    if (sc) {
+      const [what, dev] = sc.split(":");
+      if (what.startsWith("ok|")) { const [, g, u] = what.split("|"); msg = { ok: true, scrap: true, dev, text: `Scrapped — +${fmt(Number(g) || 0)} Starchrom${Number(u) ? ` and +${u} Securement Unit` : ""}.` }; }
+      else msg = { ok: false, scrap: true, text: { signin: SHOP_MSG.signin, last_one: "You can't scrap your last one.", not_found: "That one was already scrapped." }[what] || "Couldn't scrap that one." };
+    }
     res.set("Cache-Control", "no-store");
     res.send(collectionPage(p, viewerOf(req), msg));
   });
@@ -387,6 +408,22 @@ function createApp(pool) {
     if (!r.ok) return back(r.error);
     console.log(`[web] ${row.login} bought ${r.qty}x ${r.item.id} for ${r.cost}`);
     back(`ok:${r.item.id}:${r.qty}`);
+  });
+
+  // scrap one of your own specimens from your collection page (signed-in owner only; same-site posts only)
+  app.post("/u/:login/scrap", express.urlencoded({ extended: false, limit: "1kb" }), (req, res) => {
+    const login = String(req.params.login).toLowerCase();
+    const origin = req.get("origin") || req.get("referer") || "";
+    if (origin && !origin.startsWith(cfg.BASE_URL)) return res.status(403).send("forbidden");
+    const viewer = viewerOf(req);
+    const row = db.q.getPlayerByLogin.get(login);
+    if (!row) return res.status(404).send("not found");
+    const back = (code, dev) => res.redirect(303, `/u/${encodeURIComponent(login)}?scrap=${encodeURIComponent(code)}${dev ? `:${encodeURIComponent(dev)}` : ""}${dev ? `#d-${encodeURIComponent(dev)}` : ""}`);
+    if (!viewer || viewer.uid !== row.user_id) return back("signin");
+    const r = game.destroySpecimen(row.user_id, req.body.id);
+    if (!r.ok) return back(r.error);
+    console.log(`[web] ${row.login} scrapped a ${r.deviation} for ${r.gained} + ${r.units} unit(s)`);
+    back(`ok|${r.gained}|${r.units}`, r.deviation);
   });
 
   // "My Securement Pods": your own page if you're signed in, otherwise sign in with Twitch first

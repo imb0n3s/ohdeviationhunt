@@ -128,7 +128,7 @@ ${table(["Source", "Amount"], [
   ["Starting supply", `${ECONOMY.starterUnits.standard} units`],
   ["Free hourly unit", `+${ECONOMY.hourlyUnits} unit every hour after you claim today's ${cmd("!daily")}, while you're in a live stream running the game (the one where you last used a game command). '''One stream at a time''' — watching several doesn't earn more, and the timer keeps running when you switch streams. Each one comes with '''+${ECONOMY.hourlyStarchrom} ${SC}''' (you still get the ${SC} if your pods are full). The bot tells you in chat each time one arrives, along with how many Securement Units and  you now have.`],
   [cmd("!daily"), `+${ECONOMY.daily.units.standard} unit, once a day (resets at midnight Central)`],
-  ["Scrapping an extra specimen in the Twitch panel", `+${ECONOMY.destroyUnits} unit (plus ${fmt(ECONOMY.destroyValue)} ${SC})`],
+  ["Scrapping an extra specimen (Twitch panel or your collection page)", `+${ECONOMY.destroyUnits} unit (plus ${fmt(ECONOMY.destroyValue)} ${SC})`],
   [cmd("!buy <amount>") + " or the panel's '''Shop''' tab", `${fmt(unitPrice)} ${SC} each`],
 ])}
 `));
@@ -142,7 +142,7 @@ ${table(["How", SC], [
   ["First time you secure a deviation (or a new variant of it)", `+${ECONOMY.newSpeciesBonus} bonus`],
   [cmd("!daily"), `+${ECONOMY.daily.starchrom}`],
   ["Every hour after !daily, while you're in a live stream", `+${ECONOMY.hourlyStarchrom} (with your free Securement Unit)`],
-  ["Scrapping an extra specimen in the Twitch panel", `+${fmt(ECONOMY.destroyValue)} each, plus ${ECONOMY.destroyUnits} Securement Unit back (only while you own more than one)`],
+  ["Scrapping an extra specimen (Twitch panel or your collection page)", `+${fmt(ECONOMY.destroyValue)} each, plus ${ECONOMY.destroyUnits} Securement Unit back (only while you own more than one)`],
 ])}
 `));
 
@@ -178,7 +178,7 @@ out.push(box("Ratings", "Skill Rating & Activity Rating", `
 Every deviation you secure is its own specimen with two ratings from 1 to 5 — '''Skill Rating''' (Deviant Power) and '''Activity Rating''' (Mood). Higher is rarer:
 ${table(["Rating", "1", "2", "3", "4", "5"], [["Chance", ...RATING_WEIGHTS.map((w) => pct(w / ratingTotal))]])}
 
-A 5/5 specimen gets a ⭐ in chat. Catch the same deviation again to hunt for better ratings, then scrap the ones you don't want in the Twitch panel.
+A 5/5 specimen gets a ⭐ in chat. Catch the same deviation again to hunt for better ratings, then scrap the ones you don't want in the Twitch panel or on your collection page (signed in with Twitch).
 `));
 
 out.push(box("Traits", "Traits", `

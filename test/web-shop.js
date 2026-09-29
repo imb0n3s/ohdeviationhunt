@@ -28,5 +28,18 @@ const sign = (d) => { const b = Buffer.from(JSON.stringify(d)).toString("base64u
   r = await fetch(`${base}/me`, { redirect: "manual" }); assert.equal(r.headers.get("location"), "/login?next=/me");
   r = await fetch(`${base}/me`, { redirect: "manual", headers: { Cookie: sess("A", "alice") } }); assert.equal(r.headers.get("location"), "/u/alice");
   r = await fetch(`${base}/me`, { headers: { Cookie: sess("Z", "zed") } }); assert.ok((await r.text()).includes("haven't played yet")); console.log("/me works");
+  // scrapping extras from the collection page
+  const db = require("../db");
+  for (let i = 0; i < 2; i++) { db.q.addCatch.run("A", "grumpybulb", "", "base", Date.now(), "1"); db.q.addSpecimen.run({ user_id: "A", deviation: "grumpybulb", variant: "", power: 2 + i, mood: 2, t1: null, t1_level: null, t2: null, t3: null, caught_at: Date.now(), channel: "1" }); }
+  const specs = db.q.specimensOf.all("A", "grumpybulb");
+  const scrap = (cookie, id, extra = {}) => fetch(`${base}/u/alice/scrap`, { method: "POST", redirect: "manual", headers: { "Content-Type": "application/x-www-form-urlencoded", ...(cookie ? { Cookie: cookie } : {}), ...extra }, body: new URLSearchParams({ id: String(id) }) });
+  html = await (await fetch(`${base}/u/alice`, { headers: { Cookie: sess("A", "alice") } })).text(); assert.ok(html.includes("Scrap extras (2)"));
+  html = await (await fetch(`${base}/u/alice`, { headers: { Cookie: sess("B", "bob") } })).text(); assert.ok(!html.includes("Scrap extras"));
+  r = await scrap(sess("B", "bob"), specs[1].id); assert.match(r.headers.get("location"), /scrap=signin/); assert.equal(db.q.specimensOf.all("A", "grumpybulb").length, 2);
+  r = await scrap(sess("A", "alice"), specs[1].id, { Origin: "https://evil.example" }); assert.equal(r.status, 403);
+  const sc0 = game.loadPlayer("A").starchrom;
+  r = await scrap(sess("A", "alice"), specs[1].id); assert.match(r.headers.get("location"), /scrap=ok/); assert.equal(game.loadPlayer("A").starchrom, sc0 + 500);
+  html = await (await fetch(`${base}${r.headers.get("location")}`, { headers: { Cookie: sess("A", "alice") } })).text(); assert.ok(html.includes("Scrapped — +500 Starchrom"));
+  r = await scrap(sess("A", "alice"), specs[0].id); assert.match(r.headers.get("location"), /scrap=last_one/); console.log("web scrap works, keeps the last one");
   console.log("all web shop checks passed"); srv.close(); process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });

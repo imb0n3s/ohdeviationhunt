@@ -124,7 +124,7 @@ function makeHandler(pool, spawns) {
         }
         return reply(game.dex(uid, login, name, cfg.BASE_URL));
       }
-      case "!scrap": return reply(`@${name} scrapping is done in the Securement Pods panel under the stream now: click a deviation, then Scrap the one you don't want.`);
+      case "!scrap": return reply(`@${name} scrapping is done in the Securement Pods panel under the stream, or on your collection page (sign in with Twitch): ${cfg.BASE_URL}/me`);
       case "!dev": {
         if (!args.length) return reply(`@${name} usage: !dev <deviation name>`);
         return reply(game.info(args.join(" "), cfg.BASE_URL) || `@${name} no deviation matches "${args.join(" ")}".`);
