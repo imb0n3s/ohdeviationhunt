@@ -155,7 +155,7 @@
       '<h2>' + esc(d.name) + '</h2><div class="sub">' + esc(d.category.charAt(0).toUpperCase() + d.category.slice(1)) + ' · secured ×' + d.count + '</div></div>';
     if (detailNotice) html += '<div class="notice ' + detailNotice.kind + '">' + esc(detailNotice.text) + '</div>';
     html += '<h3>Your ' + esc(d.name) + ' (' + specs.length + ')</h3>';
-    if (canDestroy) html += '<div class="hint left">Destroy an extra one for <b>' + reward + '</b>. You always keep at least one.</div>';
+    if (canDestroy) html += '<div class="hint left">Scrap an extra one for <b>' + reward + '</b>. You always keep at least one.</div>';
     html += specs.map(function (x, i) {
       var confirming = confirmId === x.id;
       return '<div class="spec' + (i === 0 ? " best" : "") + '">' +
@@ -164,8 +164,8 @@
         (x.variant ? '<div class="vn">✨ ' + esc(x.variant) + '</div>' : "") +
         x.traits.map(traitHtml).join("") +
         (canDestroy ? (confirming
-          ? '<div class="confirm"><span>Destroy this one for ' + reward + '?</span><button class="btn danger" data-act="yes" data-id="' + x.id + '"' + (busy ? " disabled" : "") + '>' + (busy ? "…" : "Destroy") + '</button><button class="btn ghost" data-act="no">Cancel</button></div>'
-          : '<button class="btn outline" data-act="ask" data-id="' + x.id + '">Destroy for ' + reward + '</button>') : "") +
+          ? '<div class="confirm"><span>Scrap this one for ' + reward + '?</span><button class="btn danger" data-act="yes" data-id="' + x.id + '"' + (busy ? " disabled" : "") + '>' + (busy ? "…" : "Scrap") + '</button><button class="btn ghost" data-act="no">Cancel</button></div>'
+          : '<button class="btn outline" data-act="ask" data-id="' + x.id + '">Scrap for ' + reward + '</button>') : "") +
         '</div>';
     }).join("");
     if (d.count > specs.length) html += '<div class="hint left">' + (d.count - specs.length) + ' older catch' + (d.count - specs.length > 1 ? "es" : "") + ' from before ratings existed ' + (d.count - specs.length > 1 ? "have" : "has") + ' no ratings or traits.</div>';
@@ -196,10 +196,10 @@
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (res) {
         busy = false; confirmId = null;
-        if (res.ok) { bag = res.j.bag; detailNotice = { kind: "ok", text: "Destroyed — +" + res.j.gained.toLocaleString() + " Starchrom" + (res.j.units ? " and +" + res.j.units + " Securement Unit" + (res.j.units > 1 ? "s" : "") : "") + "." }; }
+        if (res.ok) { bag = res.j.bag; detailNotice = { kind: "ok", text: "Scrapped — +" + res.j.gained.toLocaleString() + " Starchrom" + (res.j.units ? " and +" + res.j.units + " Securement Unit" + (res.j.units > 1 ? "s" : "") : "") + "." }; }
         else if (res.j.error === "needs_identity") return askIdentity();
-        else if (res.j.error === "last_one") detailNotice = { kind: "err", text: "You can’t destroy your last one." };
-        else detailNotice = { kind: "err", text: "Couldn’t destroy that one. Try again." };
+        else if (res.j.error === "last_one") detailNotice = { kind: "err", text: "You can’t scrap your last one." };
+        else detailNotice = { kind: "err", text: "Couldn’t scrap that one. Try again." };
         render();
       })
       .catch(function () { busy = false; detailNotice = { kind: "err", text: "Couldn’t reach the server. Try again in a minute." }; render(); });
@@ -233,7 +233,7 @@
         '</div>';
     }).join("");
     html += bitsHtml();
-    html += '<div class="hint">Earn Starchrom by securing deviations in chat, <b>!daily</b> and <b>!scrap</b>. You can also buy in chat with <b>!buy &lt;amount&gt;</b>.</div>';
+    html += '<div class="hint">Earn Starchrom by securing deviations in chat and <b>!daily</b>, or scrap extras in the Pods tab. You can also buy in chat with <b>!buy &lt;amount&gt;</b>.</div>';
     el(html);
     Array.prototype.forEach.call(document.querySelectorAll(".bitsbuy"), function (b) {
       b.onclick = function () { buyBits(b.getAttribute("data-sku")); };

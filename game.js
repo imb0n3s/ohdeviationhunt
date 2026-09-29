@@ -1,4 +1,4 @@
-// game.js — the Deviation Hunt rules: players, spawns, securing, shop, daily, scrap
+// game.js — the Deviation Hunt rules: players, spawns, securing, shop, daily
 const cfg = require("./config");
 const db = require("./db");
 const data = require("./data");
@@ -348,11 +348,11 @@ function buy(userId, login, display, args) {
   const p = loadPlayer(userId, login, display);
   const r = shopCatalog.purchase(p, item.id, qty);
   if (!r.ok && r.error === "owned") return `@${display} you already own ${item.name}.`;
-  if (!r.ok && r.error === "full") return `@${display} your Securement Pods are full (${r.cap}/${r.cap} — caught deviations and empty units both count). !scrap duplicates to free some up.`;
+  if (!r.ok && r.error === "full") return `@${display} your Securement Pods are full (${r.cap}/${r.cap} — caught deviations and empty units both count). Scrap extras in the Securement Pods panel under the stream to free some up.`;
   if (!r.ok && r.error === "too_many") return `@${display} you have ${r.cap} Securement Pods (caught deviations + empty units), so you can buy up to ${r.room} more Securement Units right now.`;
   if (!r.ok && r.error === "outclassed") return `@${display} you already wear ${r.better.name} (+${Math.round(r.better.bonus * 100)}%), which beat ${item.name}.`;
   const label = item.kind === "gloves" ? item.name : `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
-  if (!r.ok) return `@${display} ${label} ${qty > 1 || item.kind === "gloves" ? "cost" : "costs"} ${fmt(item.price * qty)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations, !daily and !scrap.`;
+  if (!r.ok) return `@${display} ${label} ${qty > 1 || item.kind === "gloves" ? "cost" : "costs"} ${fmt(item.price * qty)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations and !daily, or scrap extras in the Securement Pods panel.`;
   savePlayer(p);
   if (item.kind === "gloves") {
     const best = bestGlove(p);
@@ -450,27 +450,6 @@ function dex(userId, login, display, baseUrl) {
   return `@${display} 📖 Securement Pods: ${c.species}/${all.length} deviations, ${c.variants}/${totalVariants} variants & skins, ${c.total} secured in total. ${baseUrl}/u/${login}`;
 }
 
-function scrap(userId, login, display) {
-  const p = loadPlayer(userId, login, display);
-  let n = 0, gain = 0;
-  db.tx(() => {
-    for (const r of db.q.dupes.all(userId)) {
-      if (r.variant) continue; // variations and skins are never scrapped
-      const dev = data.get(r.deviation);
-      const variant = dev?.variants.find((v) => v.name === r.variant);
-      const each = Math.round(rewardFor({ dev: dev || { rarity: "uncommon" }, variant: r.variant ? variant || { kind: r.kind } : null }) * ECONOMY.scrapValue);
-      gain += each * (r.count - 1);
-      n += r.count - 1;
-      db.q.trimDupe.run(userId, r.deviation, r.variant);
-      const extra = db.q.specimensOf.all(userId, r.deviation).filter((x) => x.variant === r.variant).slice(1);
-      for (const x of extra) db.q.deleteSpecimen.run(x.id);
-    }
-    p.starchrom += gain;
-    savePlayer(p);
-  })();
-  if (!n) return `@${display} no duplicates to scrap — you keep one of everything, and variations and skins are never scrapped.`;
-  return `@${display} ♻️ scrapped ${n} duplicate${n > 1 ? "s" : ""} for ${fmt(gain)} ${SC} (kept your best Skill + Activity Rating of each; variations and skins are never scrapped). ${bagText(p)}`;
-}
 
 function info(query, baseUrl) {
   const d = data.find(query);
@@ -527,4 +506,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, scrap, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

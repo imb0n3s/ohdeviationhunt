@@ -73,9 +73,8 @@ const ECONOMY = {
   unitCap: 100,           // most Securement Units a player can hold (+ players.extra_cap, for future Bits capacity blocks)
   throwCost: 10,          // Starchrom per !secure throw. A Securement Unit is only used to HOUSE a caught deviation;
                           // a throw that misses costs just the Starchrom.
-  scrapValue: 0.5,
-  destroyValue: 500,      // Starchrom for destroying one extra specimen from the panel (you always keep at least one)
-  destroyUnits: 1,        // ...plus this many Securement Units back        // !scrap pays this fraction of the catch reward for each duplicate
+  destroyValue: 500,      // Starchrom for scrapping one extra specimen in the panel (you always keep at least one)
+  destroyUnits: 1,        // ...plus this many Securement Units back
   maxCatchChance: 0.95,
 };
 

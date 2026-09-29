@@ -10,7 +10,7 @@ function isModOrOwner(ev) {
   return ev.chatter_user_id === ev.broadcaster_user_id || (ev.badges || []).some((b) => b.set_id === "moderator" || b.set_id === "broadcaster");
 }
 
-const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations appear in the wild while the stream is live — type !secure to catch them. !starchrom · !units · !shop · !buy <n> · !daily · !pods · !scrap · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
+const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations appear in the wild while the stream is live — type !secure to catch them. !starchrom · !units · !shop · !buy <n> · !daily · !pods · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
 
 function makeHandler(pool, spawns) {
   const botId = () => db.getBotAccount()?.user_id;
@@ -123,7 +123,7 @@ function makeHandler(pool, spawns) {
         }
         return reply(game.dex(uid, login, name, cfg.BASE_URL));
       }
-      case "!scrap": return reply(game.scrap(uid, login, name));
+      case "!scrap": return reply(`@${name} scrapping is done in the Securement Pods panel under the stream now: click a deviation, then Scrap the one you don't want.`);
       case "!dev": {
         if (!args.length) return reply(`@${name} usage: !dev <deviation name>`);
         return reply(game.info(args.join(" "), cfg.BASE_URL) || `@${name} no deviation matches "${args.join(" ")}".`);

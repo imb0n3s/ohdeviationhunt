@@ -96,7 +96,6 @@ out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!pods [name]"), `Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.`],
   [cmd("!traits <deviation>"), `Skill Rating, Activity Rating and all three traits of your best specimen of that deviation. Also ${cmd("!stats")}.`],
   [cmd("!dev <deviation>"), `Info about a deviation: what it does, its variations and skins, and a wiki link.`],
-  [cmd("!scrap"), `Recycle every duplicate for ${SC} (${pct(ECONOMY.scrapValue)} of its catch reward). You keep the specimen with the best Skill + Activity Rating of each deviation. Variations and skins are '''never''' scrapped.`],
   [cmd("!hunttop"), `Top collectors across every channel. Also ${cmd("!leaderboard")}.`],
   [cmd("!hunt"), `Short help message with a link to this guide.`],
 ])));
@@ -120,7 +119,7 @@ ${table(["Item", "Description", "Price"], [
   ["'''Securement Unit'''", "Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw. " + cmd("!buy <amount>"), `${fmt(unitPrice)} ${SC}`],
   ...GLOVES.map((g) => [`'''<span style="color:${g.color};">${g.name}</span>''' <small>(${g.rarity})</small>`, `+${Math.round(g.bonus * 100)}% catch chance on every throw. Bought once and kept forever. ${cmd("!buy " + g.id)}`, `${fmt(g.price)} ${SC}`]),
 ])}
-You have '''${ECONOMY.unitCap} Securement Pods''' — every deviation you've caught '''and''' every empty Securement Unit takes one. When all ${ECONOMY.unitCap} are used, you can't buy more units, and free hourly units and the one from ${cmd("!daily")} are skipped. Free space with ${cmd("!scrap")} or by destroying extra specimens in the panel.
+You have '''${ECONOMY.unitCap} Securement Pods''' — every deviation you've caught '''and''' every empty Securement Unit takes one. When all ${ECONOMY.unitCap} are used, you can't buy more units, and free hourly units and the one from ${cmd("!daily")} are skipped. Free space by scrapping extra specimens in the Twitch panel.
 
 Gloves don't stack — only your best pair counts, so you can't buy a pair weaker than one you already own. The bonus is added to the catch chance (a ${pct(TIERS.legendary.catch)} Legendary becomes ${pct(TIERS.legendary.catch + GLOVES[GLOVES.length - 1].bonus)} with ${GLOVES[GLOVES.length - 1].name}), still capped at ${pct(ECONOMY.maxCatchChance)}.
 
@@ -129,7 +128,7 @@ ${table(["Source", "Amount"], [
   ["Starting supply", `${ECONOMY.starterUnits.standard} units`],
   ["Free hourly unit", `+${ECONOMY.hourlyUnits} unit every hour after you claim today's ${cmd("!daily")}, while you're in a live stream running the game (the one where you last used a game command). '''One stream at a time''' — watching several doesn't earn more, and the timer keeps running when you switch streams. Each one comes with '''+${ECONOMY.hourlyStarchrom} ${SC}''' (you still get the ${SC} if your pods are full). The bot tells you in chat each time one arrives.`],
   [cmd("!daily"), `+${ECONOMY.daily.units.standard} unit, once a day (resets at midnight Central)`],
-  ["Destroying an extra specimen in the Twitch panel", `+${ECONOMY.destroyUnits} unit (plus ${fmt(ECONOMY.destroyValue)} ${SC})`],
+  ["Scrapping an extra specimen in the Twitch panel", `+${ECONOMY.destroyUnits} unit (plus ${fmt(ECONOMY.destroyValue)} ${SC})`],
   [cmd("!buy <amount>") + " or the panel's '''Shop''' tab", `${fmt(unitPrice)} ${SC} each`],
 ])}
 `));
@@ -143,8 +142,7 @@ ${table(["How", SC], [
   ["First time you secure a deviation (or a new variant of it)", `+${ECONOMY.newSpeciesBonus} bonus`],
   [cmd("!daily"), `+${ECONOMY.daily.starchrom}`],
   ["Every hour after !daily, while you're in a live stream", `+${ECONOMY.hourlyStarchrom} (with your free Securement Unit)`],
-  [cmd("!scrap"), `${pct(ECONOMY.scrapValue)} of the catch reward per duplicate`],
-  ["Destroying an extra specimen in the Twitch panel", `+${fmt(ECONOMY.destroyValue)} each, plus ${ECONOMY.destroyUnits} Securement Unit back (only while you own more than one)`],
+  ["Scrapping an extra specimen in the Twitch panel", `+${fmt(ECONOMY.destroyValue)} each, plus ${ECONOMY.destroyUnits} Securement Unit back (only while you own more than one)`],
 ])}
 `));
 
@@ -179,7 +177,7 @@ out.push(box("Ratings", "Skill Rating & Activity Rating", `
 Every deviation you secure is its own specimen with two ratings from 1 to 5 — '''Skill Rating''' (Deviant Power) and '''Activity Rating''' (Mood). Higher is rarer:
 ${table(["Rating", "1", "2", "3", "4", "5"], [["Chance", ...RATING_WEIGHTS.map((w) => pct(w / ratingTotal))]])}
 
-A 5/5 specimen gets a ⭐ in chat. Catch the same deviation again to hunt for better ratings — ${cmd("!scrap")} always keeps your best one.
+A 5/5 specimen gets a ⭐ in chat. Catch the same deviation again to hunt for better ratings, then scrap the ones you don't want in the Twitch panel.
 `));
 
 out.push(box("Traits", "Traits", `
@@ -199,7 +197,7 @@ out.push(box("Collection", "Securement Pods & Twitch Panel", `
 Your collection is tied to your Twitch account, not to a channel — everything you catch on any stream lands in the same Securement Pods, and a name change doesn't lose it.
 
 * '''Collection page:''' ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)} — every deviation grouped by Combat / Crafting / Territory, your best specimen's ratings and traits, and caught variations and skins highlighted. ${cmd("!pods")} posts your link. On the site, '''My Securement Pods''' in the top menu takes you straight to yours. Click '''Sign in with Twitch''' on your own page to use the '''Shop''' there too — buy Securement Units and Gloves with your Starchrom (signing in only confirms who you are).
-* '''Twitch panel:''' the ''Securement Pods'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Securement Pods''' once to let Twitch share your username with it. Under your name, a countdown shows how long until your next free hourly Securement Unit (or reminds you to type ${cmd("!daily")} first), plus a link to your own collection page. Click a deviation to see '''every''' specimen you own with its Skill Rating, Activity Rating and traits — when you have more than one, you can destroy an extra for '''${fmt(ECONOMY.destroyValue)} ${SC} + ${ECONOMY.destroyUnits} Securement Unit''' (you always keep at least one). The '''Commands''' tab lists every chat command. Switch to the '''Shop''' tab to buy Securement Units with your Starchrom without typing in chat. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
+* '''Twitch panel:''' the ''Securement Pods'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Securement Pods''' once to let Twitch share your username with it. Under your name, a countdown shows how long until your next free hourly Securement Unit (or reminds you to type ${cmd("!daily")} first), plus a link to your own collection page. Click a deviation to see '''every''' specimen you own with its Skill Rating, Activity Rating and traits — when you have more than one, you can '''scrap''' the one you pick for '''${fmt(ECONOMY.destroyValue)} ${SC} + ${ECONOMY.destroyUnits} Securement Unit''' (you always keep at least one). The '''Commands''' tab lists every chat command. Switch to the '''Shop''' tab to buy Securement Units with your Starchrom without typing in chat. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
 * '''Leaderboard:''' [${URL}/top ${URL.replace(/^https?:\/\//, "")}/top] or ${cmd("!hunttop")}.
 `));
 

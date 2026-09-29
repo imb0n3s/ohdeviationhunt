@@ -12,7 +12,7 @@ Streamers: click the image to add the game to your channel.
 Image: panel-commands.png
 Image Links To: https://deviationhunt.ohwikiguide.com/commands
 Description:
-Every chat command: **!daily**, **!secure**, **!pods**, **!units**, **!shop**, **!buy**, **!traits**, **!dev**, **!scrap**, **!hunttop**, plus the **!hunt** commands for streamers and mods.
+Every chat command: **!daily**, **!secure**, **!pods**, **!units**, **!shop**, **!buy**, **!traits**, **!dev**, **!hunttop**, plus the **!hunt** commands for streamers and mods.
 
 Click the image for the full list.
 

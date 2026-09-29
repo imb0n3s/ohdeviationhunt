@@ -19,7 +19,6 @@ function commandSections() {
       ["!buy <amount>", `Buy Securement Units, e.g. \`!buy 3\`. Buy gloves with \`!buy rustic\`, \`!buy bbq\` or \`!buy savior\`. You can hold ${E.unitCap} Securement Pods in total (caught deviations + empty units).`],
       ["!traits [deviation]", "Skill Rating, Activity Rating and traits of your latest catch, or of a deviation you've secured (`!traits grumpy bulb`). Also `!stats`."],
       ["!dev <deviation>", "Info about any deviation: rarity, type, variations and skins."],
-      ["!scrap", `Turn duplicate specimens into Starchrom (${Math.round(E.scrapValue * 100)}% of the catch reward each). Keeps your best Skill + Activity specimen of every deviation and frees up pods. Variations and skins are never scrapped.`],
       ["!hunttop", "The leaderboard link. Also `!leaderboard`."],
       ["!hunt", "A quick how-to-play reminder in chat."],
     ] },

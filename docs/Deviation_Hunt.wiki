@@ -56,8 +56,6 @@ Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!dev <deviation></nowiki></span> || Info about a deviation: what it does, its variations and skins, and a wiki link.
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!scrap</nowiki></span> || Recycle every duplicate for Starchrom (50% of its catch reward). You keep the specimen with the best Skill + Activity Rating of each deviation. Variations and skins are '''never''' scrapped.
-|-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunttop</nowiki></span> || Top collectors across every channel. Also <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!leaderboard</nowiki></span>.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt</nowiki></span> || Short help message with a link to this guide.
@@ -115,7 +113,7 @@ Buy with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a3
 |-
 | '''<span style="color:#fbbf24;">Savior Gloves</span>''' <small>(Legendary)</small> || +9% catch chance on every throw. Bought once and kept forever. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy savior</nowiki></span> || 10,000 Starchrom
 |}
-You have '''100 Securement Pods''' — every deviation you've caught '''and''' every empty Securement Unit takes one. When all 100 are used, you can't buy more units, and free hourly units and the one from <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> are skipped. Free space with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!scrap</nowiki></span> or by destroying extra specimens in the panel.
+You have '''100 Securement Pods''' — every deviation you've caught '''and''' every empty Securement Unit takes one. When all 100 are used, you can't buy more units, and free hourly units and the one from <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> are skipped. Free space by scrapping extra specimens in the Twitch panel.
 
 Gloves don't stack — only your best pair counts, so you can't buy a pair weaker than one you already own. The bonus is added to the catch chance (a 12% Legendary becomes 21% with Savior Gloves), still capped at 95%.
 
@@ -130,7 +128,7 @@ Gloves don't stack — only your best pair counts, so you can't buy a pair weake
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || +1 unit, once a day (resets at midnight Central)
 |-
-| Destroying an extra specimen in the Twitch panel || +1 unit (plus 500 Starchrom)
+| Scrapping an extra specimen in the Twitch panel || +1 unit (plus 500 Starchrom)
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy <amount></nowiki></span> or the panel's '''Shop''' tab || 500 Starchrom each
 |}
@@ -161,9 +159,7 @@ Starchrom is earned by securing deviations and spent on throws (10 per <span sty
 |-
 | Every hour after !daily, while you're in a live stream || +15 (with your free Securement Unit)
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!scrap</nowiki></span> || 50% of the catch reward per duplicate
-|-
-| Destroying an extra specimen in the Twitch panel || +500 each, plus 1 Securement Unit back (only while you own more than one)
+| Scrapping an extra specimen in the Twitch panel || +500 each, plus 1 Securement Unit back (only while you own more than one)
 |}
 </div>
 </div>
@@ -262,7 +258,7 @@ Every deviation you secure is its own specimen with two ratings from 1 to 5 — 
 | Chance || 30% || 28% || 22% || 13% || 7%
 |}
 
-A 5/5 specimen gets a ⭐ in chat. Catch the same deviation again to hunt for better ratings — <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!scrap</nowiki></span> always keeps your best one.
+A 5/5 specimen gets a ⭐ in chat. Catch the same deviation again to hunt for better ratings, then scrap the ones you don't want in the Twitch panel.
 </div>
 </div>
 
@@ -302,7 +298,7 @@ Each specimen has three trait slots, and '''each slot may or may not have a trai
 Your collection is tied to your Twitch account, not to a channel — everything you catch on any stream lands in the same Securement Pods, and a name change doesn't lose it.
 
 * '''Collection page:''' <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>https://deviationhunt.ohwikiguide.com/u/</nowiki>''yourname''</span> — every deviation grouped by Combat / Crafting / Territory, your best specimen's ratings and traits, and caught variations and skins highlighted. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!pods</nowiki></span> posts your link. On the site, '''My Securement Pods''' in the top menu takes you straight to yours. Click '''Sign in with Twitch''' on your own page to use the '''Shop''' there too — buy Securement Units and Gloves with your Starchrom (signing in only confirms who you are).
-* '''Twitch panel:''' the ''Securement Pods'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Securement Pods''' once to let Twitch share your username with it. Under your name, a countdown shows how long until your next free hourly Securement Unit (or reminds you to type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> first), plus a link to your own collection page. Click a deviation to see '''every''' specimen you own with its Skill Rating, Activity Rating and traits — when you have more than one, you can destroy an extra for '''500 Starchrom + 1 Securement Unit''' (you always keep at least one). The '''Commands''' tab lists every chat command. Switch to the '''Shop''' tab to buy Securement Units with your Starchrom without typing in chat. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
+* '''Twitch panel:''' the ''Securement Pods'' panel extension shows your own collection under the stream on any channel that installs it. Click '''Show my Securement Pods''' once to let Twitch share your username with it. Under your name, a countdown shows how long until your next free hourly Securement Unit (or reminds you to type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> first), plus a link to your own collection page. Click a deviation to see '''every''' specimen you own with its Skill Rating, Activity Rating and traits — when you have more than one, you can '''scrap''' the one you pick for '''500 Starchrom + 1 Securement Unit''' (you always keep at least one). The '''Commands''' tab lists every chat command. Switch to the '''Shop''' tab to buy Securement Units with your Starchrom without typing in chat. ''The panel is in testing and will be installable by every streamer once Twitch approves it.''
 * '''Leaderboard:''' [https://deviationhunt.ohwikiguide.com/top deviationhunt.ohwikiguide.com/top] or <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunttop</nowiki></span>.
 </div>
 </div>
