@@ -23,13 +23,18 @@
   https://deviationhunt.ohwikiguide.com/api/players with docs/tester-allowlist.txt, add anyone new in the
   console (Access tab — only editable in Local Test: move to Local Test, add, Save, reload to verify, move
   back to Hosted Test, reload and confirm), then update docs/tester-allowlist.txt.
-- Bits: panel Shop sells Starchrom packs for Bits (rarity.js BITS_PACKS, 5 Bits = 100 Starchrom; receipts verified at
+- Bits: panel Shop sells Starchrom packs for Bits (rarity.js BITS_PACKS, 1 Bit = 4 Starchrom (Savior Gloves = 2,500 Bits = $25); receipts verified at
   POST /ext/bits/complete, one credit per transactionId in bits_tx). Hidden until Twitch Bits is on. TO SWITCH ON (after B
   finishes Monetization onboarding): Local Test → Monetization tab → "Bits enabled" → add one product per pack with the
-  SAME sku + Bits amount (starchrom100/5, starchrom500/25, starchrom1000/50, starchrom2000/100, pods5/50), In Development = No,
+  SAME sku + Bits amount (starchrom20/5, starchrom100/25, starchrom200/50, starchrom400/100, starchrom2000/500, starchrom10000/2500, pods5/50), In Development = No,
   Save All → back to Hosted Test (reload/confirm) → add Bits to the wiki page.
   B's call (2026-09-28): DON'T switch Bits on until it takes real Bits — i.e. after the extension is
   approved/released (in Local/Hosted Test Twitch makes Bits purchases free). Onboarding was submitted 2026-09-28.
 - Pod cap: ECONOMY.unitCap = 100 Securement Pods = caught deviations + empty Securement Units (+ players.extra_cap). Extra room is sold for Bits:
   pods5 = +5 capacity for 50 Bits (in BITS_PACKS; decided by B 2026-09-28). When switching Bits on, the Twitch
-  products are: starchrom100/5, starchrom500/25, starchrom1000/50, starchrom2000/100 AND pods5/50.
+  products are: starchrom20/5, starchrom100/25, starchrom200/50, starchrom400/100, starchrom2000/500, starchrom10000/2500 AND pods5/50.
+- B's call (2026-09-29): keep the extension in LOCAL TEST during testing (until B says otherwise) so testers can be
+  added any time. Local Test loads the panel from Asset Hosting → Testing Base URI = https://deviationhunt.ohwikiguide.com/panel/
+  (web.js serves ext/ at /panel; the Dockerfile copies ext/). So panel changes go live on the next Railway deploy — no zip
+  upload needed while in Local Test — but ext/ is not a Railway watch path: a push that only touches ext/ won't redeploy
+  (ship it with a root .js change, or B adds /ext/** to Watch Paths). Keep the zip in docs/ext-assets/ current for Hosted Test/review.

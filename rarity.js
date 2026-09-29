@@ -101,10 +101,13 @@ const GLOVES = [
 // Starchrom bought with Bits in the Twitch panel (5 Bits = 100 Starchrom). Each pack must also exist as a
 // Bits product with the same SKU and Bits amount in the extension's Monetization tab.
 const BITS_PACKS = [
-  { sku: "starchrom100",  bits: 5,   starchrom: 100 },
-  { sku: "starchrom500",  bits: 25,  starchrom: 500 },
-  { sku: "starchrom1000", bits: 50,  starchrom: 1000 },
-  { sku: "starchrom2000", bits: 100, starchrom: 2000 },
+  // 4 Starchrom per Bit (a Bit is ~1 cent to the streamer, so Savior Gloves = 10,000 = 2,500 Bits = $25)
+  { sku: "starchrom20",    bits: 5,    starchrom: 20 },
+  { sku: "starchrom100",   bits: 25,   starchrom: 100 },
+  { sku: "starchrom200",   bits: 50,   starchrom: 200 },
+  { sku: "starchrom400",   bits: 100,  starchrom: 400 },
+  { sku: "starchrom2000",  bits: 500,  starchrom: 2000 },
+  { sku: "starchrom10000", bits: 2500, starchrom: 10000 },
   // raises the most Securement Units you can hold (ECONOMY.unitCap) by 5, permanently
   { sku: "pods5",         bits: 50,  capacity: 5 },
 ];

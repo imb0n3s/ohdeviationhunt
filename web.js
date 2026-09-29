@@ -377,12 +377,15 @@ function createApp(pool) {
   // The panel API (/ext), Twitch login (/auth) and /health keep answering on both addresses.
   app.use((req, res, next) => {
     const host = String(req.headers.host || "");
-    if (host.endsWith(".up.railway.app") && !cfg.BASE_URL.includes(host) && req.method === "GET" && !/^\/(ext|auth|health|setup|admin)\b/.test(req.path)) {
+    if (host.endsWith(".up.railway.app") && !cfg.BASE_URL.includes(host) && req.method === "GET" && !/^\/(ext|panel|auth|health|setup|admin)\b/.test(req.path)) {
       return res.redirect(301, cfg.BASE_URL + req.originalUrl);
     }
     next();
   });
   require("./extension").mount(app);
+  // Twitch panel files, served from here so the extension works in Local Test
+  // (Asset Hosting → Testing Base URI = <BASE_URL>/panel/)
+  app.use("/panel", express.static(require("path").join(__dirname, "ext"), { maxAge: 0, index: "panel.html" }));
   require("./overlay").mount(app, pool);
   app.get("/", async (req, res) => { await refreshAvatars(); res.send(landing(pool)); });
   app.get("/channels", async (req, res) => { await refreshAvatars(); res.send(channelsPage(pool)); });

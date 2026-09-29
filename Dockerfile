@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends python3 make g+
 COPY package*.json ./
 RUN npm ci --omit=dev
 COPY *.js *.json ./
+COPY ext ./ext
 ENV NODE_ENV=production DATA_DIR=/data
 EXPOSE 3000
 CMD ["node", "index.js"]

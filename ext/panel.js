@@ -262,7 +262,7 @@
   function bitsHtml() {
     var packs = (bag.bitsPacks || []).filter(function (x) { return bitsProducts[x.sku]; });
     if (!bitsOn || !packs.length) return "";
-    return '<div class="sect">Starchrom with Bits</div><div class="item bits"><div class="id">5 Bits = 100 Starchrom · 50 Bits = 5 more Securement Pods (permanent). Bits used here support the streamer.</div><div class="packs">' +
+    return '<div class="sect">Starchrom with Bits</div><div class="item bits"><div class="id">1 Bit = 4 Starchrom · 50 Bits = 5 more Securement Pods (permanent). Bits used here support the streamer.</div><div class="packs">' +
       packs.map(function (x) {
         var cost = bitsProducts[x.sku].cost && bitsProducts[x.sku].cost.amount || x.bits;
         return '<button class="btn bitsbuy" data-sku="' + esc(x.sku) + '"' + (busy ? " disabled" : "") + '><b>' + (x.capacity ? "+" + x.capacity : money(x.starchrom)) + '</b> ' + (x.capacity ? "Securement Pod space" : "Starchrom") + '<span>' + cost + ' Bits</span></button>';
