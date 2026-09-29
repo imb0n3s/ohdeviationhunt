@@ -152,6 +152,8 @@ function spawnAnnouncement(s) {
   return `👀 A ${s.dev.name} has been spotted in the wild!${v} Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`;
 }
 
+const RESTORE_GRACE_S = 60; // after a restart, a loose deviation gets at least this long again
+
 // Per-channel spawn state lives in memory; the result goes to SQLite when it resolves
 class Spawns {
   constructor(send) {
@@ -181,7 +183,17 @@ class Spawns {
         const variant = d.variant ? dev.variants.find((v) => v.name === d.variant.name) || d.variant : null;
         const s = { dev, variant, endsAt: d.endsAt, attempts: new Map(d.attempts), warned: new Set(d.warned), legendary: d.legendary || null };
         const bid = row.broadcaster_id;
-        const wait = Math.max(2000, d.endsAt - Date.now());
+        // chat typed while the bot was restarting never arrived, so give everyone a fresh chance:
+        // at least RESTORE_GRACE seconds from now, and tell the channel it's still loose
+        const graceMs = RESTORE_GRACE_S * 1000;
+        const extended = d.endsAt - Date.now() < graceMs;
+        if (extended) s.endsAt = Date.now() + graceMs;
+        const wait = Math.max(2000, s.endsAt - Date.now());
+        if (extended || d.endsAt > Date.now()) setTimeout(() => {
+          if (this.active.get(bid) !== s) return;
+          const left = Math.max(1, Math.round((s.endsAt - Date.now()) / 1000));
+          Promise.resolve(this.send(bid, `🔄 The bot just restarted — the ${spawnName(s)} is still loose! If you typed !secure in the last minute, type it again. You have ${left}s.`)).catch(() => {});
+        }, 5000);
         s.timer = setTimeout(() => this.resolve(bid).catch((e) => console.error("[resolve]", e)), wait);
         this.active.set(bid, s);
     this.persist(bid);
