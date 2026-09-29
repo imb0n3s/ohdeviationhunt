@@ -50,7 +50,7 @@ Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!daily</nowiki></span> || Claim your daily supply drop: +100 Starchrom and 1 Securement Unit, and turn on 1 free Securement Unit + 15 Starchrom every hour for the rest of the day while you're in a live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream.
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!pods [name]</nowiki></span> || Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!pods [name]</nowiki></span> || Your collection count (unique deviations, variations and skins, counted separately) and a link to your collection page. Add a name to see someone else's.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!traits <deviation></nowiki></span> || Skill Rating, Activity Rating and all three traits of your best specimen of that deviation. Also <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!stats</nowiki></span>.
 |-
@@ -234,7 +234,7 @@ Variations and skins are Deviation Hunt's shinies. When one appears, the spawn m
 <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;">👀 A Grumpy Bulb has been spotted in the wild! ✨ VARIATION: Violet Robe Type !secure within 90s to catch it.</span>
 
 * Each variation and skin is its own entry in your Securement Pods, and the first one of each earns the +100 new-entry bonus.
-* On your collection page and in the Twitch panel, caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.
+* Your collection page and the Twitch panel count '''Variations''' and '''Skins''' separately (their own totals and their own lists on each deviation). Caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.
 * Some deviations have a trait that belongs to one variant only (e.g. Grumpy Bulb's Slot 1 trait is ''Violet Robe'') — see Traits below.
 </div>
 </div>

@@ -89,7 +89,10 @@ function bagFor(userId) {
     bitsPacks: BITS_PACKS,
     destroyValue: require("./rarity").ECONOMY.destroyValue,
     destroyUnits: require("./rarity").ECONOMY.destroyUnits,
-    stats: { unique: summary.species, total: summary.total, variants: summary.variants, all: all.length, allVariants: all.reduce((s, d) => s + d.variants.length, 0) },
+    stats: { unique: summary.species, total: summary.total, variants: summary.variants, all: all.length, allVariants: all.reduce((s, d) => s + d.variants.length, 0),
+      variations: summary.variations, skins: summary.skins,
+      allVariations: all.reduce((s, d) => s + d.variants.filter((v) => v.kind === "variation").length, 0),
+      allSkins: all.reduce((s, d) => s + d.variants.filter((v) => v.kind === "skin").length, 0) },
     page: p ? `${cfg.BASE_URL}/u/${p.login}` : null,
     deviations,
   };

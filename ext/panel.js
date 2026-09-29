@@ -93,7 +93,8 @@
     }
     var pct = Math.round(s.unique / s.all * 100);
     el('<div class="stats"><div class="stat"><b>' + s.unique + '/' + s.all + '</b>deviations</div>' +
-       '<div class="stat"><b>' + s.variants + '</b>variants &amp; skins</div>' +
+       '<div class="stat"><b>' + (s.variations || 0) + '<small>/' + (s.allVariations || 0) + '</small></b>variations</div>' +
+       '<div class="stat skin"><b>' + (s.skins || 0) + '<small>/' + (s.allSkins || 0) + '</small></b>skins</div>' +
        (bag.player && bag.player.unitCap ? '<div class="stat"><b>' + bag.player.podsUsed + '<small>/' + bag.player.unitCap + '</small></b>pods · ' + s.total + ' secured</div></div>' : '<div class="stat"><b>' + s.total + '</b>secured</div></div>') +
        '<div class="bar"><i id="barfill"></i></div>' + gridHtml() +
        (bag.page ? '<footer><a href="' + esc(bag.page) + '" target="_blank" rel="noopener">Open my full collection ↗</a></footer>' : ""));
@@ -115,13 +116,16 @@
     return (d.variants || []).filter(function (v) { return v.owned; }).sort(function (a, b) { return (b.kind === "skin") - (a.kind === "skin"); });
   }
 
+  function vCount(list, kind) { return list.filter(function (v) { return v.kind === kind; }).length; }
+
   function card(d) {
     var got = caughtVariants(d), top = got[0];
     var cls = "dev" + (d.owned ? "" : " missing") + (top ? " shiny" + (top.kind === "skin" ? " skin" : "") : "");
     var r = d.best ? '<div class="r">Skill ' + d.best.skill + ' \u00b7 Act ' + d.best.activity + '</div>' : "";
     return '<div class="' + cls + '" data-id="' + esc(d.id) + '">' +
       (d.owned ? '<span class="c">\u00d7' + d.count + '</span>' : "") +
-      (top ? '<span class="vb">\u2728 ' + got.length + '</span>' : "") +
+      (vCount(got, "variation") ? '<span class="vb">\u2728 ' + vCount(got, "variation") + '</span>' : "") +
+      (vCount(got, "skin") ? '<span class="vb sk">\u2728 ' + vCount(got, "skin") + '</span>' : "") +
       '<img loading="lazy" src="' + esc((top && top.img) || d.img) + '" alt=""><div class="n">' + (d.owned ? esc(d.name) : "???") + '</div>' +
       (top ? '<div class="vn">' + esc(top.name) + '</div>' : "") + r + '</div>';
   }
@@ -169,13 +173,15 @@
         '</div>';
     }).join("");
     if (d.count > specs.length) html += '<div class="hint left">' + (d.count - specs.length) + ' older catch' + (d.count - specs.length > 1 ? "es" : "") + ' from before ratings existed ' + (d.count - specs.length > 1 ? "have" : "has") + ' no ratings or traits.</div>';
-    if (d.variantsTotal) {
-      var got = caughtVariants(d);
-      html += '<h3>Variants &amp; skins (' + got.length + '/' + d.variantsTotal + ' caught) · <span style="color:#fbbf24">all Legendary</span></h3><div class="chips">' +
-        d.variants.map(function (v) {
-          return '<span class="' + (v.owned ? "have " + v.kind : "") + '" title="' + (v.kind === "skin" ? "Skin" : "Variation") + '">' + (v.owned ? "✨ " : "") + esc(v.name) + '</span>';
+    [["variation", "Variations"], ["skin", "Skins"]].forEach(function (k) {
+      var list = (d.variants || []).filter(function (v) { return v.kind === k[0]; });
+      if (!list.length) return;
+      var have = list.filter(function (v) { return v.owned; }).length;
+      html += '<h3>' + k[1] + ' (' + have + '/' + list.length + ' secured) · <span class="leg">Legendary</span></h3><div class="chips">' +
+        list.map(function (v) {
+          return '<span class="' + (v.owned ? "have " + v.kind : "") + '">' + (v.owned ? "✨ " : "") + esc(v.name) + '</span>';
         }).join("") + '</div>';
-    }
+    });
     html += '</div>';
     el(html);
     document.getElementById("back").onclick = function () { view.open = null; confirmId = null; detailNotice = null; render(); };

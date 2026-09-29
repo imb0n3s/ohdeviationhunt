@@ -93,7 +93,7 @@ out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!shop"), `Show what the shop sells and the prices. The Securement Pods panel has the same shop in its '''Shop''' tab.`],
   [cmd("!buy <amount>"), `Buy Securement Units for ${fmt(unitPrice)} ${SC} each, e.g. ${cmd("!buy 2")}.`],
   [cmd("!daily"), `Claim your daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${ECONOMY.daily.units.standard} Securement Unit, and turn on ${ECONOMY.hourlyUnits} free Securement Unit + ${ECONOMY.hourlyStarchrom} ${SC} every hour for the rest of the day while you're in a live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream.`],
-  [cmd("!pods [name]"), `Your collection count (unique deviations, variants & skins) and a link to your collection page. Add a name to see someone else's.`],
+  [cmd("!pods [name]"), `Your collection count (unique deviations, variations and skins, counted separately) and a link to your collection page. Add a name to see someone else's.`],
   [cmd("!traits <deviation>"), `Skill Rating, Activity Rating and all three traits of your best specimen of that deviation. Also ${cmd("!stats")}.`],
   [cmd("!dev <deviation>"), `Info about a deviation: what it does, its variations and skins, and a wiki link.`],
   [cmd("!hunttop"), `Top collectors across every channel. Also ${cmd("!leaderboard")}.`],
@@ -169,7 +169,7 @@ Variations and skins are Deviation Hunt's shinies. When one appears, the spawn m
 ${code(`👀 A Grumpy Bulb has been spotted in the wild! ✨ VARIATION: Violet Robe Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`)}
 
 * Each variation and skin is its own entry in your Securement Pods, and the first one of each earns the +${ECONOMY.newSpeciesBonus} new-entry bonus.
-* On your collection page and in the Twitch panel, caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.
+* Your collection page and the Twitch panel count '''Variations''' and '''Skins''' separately (their own totals and their own lists on each deviation). Caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.
 * Some deviations have a trait that belongs to one variant only (e.g. Grumpy Bulb's Slot 1 trait is ''Violet Robe'') — see Traits below.
 `));
 

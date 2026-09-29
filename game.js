@@ -437,17 +437,19 @@ function collectionSummary(userId) {
   const rows = db.q.listCatches.all(userId);
   const species = new Set(rows.map((r) => r.deviation));
   const variants = rows.filter((r) => r.variant).length;
+  const skins = rows.filter((r) => r.variant && r.kind === "skin").length;
+  const variations = variants - skins;
   const total = rows.reduce((s, r) => s + r.count, 0);
-  return { rows, species: species.size, variants, total };
+  return { rows, species: species.size, variants, variations, skins, total };
 }
 
 function dex(userId, login, display, baseUrl) {
   loadPlayer(userId, login, display);
   const c = collectionSummary(userId);
   const all = data.all();
-  const totalVariants = all.reduce((s, d) => s + d.variants.length, 0);
+  const totalOf = (kind) => all.reduce((s, d) => s + d.variants.filter((v) => v.kind === kind).length, 0);
   if (!c.total) return `@${display} your Securement Pods are empty — wait for a deviation to show up and type !secure! Collection page: ${baseUrl}/u/${login}`;
-  return `@${display} 📖 Securement Pods: ${c.species}/${all.length} deviations, ${c.variants}/${totalVariants} variants & skins, ${c.total} secured in total. ${baseUrl}/u/${login}`;
+  return `@${display} 📖 Securement Pods: ${c.species}/${all.length} deviations, ${c.variations}/${totalOf("variation")} variations, ${c.skins}/${totalOf("skin")} skins, ${c.total} secured in total. ${baseUrl}/u/${login}`;
 }
 
 

@@ -87,7 +87,8 @@ h2 .sub{font-size:.8rem;color:var(--muted);font-weight:600;margin-left:6px}
 .dev.shiny{border-color:#fbbf24;box-shadow:0 0 14px rgba(251,191,36,.35)}
 .dev.shiny.skin{border-color:#e879f9;box-shadow:0 0 14px rgba(232,121,249,.4)}
 .dev .vb{position:absolute;top:8px;left:10px;font-size:.75rem;font-weight:700;background:#3b2f0b;color:#fde68a;border-radius:99px;padding:1px 8px}
-.dev.skin .vb{background:#4a1d4f;color:#f5d0fe}
+.dev .vb.sk{left:auto;right:10px;top:34px;background:#4a1d4f;color:#f5d0fe}
+.vk{font-size:.68rem;font-weight:700;margin-top:6px;color:#fbbf24;text-transform:uppercase;letter-spacing:.04em}.vk.skin{color:#f0abfc}
 .dev .vn{font-size:.75rem;font-weight:700;color:#fde68a;margin-top:2px}.dev.skin .vn{color:#f5d0fe}
 table{width:100%;border-collapse:collapse}td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-weight:600}
 .bar{height:8px;background:#0b1016;border-radius:99px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:var(--accent)}
@@ -249,13 +250,16 @@ function collectionPage(p, viewer, msg) {
     specCount.set(sp.deviation, (specCount.get(sp.deviation) || 0) + 1);
   }
   const all = data.all();
-  const totalVariants = all.reduce((s, d) => s + d.variants.length, 0);
+  const totalOf = (kind) => all.reduce((s, d) => s + d.variants.filter((v) => v.kind === kind).length, 0);
   const pct = all.length ? Math.round((c.species / all.length) * 100) : 0;
   const live = game.loadPlayer(p.user_id, p.login, p.display);
   const units = live.units;
   const cardFor = (d) => {
     const h = have.get(d.id);
-    const vars = d.variants.length ? `<div class="vars">${d.variants.map((v) => { const got = h?.variants.has(v.name); return `<span class="${got ? `have ${v.kind}` : ""}" title="${v.kind === "skin" ? "Skin" : "Variation"}${got ? " — caught!" : ""}">${got ? "✨ " : ""}${esc(v.name)}</span>`; }).join("")}</div>` : "";
+    const chips = (kind, label) => { const list = d.variants.filter((v) => v.kind === kind); if (!list.length) return "";
+      const n = list.filter((v) => h?.variants.has(v.name)).length;
+      return `<div class="vk ${kind}">${label} ${n}/${list.length}</div><div class="vars">${list.map((v) => { const got = h?.variants.has(v.name); return `<span class="${got ? `have ${v.kind}` : ""}" title="${label.slice(0, -1)}${got ? " — secured!" : ""}">${got ? "✨ " : ""}${esc(v.name)}</span>`; }).join("")}</div>`; };
+    const vars = chips("variation", "Variations") + chips("skin", "Skins");
     // caught variations/skins: highlight the card and show the rarest one (skins first)
     const gotVars = h ? d.variants.filter((v) => h.variants.has(v.name)).sort((a, b) => (a.kind === "skin" ? -1 : 0) - (b.kind === "skin" ? -1 : 0)) : [];
     const top = gotVars[0];
@@ -263,12 +267,12 @@ function collectionPage(p, viewer, msg) {
     const sp = best.get(d.id);
     const spHtml = sp ? `<div class="sp"><div class="pm"><span title="Skill Rating (Deviant Power)">Skill ${sp.power}/5</span><span title="Activity Rating (Mood)">Activity ${sp.mood}/5</span></div>
 <ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => (key ? `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant, d.category))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant, d.category))}</li>` : `<li class="empty"><b>${slot}</b>Empty slot</li>`)).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
-    return `<div class="dev ${h ? "" : "missing"}${shiny}">${h ? `<span class="c">×${h.count}</span>` : ""}${top ? `<span class="vb" title="Variations &amp; skins caught">✨ ${gotVars.length}</span>` : ""}<img loading="lazy" src="${esc((top && top.img) || d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${top ? `<div class="vn">✨ ${top.kind === "skin" ? "Skin" : "Variation"}: ${esc(top.name)}</div>` : ""}${tierTag(d.rarity)}${d.variants.length ? `<div class="t" style="color:${TIERS.legendary.color};font-size:.8em">variants &amp; skins: Legendary</div>` : ""}${spHtml}${h ? vars : ""}</div>`;
+    return `<div class="dev ${h ? "" : "missing"}${shiny}">${h ? `<span class="c">×${h.count}</span>` : ""}${gotVars.filter((v) => v.kind === "variation").length ? `<span class="vb" title="Variations secured">✨ ${gotVars.filter((v) => v.kind === "variation").length}</span>` : ""}${gotVars.filter((v) => v.kind === "skin").length ? `<span class="vb sk" title="Skins secured">✨ ${gotVars.filter((v) => v.kind === "skin").length}</span>` : ""}<img loading="lazy" src="${esc((top && top.img) || d.img || "")}" alt="${esc(d.name)}"><div class="n">${h ? esc(d.name) : "???"}</div>${top ? `<div class="vn">✨ ${top.kind === "skin" ? "Skin" : "Variation"}: ${esc(top.name)}</div>` : ""}${tierTag(d.rarity)}${d.variants.length ? `<div class="t" style="color:${TIERS.legendary.color};font-size:.8em">variations &amp; skins: Legendary</div>` : ""}${spHtml}${h ? vars : ""}</div>`;
   };
   const cards = sections(all, cardFor);
   return page(`${p.display}'s Securement Pods`, `
 <h1>${esc(p.display)}'s Securement Pods</h1>
-<div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variants}/${totalVariants}</b>variants &amp; skins</div><div class="stat"><b>${game.podsUsed(live)}/${game.unitCap(live)}</b>Securement Pods · ${fmt(c.total)} secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
+<div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variations}/${totalOf("variation")}</b>variations</div><div class="stat"><b style="color:#f0abfc">${c.skins}/${totalOf("skin")}</b>skins</div><div class="stat"><b>${game.podsUsed(live)}/${game.unitCap(live)}</b>Securement Pods · ${fmt(c.total)} secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
 <p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
 <div id="shop">${webShop(p, live, viewer, msg)}</div>
@@ -314,7 +318,7 @@ ${secs.map((s) => `<h2>${esc(s.title)}</h2>${s.note ? `<p>${esc(s.note)}</p>` : 
 
 function dexPage() {
   const all = data.all();
-  const cards = sections(all, (d) => `<div class="dev"><img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${esc(d.name)}</div>${tierTag(d.rarity)}<div class="vars">${d.variants.length ? `<span>${d.variants.length} variants/skins · <b style="color:${TIERS.legendary.color}">Legendary</b></span>` : ""}</div></div>`);
+  const cards = sections(all, (d) => `<div class="dev"><img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${esc(d.name)}</div>${tierTag(d.rarity)}<div class="vars">${d.variants.length ? `<span>${[["variation", "variation"], ["skin", "skin"]].map(([k, l]) => { const n = d.variants.filter((v) => v.kind === k).length; return n ? `${n} ${l}${n > 1 ? "s" : ""}` : ""; }).filter(Boolean).join(" · ")} · <b style="color:${TIERS.legendary.color}">Legendary</b></span>` : ""}</div></div>`);
   return page("All deviations", `<h1>All deviations</h1><p>All ${all.length} deviations can appear in the wild, pulled from the <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">wiki</a>.</p>${cards}`);
 }
 
