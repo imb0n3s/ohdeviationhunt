@@ -394,7 +394,7 @@ function buy(userId, login, display, args) {
   if (!r.ok) return `@${display} ${label} ${qty > 1 || item.kind === "gloves" ? "cost" : "costs"} ${fmt(item.price * qty)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations and !daily, or scrap extras in the Securement Pods panel.`;
   savePlayer(p);
   if (item.kind === "gloves") {
-    const old = r.replaced ? ` They replace your ${r.replaced.name} (no refund).` : "";
+    const old = r.replaced ? ` They replace your ${r.replaced.name}.` : "";
     return `@${display} 🧤 bought ${item.name} for ${fmt(r.cost)} ${SC}! +${Math.round(item.bonus * 100)}% catch chance on every throw from now on.${old} You have ${fmt(p.starchrom)} ${SC} left.`;
   }
   return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units (${podsUsed(p)}/${unitCap(p)} Securement Pods used). ${bagText(p)}`;
