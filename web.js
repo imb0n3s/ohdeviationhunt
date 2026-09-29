@@ -336,7 +336,7 @@ function webShop(p, live, viewer, msg) {
       const btn = owned ? `<button disabled class="owned">✓ Owned${best && best.id === it.glove ? " · active" : ""}</button>`
         : outclassed ? `<button disabled class="owned">You wear better gloves</button>`
         : `<button ${live.starchrom < it.price ? "disabled" : ""}>${live.starchrom < it.price ? `Need ${fmt(it.price - live.starchrom)} more` : `Buy for ${fmt(it.price)}`}</button>`;
-      return `<div class="si glove" style="--gc:${esc(it.color)}"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)} <span class="rar">${esc(it.rarity)}</span></div><div class="sd">+${Math.round(it.bonus * 100)}% catch chance on every throw · ${fmt(it.price)} Starchrom · yours forever</div>${form(it, btn)}</div></div>`;
+      return `<div class="si glove" style="--gc:${esc(it.color)}"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)} <span class="rar">${esc(it.rarity)}</span></div><div class="sd">+${Math.round(it.bonus * 100)}% catch chance on every throw · ${fmt(it.price)} Starchrom · one pair at a time (a better pair replaces yours, no refund)</div>${form(it, btn)}</div></div>`;
     }
     const room = game.unitRoom(live), max = Math.max(0, Math.min(it.maxQty, room, Math.floor(live.starchrom / it.price)));
     if (!room) return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div><button disabled>Securement Pods full (${game.podsUsed(live)}/${game.unitCap(live)})</button></div></div>`;

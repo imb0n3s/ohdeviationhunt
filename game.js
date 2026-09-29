@@ -23,6 +23,7 @@ function loadPlayer(userId, login, display) {
   }
   p.units = JSON.parse(p.units || "{}");
   try { p.gloves = JSON.parse(p.gloves || "[]"); } catch { p.gloves = []; }
+  if (p.gloves.length > 1) { const top = GLOVES.filter((g) => p.gloves.includes(g.id)).sort((a, b) => b.bonus - a.bonus)[0]; p.gloves = top ? [top.id] : []; } // one pair only
   // older saves had Advanced/Elite/Anomaly units: fold them into plain Securement Units
   for (const k of ["advanced", "elite", "anomaly"]) if (p.units[k]) { p.units.standard = (p.units.standard || 0) + p.units[k]; delete p.units[k]; }
   return p;
@@ -373,7 +374,7 @@ function daily(userId, login, display, bid) {
 
 function shop() {
   const items = shopCatalog.ITEMS.map((i) => `${i.name}${i.bonus ? ` (+${Math.round(i.bonus * 100)}% catch)` : ""}: ${fmt(i.price)} ${SC}`).join(" · ");
-  return `🛒 ${items} — !buy <amount> for units, !buy rustic / bbq / savior for gloves (or use the Securement Pods panel's Shop tab). Gloves are yours forever; your best pair counts on every throw.`;
+  return `🛒 ${items} — !buy <amount> for units, !buy rustic / bbq / savior for gloves (or use the Securement Pods panel's Shop tab). You wear one pair at a time: a better pair replaces yours (no refunds, gloves can't be scrapped).`;
 }
 
 // !buy 3  /  !buy unit 3  /  !buy savior — defaults to Securement Units
@@ -388,13 +389,13 @@ function buy(userId, login, display, args) {
   if (!r.ok && r.error === "owned") return `@${display} you already own ${item.name}.`;
   if (!r.ok && r.error === "full") return `@${display} your Securement Pods are full (${r.cap}/${r.cap} — caught deviations and empty units both count). Scrap extras in the Securement Pods panel under the stream to free some up.`;
   if (!r.ok && r.error === "too_many") return `@${display} you have ${r.cap} Securement Pods (caught deviations + empty units), so you can buy up to ${r.room} more Securement Units right now.`;
-  if (!r.ok && r.error === "outclassed") return `@${display} you already wear ${r.better.name} (+${Math.round(r.better.bonus * 100)}%), which beat ${item.name}.`;
+  if (!r.ok && r.error === "outclassed") return `@${display} you already wear ${r.better.name} (+${Math.round(r.better.bonus * 100)}%), which beat ${item.name}. You wear one pair at a time.`;
   const label = item.kind === "gloves" ? item.name : `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
   if (!r.ok) return `@${display} ${label} ${qty > 1 || item.kind === "gloves" ? "cost" : "costs"} ${fmt(item.price * qty)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations and !daily, or scrap extras in the Securement Pods panel.`;
   savePlayer(p);
   if (item.kind === "gloves") {
-    const best = bestGlove(p);
-    return `@${display} 🧤 bought ${item.name} for ${fmt(r.cost)} ${SC}! +${Math.round(item.bonus * 100)}% catch chance on every throw from now on. You have ${fmt(p.starchrom)} ${SC} left.`;
+    const old = r.replaced ? ` They replace your ${r.replaced.name} (no refund).` : "";
+    return `@${display} 🧤 bought ${item.name} for ${fmt(r.cost)} ${SC}! +${Math.round(item.bonus * 100)}% catch chance on every throw from now on.${old} You have ${fmt(p.starchrom)} ${SC} left.`;
   }
   return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units (${podsUsed(p)}/${unitCap(p)} Securement Pods used). ${bagText(p)}`;
 }

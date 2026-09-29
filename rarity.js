@@ -90,7 +90,7 @@ const rarityOf = (name) => lookup[String(name).toLowerCase().replace(/[^a-z0-9]/
 // Only one unit type now; anything typed after !secure is ignored
 function unitKey() { return "standard"; }
 
-// Gloves: bought once in the shop and kept forever. Only your best pair counts; its bonus is added
+// Gloves: you wear ONE pair at a time. Buying a better pair replaces yours (no refund, no scrapping); its bonus is added
 // straight onto every throw's catch chance (still capped at ECONOMY.maxCatchChance).
 const GLOVES = [
   { id: "rustic", name: "Rustic Gloves", bonus: 0.03, price: 3000, rarity: "Basic",     color: "#4ade80", icon: "rustic.png" },

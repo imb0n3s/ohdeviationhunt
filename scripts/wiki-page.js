@@ -117,11 +117,11 @@ out.push(box("Shop", "Securement Units & Gloves", `
 Buy with ${cmd("!buy")} in chat, in the Securement Pods panel's '''Shop''' tab, or on your own collection page (signed in with Twitch). Buying gloves in the panel or on the website is announced in the chat of the live stream you're playing in.
 ${table(["Item", "Description", "Price"], [
   ["'''Securement Unit'''", "Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw. " + cmd("!buy <amount>"), `${fmt(unitPrice)} ${SC}`],
-  ...GLOVES.map((g) => [`'''<span style="color:${g.color};">${g.name}</span>''' <small>(${g.rarity})</small>`, `+${Math.round(g.bonus * 100)}% catch chance on every throw. Bought once and kept forever. ${cmd("!buy " + g.id)}`, `${fmt(g.price)} ${SC}`]),
+  ...GLOVES.map((g) => [`'''<span style="color:${g.color};">${g.name}</span>''' <small>(${g.rarity})</small>`, `+${Math.round(g.bonus * 100)}% catch chance on every throw. ${cmd("!buy " + g.id)}`, `${fmt(g.price)} ${SC}`]),
 ])}
 You have '''${ECONOMY.unitCap} Securement Pods''' — every deviation you've caught '''and''' every empty Securement Unit takes one. When all ${ECONOMY.unitCap} are used, you can't buy more units, and free hourly units and the one from ${cmd("!daily")} are skipped. Free space by scrapping extra specimens in the Twitch panel.
 
-Gloves don't stack — only your best pair counts, so you can't buy a pair weaker than one you already own. The bonus is added to the catch chance (a ${pct(TIERS.legendary.catch)} Legendary becomes ${pct(TIERS.legendary.catch + GLOVES[GLOVES.length - 1].bonus)} with ${GLOVES[GLOVES.length - 1].name}), still capped at ${pct(ECONOMY.maxCatchChance)}.
+'''You wear one pair of gloves at a time.''' Buying a better pair replaces the one you have — there's '''no refund''' for the old pair, and gloves can't be scrapped. You can't buy a pair weaker than (or the same as) the one you wear. The bonus is added to the catch chance (a ${pct(TIERS.legendary.catch)} Legendary becomes ${pct(TIERS.legendary.catch + GLOVES[GLOVES.length - 1].bonus)} with ${GLOVES[GLOVES.length - 1].name}), still capped at ${pct(ECONOMY.maxCatchChance)}.
 
 '''Ways to get Securement Units'''
 ${table(["Source", "Amount"], [
