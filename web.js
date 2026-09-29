@@ -211,8 +211,6 @@ ${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels â†
 <script>(function(){function fit(){document.querySelectorAll(".obsframe").forEach(function(f){var i=f.querySelector("iframe");i.style.transform="scale("+(f.clientWidth/600)+")";});}fit();addEventListener("resize",fit);})();</script>
 <p>Type <kbd>!hunt obs</kbd> in your chat (broadcaster or mods) and the bot replies with your channel's link. In OBS add a <b>Browser</b> source with that link, size <b>600 Ã— 600</b>. Add <code>?demo=1</code> to the end while you position it so you can see it, then remove it.</p></div>
 
-<h2>Find a collection</h2>
-<form class="find" action="/u" method="get"><input name="login" placeholder="Twitch username" aria-label="Twitch username"><button>View</button></form>
 
 <h2>What it looks like</h2>
 ${chatExamples(botName)}
