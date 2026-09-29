@@ -99,7 +99,7 @@ Only the broadcaster and moderators can use these.
 <span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Securement Units & Gloves</span>
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
-Buy with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy</nowiki></span> in chat or in the Securement Pods panel's '''Shop''' tab.
+Buy with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!buy</nowiki></span> in chat, in the Securement Pods panel's '''Shop''' tab, or on your own collection page (signed in with Twitch). Buying gloves in the panel or on the website is announced in the chat of the live stream you're playing in.
 {| class="wikitable" style="width:100%; background:#0f1620; color:#cfd6df; border:1px solid #1f2a35; margin-top:10px;"
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Item
 ! style="background:#131c27; color:#e6edf3; text-align:left;" | Description

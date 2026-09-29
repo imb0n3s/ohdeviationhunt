@@ -114,7 +114,7 @@ ${table(["Command", "Effect"], [
 `));
 
 out.push(box("Shop", "Securement Units & Gloves", `
-Buy with ${cmd("!buy")} in chat or in the Securement Pods panel's '''Shop''' tab.
+Buy with ${cmd("!buy")} in chat, in the Securement Pods panel's '''Shop''' tab, or on your own collection page (signed in with Twitch). Buying gloves in the panel or on the website is announced in the chat of the live stream you're playing in.
 ${table(["Item", "Description", "Price"], [
   ["'''Securement Unit'''", "Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw. " + cmd("!buy <amount>"), `${fmt(unitPrice)} ${SC}`],
   ...GLOVES.map((g) => [`'''<span style="color:${g.color};">${g.name}</span>''' <small>(${g.rarity})</small>`, `+${Math.round(g.bonus * 100)}% catch chance on every throw. Bought once and kept forever. ${cmd("!buy " + g.id)}`, `${fmt(g.price)} ${SC}`]),
