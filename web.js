@@ -63,7 +63,11 @@ code,kbd{background:#0b1016;padding:2px 7px;border-radius:5px;color:#c9e7ff;font
 @media(max-width:600px){.cmds td{display:block;border:0;padding:4px 0}.cmds tr{display:block;padding:8px 0;border-bottom:1px solid var(--line)}}
 .stats{display:flex;gap:12px;flex-wrap:wrap}.stat{flex:1;min-width:130px;background:var(--card);border-radius:12px;padding:14px;text-align:center;color:var(--muted)}
 .stat b{display:block;font-size:1.9rem;color:var(--accent)}
-.chat{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;color:#dfe8f0;overflow-wrap:anywhere;background:#0e0e10;border-radius:8px;padding:.6em .8em}.chat .cl{padding:.18em 0;line-height:1.45}
+.chat{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;color:#dfe8f0;overflow-wrap:anywhere;background:#0e0e10;border-radius:8px;padding:.6em .8em}.obsprev{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}
+.obsprev figure{margin:0;text-align:center}.obsprev figcaption{font-size:.85rem;color:var(--muted);margin-top:6px;font-weight:600}
+.obsframe{position:relative;aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:radial-gradient(circle at 30% 20%,#2b3a4a,#0b1016 70%),#0b1016;box-shadow:inset 0 0 0 1px var(--line)}
+.obsframe iframe{position:absolute;top:0;left:0;width:600px;height:600px;border:0;transform-origin:0 0;background:transparent}
+.chat .cl{padding:.18em 0;line-height:1.45}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .dev{background:var(--card);border-radius:12px;padding:10px;text-align:center;border:2px solid transparent;position:relative}
 .dev img{width:100%;aspect-ratio:1;object-fit:contain;display:block}
@@ -202,6 +206,9 @@ ${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels â†
 
 <h2>OBS Source</h2>
 <div class="card"><p style="margin-top:0">Show the deviation on your stream while it can be caught: its picture, name, variation or skin, and a countdown. It appears when one is spotted and disappears when it's secured or gets away.</p>
+<p>This is what your viewers see on stream when a deviation shows up (live previews, with the real countdown):</p>
+<div class="obsprev">${[["base", "Normal spawn"], ["variation", "Variation (Legendary)"], ["skin", "Skin (Legendary)"]].map(([k, l]) => `<figure><div class="obsframe"><iframe src="/obs-preview?kind=${k}" title="OBS Source preview: ${l}" loading="lazy" scrolling="no"></iframe></div><figcaption>${l}</figcaption></figure>`).join("")}</div>
+<script>(function(){function fit(){document.querySelectorAll(".obsframe").forEach(function(f){var i=f.querySelector("iframe");i.style.transform="scale("+(f.clientWidth/600)+")";});}fit();addEventListener("resize",fit);})();</script>
 <p>Type <kbd>!hunt obs</kbd> in your chat (broadcaster or mods) and the bot replies with your channel's link. In OBS add a <b>Browser</b> source with that link, size <b>600 Ã— 600</b>. Add <code>?demo=1</code> to the end while you position it so you can see it, then remove it.</p></div>
 
 <h2>Find a collection</h2>

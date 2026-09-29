@@ -44,9 +44,17 @@ function stateFor(pool, code) {
   };
 }
 
+// demo: true (OBS positioning sample) or "base" | "variation" | "skin" (homepage preview)
 function page(code, demo) {
-  const sample = demo ? data.all().find((d) => d.id === "grumpybulb") || data.all()[0] : null;
-  const demoState = sample ? JSON.stringify({ ok: true, active: true, id: "demo", name: sample.name, variant: sample.variants[0] ? { name: sample.variants[0].name, kind: sample.variants[0].kind } : null, img: sample.variants[0]?.img || sample.img, demo: true, windowMs: cfg.SPAWN_WINDOW_SECONDS * 1000 }) : "null";
+  const all = data.all();
+  const sample = !demo ? null
+    : demo === "base" ? all.find((d) => d.id === "lonewolfwhisper") || all[0]
+    : all.find((d) => d.id === "grumpybulb") || all[0];
+  const v = !sample ? null
+    : demo === "base" ? null
+    : demo === "skin" ? sample.variants.find((x) => x.kind === "skin") || null
+    : sample.variants.find((x) => x.kind === "variation") || sample.variants[0] || null;
+  const demoState = sample ? JSON.stringify({ ok: true, active: true, id: "demo", name: sample.name, variant: v ? { name: v.name, kind: v.kind } : null, img: (v && v.img) || sample.img, demo: true, windowMs: cfg.SPAWN_WINDOW_SECONDS * 1000 }) : "null";
   return `<!doctype html><html><head><meta charset="utf-8"><title>Deviation Hunt — OBS Source</title>
 <style>
 html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
@@ -116,6 +124,12 @@ function mount(app, pool) {
     res.set("Cache-Control", "no-store");
     const st = stateFor(pool, req.params.code);
     res.status(st.ok ? 200 : 404).json(st);
+  });
+  // public preview for the homepage: /obs-preview?kind=base|variation|skin
+  app.get("/obs-preview", (req, res) => {
+    const kind = ["base", "variation", "skin"].includes(req.query.kind) ? req.query.kind : "base";
+    res.set("Cache-Control", "public, max-age=300");
+    res.send(page("preview", kind));
   });
   app.get("/obs-source/:code", (req, res) => {
     const code = String(req.params.code).toLowerCase().replace(/[^a-z0-9]/g, "");
