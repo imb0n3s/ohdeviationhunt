@@ -140,6 +140,7 @@ const q = {
   // the stream a player is in = where they last used a game command (and that stream's id)
   touchActive: db.prepare(`UPDATE players SET last_channel=?, last_active_at=?, active_stream=? WHERE user_id=?`),
   lastDaily: db.prepare(`SELECT MAX(at) AS at FROM daily_claims WHERE user_id=?`),
+  countDaily: db.prepare(`SELECT COUNT(*) AS n FROM daily_claims WHERE user_id=?`),
   addDaily: db.prepare(`INSERT OR IGNORE INTO daily_claims (user_id, stream_id, channel, at) VALUES (?, ?, ?, ?)`),
   setDailyStream: db.prepare(`UPDATE players SET daily_channel=?, daily_stream=? WHERE user_id=?`),
   // players whose next hourly free unit is due (eligibility is checked in game.js)

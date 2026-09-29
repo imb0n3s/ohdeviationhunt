@@ -354,7 +354,8 @@ function daily(userId, login, display, bid) {
   if (!stream) return `@${display} !daily only works while the stream is live. If the stream just started, Twitch can take a minute or two to show it as live — try !daily again shortly.`;
   const p = loadPlayer(userId, login, display);
   if (!dailyReady(userId)) {
-    return `@${display} you already claimed today's !daily — it resets at midnight Central (in ${untilReset()}).${hourlyOn(p) ? ` Next free Securement Unit in ${nextUnitIn(p)}.` : ""}`;
+    const n = db.q.countDaily.get(userId).n;
+    return `@${display} you already claimed today's !daily (${fmt(n)} check-in${n === 1 ? "" : "s"} so far) — it resets at midnight Central (in ${untilReset()}).${hourlyOn(p) ? ` Next free Securement Unit in ${nextUnitIn(p)}.` : ""}`;
   }
   p.last_daily = Date.now();
   p.starchrom += ECONOMY.daily.starchrom;
@@ -366,7 +367,8 @@ function daily(userId, login, display, bid) {
     db.q.addDaily.run(userId, stream, bid, Date.now());
     db.q.setDailyStream.run(bid, stream, userId);
   })();
-  return `@${display} 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}! For the rest of today you'll also get 1 free Securement Unit every hour while you're in a live stream (one stream at a time — the timer keeps going if you switch). ${bagText(p)}`;
+  const checkins = db.q.countDaily.get(userId).n;
+  return `@${display} ✅ Check-in #${fmt(checkins)}! 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}! For the rest of today you'll also get 1 free Securement Unit every hour while you're in a live stream (one stream at a time — the timer keeps going if you switch). ${bagText(p)}`;
 }
 
 function shop() {
