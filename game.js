@@ -154,7 +154,7 @@ class Spawns {
   persist(bid) {
     const s = this.active.get(bid);
     if (!s) return db.q.deleteActive.run(bid);
-    db.q.saveActive.run(bid, JSON.stringify({ dev: s.dev.id, variant: s.variant ? { name: s.variant.name, kind: s.variant.kind } : null, endsAt: s.endsAt, attempts: [...s.attempts], warned: [...s.warned] }));
+    db.q.saveActive.run(bid, JSON.stringify({ dev: s.dev.id, variant: s.variant ? { name: s.variant.name, kind: s.variant.kind } : null, endsAt: s.endsAt, attempts: [...s.attempts], warned: [...s.warned], legendary: s.legendary || null }));
   }
 
   // called once at startup: bring back loose deviations and finish any that ran out while we were down
@@ -165,7 +165,7 @@ class Spawns {
         const dev = data.get(d.dev);
         if (!dev) { db.q.deleteActive.run(row.broadcaster_id); continue; }
         const variant = d.variant ? dev.variants.find((v) => v.name === d.variant.name) || d.variant : null;
-        const s = { dev, variant, endsAt: d.endsAt, attempts: new Map(d.attempts), warned: new Set(d.warned) };
+        const s = { dev, variant, endsAt: d.endsAt, attempts: new Map(d.attempts), warned: new Set(d.warned), legendary: d.legendary || null };
         const bid = row.broadcaster_id;
         const wait = Math.max(2000, d.endsAt - Date.now());
         s.timer = setTimeout(() => this.resolve(bid).catch((e) => console.error("[resolve]", e)), wait);
@@ -213,6 +213,7 @@ class Spawns {
     if (cfg.PAUSED) return { error: "paused" };
     if (this.active.has(bid)) return { error: "already" };
     const s = rollSpawn();
+    if (s) s.legendary = traits.rollLegendary(s.dev.name, s.dev.category); // hidden 1-in-400 Legendary trait, never announced
     if (!s) return { error: "nodata" };
     s.attempts = new Map();
     s.warned = new Set();
@@ -276,7 +277,7 @@ class Spawns {
           const variant = s.variant?.name || "";
           const had = db.q.getCatch.get(userId, s.dev.id, variant);
           db.q.addCatch.run(userId, s.dev.id, variant, s.variant?.kind || "base", Date.now(), bid);
-          const sp = traits.rollSpecimen(s.dev.name, variant, s.dev.variants.map((v) => v.name), s.dev.category);
+          const sp = traits.rollSpecimen(s.dev.name, variant, s.dev.variants.map((v) => v.name), s.dev.category, s.legendary);
           db.q.addSpecimen.run({ user_id: userId, deviation: s.dev.id, variant, ...sp, caught_at: Date.now(), channel: bid });
           p.starchrom += reward + (had ? 0 : ECONOMY.newSpeciesBonus);
           if (!had) firsts.push(a.display);

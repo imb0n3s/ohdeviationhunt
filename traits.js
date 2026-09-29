@@ -23,6 +23,17 @@ const SPECIFIC_CHANCE = { slot1: 0.15, slot2: 0.2 };
 // Deviant Power and Mood ratings 1-5: higher is rarer
 const RATING_WEIGHTS = [30, 28, 22, 13, 7];
 
+// Legendary traits: never in the normal trait rolls. A spawn secretly carries one 1 in 400 times
+// (not announced); everyone who secures that spawn gets it. Power Rewind is Legendary at level 2
+// only — level 1 still rolls normally.
+const LEGENDARY_CHANCE = 1 / 400;
+const LEGENDARY = {
+  slot1: [{ key: "power_rewind", level: 2 }, { key: "upper_hand" }],
+  slot2: ["crack_shot", "psychic_kid", "come_as_one", "world_charm", "anti_burnout", "devoted_laborer", "dream_wild",
+          "hydrophilic", "living_map", "panovision", "sweet_talk", "water_dormancy"],
+};
+const LEGENDARY_KEYS = new Set([...LEGENDARY.slot1.filter((x) => !x.level).map((x) => x.key), ...LEGENDARY.slot2]);
+
 let T = null; // { global, slot1, slot2, slot3, slot1ForDev, slot2ForDev }
 let source = "none";
 
@@ -94,9 +105,9 @@ function allowed(devName, cat = "combat") {
   const own2 = T.slot2ForDev[devName] || [];
   const specific2 = specificSlot2Keys();
   return {
-    slot1General: T.global,
+    slot1General: T.global.filter((t) => !LEGENDARY_KEYS.has(t.key)),
     slot1Own: own1 ? C.slot1.filter((t) => t.key === own1) : [],
-    slot2General: C.slot2.filter((t) => !specific2.has(t.key)),
+    slot2General: C.slot2.filter((t) => !specific2.has(t.key) && !LEGENDARY_KEYS.has(t.key)),
     slot2Own: C.slot2.filter((t) => own2.includes(t.key)),
     slot3: C.slot3,
   };
@@ -157,13 +168,27 @@ function rollSlot(general, own, variant, chance, slotChance) {
   return pick(general).key;
 }
 
-function rollSpecimen(devName, variant, variants = [], cat = "combat") {
+// At spawn: 1 in 400 spawns hide a Legendary trait this deviation's type can have. { slot, key, level } or null
+function rollLegendary(devName, cat = "combat", force = false) {
+  if (!T || (!force && Math.random() >= LEGENDARY_CHANCE)) return null;
+  const C = catOf(cat), specific2 = specificSlot2Keys(), own2 = T.slot2ForDev[devName] || [];
+  const opts = [
+    ...LEGENDARY.slot1.filter((x) => T.global.some((t) => t.key === x.key)).map((x) => ({ slot: 1, key: x.key, level: x.level || null })),
+    ...LEGENDARY.slot2.filter((k) => C.slot2.some((t) => t.key === k) && (!specific2.has(k) || own2.includes(k))).map((k) => ({ slot: 2, key: k, level: null })),
+  ];
+  return opts.length ? pick(opts) : null;
+}
+
+function rollSpecimen(devName, variant, variants = [], cat = "combat", legendary = null) {
   const a = allowed(devName, cat);
-  const t1 = rollSlot(a.slot1General, ownOptions(a.slot1Own, variants), variant, SPECIFIC_CHANCE.slot1, SLOT_CHANCE[1]);
-  const t2 = rollSlot(a.slot2General, ownOptions(a.slot2Own, variants), variant, SPECIFIC_CHANCE.slot2, SLOT_CHANCE[2]);
+  let t1 = rollSlot(a.slot1General, ownOptions(a.slot1Own, variants), variant, SPECIFIC_CHANCE.slot1, SLOT_CHANCE[1]);
+  let t2 = rollSlot(a.slot2General, ownOptions(a.slot2Own, variants), variant, SPECIFIC_CHANCE.slot2, SLOT_CHANCE[2]);
   const t3 = Math.random() < SLOT_CHANCE[3] ? pick(a.slot3).key : null;
   const g = t1 && T.global.find((t) => t.key === t1);
-  const lvl = g?.maxLevel ? g.minLevel + Math.floor(Math.random() * (g.maxLevel - g.minLevel + 1)) : null;
+  let lvl = g?.maxLevel ? g.minLevel + Math.floor(Math.random() * (g.maxLevel - g.minLevel + 1)) : null;
+  if (t1 === "power_rewind") lvl = g.minLevel;                  // level 2 is Legendary-only
+  if (legendary?.slot === 1) { t1 = legendary.key; lvl = legendary.level; }
+  if (legendary?.slot === 2) t2 = legendary.key;
   return { power: rating(), mood: rating(), t1, t1_level: lvl, t2, t3 };
 }
 
@@ -206,4 +231,4 @@ function traitEffect(slot, key, level, variant, cat) {
 
 const shortTraits = (s, cat) => [traitName(1, s.t1, s.t1_level, s.variant, cat), traitName(2, s.t2, null, s.variant, cat), traitName(3, s.t3, null, null, cat)].filter(Boolean).join(" | ") || "none";
 
-module.exports = { refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS, SLOT_CHANCE };
+module.exports = { refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, rollLegendary, LEGENDARY_CHANCE, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS, SLOT_CHANCE };
