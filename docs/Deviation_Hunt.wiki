@@ -307,6 +307,30 @@ Your collection is tied to your Twitch account, not to a channel — everything 
 
 <div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
 <div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Scrap</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">How to Scrap Extra Deviations</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+Caught the same deviation more than once? Keep the best one and scrap the rest. Each scrap gives you '''500 Starchrom + 1 Securement Unit''' and frees up a Securement Pod. You always keep at least one of every deviation (you can't scrap your last one). Variations and skins can be scrapped too, but only if you pick them. There is no chat command for scrapping — <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!scrap</nowiki></span> just tells you where to go.
+
+'''On the website'''
+# Go to [https://deviationhunt.ohwikiguide.com/me deviationhunt.ohwikiguide.com/me] (''My Securement Pods'') and click '''Sign in with Twitch'''. The Scrap buttons only appear on your own page while you're signed in.
+# Find the deviation you have extras of (the '''×2''', '''×3'''… in the corner of its card).
+# Click the red '''Scrap extras''' button at the bottom of that card — clicking the picture itself does nothing.
+# Every copy you own is listed with its Skill/Activity Rating, variation or skin, and traits. Your best one is marked '''Best'''.
+# Click '''Scrap''' on the one you don't want and confirm.
+
+'''In the Twitch panel'''
+# Under the stream, open the ''Securement Pods'' panel and click '''Show my Securement Pods''' (first time only).
+# Click the deviation you have extras of.
+# Every copy you own is listed with its ratings and traits.
+# Click '''Scrap for 500 Starchrom + 1 Securement Unit''' on the one you don't want, then '''Scrap''' to confirm.
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
 <span style="color:#0ea5e9; font-weight:800;">Streamers</span>
 <span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Add Deviation Hunt to Your Channel</span>
 </div>

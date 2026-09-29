@@ -202,6 +202,23 @@ Your collection is tied to your Twitch account, not to a channel — everything 
 * '''Leaderboard:''' [${URL}/top ${URL.replace(/^https?:\/\//, "")}/top] or ${cmd("!hunttop")}.
 `));
 
+out.push(box("Scrap", "How to Scrap Extra Deviations", `
+Caught the same deviation more than once? Keep the best one and scrap the rest. Each scrap gives you '''${fmt(ECONOMY.destroyValue)} ${SC} + ${ECONOMY.destroyUnits} Securement Unit''' and frees up a Securement Pod. You always keep at least one of every deviation (you can't scrap your last one). Variations and skins can be scrapped too, but only if you pick them. There is no chat command for scrapping — ${cmd("!scrap")} just tells you where to go.
+
+'''On the website'''
+# Go to [${URL}/me ${URL.replace(/^https?:\/\//, "")}/me] (''My Securement Pods'') and click '''Sign in with Twitch'''. The Scrap buttons only appear on your own page while you're signed in.
+# Find the deviation you have extras of (the '''×2''', '''×3'''… in the corner of its card).
+# Click the red '''Scrap extras''' button at the bottom of that card — clicking the picture itself does nothing.
+# Every copy you own is listed with its Skill/Activity Rating, variation or skin, and traits. Your best one is marked '''Best'''.
+# Click '''Scrap''' on the one you don't want and confirm.
+
+'''In the Twitch panel'''
+# Under the stream, open the ''Securement Pods'' panel and click '''Show my Securement Pods''' (first time only).
+# Click the deviation you have extras of.
+# Every copy you own is listed with its ratings and traits.
+# Click '''Scrap for ${fmt(ECONOMY.destroyValue)} ${SC} + ${ECONOMY.destroyUnits} Securement Unit''' on the one you don't want, then '''Scrap''' to confirm.
+`));
+
 out.push(box("Streamers", "Add Deviation Hunt to Your Channel", `
 # Go to [${URL} ${URL.replace(/^https?:\/\//, "")}] and click '''Add to my channel''' (sign in with Twitch). Or type ${cmd("!join")} in [https://www.twitch.tv/${BOT} ${BOT}'s chat].
 # If the bot says it needs permission, type ${cmd(`/mod ${BOT}`)} in your chat and try again.

@@ -67,6 +67,7 @@ code,kbd{background:#0b1016;padding:2px 7px;border-radius:5px;color:#c9e7ff;font
 .obsprev figure{margin:0;text-align:center}.obsprev figcaption{font-size:.85rem;color:var(--muted);margin-top:6px;font-weight:600}
 .obsframe{position:relative;aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:radial-gradient(circle at 30% 20%,#2b3a4a,#0b1016 70%),#0b1016;box-shadow:inset 0 0 0 1px var(--line)}
 .obsframe iframe{position:absolute;top:0;left:0;width:600px;height:600px;border:0;transform-origin:0 0;background:transparent}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.howto h3{margin:.2em 0 .4em;font-size:1rem;color:var(--text)}.howto ol{margin:0;padding-left:1.2em;color:var(--muted)}.howto li{margin:.3em 0}
 .chat .cl{padding:.18em 0;line-height:1.45}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .xtra{margin-top:8px;text-align:left;font-size:.78rem}.xtra summary{cursor:pointer;color:#f87171;font-weight:700;text-align:center;padding:4px;border:1px solid #7f1d1d;border-radius:8px}
@@ -221,13 +222,30 @@ ${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels �
 <h2>What it looks like</h2>
 ${chatExamples(botName)}
 
+<h2 id="scrap">How to scrap extra deviations</h2>
+<div class="card">
+<p style="margin-top:0">Caught the same deviation more than once? Keep the best one and scrap the rest. Each scrap gives you <b>${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit</b> and frees up a Securement Pod. You always keep at least one of every deviation, so you can't scrap your last one. Variations and skins can be scrapped too, but only if you pick them.</p>
+<div class="howto"><div><h3>On this website</h3><ol>
+<li>Open <a href="/me">My Securement Pods</a> (top of the page) and <b>Sign in with Twitch</b>. The Scrap buttons only show on your own page while you're signed in.</li>
+<li>Find the deviation you have extras of (the <b>×2</b>, <b>×3</b>… in the corner).</li>
+<li>Click the red <b>Scrap extras</b> button at the bottom of that card (clicking the picture doesn't do anything).</li>
+<li>Every copy you own is listed with its Skill/Activity rating, variation or skin, and traits; your best one is marked <b>Best</b>.</li>
+<li>Click <b>Scrap</b> on the one you don't want and confirm.</li></ol></div>
+<div><h3>In the Twitch panel</h3><ol>
+<li>Under the stream, open the <b>Securement Pods</b> panel and click <b>Show my Securement Pods</b> (first time only).</li>
+<li>Click the deviation you have extras of.</li>
+<li>Every copy you own is listed with its ratings and traits.</li>
+<li>Click <b>Scrap for ${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit</b> on the one you don't want, then <b>Scrap</b> to confirm.</li></ol></div></div>
+<p>There's no chat command for scrapping — <kbd>!scrap</kbd> just tells you where to go.</p>
+</div>
+
 <h2>Viewer commands</h2>
 <div class="card">
 <p><kbd>!secure</kbd> — throw a Securement Unit at the loose deviation (one throw per spawn). <kbd>!catch</kbd> works too.</p>
 <p><kbd>!units</kbd> — your Starchrom and Units · <kbd>!shop</kbd> — prices · <kbd>!buy 5</kbd> — buy Securement Units</p>
 <p><kbd>!daily</kbd> — free supply drop (+${ECONOMY.daily.starchrom} Starchrom and ${ECONOMY.daily.units.standard} Securement Unit), once a day (resets at midnight Central) during a live stream, plus ${ECONOMY.hourlyUnits} free Securement Unit and ${ECONOMY.hourlyStarchrom} Starchrom every hour for the rest of the day while you're in a live stream</p>
 <p><kbd>!pods</kbd> — your Securement Pods and collection link · <kbd>!pods name</kbd> — someone else's</p>
-<p><b>Scrapping</b> is done in the Securement Pods panel under the stream, or on your own collection page when you're signed in with Twitch (<b>Scrap extras</b> on a card): pick a deviation and scrap the extra you don't want for ${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit (you always keep at least one).</p>
+<p><b>Scrapping</b> — got duplicates? Scrap the ones you don't want for ${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit each (see <a href="#scrap">How to scrap</a> below).</p>
 <p><kbd>!traits</kbd> — your latest catch's Skill Rating, Activity Rating and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
 <p><kbd>!dev behemoth</kbd> — what a deviation does and where it drops · <kbd>!hunttop</kbd> — leaderboard · <kbd>!hunt</kbd> — help</p>
 </div>
@@ -294,7 +312,7 @@ function collectionPage(p, viewer, msg) {
 <h1>${esc(p.display)}'s Securement Pods</h1>${msg && msg.scrap && !msg.dev ? `<div class="snote err">${esc(msg.text)}</div>` : ""}
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variations}/${totalOf("variation")}</b>variations</div><div class="stat"><b style="color:#f0abfc">${c.skins}/${totalOf("skin")}</b>skins</div><div class="stat"><b>${game.podsUsed(live)}/${game.unitCap(live)}</b>Securement Pods · ${fmt(c.total)} secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
-<p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
+${owner ? `<p class="snote ok" style="text-align:left">♻️ Have duplicates? Click the red <b>Scrap extras</b> button at the bottom of any card marked ×2 or more to scrap the copies you don't want (${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit each). <a href="/#scrap">How scrapping works</a></p>` : ""}<p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
 <div id="shop">${webShop(p, live, viewer, msg)}</div>
 <p>Empty Securement Units: <b>${units.standard || 0}</b> · Securement Pods used: <b>${game.podsUsed(live)}/${game.unitCap(live)}</b> (caught + empty)${(() => { const g = game.bestGlove(live); return g ? ` · 🧤 <b style="color:${g.color}">${esc(g.name)}</b> (+${Math.round(g.bonus * 100)}% catch)` : ""; })()} · next free unit: ${game.nextUnitIn(live)} (1 every hour while you're in a live stream, after today's <kbd>!daily</kbd>)</p>
 ${cards}`);
