@@ -55,7 +55,12 @@ const VARIANT = {
   // Every variation and skin is Legendary, whatever the base deviation's rarity.
   variation: { chance: 1 / 12, catch: 0.12, rarity: "legendary", rewardMult: 1, label: "Variation" },
   skin:      { chance: 1 / 40, catch: 0.09, rarity: "legendary", rewardMult: 1, label: "Skin" },
+  // the Chaos variation (Mini Wonder, Mr. Wish, Snowsprite, Zeno-Purifier): 1 in 375 of ALL spawns, 2.5% capture
+  chaos:     { chance: 1 / 375, catch: 0.025, rarity: "legendary", rewardMult: 1, label: "Chaos Variation", names: ["Chaos"] },
 };
+// which rule a spawned/caught variant follows
+const isChaos = (v) => !!v && VARIANT.chaos.names.some((n) => n.toLowerCase() === String(v.name || v).toLowerCase());
+const variantRule = (v) => (!v ? null : isChaos(v) ? VARIANT.chaos : VARIANT[v.kind] || null);
 
 // One kind of Securement Unit (the "ball"), bought with Starchrom.
 const UNITS = {
@@ -104,4 +109,4 @@ const BITS_PACKS = [
   { sku: "pods5",         bits: 50,  capacity: 5 },
 ];
 
-module.exports = { TIERS, ASSIGN, VARIANT, UNITS, ECONOMY, GLOVES, BITS_PACKS, rarityOf, unitKey };
+module.exports = { TIERS, ASSIGN, VARIANT, isChaos, variantRule, UNITS, ECONOMY, GLOVES, BITS_PACKS, rarityOf, unitKey };

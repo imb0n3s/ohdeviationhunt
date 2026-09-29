@@ -8,7 +8,7 @@ for (const k of ["TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET", "ADMIN_KEY", "SESSI
 process.env.BASE_URL ||= "https://deviationhunt.ohwikiguide.com";
 const path = require("path");
 const cfg = require("../config");
-const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, rarityOf } = require("../rarity");
+const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, rarityOf, isChaos } = require("../rarity");
 const { RATING_WEIGHTS, SLOT_CHANCE } = require("../traits");
 const devs = require(path.join(__dirname, "..", "combat-fallback.json"));
 
@@ -156,6 +156,7 @@ ${table(["Rarity", "Spawn chance", "Capture rate", `${SC} reward`, "Deviations"]
 * '''Every Variation and Skin is ${tierTag("legendary")}''', no matter the rarity of the deviation it belongs to — a Common deviation's variations and skins are Legendary too.
 * '''Variations''' spawn about ${pct(VARIANT.variation.chance)} of the time (on deviations that have them), with a flat '''${pct(VARIANT.variation.catch)}''' capture rate and ${TIERS[VARIANT.variation.rarity].reward * VARIANT.variation.rewardMult} ${SC}.
 * '''Skins''' spawn about ${pct(VARIANT.skin.chance)} of the time (on deviations that have them), with a flat '''${pct(VARIANT.skin.catch)}''' capture rate and ${skinReward} ${SC}.
+* '''Chaos variation''' — the rarest spawn in the game. ${devs.filter((d) => d.variants.some(isChaos)).map((d) => d.name).join(", ")} can appear as their ''Chaos'' variation in '''1 in ${Math.round(1 / VARIANT.chaos.chance)}''' of all spawns, with a flat '''${+(VARIANT.chaos.catch * 100).toFixed(1)}%''' capture rate (Legendary, ${TIERS[VARIANT.chaos.rarity].reward * VARIANT.chaos.rewardMult} ${SC}). Chaos never shows up as a normal variation roll.
 * Capture rates never go above ${pct(ECONOMY.maxCatchChance)}.
 `));
 

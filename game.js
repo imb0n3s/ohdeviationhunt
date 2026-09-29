@@ -3,7 +3,7 @@ const cfg = require("./config");
 const db = require("./db");
 const data = require("./data");
 const traits = require("./traits");
-const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, unitKey } = require("./rarity");
+const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, unitKey, isChaos, variantRule } = require("./rarity");
 
 const SC = "Starchrom";
 const shopCatalog = require("./shop");
@@ -82,13 +82,19 @@ function weightedPick(items, weightOf) {
 function rollSpawn() {
   const all = data.all();
   if (!all.length) return null;
+  // the Chaos variation is its own 1-in-375 roll across every spawn
+  const chaosDevs = all.filter((d) => d.variants.some(isChaos));
+  if (chaosDevs.length && Math.random() < VARIANT.chaos.chance) {
+    const dev = chaosDevs[Math.floor(Math.random() * chaosDevs.length)];
+    return { dev, variant: dev.variants.find(isChaos) };
+  }
   const tiersPresent = Object.keys(TIERS).filter((t) => all.some((d) => d.rarity === t));
   const tier = weightedPick(tiersPresent, (t) => TIERS[t].weight);
   const pool = all.filter((d) => d.rarity === tier);
   const dev = pool[Math.floor(Math.random() * pool.length)];
   let variant = null;
   const skins = dev.variants.filter((v) => v.kind === "skin");
-  const vars = dev.variants.filter((v) => v.kind === "variation");
+  const vars = dev.variants.filter((v) => v.kind === "variation" && !isChaos(v)); // Chaos only comes from its own roll
   const r = Math.random();
   if (skins.length && r < VARIANT.skin.chance) variant = skins[Math.floor(Math.random() * skins.length)];
   else if (vars.length && r < VARIANT.skin.chance + VARIANT.variation.chance) variant = vars[Math.floor(Math.random() * vars.length)];
@@ -113,20 +119,22 @@ function bestGlove(p) {
 
 function catchChance(s, unit, bonus = 0) {
   // variations and skins are always Legendary with their own flat capture rate
-  const v = s.variant && VARIANT[s.variant.kind];
+  const v = variantRule(s.variant);
   if (v) return Math.min(ECONOMY.maxCatchChance, v.catch + bonus);
   const c = TIERS[s.dev.rarity].catch * UNITS[unit].mult;
   return Math.min(ECONOMY.maxCatchChance, c + bonus);
 }
 
 function rewardFor(s) {
-  const v = s.variant && VARIANT[s.variant.kind];
+  const v = variantRule(s.variant);
   if (v) return TIERS[v.rarity].reward * v.rewardMult;
   return TIERS[s.dev.rarity].reward;
 }
 
 function spawnAnnouncement(s) {
-  const v = s.variant ? ` ✨ LEGENDARY ${VARIANT[s.variant.kind].label.toUpperCase()}: ${s.variant.name}!` : "";
+  const v = !s.variant ? ""
+    : isChaos(s.variant) ? ` 🌀✨ ULTRA-RARE LEGENDARY CHAOS VARIATION! (1 in ${Math.round(1 / VARIANT.chaos.chance)} spawns, ${VARIANT.chaos.catch * 100}% capture)`
+    : ` ✨ LEGENDARY ${VARIANT[s.variant.kind].label.toUpperCase()}: ${s.variant.name}!`;
   return `👀 A ${s.dev.name} has been spotted in the wild!${v} Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`;
 }
 
