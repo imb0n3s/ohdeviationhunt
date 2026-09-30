@@ -85,12 +85,12 @@ function makeHandler(pool, spawns) {
       if (mod && (sub === "chatdelay" || sub === "delay")) {
         if (args[1] === undefined) {
           const v = db.getSetting(`chatdelay:${bid}`);
-          return reply(`Chat waits ${v === null ? cfg.RESULT_CHAT_DELAY_SECONDS : v}s after a deviation is secured/gets away before posting the result, so the OBS Source shows it first (only while the OBS Source is on your stream). Change it: !hunt chatdelay <0-30>`);
+          return reply(`Chat waits ${v === null ? cfg.RESULT_CHAT_DELAY_SECONDS : v}s after a deviation appears on screen and after it's secured/gets away, so the OBS Source shows it first (only while the OBS Source is on your stream). Change it: !hunt chatdelay <0-30>`);
         }
         const n = parseInt(args[1], 10);
         if (!(n >= 0 && n <= 30)) return reply("Usage: !hunt chatdelay <seconds 0-30> (0 = post right away)");
         db.setSetting(`chatdelay:${bid}`, String(n));
-        return reply(n ? `Got it — the result will post in chat ${n}s after it resolves, so the OBS Source shows who caught it first.` : "Got it — results post in chat right away.");
+        return reply(n ? `Got it — spawns and results post in chat ${n}s after the OBS Source shows them (the catch window gets the extra ${n}s too).` : "Got it — spawns and results post in chat right away.");
       }
       if (mod && (sub === "off" || sub === "on")) {
         db.setSpawnsOn(bid, sub === "on");

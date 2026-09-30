@@ -264,13 +264,19 @@ class Spawns {
     if (!s) return { error: "nodata" };
     s.attempts = new Map();
     s.warned = new Set();
-    s.endsAt = Date.now() + cfg.SPAWN_WINDOW_SECONDS * 1000;
-    s.timer = setTimeout(() => this.resolve(bid).catch((e) => console.error("[resolve]", e)), cfg.SPAWN_WINDOW_SECONDS * 1000);
+    // With the OBS Source on stream it shows up on screen first and chat hears about it after the
+    // chat delay (stream video lags chat). The window is extended by that delay so chat still gets
+    // the full SPAWN_WINDOW_SECONDS from the announcement.
+    const delay = this.chatDelayMs(bid);
+    s.windowMs = cfg.SPAWN_WINDOW_SECONDS * 1000 + delay;
+    s.endsAt = Date.now() + s.windowMs;
+    s.timer = setTimeout(() => this.resolve(bid).catch((e) => console.error("[resolve]", e)), s.windowMs);
     this.active.set(bid, s);
     this.persist(bid);
-    this.scheduleNext(bid, this.intervalMs(bid) + cfg.SPAWN_WINDOW_SECONDS * 1000);
-    console.log(`[spawn] ${bid}: ${spawnName(s)} (${s.dev.rarity})${forced ? " [forced]" : ""}`);
-    await this.send(bid, spawnAnnouncement(s));
+    this.scheduleNext(bid, this.intervalMs(bid) + s.windowMs);
+    console.log(`[spawn] ${bid}: ${spawnName(s)} (${s.dev.rarity})${forced ? " [forced]" : ""}${delay ? ` [chat in ${delay / 1000}s]` : ""}`);
+    if (!delay) await this.send(bid, spawnAnnouncement(s));
+    else setTimeout(() => { if (this.active.get(bid) === s) Promise.resolve(this.send(bid, spawnAnnouncement(s))).catch((e) => console.error("[spawn] delayed send", e.message)); }, delay);
     return { spawn: s };
   }
 

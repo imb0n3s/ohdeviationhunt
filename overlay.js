@@ -50,7 +50,7 @@ function stateFor(pool, code) {
     name: s.dev.name,
     variant: s.variant ? { name: s.variant.name, kind: s.variant.kind } : null,
     img: (s.variant && s.variant.img) || s.dev.img,
-    endsAt: s.endsAt, now: Date.now(), windowMs: cfg.SPAWN_WINDOW_SECONDS * 1000,
+    endsAt: s.endsAt, now: Date.now(), windowMs: s.windowMs || cfg.SPAWN_WINDOW_SECONDS * 1000,
   };
 }
 
