@@ -366,11 +366,13 @@ function dexPage() {
 }
 
 function topPage() {
-  const rows = db.leaderboard(100); // top 100, including players who haven't caught anything yet
-  const body = rows.length
-    ? `<div class="card"><table><tr><th>#</th><th>Meta</th><th>Deviations</th><th>Variants</th><th>Total</th></tr>${rows.map((r, i) => `<tr><td>${i + 1}</td><td><a href="/u/${esc(r.login)}">${esc(r.display)}</a></td><td>${r.species}/${data.all().length}</td><td>${r.variants}</td><td>${fmt(r.total)}</td></tr>`).join("")}</table></div>`
-    : `<p>No one has secured a deviation yet.</p>`;
-  return page("Leaderboard", `<h1>Leaderboard — Top 100</h1>${body}`);
+  // streamers (channels running the game) get their own top 10; everyone else is the top 100
+  const table = (rows, who) => rows.length
+    ? `<div class="card"><table><tr><th>#</th><th>${who}</th><th>Deviations</th><th>Variants</th><th>Total</th></tr>${rows.map((r, i) => `<tr><td>${i + 1}</td><td><a href="/u/${esc(r.login)}">${esc(r.display)}</a></td><td>${r.species}/${data.all().length}</td><td>${r.variants}</td><td>${fmt(r.total)}</td></tr>`).join("")}</table></div>`
+    : `<p>No one here yet.</p>`;
+  return page("Leaderboard", `<h1>Leaderboard</h1>
+<h2>🎥 Streamers — Top 10</h2><p>Streamers running Deviation Hunt on their channel.</p>${table(db.leaderboard(10, "streamers"), "Streamer")}
+<h2>🏆 Metas — Top 100</h2><p>Everyone else, including players who haven't secured anything yet.</p>${table(db.leaderboard(100, "viewers"), "Meta")}`);
 }
 
 function createApp(pool) {

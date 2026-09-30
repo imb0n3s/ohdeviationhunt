@@ -161,7 +161,8 @@ const q = {
       COALESCE(SUM(CASE WHEN c.variant<>'' THEN 1 ELSE 0 END),0) AS variants,
       COALESCE(SUM(c.count),0) AS total
     FROM players p LEFT JOIN catches c ON c.user_id=p.user_id
-    GROUP BY p.user_id ORDER BY species DESC, variants DESC, total DESC, LOWER(p.display) ASC LIMIT ?`),
+    WHERE (@who = 'all' OR (p.user_id IN (SELECT broadcaster_id FROM channels WHERE enabled=1)) = (@who = 'streamers'))
+    GROUP BY p.user_id ORDER BY species DESC, variants DESC, total DESC, LOWER(p.display) ASC LIMIT @n`),
 
   addSpecimen: db.prepare(`INSERT INTO specimens (user_id, deviation, variant, power, mood, t1, t1_level, t2, t3, caught_at, channel)
     VALUES (@user_id, @deviation, @variant, @power, @mood, @t1, @t1_level, @t2, @t3, @caught_at, @channel)`),
@@ -208,6 +209,7 @@ module.exports = {
   // running total of all Starchrom players have spent (throws + shop), kept in settings
   starchromSpent: () => Number(q.getSetting.get("stat:starchrom_spent")?.value || 0),
   addSpent: (n) => { if (n > 0) q.setSetting.run("stat:starchrom_spent", String(Number(q.getSetting.get("stat:starchrom_spent")?.value || 0) + n)); },
-  leaderboard: (n = 10) => q.leaderboard.all(n),
+  // who: "all" | "streamers" (channels running the game) | "viewers" (everyone else)
+  leaderboard: (n = 10, who = "all") => q.leaderboard.all({ n, who }),
   logSpawn: (bid, dev, variant, attempts, caught) => q.logSpawn.run(Date.now(), bid, dev, variant || "", attempts, caught),
 };
