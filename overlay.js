@@ -104,18 +104,19 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 .bar{width:300px;height:8px;margin:12px auto 0;background:rgba(13,19,25,.8);border-radius:99px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#0ea5e9,#7dd3fc);transform-origin:left}
 #card.variation .bar i{background:linear-gradient(90deg,#f59e0b,#fde68a)}#card.skin .bar i{background:linear-gradient(90deg,#d946ef,#f5d0fe)}
-#res{position:absolute;left:50%;top:50%;width:440px;transform:translate(-50%,-50%) scale(.6);opacity:0;transition:opacity .35s ease,transform .45s cubic-bezier(.2,1.4,.4,1);text-align:center;color:#fff}
+#res{position:absolute;left:50%;top:50%;width:580px;transform:translate(-50%,-50%) scale(.6);opacity:0;transition:opacity .35s ease,transform .45s cubic-bezier(.2,1.4,.4,1);text-align:center;color:#fff}
 #res.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
-#res .rt{display:inline-block;font-weight:900;letter-spacing:3px;font-size:18px;padding:6px 18px;border-radius:999px;color:#04121c;background:#22c55e;box-shadow:0 4px 18px rgba(0,0,0,.5)}
-#res.legend .rt{background:linear-gradient(90deg,#fbbf24,#fde68a,#fbbf24)}#res.miss .rt{background:#64748b;color:#fff}
-#res .glow{width:210px;height:210px;margin:8px auto 0}#res .glow:before{background:radial-gradient(circle,rgba(34,197,94,.55),rgba(34,197,94,0) 70%)}
-#res.legend .glow:before{background:radial-gradient(circle,rgba(251,191,36,.7),rgba(251,191,36,0) 70%)}#res.miss .glow:before{background:radial-gradient(circle,rgba(148,163,184,.4),rgba(148,163,184,0) 70%)}
-#res.miss .glow img{filter:grayscale(.7) drop-shadow(0 8px 18px rgba(0,0,0,.6));opacity:.8}
-#res .rn{font-size:28px;font-weight:900;text-shadow:0 3px 10px #000}#res .rr{font-size:15px;font-weight:800;color:#38bdf8;text-shadow:0 2px 6px #000}#res.legend .rr{color:#fbbf24}
-#res .list{margin:12px auto 0;display:flex;flex-direction:column;gap:6px;width:340px}
-#res .row{display:flex;justify-content:space-between;align-items:center;background:rgba(8,14,20,.85);border:1px solid rgba(34,197,94,.55);border-radius:10px;padding:7px 12px;font-weight:800;font-size:17px;text-shadow:0 1px 3px #000}
-#res.legend .row{border-color:rgba(251,191,36,.6)}#res .row span{font-size:14px;color:#fde68a}
-#res .more,#res .missed{margin-top:8px;font-size:13px;color:rgba(255,255,255,.75);text-shadow:0 2px 6px #000}
+#res .rt{display:inline-block;font-weight:900;letter-spacing:3px;font-size:30px;padding:8px 24px;border-radius:999px;color:#04121c;background:#22c55e;box-shadow:0 4px 18px rgba(0,0,0,.6)}
+#res .rt{white-space:nowrap}#res.legend .rt{font-size:26px;letter-spacing:2px;background:linear-gradient(90deg,#fbbf24,#fde68a,#fbbf24)}
+#res .glow{width:170px;height:170px;margin:6px auto 0}#res .glow:before{background:radial-gradient(circle,rgba(34,197,94,.55),rgba(34,197,94,0) 70%)}
+#res.legend .glow:before{background:radial-gradient(circle,rgba(251,191,36,.7),rgba(251,191,36,0) 70%)}
+#res .rn{font-size:40px;font-weight:900;line-height:1.1;text-shadow:0 3px 10px #000,0 0 3px #000}#res .rr{font-size:24px;font-weight:800;color:#38bdf8;text-shadow:0 2px 6px #000,0 0 2px #000}#res.legend .rr{color:#fbbf24}
+#res .list{margin:10px auto 0;display:flex;flex-direction:column;gap:8px;width:580px}
+#res .row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:rgba(8,14,20,.9);border:2px solid rgba(34,197,94,.7);border-radius:14px;padding:8px 16px;font-weight:900;font-size:36px;line-height:1.15;text-shadow:0 2px 4px #000}
+#res .row b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#res.legend .row{border-color:rgba(251,191,36,.8)}#res .row span{font-size:30px;color:#fde68a;white-space:nowrap}
+#res.many .row{font-size:28px;padding:5px 14px}#res.many .row span{font-size:24px}#res.many .glow{width:120px;height:120px}
+#res .more,#res .missed{margin-top:8px;font-size:22px;font-weight:700;color:rgba(255,255,255,.85);text-shadow:0 2px 6px #000,0 0 2px #000}
 </style></head><body>
 <div id="card"><div class="tag">Spotted in the wild</div>
 <div class="glow"><img id="img" alt=""></div>
@@ -145,12 +146,12 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
     var won=r.winners&&r.winners.length, legend=r.tier==="legendary";
     var star=legend?"\ud83c\udf1f":"\u2b50", stars=new Array(r.stars+1).join(star);
     txt("rt", won?(legend?star+" LEGENDARY SECURED! "+star:stars+" SECURED! "+stars):(r.tried?"\ud83d\udca5 GOT AWAY!":"\ud83d\udca8 SLIPPED AWAY"));
-    document.getElementById("rimg").src=r.img; txt("rn",r.name); txt("rr",(r.variant?r.variant+" \u00b7 ":"")+r.tierLabel);
+    document.getElementById("rimg").src=r.img; txt("rn",r.name); txt("rr",(r.variant?r.variant+" \u00b7 ":"")+r.tierLabel+" \u00b7 +"+r.reward);
     var list=document.getElementById("rlist"); list.innerHTML="";
-    (r.winners||[]).slice(0,5).forEach(function(w){var d=document.createElement("div");d.className="row";d.textContent="@"+w.name;var sp=document.createElement("span");sp.textContent=w.rating+" \u00b7 +"+r.reward;d.appendChild(sp);list.appendChild(d);});
-    if((r.winners||[]).length>5){var m=document.createElement("div");m.className="more";m.textContent="+"+(r.winners.length-5)+" more";list.appendChild(m);}
+    (r.winners||[]).slice(0,4).forEach(function(w){var d=document.createElement("div");d.className="row";var nb=document.createElement("b");nb.textContent="@"+w.name;d.appendChild(nb);var sp=document.createElement("span");sp.textContent=w.rating;d.appendChild(sp);list.appendChild(d);});
+    if((r.winners||[]).length>4){var m=document.createElement("div");m.className="more";m.textContent="+"+(r.winners.length-4)+" more";list.appendChild(m);}
     var esc=r.escaped||[]; txt("rmiss", esc.length?("\ud83d\udca5 "+(won?"Broke free from ":"Got away from ")+esc.slice(0,4).join(", ")+(esc.length>4?" +"+(esc.length-4)+" more":"")):(r.tried?"":"Nobody tried to secure it"));
-    res.className=(won?(legend?"legend":""):"miss")+" show";
+    res.className=(won?(legend?"legend":""):"miss")+((r.winners||[]).length>=3?" many":"")+" show";
   }
   function hideResult(){ if(res.className.indexOf("show")>=0) res.className=res.className.replace("show","").trim(); }
   function tick(){
