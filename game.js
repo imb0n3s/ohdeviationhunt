@@ -259,9 +259,9 @@ class Spawns {
   attempt(bid, userId, login, display, unitWord) {
     const s = this.active.get(bid);
     if (!s) return null; // nothing out right now — stay silent so chat isn't spammed
-    if (s.attempts.has(userId)) return null;
     // tell each viewer about a problem at most once per spawn
     const warn = (msg) => { if (s.warned.has(userId)) return null; s.warned.add(userId); return msg; };
+    if (s.attempts.has(userId)) return warn(`@${display} you already threw at this ${spawnName(s)} — one throw per deviation. Wait and see if you secured it!`);
     const unit = "standard";
     const p = loadPlayer(userId, login, display);
     if (p.starchrom < ECONOMY.throwCost) {
