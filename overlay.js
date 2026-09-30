@@ -28,12 +28,18 @@ function codeFor(bid) {
 const channelForCode = (code) => db.q.getSetting.get(`obs-code:${String(code).toLowerCase()}`)?.value || null;
 const linkFor = (bid) => `${cfg.BASE_URL}/obs-source/${codeFor(bid)}`;
 
+const RESULT_MS = 12000; // how long the "who caught it" card stays up
+
 function stateFor(pool, code) {
   const bid = channelForCode(code);
   const ch = bid && db.getChannel(bid);
   if (!ch) return { ok: false, error: "unknown_channel" };
   const s = pool?.spawns?.active.get(bid);
-  if (!s || !(s.endsAt > Date.now())) return { ok: true, active: false };
+  if (!s || !(s.endsAt > Date.now())) {
+    // just resolved? show who caught it for a few seconds
+    const r = pool?.spawns?.lastResult?.get(bid);
+    return r && Date.now() - r.at < RESULT_MS ? { ok: true, active: false, result: r, now: Date.now() } : { ok: true, active: false };
+  }
   return {
     ok: true, active: true,
     id: `${s.dev.id}:${s.endsAt}`,             // changes for every new spawn
@@ -54,7 +60,23 @@ function page(code, demo) {
     : demo === "base" ? null
     : demo === "skin" ? sample.variants.find((x) => x.kind === "skin") || null
     : sample.variants.find((x) => x.kind === "variation") || sample.variants[0] || null;
+  // results-card demos: "result" (Rare catch), "resultlegend" (Chaos), "resultmiss" (got away)
+  if (demo === "result" || demo === "resultlegend" || demo === "resultmiss") {
+    const d = all.find((x) => x.id === "snowsprite") || all[0];
+    const chaos = demo === "resultlegend" ? d.variants.find((x) => /chaos/i.test(x.name)) : null;
+    const tier = chaos ? "legendary" : d.rarity;
+    const T = require("./rarity").TIERS;
+    const r = { id: "demo-result", name: d.name, img: (chaos && chaos.img) || d.img, tier, tierLabel: T[tier].label,
+      variant: chaos ? "🌀 Chaos Variation" : null, stars: { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 }[tier],
+      winners: demo === "resultmiss" ? [] : [{ name: "imbon3s", rating: "4/2" }, { name: "luna_raventhorn", rating: "5/5 ⭐" }],
+      escaped: ["DeeOhGee024"], reward: T[tier].reward, tried: 3, demo: true };
+    return pageHtml(code, "null", JSON.stringify(r));
+  }
   const demoState = sample ? JSON.stringify({ ok: true, active: true, id: "demo", name: sample.name, variant: v ? { name: v.name, kind: v.kind } : null, img: (v && v.img) || sample.img, demo: true, windowMs: cfg.SPAWN_WINDOW_SECONDS * 1000 }) : "null";
+  return pageHtml(code, demoState, "null");
+}
+
+function pageHtml(code, demoState, demoResult) {
   return `<!doctype html><html><head><meta charset="utf-8"><title>Deviation Hunt — OBS Source</title>
 <style>
 html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
@@ -80,6 +102,18 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 .bar{width:300px;height:8px;margin:12px auto 0;background:rgba(13,19,25,.8);border-radius:99px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#0ea5e9,#7dd3fc);transform-origin:left}
 #card.variation .bar i{background:linear-gradient(90deg,#f59e0b,#fde68a)}#card.skin .bar i{background:linear-gradient(90deg,#d946ef,#f5d0fe)}
+#res{position:absolute;left:50%;top:50%;width:440px;transform:translate(-50%,-50%) scale(.6);opacity:0;transition:opacity .35s ease,transform .45s cubic-bezier(.2,1.4,.4,1);text-align:center;color:#fff}
+#res.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#res .rt{display:inline-block;font-weight:900;letter-spacing:3px;font-size:18px;padding:6px 18px;border-radius:999px;color:#04121c;background:#22c55e;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+#res.legend .rt{background:linear-gradient(90deg,#fbbf24,#fde68a,#fbbf24)}#res.miss .rt{background:#64748b;color:#fff}
+#res .glow{width:210px;height:210px;margin:8px auto 0}#res .glow:before{background:radial-gradient(circle,rgba(34,197,94,.55),rgba(34,197,94,0) 70%)}
+#res.legend .glow:before{background:radial-gradient(circle,rgba(251,191,36,.7),rgba(251,191,36,0) 70%)}#res.miss .glow:before{background:radial-gradient(circle,rgba(148,163,184,.4),rgba(148,163,184,0) 70%)}
+#res.miss .glow img{filter:grayscale(.7) drop-shadow(0 8px 18px rgba(0,0,0,.6));opacity:.8}
+#res .rn{font-size:28px;font-weight:900;text-shadow:0 3px 10px #000}#res .rr{font-size:15px;font-weight:800;color:#38bdf8;text-shadow:0 2px 6px #000}#res.legend .rr{color:#fbbf24}
+#res .list{margin:12px auto 0;display:flex;flex-direction:column;gap:6px;width:340px}
+#res .row{display:flex;justify-content:space-between;align-items:center;background:rgba(8,14,20,.85);border:1px solid rgba(34,197,94,.55);border-radius:10px;padding:7px 12px;font-weight:800;font-size:17px;text-shadow:0 1px 3px #000}
+#res.legend .row{border-color:rgba(251,191,36,.6)}#res .row span{font-size:14px;color:#fde68a}
+#res .more,#res .missed{margin-top:8px;font-size:13px;color:rgba(255,255,255,.75);text-shadow:0 2px 6px #000}
 </style></head><body>
 <div id="card"><div class="tag">Spotted in the wild</div>
 <div class="glow"><img id="img" alt=""></div>
@@ -87,9 +121,10 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 <div class="cta">Type <b>!secure</b> to catch it</div>
 <div class="bar"><i id="bar"></i></div>
 <div class="count" id="count">0:00<small>left to catch</small></div></div>
+<div id="res"><div class="rt" id="rt"></div><div class="glow"><img id="rimg" alt=""></div><div class="rn" id="rn"></div><div class="rr" id="rr"></div><div class="list" id="rlist"></div><div class="missed" id="rmiss"></div></div>
 <script>
 (function(){
-  var code=${JSON.stringify(code)}, demo=${demoState}, card=document.getElementById("card"), bar=document.getElementById("bar"), count=document.getElementById("count");
+  var code=${JSON.stringify(code)}, demo=${demoState}, demoResult=${demoResult}, res=document.getElementById("res"), shownResult=null, card=document.getElementById("card"), bar=document.getElementById("bar"), count=document.getElementById("count");
   function setCount(sec){ sec=Math.max(0,Math.ceil(sec)); count.firstChild.nodeValue=Math.floor(sec/60)+":"+("0"+(sec%60)).slice(-2); count.className="count"+(sec<=10?" low":""); }
   var current=null, skew=0, hideTimer=null;
   function show(s){
@@ -101,6 +136,21 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
     card.className=(s.variant?s.variant.kind:"")+" show";
   }
   function hide(){current=null;card.className=(card.className||"").replace("show","").trim();}
+  function txt(id,t){document.getElementById(id).textContent=t;}
+  // "who caught it" card, shown for a few seconds after the deviation is gone
+  function showResult(r){
+    if(shownResult===r.id)return; shownResult=r.id; hide();
+    var won=r.winners&&r.winners.length, legend=r.tier==="legendary";
+    var star=legend?"\ud83c\udf1f":"\u2b50", stars=new Array(r.stars+1).join(star);
+    txt("rt", won?(legend?star+" LEGENDARY SECURED! "+star:stars+" SECURED! "+stars):(r.tried?"\ud83d\udca5 GOT AWAY!":"\ud83d\udca8 SLIPPED AWAY"));
+    document.getElementById("rimg").src=r.img; txt("rn",r.name); txt("rr",(r.variant?r.variant+" \u00b7 ":"")+r.tierLabel);
+    var list=document.getElementById("rlist"); list.innerHTML="";
+    (r.winners||[]).slice(0,5).forEach(function(w){var d=document.createElement("div");d.className="row";d.textContent="@"+w.name;var sp=document.createElement("span");sp.textContent=w.rating+" \u00b7 +"+r.reward;d.appendChild(sp);list.appendChild(d);});
+    if((r.winners||[]).length>5){var m=document.createElement("div");m.className="more";m.textContent="+"+(r.winners.length-5)+" more";list.appendChild(m);}
+    var esc=r.escaped||[]; txt("rmiss", esc.length?("\ud83d\udca5 "+(won?"Broke free from ":"Got away from ")+esc.slice(0,4).join(", ")+(esc.length>4?" +"+(esc.length-4)+" more":"")):(r.tried?"":"Nobody tried to secure it"));
+    res.className=(won?(legend?"legend":""):"miss")+" show";
+  }
+  function hideResult(){ if(res.className.indexOf("show")>=0) res.className=res.className.replace("show","").trim(); }
   function tick(){
     if(!current)return;
     if(current.demo){var d=${cfg.SPAWN_WINDOW_SECONDS}-((Date.now()/1000)%${cfg.SPAWN_WINDOW_SECONDS});bar.style.transform="scaleX("+(d/${cfg.SPAWN_WINDOW_SECONDS})+")";setCount(d);return;}
@@ -110,11 +160,12 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
   }
   function poll(){
     fetch("/obs-source/"+encodeURIComponent(code)+"/state",{cache:"no-store"}).then(function(r){return r.json();}).then(function(s){
-      if(s.active){skew=s.now-Date.now();show(s);}else if(current)hide();
+      if(s.active){skew=s.now-Date.now();hideResult();show(s);}
+      else { if(current)hide(); if(s.result)showResult(s.result); else hideResult(); }
     }).catch(function(){}).then(function(){setTimeout(poll,1500);});
   }
   setInterval(tick,100);
-  if(demo)show(demo);else poll();
+  if(demoResult)showResult(demoResult);else if(demo)show(demo);else poll();
 })();
 </script></body></html>`;
 }
@@ -127,7 +178,7 @@ function mount(app, pool) {
   });
   // public preview for the homepage: /obs-preview?kind=base|variation|skin
   app.get("/obs-preview", (req, res) => {
-    const kind = ["base", "variation", "skin"].includes(req.query.kind) ? req.query.kind : "base";
+    const kind = ["base", "variation", "skin", "result", "resultlegend", "resultmiss"].includes(req.query.kind) ? req.query.kind : "base";
     res.set("Cache-Control", "public, max-age=300");
     res.send(page("preview", kind));
   });
@@ -135,7 +186,7 @@ function mount(app, pool) {
     const code = String(req.params.code).toLowerCase().replace(/[^a-z0-9]/g, "");
     if (!channelForCode(code)) return res.status(404).send("Unknown OBS Source link. A mod can get the right one by typing !hunt obs in chat.");
     res.set("Cache-Control", "no-store");
-    res.send(page(code, req.query.demo === "1"));
+    res.send(page(code, req.query.demo === "result" ? "result" : req.query.demo === "1"));
   });
 }
 

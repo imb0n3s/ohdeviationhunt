@@ -166,6 +166,7 @@ class Spawns {
     this.nextAt = new Map();       // bid -> ts of the next spawn
     this.lastChat = new Map();     // bid -> ts of the last viewer message
     this.live = new Set();         // bids currently live
+    this.lastResult = new Map();   // bid -> who caught the last spawn (for the OBS source results card)
   }
 
   noteChat(bid) { this.lastChat.set(bid, Date.now()); }
@@ -298,9 +299,10 @@ class Spawns {
     if (!s.attempts.size) {
       db.logSpawn(bid, s.dev.id, s.variant?.name, 0, 0);
       db.bumpChannel(bid, 0);
+      this.recordResult(bid, s, [], [], 0);
       return this.send(bid, `💨 ${name} slipped away. Nobody tried to secure it...`);
     }
-    const caught = [], escaped = [], firsts = [];
+    const caught = [], escaped = [], firsts = [], winners = [];
     const reward = rewardFor(s);
     db.tx(() => {
       for (const [userId, a] of s.attempts) {
@@ -314,6 +316,7 @@ class Spawns {
           p.starchrom += reward + (had ? 0 : ECONOMY.newSpeciesBonus);
           if (!had) firsts.push(a.display);
           caught.push(`a ${ratingTag(sp)} by @${a.display}`);
+          winners.push({ name: a.display, rating: ratingTag(sp) });
         } else {
           p.units[a.unit] = (p.units[a.unit] || 0) + 1; // it broke free, so the unit it was going into is still empty
           escaped.push(a.display);
@@ -323,6 +326,7 @@ class Spawns {
     })();
     db.logSpawn(bid, s.dev.id, s.variant?.name, s.attempts.size, caught.length);
     db.bumpChannel(bid, caught.length);
+    this.recordResult(bid, s, winners, escaped, reward);
 
     const list = (arr, max = 12) => arr.length > max ? `${arr.slice(0, max).join(", ")} +${arr.length - max} more` : arr.join(", ");
     let msg;
@@ -339,6 +343,19 @@ class Spawns {
     }
     msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !pods to see your collection`;
     return this.send(bid, msg);
+  }
+
+  recordResult(bid, s, winners, escaped, reward) {
+    const tier = variantRule(s.variant)?.rarity || s.dev.rarity;
+    const vr = variantRule(s.variant);
+    this.lastResult.set(bid, {
+      id: `${s.dev.id}:${s.endsAt}:done`, at: Date.now(),
+      name: s.dev.name, img: (s.variant && s.variant.img) || s.dev.img,
+      tier, tierLabel: TIERS[tier].label,
+      variant: s.variant ? `${isChaos(s.variant) ? "🌀 Chaos Variation" : `✨ ${s.variant.kind === "skin" ? "Skin" : "Variation"}: ${s.variant.name}`}` : null,
+      stars: { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 }[tier] || 1,
+      winners, escaped, reward, tried: s.attempts.size,
+    });
   }
 
   status(bid) {

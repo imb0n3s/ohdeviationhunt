@@ -213,10 +213,10 @@ ${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels �
 
 <h2>OBS Source</h2>
 <div class="card"><p style="margin-top:0">Show the deviation on your stream while it can be caught: its picture, name, variation or skin, and a countdown. It appears when one is spotted and disappears when it's secured or gets away.</p>
-<p>This is what your viewers see on stream when a deviation shows up (live previews, with the real countdown):</p>
-<div class="obsprev">${[["base", "Normal spawn"], ["variation", "Variation (Legendary)"], ["skin", "Skin (Legendary)"]].map(([k, l]) => `<figure><div class="obsframe"><iframe src="/obs-preview?kind=${k}" title="OBS Source preview: ${l}" loading="lazy" scrolling="no"></iframe></div><figcaption>${l}</figcaption></figure>`).join("")}</div>
+<p>This is what your viewers see on stream when a deviation shows up (live previews, with the real countdown), and for 12 seconds after it's gone: who secured it (gold for Legendary catches) or that it got away:</p>
+<div class="obsprev">${[["base", "Normal spawn"], ["variation", "Variation (Legendary)"], ["skin", "Skin (Legendary)"], ["result", "After: who caught it"]].map(([k, l]) => `<figure><div class="obsframe"><iframe src="/obs-preview?kind=${k}" title="OBS Source preview: ${l}" loading="lazy" scrolling="no"></iframe></div><figcaption>${l}</figcaption></figure>`).join("")}</div>
 <script>(function(){function fit(){document.querySelectorAll(".obsframe").forEach(function(f){var i=f.querySelector("iframe");i.style.transform="scale("+(f.clientWidth/600)+")";});}fit();addEventListener("resize",fit);})();</script>
-<p>Type <kbd>!hunt obs</kbd> in your chat (broadcaster or mods) and the bot replies with your channel's link. In OBS add a <b>Browser</b> source with that link, size <b>600 × 600</b>. Add <code>?demo=1</code> to the end while you position it so you can see it, then remove it.</p></div>
+<p>Type <kbd>!hunt obs</kbd> in your chat (broadcaster or mods) and the bot replies with your channel's link. In OBS add a <b>Browser</b> source with that link, size <b>600 × 600</b>. Add <code>?demo=1</code> to the end while you position it so you can see it (or <code>?demo=result</code> to see the "who caught it" card), then remove it.</p></div>
 
 
 <h2>What it looks like</h2>
