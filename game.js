@@ -443,11 +443,15 @@ function buy(userId, login, display, args) {
 
 // The specimen a deviation's card features: your best-rated skin if you have one, else your best-rated
 // variation, else your best-rated specimen — so the card's picture, name and traits all match.
-// Best first: skin > variation > normal, then Skill+Activity, then Skill (a variant always beats a plain one)
+// Best first: skin > variation > normal, then Legendary traits (e.g. Upper Hand, Power Rewind 2),
+// then Skill+Activity, then Skill, then how many trait slots are filled
+const legendaryTraitCount = (sp) => (sp.t1 && (traits.LEGENDARY_KEYS.has(sp.t1) || (sp.t1 === "power_rewind" && sp.t1_level >= 2)) ? 1 : 0) + (sp.t2 && traits.LEGENDARY_KEYS.has(sp.t2) ? 1 : 0);
+const traitCount = (sp) => (sp.t1 ? 1 : 0) + (sp.t2 ? 1 : 0) + (sp.t3 ? 1 : 0);
 function specimenOrder(specs, dev) {
   const rank = { skin: 2, variation: 1, base: 0 };
   const kindOf = (sp) => (sp.variant ? (dev?.variants.find((v) => v.name === sp.variant)?.kind || "variation") : "base");
-  return specs.slice().sort((a, b) => rank[kindOf(b)] - rank[kindOf(a)] || (b.power + b.mood) - (a.power + a.mood) || b.power - a.power || b.id - a.id);
+  return specs.slice().sort((a, b) => rank[kindOf(b)] - rank[kindOf(a)] || legendaryTraitCount(b) - legendaryTraitCount(a)
+    || (b.power + b.mood) - (a.power + a.mood) || b.power - a.power || traitCount(b) - traitCount(a) || b.id - a.id);
 }
 function featuredSpecimen(specs, dev) {
   return specs.length ? specimenOrder(specs, dev)[0] : null;

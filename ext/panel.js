@@ -158,9 +158,7 @@
     var d = find(id);
     if (!d || !d.owned) { view.open = null; return render(); }
     var topV = featuredVariant(d, caughtVariants(d));
-    var vk = function (x) { if (!x.variant) return 0; var v = (d.variants || []).filter(function (y) { return y.name === x.variant; })[0]; return v && v.kind === "skin" ? 2 : 1; };
-    // best first: skin > variation > normal, then Skill+Activity
-    var specs = (d.specimens || []).slice().sort(function (a, b) { return vk(b) - vk(a) || (b.skill + b.activity) - (a.skill + a.activity) || b.skill - a.skill || b.id - a.id; });
+    var specs = (d.specimens || []).slice(); // already best-first from the server (skin > variation > Legendary trait > rating)
     var canDestroy = d.count > 1, value = bag.destroyValue || 500, units = bag.destroyUnits == null ? 1 : bag.destroyUnits;
     var reward = value.toLocaleString() + ' Starchrom' + (units ? ' + ' + units + ' Securement Unit' + (units > 1 ? 's' : '') : '');
     var html = '<button class="btn ghost" id="back">← Back</button><div class="detail"><div class="hero"><img src="' + esc((topV && topV.img) || d.img) + '" alt="">' +

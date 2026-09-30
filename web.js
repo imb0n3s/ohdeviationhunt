@@ -229,7 +229,7 @@ ${chatExamples(botName)}
 <li>Open <a href="/me">My Securement Pods</a> (top of the page) and <b>Sign in with Twitch</b>. The Scrap buttons only show on your own page while you're signed in.</li>
 <li>Find the deviation you have extras of (the <b>×2</b>, <b>×3</b>… in the corner).</li>
 <li>Click the red <b>Scrap extras</b> button at the bottom of that card (clicking the picture doesn't do anything).</li>
-<li>Every copy you own is listed with its Skill/Activity rating, variation or skin, and traits; your best one is marked <b>Best</b> (a skin beats a variation, a variation beats a normal one, then the higher rating wins).</li>
+<li>Every copy you own is listed with its Skill/Activity rating, variation or skin, and traits; your best one is marked <b>Best</b> (a skin beats a variation, a variation beats a normal one, then a Legendary trait such as Upper Hand, then the higher rating, then more traits).</li>
 <li>Click <b>Scrap</b> on the one you don't want and confirm.</li></ol></div>
 <div><h3>In the Twitch panel</h3><ol>
 <li>Under the stream, open the <b>Securement Pods</b> panel and click <b>Show my Securement Pods</b> (first time only).</li>
