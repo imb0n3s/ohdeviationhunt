@@ -38,7 +38,7 @@ function stateFor(pool, code) {
   if (!ch) return { ok: false, error: "unknown_channel", v: BOOT };
   pool?.spawns?.overlaySeen?.set(bid, Date.now()); // this channel has the OBS Source on stream
   const s = pool?.spawns?.active.get(bid);
-  if (!s || !(s.endsAt > Date.now())) {
+  if (!s || !((s.shownEndsAt || s.endsAt) > Date.now())) {
     // just resolved? show who caught it for a few seconds (stays up past the delayed chat message)
     const r = pool?.spawns?.lastResult?.get(bid);
     const showMs = Math.max(RESULT_MS, (pool?.spawns?.chatDelayMs?.(bid) || 0) + 8000);
@@ -50,7 +50,7 @@ function stateFor(pool, code) {
     name: s.dev.name,
     variant: s.variant ? { name: s.variant.name, kind: s.variant.kind } : null,
     img: (s.variant && s.variant.img) || s.dev.img,
-    endsAt: s.endsAt, now: Date.now(), windowMs: s.windowMs || cfg.SPAWN_WINDOW_SECONDS * 1000,
+    endsAt: s.shownEndsAt || s.endsAt, now: Date.now(), windowMs: cfg.SPAWN_WINDOW_SECONDS * 1000,
   };
 }
 

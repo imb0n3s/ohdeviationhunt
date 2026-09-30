@@ -265,11 +265,12 @@ class Spawns {
     s.attempts = new Map();
     s.warned = new Set();
     // With the OBS Source on stream it shows up on screen first and chat hears about it after the
-    // chat delay (stream video lags chat). The window is extended by that delay so chat still gets
-    // the full SPAWN_WINDOW_SECONDS from the announcement.
+    // chat delay (stream video lags chat). Behind the scenes the window is extended by that delay so
+    // chat still gets the full SPAWN_WINDOW_SECONDS; the overlay and chat both just show the normal time.
     const delay = this.chatDelayMs(bid);
     s.windowMs = cfg.SPAWN_WINDOW_SECONDS * 1000 + delay;
     s.endsAt = Date.now() + s.windowMs;
+    s.shownEndsAt = s.endsAt - delay; // the OBS Source counts down the normal window; the extra time is silent
     s.timer = setTimeout(() => this.resolve(bid).catch((e) => console.error("[resolve]", e)), s.windowMs);
     this.active.set(bid, s);
     this.persist(bid);

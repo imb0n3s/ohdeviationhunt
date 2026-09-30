@@ -90,7 +90,7 @@ function makeHandler(pool, spawns) {
         const n = parseInt(args[1], 10);
         if (!(n >= 0 && n <= 30)) return reply("Usage: !hunt chatdelay <seconds 0-30> (0 = post right away)");
         db.setSetting(`chatdelay:${bid}`, String(n));
-        return reply(n ? `Got it — spawns and results post in chat ${n}s after the OBS Source shows them (the catch window gets the extra ${n}s too).` : "Got it — spawns and results post in chat right away.");
+        return reply(n ? `Got it — spawns and results post in chat ${n}s after the OBS Source shows them.` : "Got it — spawns and results post in chat right away.");
       }
       if (mod && (sub === "off" || sub === "on")) {
         db.setSpawnsOn(bid, sub === "on");
