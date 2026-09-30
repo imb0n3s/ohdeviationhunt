@@ -551,7 +551,7 @@ function specimenText(userId, login, display, query, baseUrl) {
   if (query) {
     dev = data.find(query);
     if (!dev) return `@${display} no deviation matches "${query}".`;
-    sp = db.q.specimensOf.get(userId, dev.id);
+    sp = featuredSpecimen(db.q.specimensOf.all(userId, dev.id), dev); // same one the card features
     if (!sp) return `@${display} you haven't secured a ${dev.name} yet.`;
   } else {
     sp = db.q.latestSpecimen.get(userId);
