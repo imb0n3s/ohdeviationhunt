@@ -4,7 +4,7 @@
 // To add an item: add an entry to ITEMS. `grants` says what one purchase gives; add a new
 // grant type in applyGrants() if it's something the game doesn't track yet.
 //   icon: a file bundled in the extension zip (ext/), or an https://ohwikiguide.com/ image
-const { UNITS, GLOVES, ECONOMY } = require("./rarity");
+const { UNITS, GLOVES, ECONOMY, SOUP } = require("./rarity");
 // most Securement Units this player can hold
 const unitCap = (p) => ECONOMY.unitCap + (p.extra_cap || 0);
 // Securement Pods in use = deviations you've caught (each lives in one) + empty Securement Units
@@ -20,6 +20,19 @@ const ITEMS = [
     maxQty: 100,
     icon: "unit.png",
     aliases: ["units", "securement", "securementunit", "unit"],
+  },
+  {
+    id: SOUP.id,
+    kind: "soup",
+    name: SOUP.name,
+    desc: `+${SOUP.bonus * 100}% catch chance on every !secure throw for 1 hour. Stacks with your gloves; another bowl adds another hour.`,
+    price: SOUP.price,
+    grants: { soup: 1 },
+    maxQty: 5,
+    bonus: SOUP.bonus,
+    color: "#fb923c",
+    icon: SOUP.icon,
+    aliases: ["soup", "capturesoup", "soups"],
   },
   ...GLOVES.map((g) => ({
     id: g.id + "gloves",
@@ -49,6 +62,9 @@ function applyGrants(p, grants, qty) {
   for (const [kind, val] of Object.entries(grants)) {
     if (kind === "units") {
       for (const [u, n] of Object.entries(val)) { p.units[u] = (p.units[u] || 0) + n * qty; got.push({ kind: "units", unit: u, n: n * qty }); }
+    } else if (kind === "soup") {
+      const now = Date.now();
+      p.soup_until = Math.max(now, p.soup_until || 0) + SOUP.durationMs * val * qty; got.push({ kind: "soup", until: p.soup_until });
     } else if (kind === "gloves") {
       p.gloves = [val]; got.push({ kind: "gloves", glove: val }); // one pair at a time: replaces the old pair, no refund
     } else if (kind === "starchrom") {

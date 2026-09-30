@@ -104,6 +104,7 @@ try { db.exec(`ALTER TABLE players ADD COLUMN daily_stream TEXT`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN active_stream TEXT`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN gloves TEXT NOT NULL DEFAULT '[]'`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN extra_cap INTEGER NOT NULL DEFAULT 0`); } catch {}
+try { db.exec(`ALTER TABLE players ADD COLUMN soup_until INTEGER NOT NULL DEFAULT 0`); } catch {}
 // !daily claims (one per player per day, Central time; tied to the stream it was claimed in)
 // every Bits purchase, keyed by Twitch's transaction id so a receipt can never be credited twice
 db.exec(`CREATE TABLE IF NOT EXISTS bits_tx (transaction_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, sku TEXT NOT NULL, bits INTEGER NOT NULL, starchrom INTEGER NOT NULL, channel TEXT, at INTEGER NOT NULL)`);
@@ -145,7 +146,7 @@ const q = {
   setDailyStream: db.prepare(`UPDATE players SET daily_channel=?, daily_stream=? WHERE user_id=?`),
   // players whose next hourly free unit is due (eligibility is checked in game.js)
   dueHourly: db.prepare(`SELECT * FROM players WHERE active_stream IS NOT NULL AND last_unit_at<=?`),
-  savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at, gloves=@gloves, extra_cap=@extra_cap WHERE user_id=@user_id`),
+  savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at, gloves=@gloves, extra_cap=@extra_cap, soup_until=@soup_until WHERE user_id=@user_id`),
   countPlayers: db.prepare(`SELECT COUNT(*) AS n FROM players`),
 
   addCatch: db.prepare(`INSERT INTO catches (user_id, deviation, variant, kind, count, first_at, first_channel) VALUES (?, ?, ?, ?, 1, ?, ?)

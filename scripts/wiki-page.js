@@ -8,7 +8,7 @@ for (const k of ["TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET", "ADMIN_KEY", "SESSI
 process.env.BASE_URL ||= "https://deviationhunt.ohwikiguide.com";
 const path = require("path");
 const cfg = require("../config");
-const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, rarityOf, isChaos } = require("../rarity");
+const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, SOUP, rarityOf, isChaos } = require("../rarity");
 const { RATING_WEIGHTS, SLOT_CHANCE } = require("../traits");
 const devs = require(path.join(__dirname, "..", "combat-fallback.json"));
 
@@ -113,10 +113,11 @@ ${table(["Command", "Effect"], [
 ])}
 `));
 
-out.push(box("Shop", "Securement Units & Gloves", `
+out.push(box("Shop", "Securement Units, Capture Soup & Gloves", `
 Buy with ${cmd("!buy")} in chat, in the Securement Pods panel's '''Shop''' tab, or on your own collection page (signed in with Twitch). Buying gloves in the panel or on the website is announced in the chat of the live stream you're playing in.
 ${table(["Item", "Description", "Price"], [
   ["'''Securement Unit'''", "Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw. " + cmd("!buy <amount>"), `${fmt(unitPrice)} ${SC}`],
+  [`'''<span style="color:#fb923c;">Capture Soup</span>'''`, `+${SOUP.bonus * 100}% catch chance on every throw for '''1 hour''' after you buy it. Stacks with your gloves; each extra bowl adds another hour. ${cmd("!buy soup")}`, `${fmt(SOUP.price)} ${SC}`],
   ...GLOVES.map((g) => [`'''<span style="color:${g.color};">${g.name}</span>''' <small>(${g.rarity})</small>`, `+${Math.round(g.bonus * 100)}% catch chance on every throw. ${cmd("!buy " + g.id)}`, `${fmt(g.price)} ${SC}`]),
 ])}
 You have '''${ECONOMY.unitCap} Securement Pods''' — every deviation you've caught '''and''' every empty Securement Unit takes one. When all ${ECONOMY.unitCap} are used, you can't buy more units, and free hourly units and the one from ${cmd("!daily")} are skipped. Free space by scrapping extra specimens in the Twitch panel.

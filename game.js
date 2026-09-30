@@ -3,7 +3,7 @@ const cfg = require("./config");
 const db = require("./db");
 const data = require("./data");
 const traits = require("./traits");
-const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, unitKey, isChaos, variantRule } = require("./rarity");
+const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, SOUP, unitKey, isChaos, variantRule } = require("./rarity");
 
 const SC = "Starchrom";
 const shopCatalog = require("./shop");
@@ -46,8 +46,8 @@ function announcePurchase(userId, item, qty = 1) {
   const row = db.q.getPlayer.get(userId);
   const ch = row?.last_channel;
   if (!ch || !streamOf(ch) || !db.getChannel(ch)?.enabled) return false;
-  const what = item.kind === "gloves" ? `${item.name} (+${Math.round((item.bonus || 0) * 100)}% capture on every throw)` : `${qty > 1 ? `${qty}× ` : ""}${item.name}`;
-  announce(ch, `🛒 @${row.display} just bought ${what} from the Shop! ${item.kind === "gloves" ? "🧤" : "🎉"}`);
+  const what = item.kind === "gloves" ? `${item.name} (+${Math.round((item.bonus || 0) * 100)}% capture on every throw)` : item.kind === "soup" ? `${qty > 1 ? `${qty} bowls of ` : "a bowl of "}${item.name} (+${item.bonus * 100}% capture for ${qty > 1 ? `${qty} hours` : "1 hour"})` : `${qty > 1 ? `${qty}× ` : ""}${item.name}`;
+  announce(ch, `🛒 @${row.display} just bought ${what} from the Shop! ${item.kind === "gloves" ? "🧤" : item.kind === "soup" ? "🍲" : "🎉"}`);
   return true;
 }
 // Hourly free units run while the player (a) has claimed today's !daily and (b) is in a live
@@ -70,7 +70,7 @@ function nextUnitIn(p) {
 }
 
 function savePlayer(p) {
-  db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts, last_unit_at: p.last_unit_at || Date.now(), gloves: JSON.stringify(p.gloves || []), extra_cap: p.extra_cap || 0 });
+  db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts, last_unit_at: p.last_unit_at || Date.now(), gloves: JSON.stringify(p.gloves || []), extra_cap: p.extra_cap || 0, soup_until: p.soup_until || 0 });
 }
 
 // "303 Starchrom | 21 deviations (12/61 unique)" — used where the full unit list is too noisy
@@ -125,6 +125,9 @@ function spawnName(s) { return s.variant ? `${s.dev.name} — ${s.variant.name}`
 const unitCap = (p) => shopCatalog.unitCap(p);
 const podsUsed = (p) => shopCatalog.podsUsed(p);
 const unitRoom = (p) => Math.max(0, unitCap(p) - podsUsed(p));
+
+// Capture Soup: minutes left (0 = none active)
+const soupLeftMin = (p, now = Date.now()) => Math.max(0, Math.ceil(((p.soup_until || 0) - now) / 60000));
 
 function bestGlove(p) {
   let best = null;
@@ -276,10 +279,11 @@ class Spawns {
     p.attempts += 1;
     savePlayer(p);
     const glove = bestGlove(p);
-    s.attempts.set(userId, { login, display, unit, isNew: p.isNew, bonus: glove ? glove.bonus : 0 });
+    const soupMin = soupLeftMin(p);
+    s.attempts.set(userId, { login, display, unit, isNew: p.isNew, bonus: (glove ? glove.bonus : 0) + (soupMin ? SOUP.bonus : 0) });
     this.persist(bid);
     const left = p.units[unit];
-    const throwTxt = `🎯 Threw at the ${spawnName(s)} (−${ECONOMY.throwCost} ${SC}, Left: ${fmt(p.starchrom)}). You'll have ${left} Securement Pod${left === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}%` : ""}`;
+    const throwTxt = `🎯 Threw at the ${spawnName(s)} (−${ECONOMY.throwCost} ${SC}, Left: ${fmt(p.starchrom)}). You'll have ${left} Securement Pod${left === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}%` : ""}${soupMin ? ` 🍲 Capture Soup +${SOUP.bonus * 100}% (${soupMin}m left)` : ""}`;
     if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}. ${throwTxt} Type !daily for more, plus 1 free unit every hour this stream.`;
     return `@${display} ${throwTxt}`;
   }
@@ -373,8 +377,8 @@ function daily(userId, login, display, bid) {
 }
 
 function shop() {
-  const items = shopCatalog.ITEMS.map((i) => `${i.name}${i.bonus ? ` (+${Math.round(i.bonus * 100)}% catch)` : ""}: ${fmt(i.price)} ${SC}`).join(" · ");
-  return `🛒 ${items} — !buy <amount> for units, !buy rustic / bbq / savior for gloves (or use the Securement Pods panel's Shop tab). You wear one pair at a time: a better pair replaces yours (no refunds, gloves can't be scrapped).`;
+  const items = shopCatalog.ITEMS.map((i) => `${i.name}${i.bonus ? ` (+${+(i.bonus * 100).toFixed(1)}% catch${i.kind === "soup" ? " for 1 hour" : ""})` : ""}: ${fmt(i.price)} ${SC}`).join(" · ");
+  return `🛒 ${items} — !buy <amount> for units, !buy soup, !buy rustic / bbq / savior for gloves (or use the Securement Pods panel's Shop tab). You wear one pair at a time: a better pair replaces yours (no refunds, gloves can't be scrapped).`;
 }
 
 // !buy 3  /  !buy unit 3  /  !buy savior — defaults to Securement Units
@@ -390,13 +394,14 @@ function buy(userId, login, display, args) {
   if (!r.ok && r.error === "full") return `@${display} your Securement Pods are full (${r.cap}/${r.cap} — caught deviations and empty units both count). Scrap extras in the Securement Pods panel under the stream to free some up.`;
   if (!r.ok && r.error === "too_many") return `@${display} you have ${r.cap} Securement Pods (caught deviations + empty units), so you can buy up to ${r.room} more Securement Units right now.`;
   if (!r.ok && r.error === "outclassed") return `@${display} you already wear ${r.better.name} (+${Math.round(r.better.bonus * 100)}%), which beat ${item.name}. You wear one pair at a time.`;
-  const label = item.kind === "gloves" ? item.name : `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
+  const label = item.kind === "gloves" ? item.name : item.kind === "soup" ? `${qty} bowl${qty > 1 ? "s" : ""} of ${item.name}` : `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
   if (!r.ok) return `@${display} ${label} ${qty > 1 || item.kind === "gloves" ? "cost" : "costs"} ${fmt(item.price * qty)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations and !daily, or scrap extras in the Securement Pods panel.`;
   savePlayer(p);
   if (item.kind === "gloves") {
     const old = r.replaced ? ` They replace your ${r.replaced.name}.` : "";
     return `@${display} 🧤 bought ${item.name} for ${fmt(r.cost)} ${SC}! +${Math.round(item.bonus * 100)}% catch chance on every throw from now on.${old} You have ${fmt(p.starchrom)} ${SC} left.`;
   }
+  if (item.kind === "soup") return `@${display} 🍲 bought ${label} for ${fmt(r.cost)} ${SC}! +${SOUP.bonus * 100}% catch chance on every throw for the next ${soupLeftMin(p)} minutes (stacks with gloves). You have ${fmt(p.starchrom)} ${SC} left.`;
   return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units (${podsUsed(p)}/${unitCap(p)} Securement Pods used). ${bagText(p)}`;
 }
 
@@ -551,4 +556,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

@@ -338,6 +338,11 @@ function webShop(p, live, viewer, msg) {
         : `<button ${live.starchrom < it.price ? "disabled" : ""}>${live.starchrom < it.price ? `Need ${fmt(it.price - live.starchrom)} more` : `Buy for ${fmt(it.price)}`}</button>`;
       return `<div class="si glove" style="--gc:${esc(it.color)}"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)} <span class="rar">${esc(it.rarity)}</span></div><div class="sd">+${Math.round(it.bonus * 100)}% catch chance on every throw · ${fmt(it.price)} Starchrom · one pair at a time (a better pair replaces yours, no refund)</div>${form(it, btn)}</div></div>`;
     }
+    if (it.kind === "soup") {
+      const left = game.soupLeftMin(live);
+      const btn = `<button ${live.starchrom < it.price ? "disabled" : ""}>${live.starchrom < it.price ? `Need ${fmt(it.price - live.starchrom)} more` : `${left ? "Add 1 hour" : "Buy"} for ${fmt(it.price)}`}</button>`;
+      return `<div class="si glove" style="--gc:${esc(it.color)}"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom${left ? ` · <b style="color:#fdba74">🍲 active, ${left} min left</b>` : ""}</div>${form(it, btn)}</div></div>`;
+    }
     const room = game.unitRoom(live), max = Math.max(0, Math.min(it.maxQty, room, Math.floor(live.starchrom / it.price)));
     if (!room) return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div><button disabled>Securement Pods full (${game.podsUsed(live)}/${game.unitCap(live)})</button></div></div>`;
     return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div>${form(it, `<input type="number" name="qty" min="1" max="${Math.min(it.maxQty, room)}" value="1"><button ${live.starchrom < it.price ? "disabled" : ""}>${live.starchrom < it.price ? `Need ${fmt(it.price - live.starchrom)} more` : "Buy"}</button> <span class="muted">you can buy ${max} (${game.podsUsed(live)}/${game.unitCap(live)} pods used)</span>`)}</div></div>`;
@@ -398,7 +403,7 @@ function createApp(pool) {
     if (!p) return res.status(404).send(simple("Not found", "No Securement Pods yet", `${esc(req.params.login)} hasn't secured anything yet. Catch one with <kbd>!secure</kbd> in any channel running ${esc(cfg.BOT_NAME)}.`));
     const code = String(req.query.shop || "");
     let msg = null;
-    if (code.startsWith("ok:")) { const [, id, n] = code.split(":"); const it = shop.find(id); if (it) msg = { ok: true, text: `Bought ${it.kind === "gloves" ? it.name : `${n} ${it.name}${Number(n) > 1 ? "s" : ""}`}!` }; }
+    if (code.startsWith("ok:")) { const [, id, n] = code.split(":"); const it = shop.find(id); if (it) msg = { ok: true, text: `Bought ${it.kind === "gloves" ? it.name : it.kind === "soup" ? `Capture Soup — +${it.bonus * 100}% catch chance for the next hour` : `${n} ${it.name}${Number(n) > 1 ? "s" : ""}`}!` }; }
     else if (SHOP_MSG[code]) msg = { ok: false, text: SHOP_MSG[code] };
     const sc = String(req.query.scrap || "");
     if (sc) {

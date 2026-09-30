@@ -225,6 +225,7 @@
     var gl = (bag.shop || []).filter(function (it) { return it.kind === "gloves"; });
     html += (bag.shop || []).map(function (it) {
       if (it.kind === "gloves") return gloveHtml(it, p, it === gl[0]);
+      if (it.kind === "soup") return soupHtml(it, p);
       var room = unitRoom(p), lim = Math.min(it.maxQty, room);
       var q = Math.min(cart[it.id] || 1, Math.max(1, lim)), total = q * it.price, afford = p.starchrom >= total;
       var maxAfford = Math.min(lim, Math.floor(p.starchrom / it.price));
@@ -297,6 +298,16 @@
     });
   }
 
+  function soupHtml(it, p) {
+    var afford = p.starchrom >= it.price, left = p.soupMin || 0;
+    return '<div class="item soup" data-id="' + esc(it.id) + '" style="--gc:' + esc(it.color || "#fb923c") + '">' +
+      '<div class="ih"><div class="gicon"><img src="' + esc(it.icon) + '" alt=""></div><div><div class="in">' + esc(it.name) + '</div>' +
+      '<div class="ip">+' + (it.bonus * 100) + '% catch chance for 1 hour · ' + money(it.price) + ' Starchrom</div></div></div>' +
+      '<div class="id">' + esc(it.desc) + '</div>' +
+      (left ? '<div class="soupon">🍲 Active — ' + left + ' min left</div>' : "") +
+      '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? (left ? "Add 1 hour for " : "Buy for ") + money(it.price) + " Starchrom" : "Need " + money(it.price - p.starchrom) + " more Starchrom") + '</button></div>';
+  }
+
   function gloveHtml(it, p, first) {
     var owned = (p.gloves || []).indexOf(it.glove) >= 0, active = p.glove === it.glove, afford = p.starchrom >= it.price;
     var better = !owned && (bag.shop || []).some(function (g) { return g.kind === "gloves" && g.glove === p.glove && g.bonus > it.bonus; });
@@ -322,7 +333,7 @@
       .then(function (res) {
         busy = false;
         if (res.j.player) bag.player = res.j.player;
-        if (res.ok) { notice = { kind: "ok", text: "Bought " + (it.kind === "gloves" ? it.name : res.j.qty + " " + it.name + (res.j.qty > 1 ? "s" : "")) + " for " + money(res.j.cost) + " Starchrom." }; cart[it.id] = 1; }
+        if (res.ok) { notice = { kind: "ok", text: "Bought " + (it.kind === "gloves" ? it.name : it.kind === "soup" ? "Capture Soup — +" + (it.bonus * 100) + "% for " + ((res.j.player && res.j.player.soupMin) || 60) + " min" : res.j.qty + " " + it.name + (res.j.qty > 1 ? "s" : "")) + " for " + money(res.j.cost) + " Starchrom." }; cart[it.id] = 1; }
         else if (res.j.error === "needs_identity") return askIdentity();
         else if (res.j.error === "not_enough") notice = { kind: "err", text: "Not enough Starchrom for that." };
         else if (res.j.error === "full" || res.j.error === "too_many") notice = { kind: "err", text: "That goes over your " + (res.j.player && res.j.player.unitCap || 100) + " Securement Pods (caught + empty)." };

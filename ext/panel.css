@@ -132,3 +132,5 @@ footer a { color:var(--accent); font-size:12px; }
 .stat.skin b { color:#f0abfc; }
 .dev .vb.sk { left:auto; right:4px; top:22px; background:#4a1d4f; color:#f5d0fe; }
 .leg { color:#fbbf24; }
+.item.soup { border-left:3px solid var(--gc); }
+.soupon { color:#fdba74; font-weight:700; font-size:12px; margin:4px 0; }

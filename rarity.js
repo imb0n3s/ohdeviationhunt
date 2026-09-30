@@ -94,6 +94,9 @@ function unitKey() { return "standard"; }
 // straight onto every throw's catch chance (still capped at ECONOMY.maxCatchChance).
 // AT BITS LAUNCH (B, 2026-09-30) raise glove prices to match real money at 5 Starchrom/Bit:
 //   Rustic 5,000 ($10) · BBQ 10,000 ($20) · Savior 17,500 ($35). Until then they stay at 3,000 / 7,500 / 10,000.
+// Capture Soup: +7.5% capture chance for 1 hour after you buy it (another bowl adds another hour). Stacks with gloves.
+const SOUP = { id: "soup", name: "Capture Soup", price: 1000, bonus: 0.075, durationMs: 60 * 60 * 1000, icon: "soup.png" };
+
 const GLOVES = [
   { id: "rustic", name: "Rustic Gloves", bonus: 0.03, price: 3000, rarity: "Basic",     color: "#4ade80", icon: "rustic.png" },
   { id: "bbq",    name: "BBQ Gloves",    bonus: 0.05, price: 7500, rarity: "Uncommon",  color: "#c084fc", icon: "bbq.png" },
@@ -116,4 +119,4 @@ const BITS_PACKS = [
   { sku: "pods5",         bits: 50,  capacity: 5 },
 ];
 
-module.exports = { TIERS, ASSIGN, VARIANT, isChaos, variantRule, UNITS, ECONOMY, GLOVES, BITS_PACKS, rarityOf, unitKey };
+module.exports = { TIERS, ASSIGN, VARIANT, isChaos, variantRule, UNITS, ECONOMY, GLOVES, SOUP, BITS_PACKS, rarityOf, unitKey };
