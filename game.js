@@ -443,16 +443,14 @@ function buy(userId, login, display, args) {
 
 // The specimen a deviation's card features: your best-rated skin if you have one, else your best-rated
 // variation, else your best-rated specimen — so the card's picture, name and traits all match.
-function featuredSpecimen(specs, dev) {
-  const kindOf = (sp) => (sp.variant ? (dev?.variants.find((v) => v.name === sp.variant)?.kind || "variation") : "base");
+// Best first: skin > variation > normal, then Skill+Activity, then Skill (a variant always beats a plain one)
+function specimenOrder(specs, dev) {
   const rank = { skin: 2, variation: 1, base: 0 };
-  let best = null;
-  for (const sp of specs) {
-    if (!best) { best = sp; continue; }
-    const a = rank[kindOf(sp)], b = rank[kindOf(best)];
-    if (a > b || (a === b && (sp.power + sp.mood > best.power + best.mood || (sp.power + sp.mood === best.power + best.mood && sp.power > best.power)))) best = sp;
-  }
-  return best;
+  const kindOf = (sp) => (sp.variant ? (dev?.variants.find((v) => v.name === sp.variant)?.kind || "variation") : "base");
+  return specs.slice().sort((a, b) => rank[kindOf(b)] - rank[kindOf(a)] || (b.power + b.mood) - (a.power + a.mood) || b.power - a.power || b.id - a.id);
+}
+function featuredSpecimen(specs, dev) {
+  return specs.length ? specimenOrder(specs, dev)[0] : null;
 }
 
 // A variant always carries its own trait (from the wiki's Deviation Trait Page). When the wiki adds one
@@ -625,4 +623,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

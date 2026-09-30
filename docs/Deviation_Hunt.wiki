@@ -321,7 +321,7 @@ Caught the same deviation more than once? Keep the best one and scrap the rest. 
 # Go to [https://deviationhunt.ohwikiguide.com/me deviationhunt.ohwikiguide.com/me] (''My Securement Pods'') and click '''Sign in with Twitch'''. The Scrap buttons only appear on your own page while you're signed in.
 # Find the deviation you have extras of (the '''×2''', '''×3'''… in the corner of its card).
 # Click the red '''Scrap extras''' button at the bottom of that card — clicking the picture itself does nothing.
-# Every copy you own is listed with its Skill/Activity Rating, variation or skin, and traits. Your best one is marked '''Best'''.
+# Every copy you own is listed with its Skill/Activity Rating, variation or skin, and traits. Your best one is marked '''Best''' (a skin beats a variation, a variation beats a normal one, then the higher rating wins).
 # Click '''Scrap''' on the one you don't want and confirm.
 
 '''In the Twitch panel'''

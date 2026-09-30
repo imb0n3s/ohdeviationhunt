@@ -229,7 +229,7 @@ ${chatExamples(botName)}
 <li>Open <a href="/me">My Securement Pods</a> (top of the page) and <b>Sign in with Twitch</b>. The Scrap buttons only show on your own page while you're signed in.</li>
 <li>Find the deviation you have extras of (the <b>×2</b>, <b>×3</b>… in the corner).</li>
 <li>Click the red <b>Scrap extras</b> button at the bottom of that card (clicking the picture doesn't do anything).</li>
-<li>Every copy you own is listed with its Skill/Activity rating, variation or skin, and traits; your best one is marked <b>Best</b>.</li>
+<li>Every copy you own is listed with its Skill/Activity rating, variation or skin, and traits; your best one is marked <b>Best</b> (a skin beats a variation, a variation beats a normal one, then the higher rating wins).</li>
 <li>Click <b>Scrap</b> on the one you don't want and confirm.</li></ol></div>
 <div><h3>In the Twitch panel</h3><ol>
 <li>Under the stream, open the <b>Securement Pods</b> panel and click <b>Show my Securement Pods</b> (first time only).</li>
@@ -303,7 +303,7 @@ function collectionPage(p, viewer, msg) {
     const spHtml = sp ? `<div class="sp"><div class="pm"><span title="Skill Rating (Deviant Power)">Skill ${sp.power}/5</span><span title="Activity Rating (Mood)">Activity ${sp.mood}/5</span></div>
 <ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => (key ? `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant, d.category))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant, d.category))}</li>` : `<li class="empty"><b>${slot}</b>Empty slot</li>`)).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
     // signed-in owner: scrap any extra specimen (you always keep at least one)
-    const mine = (specsOf.get(d.id) || []).slice().sort((a, b) => (b.power + b.mood) - (a.power + a.mood) || b.power - a.power || b.id - a.id);
+    const mine = game.specimenOrder(specsOf.get(d.id) || [], d);
     const note = msg && msg.dev === d.id ? `<div class="snote ${msg.ok ? "ok" : "err"}">${esc(msg.text)}</div>` : "";
     const reward = `${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit`;
     const scrapHtml = owner && h && h.count > 1 && mine.length ? `<details class="xtra"${note ? " open" : ""}><summary>Scrap extras (${mine.length})</summary><p class="xh">Scrap one for <b>${reward}</b>. You always keep at least one.</p>${mine.map((x, i) => `<div class="xs${i === 0 ? " best" : ""}"><div class="xr"><b>${x.power}/${x.mood}</b>${x.power === 5 && x.mood === 5 ? " ⭐" : ""} Skill/Activity${i === 0 ? ' <span class="bt">Best</span>' : ""}</div>${x.variant ? `<div class="xv">✨ ${esc(x.variant)}</div>` : ""}<div class="xt">${[[1, x.t1, x.t1_level], [2, x.t2], [3, x.t3]].map(([slot, key, lvl]) => key ? esc(traits.traitName(slot, key, lvl, x.variant, d.category)) : "—").join(" · ")}</div><form method="post" action="/u/${esc(p.login)}/scrap" onsubmit="return confirm('Scrap this ${esc(d.name).replace(/'/g, "")} (${x.power}/${x.mood}) for ${reward}?')"><input type="hidden" name="id" value="${x.id}"><button class="xb">Scrap</button></form></div>`).join("")}</details>` : "";
