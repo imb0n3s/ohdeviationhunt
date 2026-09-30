@@ -225,7 +225,7 @@ out.push(box("Streamers", "Add Deviation Hunt to Your Channel", `
 # If the bot says it needs permission, type ${cmd(`/mod ${BOT}`)} in your chat and try again.
 # That's it. Deviations appear about every '''${cfg.SPAWN_INTERVAL_MIN} minutes''' while you're '''live''' and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes. Change the timer with ${cmd("!hunt interval <minutes>")}.
 
-'''OBS Source (optional):''' type ${cmd("!hunt obs")} in your chat to get your channel's link, then in OBS add a '''Browser''' source with it (600 × 600). It shows the deviation with a countdown while it can be caught, then for 12 seconds who secured it (with their Skill/Activity ratings, gold for Legendary catches) or that it got away. While a deviation can be caught it shows its picture, name, variation or skin and a countdown; it disappears when the deviation is secured or gets away. Add ${code("?demo=1")} to the link while positioning it.
+'''OBS Source (optional):''' type ${cmd("!hunt obs")} in your chat to get your channel's link, then in OBS add a '''Browser''' source with it (600 × 600). It shows the deviation with a countdown while it can be caught, then for 12 seconds who secured it (with their Skill/Activity ratings, gold for Legendary catches). If nobody catches it, it just disappears. While a deviation can be caught it shows its picture, name, variation or skin and a countdown; it disappears when the deviation is secured or gets away. Add ${code("?demo=1")} to the link while positioning it.
 
 To remove it, type ${cmd("!hunt leave")} in your chat or ${cmd("!leave")} in ${BOT}'s chat.
 `));

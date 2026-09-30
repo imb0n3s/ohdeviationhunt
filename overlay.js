@@ -38,7 +38,7 @@ function stateFor(pool, code) {
   if (!s || !(s.endsAt > Date.now())) {
     // just resolved? show who caught it for a few seconds
     const r = pool?.spawns?.lastResult?.get(bid);
-    return r && Date.now() - r.at < RESULT_MS ? { ok: true, active: false, result: r, now: Date.now() } : { ok: true, active: false };
+    return r && r.winners.length && Date.now() - r.at < RESULT_MS ? { ok: true, active: false, result: r, now: Date.now() } : { ok: true, active: false };
   }
   return {
     ok: true, active: true,
