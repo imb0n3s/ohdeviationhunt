@@ -92,6 +92,8 @@ function unitKey() { return "standard"; }
 
 // Gloves: you wear ONE pair at a time. Buying a better pair replaces yours (no refund, no scrapping); its bonus is added
 // straight onto every throw's catch chance (still capped at ECONOMY.maxCatchChance).
+// AT BITS LAUNCH (B, 2026-09-30) raise glove prices to match real money at 5 Starchrom/Bit:
+//   Rustic 5,000 ($10) · BBQ 10,000 ($20) · Savior 17,500 ($35). Until then they stay at 3,000 / 7,500 / 10,000.
 const GLOVES = [
   { id: "rustic", name: "Rustic Gloves", bonus: 0.03, price: 3000, rarity: "Basic",     color: "#4ade80", icon: "rustic.png" },
   { id: "bbq",    name: "BBQ Gloves",    bonus: 0.05, price: 7500, rarity: "Uncommon",  color: "#c084fc", icon: "bbq.png" },
@@ -101,13 +103,15 @@ const GLOVES = [
 // Starchrom bought with Bits in the Twitch panel (5 Bits = 100 Starchrom). Each pack must also exist as a
 // Bits product with the same SKU and Bits amount in the extension's Monetization tab.
 const BITS_PACKS = [
-  // 4 Starchrom per Bit (a Bit is ~1 cent to the streamer, so Savior Gloves = 10,000 = 2,500 Bits = $25)
-  { sku: "starchrom20",    bits: 5,    starchrom: 20 },
-  { sku: "starchrom100",   bits: 25,   starchrom: 100 },
-  { sku: "starchrom200",   bits: 50,   starchrom: 200 },
-  { sku: "starchrom400",   bits: 100,  starchrom: 400 },
-  { sku: "starchrom2000",  bits: 500,  starchrom: 2000 },
-  { sku: "starchrom10000", bits: 2500, starchrom: 10000 },
+  // 5 Starchrom per Bit (a Bit is ~1 cent to the streamer). The big packs match the glove prices at launch.
+  { sku: "starchrom25",    bits: 5,    starchrom: 25 },
+  { sku: "starchrom125",   bits: 25,   starchrom: 125 },
+  { sku: "starchrom250",   bits: 50,   starchrom: 250 },
+  { sku: "starchrom500",   bits: 100,  starchrom: 500 },
+  { sku: "starchrom2500",  bits: 500,  starchrom: 2500 },
+  { sku: "starchrom5000",  bits: 1000, starchrom: 5000 },   // = Rustic Gloves ($10)
+  { sku: "starchrom10000", bits: 2000, starchrom: 10000 },  // = BBQ Gloves ($20)
+  { sku: "starchrom17500", bits: 3500, starchrom: 17500 },  // = Savior Gloves ($35)
   // raises the most Securement Units you can hold (ECONOMY.unitCap) by 5, permanently
   { sku: "pods5",         bits: 50,  capacity: 5 },
 ];

@@ -23,17 +23,18 @@
   https://deviationhunt.ohwikiguide.com/api/players with docs/tester-allowlist.txt, add anyone new in the
   console (Access tab — only editable in Local Test: move to Local Test, add, Save, reload to verify, move
   back to Hosted Test, reload and confirm), then update docs/tester-allowlist.txt.
-- Bits: panel Shop sells Starchrom packs for Bits (rarity.js BITS_PACKS, 1 Bit = 4 Starchrom (Savior Gloves = 2,500 Bits = $25); receipts verified at
+- Bits: panel Shop sells Starchrom packs for Bits (rarity.js BITS_PACKS, 1 Bit = 5 Starchrom; receipts verified at
   POST /ext/bits/complete, one credit per transactionId in bits_tx). Hidden until Twitch Bits is on. TO SWITCH ON (after B
   finishes Monetization onboarding): Local Test → Monetization tab → "Bits enabled" → add one product per pack with the
-  SAME sku + Bits amount (starchrom20/5, starchrom100/25, starchrom200/50, starchrom400/100, starchrom2000/500, starchrom10000/2500, pods5/50), In Development = No,
-  Save All → back to Hosted Test (reload/confirm) → add Bits to the wiki page.
+  SAME sku + Bits amount (starchrom25/5, starchrom125/25, starchrom250/50, starchrom500/100, starchrom2500/500, starchrom5000/1000, starchrom10000/2000, starchrom17500/3500, pods5/50), In Development = No,
+  Save All → back to Hosted Test (reload/confirm) → set BITS_ENABLED=1 → RAISE GLOVE PRICES (rarity.js GLOVES:
+  Rustic 5,000 = $10, BBQ 10,000 = $20, Savior 17,500 = $35; B 2026-09-30) → add Bits to the wiki page.
   Server kill switch: Bits are refused unless Railway env BITS_ENABLED=1 (unset = off; packs hidden, /ext/bits/complete → 403) —
   set it only when switching Bits on. B's call (2026-09-28): DON'T switch Bits on until it takes real Bits — i.e. after the extension is
   approved/released (in Local/Hosted Test Twitch makes Bits purchases free). Onboarding was submitted 2026-09-28.
 - Pod cap: ECONOMY.unitCap = 100 Securement Pods = caught deviations + empty Securement Units (+ players.extra_cap). Extra room is sold for Bits:
   pods5 = +5 capacity for 50 Bits (in BITS_PACKS; decided by B 2026-09-28). When switching Bits on, the Twitch
-  products are: starchrom20/5, starchrom100/25, starchrom200/50, starchrom400/100, starchrom2000/500, starchrom10000/2500 AND pods5/50.
+  products are: starchrom25/5, starchrom125/25, starchrom250/50, starchrom500/100, starchrom2500/500, starchrom5000/1000, starchrom10000/2000, starchrom17500/3500 AND pods5/50.
 - B's call (2026-09-29): keep the extension in HOSTED TEST; only go to Local Test briefly to add testers / upload, then
   straight back (reload + confirm). In Local Test the panel is blank for everyone. (web.js also serves ext/ at /panel —
   unused for now; it would let Local Test work if Asset Hosting → Testing Base URI pointed at <BASE_URL>/panel/.)
