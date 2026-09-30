@@ -23,7 +23,7 @@ const cfg = {
   SPAWN_WINDOW_SECONDS: Number(process.env.SPAWN_WINDOW_SECONDS || 90),
   // when a channel uses the OBS Source, hold the "SECURED!/got away" chat message this long so it
   // lands after viewers see the result on stream (stream delay + overlay poll); mods: !hunt chatdelay
-  RESULT_CHAT_DELAY_SECONDS: Number(process.env.RESULT_CHAT_DELAY_SECONDS || 8),
+  RESULT_CHAT_DELAY_SECONDS: Number(process.env.RESULT_CHAT_DELAY_SECONDS || 14),
   ACTIVITY_WINDOW_MIN: Number(process.env.ACTIVITY_WINDOW_MIN || 10), // someone must have chatted this recently
   LIVE_POLL_SECONDS: Number(process.env.LIVE_POLL_SECONDS || 60),
   SPAWN_OFFLINE: process.env.SPAWN_OFFLINE === "1",

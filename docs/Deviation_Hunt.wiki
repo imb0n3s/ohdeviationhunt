@@ -85,7 +85,7 @@ Only the broadcaster and moderators can use these.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt obs</nowiki></span> || Posts your channel's OBS Source link (see Add Deviation Hunt to Your Channel).
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt chatdelay <seconds></nowiki></span> || While your OBS Source is on stream, the bot waits this long (0–30, default 8) before posting who secured the deviation, so viewers see it on screen first. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt chatdelay 0</nowiki></span> posts right away.
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt chatdelay <seconds></nowiki></span> || While your OBS Source is on stream, the bot waits this long (0–30, default 14) before posting who secured the deviation, so viewers see it on screen first. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt chatdelay 0</nowiki></span> posts right away.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt leave</nowiki></span> || Remove the bot from your channel.
 |-
