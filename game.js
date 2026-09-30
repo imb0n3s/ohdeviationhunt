@@ -313,7 +313,7 @@ class Spawns {
           db.q.addSpecimen.run({ user_id: userId, deviation: s.dev.id, variant, ...sp, caught_at: Date.now(), channel: bid });
           p.starchrom += reward + (had ? 0 : ECONOMY.newSpeciesBonus);
           if (!had) firsts.push(a.display);
-          caught.push(`a ${ratingTag(sp)} by ${a.display}`);
+          caught.push(`a ${ratingTag(sp)} by @${a.display}`);
         } else {
           p.units[a.unit] = (p.units[a.unit] || 0) + 1; // it broke free, so the unit it was going into is still empty
           escaped.push(a.display);
@@ -327,7 +327,11 @@ class Spawns {
     const list = (arr, max = 12) => arr.length > max ? `${arr.slice(0, max).join(", ")} +${arr.length - max} more` : arr.join(", ");
     let msg;
     if (caught.length) {
-      msg = `🔒 ${name} secured ${list(caught, 7)}! +${reward} ${SC} each.`;
+      // stand-out banner: more stars for rarer catches (variations, skins and Chaos count as Legendary)
+      const tier = variantRule(s.variant)?.rarity || s.dev.rarity;
+      const n = { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 }[tier] || 1;
+      const stars = (tier === "legendary" ? "🌟" : "⭐").repeat(n);
+      msg = `${stars} ${tier === "legendary" ? "LEGENDARY " : ""}SECURED! ${stars} ${name} (${TIERS[tier].label}) — ${list(caught, 7)}! 🔒 +${reward} ${SC} each.`;
       if (firsts.length) msg += ` 📖 New entry for ${list(firsts, 8)} (+${ECONOMY.newSpeciesBonus}).`;
       if (escaped.length) msg += ` It broke free from ${list(escaped, 6)}.`;
     } else {

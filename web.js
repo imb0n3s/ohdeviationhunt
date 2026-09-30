@@ -134,7 +134,7 @@ function chatExamples(botName) {
       line("viewer42", "!secure"), thr("viewer42", "Grumpy Bulb", 480, 7),
       line("metabones", "!secure"), thr("metabones", "Grumpy Bulb", 2310, 23, glove),
       line("nightowl", "!secure"), thr("nightowl", "Grumpy Bulb", 95, 2),
-      bot(`🔒 Grumpy Bulb secured a 3/2 by metabones, a 5/5 ⭐ by viewer42! +${rew(rarityOf("Grumpy Bulb"))} Starchrom each. 📖 New entry for viewer42 (+${ECONOMY.newSpeciesBonus}). It broke free from nightowl. | !traits grumpybulb for traits`),
+      bot(`⭐ SECURED! ⭐ Grumpy Bulb (${TIERS[rarityOf("Grumpy Bulb")].label}) — a 3/2 by @metabones, a 5/5 ⭐ by @viewer42! 🔒 +${rew(rarityOf("Grumpy Bulb"))} Starchrom each. 📖 New entry for viewer42 (+${ECONOMY.newSpeciesBonus}). It broke free from nightowl. | !traits grumpybulb for traits`),
     ]),
     ex("Nobody catches it", `If every throw misses, it gets away. You only lose the ${T} Starchrom for the throw — your Securement Pod stays empty for next time.`, [
       spawn("Lonewolf Whisper"),
@@ -145,7 +145,7 @@ function chatExamples(botName) {
     ex("A Variation or Skin shows up", `Every Variation and Skin is Legendary, no matter the deviation's usual rarity — harder to catch, worth ${rew("legendary")} Starchrom.`, [
       bot(`👀 A Lonewolf Whisper has been spotted in the wild! ✨ LEGENDARY VARIATION: Lunar Oracle! Type !secure within ${W}s to catch it.`),
       line("metabones", "!secure"), thr("metabones", "Lonewolf Whisper — Lunar Oracle", 2300, 23, glove),
-      bot(`🔒 Lonewolf Whisper — Lunar Oracle secured a 4/4 by metabones! +${rew("legendary")} Starchrom each. 📖 New entry for metabones (+${ECONOMY.newSpeciesBonus}). | !traits lonewolfwhisper for traits`),
+      bot(`🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Lonewolf Whisper — Lunar Oracle (Legendary) — a 4/4 by @metabones! 🔒 +${rew("legendary")} Starchrom each. 📖 New entry for metabones (+${ECONOMY.newSpeciesBonus}). | !traits lonewolfwhisper for traits`),
     ]),
   ].join("\n");
 }
