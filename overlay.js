@@ -28,20 +28,22 @@ function codeFor(bid) {
 const channelForCode = (code) => db.q.getSetting.get(`obs-code:${String(code).toLowerCase()}`)?.value || null;
 const linkFor = (bid) => `${cfg.BASE_URL}/obs-source/${codeFor(bid)}`;
 
-const RESULT_MS = 12000; // how long the "who caught it" card stays up
+const RESULT_MS = 12000;
+// changes on every server start: an OBS source still running an older page reloads itself
+const BOOT = Date.now().toString(36); // how long the "who caught it" card stays up
 
 function stateFor(pool, code) {
   const bid = channelForCode(code);
   const ch = bid && db.getChannel(bid);
-  if (!ch) return { ok: false, error: "unknown_channel" };
+  if (!ch) return { ok: false, error: "unknown_channel", v: BOOT };
   const s = pool?.spawns?.active.get(bid);
   if (!s || !(s.endsAt > Date.now())) {
     // just resolved? show who caught it for a few seconds
     const r = pool?.spawns?.lastResult?.get(bid);
-    return r && r.winners.length && Date.now() - r.at < RESULT_MS ? { ok: true, active: false, result: r, now: Date.now() } : { ok: true, active: false };
+    return r && r.winners.length && Date.now() - r.at < RESULT_MS ? { ok: true, active: false, result: r, now: Date.now(), v: BOOT } : { ok: true, active: false, v: BOOT };
   }
   return {
-    ok: true, active: true,
+    ok: true, active: true, v: BOOT,
     id: `${s.dev.id}:${s.endsAt}`,             // changes for every new spawn
     name: s.dev.name,
     variant: s.variant ? { name: s.variant.name, kind: s.variant.kind } : null,
@@ -160,6 +162,7 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
   }
   function poll(){
     fetch("/obs-source/"+encodeURIComponent(code)+"/state",{cache:"no-store"}).then(function(r){return r.json();}).then(function(s){
+      if(s.v&&s.v!==${JSON.stringify(BOOT)}&&!current){location.reload();return;} // server updated: load the new page
       if(s.active){skew=s.now-Date.now();hideResult();show(s);}
       else { if(current)hide(); if(s.result)showResult(s.result); else hideResult(); }
     }).catch(function(){}).then(function(){setTimeout(poll,1500);});
