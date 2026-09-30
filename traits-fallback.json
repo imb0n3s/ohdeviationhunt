@@ -134,6 +134,16 @@
   "combat": {
    "slot1": [
     {
+     "key": "infrasonic",
+     "name": "Infrasonic Illusion",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "The appearance of the Deviation has changed. It gains Energy Recovery Speed +10%"
+     ],
+     "fuse": null
+    },
+    {
      "key": "bf_glistening",
      "name": "Weakspot Master - Glistening Blue",
      "minLevel": null,
@@ -737,6 +747,16 @@
   "crafting": {
    "slot1": [
     {
+     "key": "infrasonic",
+     "name": "Infrasonic Illusion",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "The appearance of the Deviation has changed. It gains Energy Recovery Speed +10%"
+     ],
+     "fuse": null
+    },
+    {
      "key": "atomic_snail",
      "name": "Atomic Snail",
      "minLevel": null,
@@ -1245,6 +1265,16 @@
   "territory": {
    "slot1": [
     {
+     "key": "infrasonic",
+     "name": "Infrasonic Illusion",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "The appearance of the Deviation has changed. It gains Energy Recovery Speed +10%"
+     ],
+     "fuse": null
+    },
+    {
      "key": "opt_extra_large",
      "name": "Optimism - Extra Large",
      "minLevel": null,
@@ -1715,22 +1745,27 @@
   "Butterfly Emissary": [
    "bf_glistening",
    "bf_ancient",
-   "bf_starry"
+   "bf_starry",
+   "infrasonic"
   ],
   "By-the-Wind": [
-   "by_the_wind"
+   "by_the_wind",
+   "infrasonic"
   ],
   "Dr. Teddy": [
-   "dr_teddy"
+   "dr_teddy",
+   "infrasonic"
   ],
   "Festering Gel": [
-   "festering_gel"
+   "festering_gel",
+   "infrasonic"
   ],
   "Grumpy Bulb": [
    "grumpy_bulb"
   ],
   "Invincible Sun": [
-   "invincible_sun"
+   "invincible_sun",
+   "infrasonic"
   ],
   "Lonewolf Whisper": [
    "lonewolf_whisper"
@@ -1739,7 +1774,8 @@
    "mini_wonder"
   ],
   "Polar Jelly": [
-   "polar_jellyfish"
+   "polar_jellyfish",
+   "infrasonic"
   ],
   "Shattered Maiden": [
    "shattered_maiden"
@@ -1754,16 +1790,60 @@
    "whalepup"
   ],
   "ZapCam": [
-   "zapcam"
+   "zapcam",
+   "infrasonic"
   ],
   "Atomic Snail": [
    "atomic_snail"
   ],
   "Space Turner": [
-   "space_turner"
+   "space_turner",
+   "infrasonic"
   ],
   "Growshroom": [
    "opt_extra_large"
+  ],
+  "Atomic Lighter": [
+   "infrasonic"
+  ],
+  "Disco Ball": [
+   "infrasonic"
+  ],
+  "Gingerbread House": [
+   "infrasonic"
+  ],
+  "Hug-in-a-Bowl": [
+   "infrasonic"
+  ],
+  "Party Monkey": [
+   "infrasonic"
+  ],
+  "Pup Buddy": [
+   "infrasonic"
+  ],
+  "Snow Globe": [
+   "infrasonic"
+  ],
+  "Chefosaurus Rex": [
+   "infrasonic"
+  ],
+  "Electric Eel": [
+   "infrasonic"
+  ],
+  "Fetch-A-Lot Bunny": [
+   "infrasonic"
+  ],
+  "H37": [
+   "infrasonic"
+  ],
+  "Nutcracker": [
+   "infrasonic"
+  ],
+  "Paper Doll": [
+   "infrasonic"
+  ],
+  "Wish Box": [
+   "infrasonic"
   ]
  },
  "slot2ForDev": {

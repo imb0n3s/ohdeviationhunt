@@ -405,6 +405,25 @@ function buy(userId, login, display, args) {
   return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units (${podsUsed(p)}/${unitCap(p)} Securement Pods used). ${bagText(p)}`;
 }
 
+// A variant always carries its own trait (from the wiki's Deviation Trait Page). When the wiki adds one
+// later (e.g. Infrasonic Illusion), give it to every specimen of that variant already caught — without
+// replacing a Legendary trait. Safe to run any time; returns how many specimens changed.
+function backfillVariantTraits() {
+  let n = 0;
+  db.tx(() => {
+    for (const sp of db.q.variantSpecimens.all()) {
+      const dev = data.get(sp.deviation);
+      if (!dev) continue;
+      const own = traits.variantTraits(dev.name, sp.variant, dev.variants.map((v) => v.name), dev.category);
+      const next = { id: sp.id, t1: sp.t1, t1_level: sp.t1_level, t2: sp.t2 };
+      if (own[1] && sp.t1 !== own[1] && !traits.LEGENDARY_KEYS.has(sp.t1) && !(sp.t1 === "power_rewind" && sp.t1_level === 2)) { next.t1 = own[1]; next.t1_level = null; }
+      if (own[2] && sp.t2 !== own[2] && !traits.LEGENDARY_KEYS.has(sp.t2)) next.t2 = own[2];
+      if (next.t1 !== sp.t1 || next.t2 !== sp.t2) { db.q.setVariantTraits.run(next); n++; }
+    }
+  })();
+  return n;
+}
+
 // Destroy one specimen for Starchrom. Only allowed while you own more than one of that deviation,
 // so a deviation never leaves your Securement Pods this way.
 function destroySpecimen(userId, specimenId) {
@@ -556,4 +575,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

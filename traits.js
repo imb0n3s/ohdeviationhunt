@@ -101,12 +101,12 @@ const catOf = (cat) => T.cats[cat] || T.cats.combat;
 
 function allowed(devName, cat = "combat") {
   const C = catOf(cat);
-  const own1 = T.slot1ForDev[devName];
+  const own1 = [].concat(T.slot1ForDev[devName] || []); // wiki lists one key or several
   const own2 = T.slot2ForDev[devName] || [];
   const specific2 = specificSlot2Keys();
   return {
     slot1General: T.global.filter((t) => !LEGENDARY_KEYS.has(t.key)),
-    slot1Own: own1 ? C.slot1.filter((t) => t.key === own1) : [],
+    slot1Own: C.slot1.filter((t) => own1.includes(t.key)),
     slot2General: C.slot2.filter((t) => !specific2.has(t.key) && !LEGENDARY_KEYS.has(t.key)),
     slot2Own: C.slot2.filter((t) => own2.includes(t.key)),
     slot3: C.slot3,
@@ -141,7 +141,9 @@ function ownOptions(traitList, variants) {
     const nameLabel = t.name.includes(" - ") ? t.name.split(" - ").pop().trim() : null;
     for (const line of t.effects.length ? t.effects : [""]) {
       const label = lineLabel(line) || nameLabel;
-      const locked = label && variants.some((v) => variantMatches(label, v)) ? label : null;
+      let locked = label && variants.some((v) => variantMatches(label, v)) ? label : null;
+      // a trait named exactly like one of the deviation's variants (e.g. "Infrasonic Illusion") belongs to that variant
+      if (!locked) { const v = variants.find((x) => norm(x) === norm(t.name)); if (v) locked = v; }
       out.push({ key: t.key, label, effect: line, locked });
     }
   }
@@ -177,6 +179,17 @@ function rollLegendary(devName, cat = "combat", force = false) {
     ...LEGENDARY.slot2.filter((k) => C.slot2.some((t) => t.key === k) && (!specific2.has(k) || own2.includes(k))).map((k) => ({ slot: 2, key: k, level: null })),
   ];
   return opts.length ? pick(opts) : null;
+}
+
+// The own trait a variant always carries in each slot ({1: key, 2: key}), from the wiki's lists
+function variantTraits(devName, variant, variants = [], cat = "combat") {
+  if (!T || !variant) return {};
+  const a = allowed(devName, cat), out = {};
+  const pick1 = ownOptions(a.slot1Own, variants).find((o) => o.locked && variantMatches(o.locked, variant));
+  const pick2 = ownOptions(a.slot2Own, variants).find((o) => o.locked && variantMatches(o.locked, variant));
+  if (pick1) out[1] = pick1.key;
+  if (pick2) out[2] = pick2.key;
+  return out;
 }
 
 function rollSpecimen(devName, variant, variants = [], cat = "combat", legendary = null) {
@@ -235,4 +248,4 @@ const shortTraits = (s, cat) => {
   return t.some(Boolean) ? t.map((x, i) => `Slot ${i + 1}: ${x || "None"}`).join(" · ") : "Traits: none";
 };
 
-module.exports = { refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, rollLegendary, LEGENDARY_CHANCE, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS, SLOT_CHANCE };
+module.exports = { variantTraits, LEGENDARY_KEYS, refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, rollLegendary, LEGENDARY_CHANCE, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS, SLOT_CHANCE };
