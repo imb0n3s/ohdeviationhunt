@@ -28,6 +28,7 @@ function commandSections() {
       ["!hunt off / !hunt on", "Pause or resume spawns. Other commands keep working."],
       ["!hunt status", "Live status, spawn settings, what's loose right now, and spawn/catch totals for your channel."],
       ["!hunt obs", "Your OBS Source link — a Browser Source that shows the deviation and its countdown on stream while it can be caught."],
+      ["!hunt chatdelay <seconds>", `When the OBS Source is on stream, wait this long before posting the catch result in chat so the overlay shows it first (0–30, default ${cfg.RESULT_CHAT_DELAY_SECONDS}).`],
       ["!hunt leave", "Remove Deviation Hunt from your channel. Everyone keeps their collections."],
       ["!hunt help", "Lists these mod commands in chat."],
     ] },

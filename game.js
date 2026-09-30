@@ -167,6 +167,21 @@ class Spawns {
     this.lastChat = new Map();     // bid -> ts of the last viewer message
     this.live = new Set();         // bids currently live
     this.lastResult = new Map();   // bid -> who caught the last spawn (for the OBS source results card)
+    this.overlaySeen = new Map();  // bid -> ts the channel's OBS Source last polled (it's on their stream)
+  }
+
+  // Twitch video runs a few seconds behind chat, so on channels showing the OBS Source the result
+  // message waits until the "who caught it" card is on stream. No overlay = no delay.
+  chatDelayMs(bid) {
+    if (!(Date.now() - (this.overlaySeen.get(bid) || 0) < 60000)) return 0;
+    const v = db.getSetting(`chatdelay:${bid}`);
+    const sec = v === null ? cfg.RESULT_CHAT_DELAY_SECONDS : Number(v);
+    return Math.max(0, Math.min(30, sec || 0)) * 1000;
+  }
+  sendResult(bid, text) {
+    const wait = this.chatDelayMs(bid);
+    if (!wait) return this.send(bid, text);
+    setTimeout(() => Promise.resolve(this.send(bid, text)).catch((e) => console.error("[resolve] delayed send", e.message)), wait);
   }
 
   noteChat(bid) { this.lastChat.set(bid, Date.now()); }
@@ -300,7 +315,7 @@ class Spawns {
       db.logSpawn(bid, s.dev.id, s.variant?.name, 0, 0);
       db.bumpChannel(bid, 0);
       this.recordResult(bid, s, [], [], 0);
-      return this.send(bid, `💨 ${name} slipped away. Nobody tried to secure it...`);
+      return this.sendResult(bid, `💨 ${name} slipped away. Nobody tried to secure it...`);
     }
     const caught = [], escaped = [], firsts = [], winners = [];
     const reward = rewardFor(s);
@@ -342,7 +357,7 @@ class Spawns {
       msg = `💥 ${name} got away from ${list(escaped, 8)}! Better luck next time.`;
     }
     msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !pods to see your collection`;
-    return this.send(bid, msg);
+    return this.sendResult(bid, msg);
   }
 
   recordResult(bid, s, winners, escaped, reward) {
