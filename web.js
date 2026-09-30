@@ -299,7 +299,7 @@ function collectionPage(p, viewer, msg) {
     const shiny = top ? ` shiny${top.kind === "skin" ? " skin" : ""}` : "";
     const sp = best.get(d.id);
     const spHtml = sp ? `<div class="sp"><div class="pm"><span title="Skill Rating (Deviant Power)">Skill ${sp.power}/5</span><span title="Activity Rating (Mood)">Activity ${sp.mood}/5</span></div>
-<ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => (key ? `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant, d.category))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant, d.category))}</li>` : `<li class="empty"><b>${slot}</b>Empty slot</li>`)).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
+<ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => (key ? `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant, d.category))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant, d.category))}</li>` : `<li class="empty"><b>${slot}</b>Empty slot</li>`)).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : top ? `<div class="bv">best: normal ${esc(d.name)} — open Scrap extras to see your ${esc(top.name)}</div>` : ""}</div>` : "";
     // signed-in owner: scrap any extra specimen (you always keep at least one)
     const mine = (specsOf.get(d.id) || []).slice().sort((a, b) => (b.power + b.mood) - (a.power + a.mood) || b.power - a.power || b.id - a.id);
     const note = msg && msg.dev === d.id ? `<div class="snote ${msg.ok ? "ok" : "err"}">${esc(msg.text)}</div>` : "";
