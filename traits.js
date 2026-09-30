@@ -229,6 +229,10 @@ function traitEffect(slot, key, level, variant, cat) {
   return line.includes(": ") && named ? line.slice(line.indexOf(": ") + 2) : line;
 }
 
-const shortTraits = (s, cat) => [traitName(1, s.t1, s.t1_level, s.variant, cat), traitName(2, s.t2, null, s.variant, cat), traitName(3, s.t3, null, null, cat)].filter(Boolean).join(" | ") || "none";
+// "Slot 1: Infrasonic · Slot 2: None · Slot 3: None", or "Traits: none" when all three are empty
+const shortTraits = (s, cat) => {
+  const t = [traitName(1, s.t1, s.t1_level, s.variant, cat), traitName(2, s.t2, null, s.variant, cat), traitName(3, s.t3, null, null, cat)];
+  return t.some(Boolean) ? t.map((x, i) => `Slot ${i + 1}: ${x || "None"}`).join(" · ") : "Traits: none";
+};
 
 module.exports = { refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, rollLegendary, LEGENDARY_CHANCE, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS, SLOT_CHANCE };

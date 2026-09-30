@@ -528,7 +528,7 @@ function specimenText(userId, login, display, query, baseUrl) {
   const count = db.q.specimensOf.all(userId, sp.deviation).length;
   const nm = `${dev?.name || sp.deviation}${sp.variant ? ` — ${sp.variant}` : ""}`;
   const label = query ? `best ${nm}${count > 1 ? ` (of ${count})` : ""}` : `latest: ${nm}`;
-  return `@${display} ${label} · ${ratingTag(sp)} · Traits: ${traits.shortTraits(sp, dev?.category)} ${baseUrl}/u/${login}`;
+  return `@${display} ${label} · ${ratingTag(sp)} · ${traits.shortTraits(sp, dev?.category)} ${baseUrl}/u/${login}`;
 }
 
 function top(baseUrl) {
