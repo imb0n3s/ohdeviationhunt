@@ -116,10 +116,17 @@
     return (d.variants || []).filter(function (v) { return v.owned; }).sort(function (a, b) { return (b.kind === "skin") - (a.kind === "skin"); });
   }
 
+  // the variant the card features = the one the server picked as the featured specimen (best skin > best variation)
+  function featuredVariant(d, got) {
+    var name = d.best && d.best.variant;
+    for (var i = 0; name && i < got.length; i++) if (got[i].name === name) return got[i];
+    return got[0];
+  }
+
   function vCount(list, kind) { return list.filter(function (v) { return v.kind === kind; }).length; }
 
   function card(d) {
-    var got = caughtVariants(d), top = got[0];
+    var got = caughtVariants(d), top = featuredVariant(d, got);
     var cls = "dev" + (d.owned ? "" : " missing") + (top ? " shiny" + (top.kind === "skin" ? " skin" : "") : "");
     var r = d.best ? '<div class="r">Skill ' + d.best.skill + ' \u00b7 Act ' + d.best.activity + '</div>' : "";
     return '<div class="' + cls + '" data-id="' + esc(d.id) + '">' +
@@ -150,7 +157,7 @@
   function renderDetail(id) {
     var d = find(id);
     if (!d || !d.owned) { view.open = null; return render(); }
-    var topV = caughtVariants(d)[0];
+    var topV = featuredVariant(d, caughtVariants(d));
     var specs = (d.specimens || []).slice().sort(function (a, b) { return (b.skill + b.activity) - (a.skill + a.activity) || b.skill - a.skill || b.id - a.id; });
     var canDestroy = d.count > 1, value = bag.destroyValue || 500, units = bag.destroyUnits == null ? 1 : bag.destroyUnits;
     var reward = value.toLocaleString() + ' Starchrom' + (units ? ' + ' + units + ' Securement Unit' + (units > 1 ? 's' : '') : '');

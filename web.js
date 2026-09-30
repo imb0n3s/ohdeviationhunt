@@ -295,11 +295,13 @@ function collectionPage(p, viewer, msg) {
     const vars = chips("variation", "Variations") + chips("skin", "Skins");
     // caught variations/skins: highlight the card and show the rarest one (skins first)
     const gotVars = h ? d.variants.filter((v) => h.variants.has(v.name)).sort((a, b) => (a.kind === "skin" ? -1 : 0) - (b.kind === "skin" ? -1 : 0)) : [];
-    const top = gotVars[0];
+    // featured specimen: best skin, else best variation, else best — picture, name and traits all come from it
+    const feat = game.featuredSpecimen(specsOf.get(d.id) || [], d);
+    const top = (feat && feat.variant && d.variants.find((v) => v.name === feat.variant)) || gotVars[0];
     const shiny = top ? ` shiny${top.kind === "skin" ? " skin" : ""}` : "";
-    const sp = best.get(d.id);
+    const sp = feat || best.get(d.id);
     const spHtml = sp ? `<div class="sp"><div class="pm"><span title="Skill Rating (Deviant Power)">Skill ${sp.power}/5</span><span title="Activity Rating (Mood)">Activity ${sp.mood}/5</span></div>
-<ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => (key ? `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant, d.category))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant, d.category))}</li>` : `<li class="empty"><b>${slot}</b>Empty slot</li>`)).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : top ? `<div class="bv">best: normal ${esc(d.name)} — open Scrap extras to see your ${esc(top.name)}</div>` : ""}</div>` : "";
+<ul class="tr">${[[1, sp.t1, sp.t1_level], [2, sp.t2], [3, sp.t3]].map(([slot, key, lvl]) => (key ? `<li title="${esc(traits.traitEffect(slot, key, lvl, sp.variant, d.category))}"><b>${slot}</b>${esc(traits.traitName(slot, key, lvl, sp.variant, d.category))}</li>` : `<li class="empty"><b>${slot}</b>Empty slot</li>`)).join("")}</ul>${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""}</div>` : "";
     // signed-in owner: scrap any extra specimen (you always keep at least one)
     const mine = (specsOf.get(d.id) || []).slice().sort((a, b) => (b.power + b.mood) - (a.power + a.mood) || b.power - a.power || b.id - a.id);
     const note = msg && msg.dev === d.id ? `<div class="snote ${msg.ok ? "ok" : "err"}">${esc(msg.text)}</div>` : "";
@@ -312,7 +314,7 @@ function collectionPage(p, viewer, msg) {
 <h1>${esc(p.display)}'s Securement Pods</h1>${msg && msg.scrap && !msg.dev ? `<div class="snote err">${esc(msg.text)}</div>` : ""}
 <div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variations}/${totalOf("variation")}</b>variations</div><div class="stat"><b style="color:#f0abfc">${c.skins}/${totalOf("skin")}</b>skins</div><div class="stat"><b>${game.podsUsed(live)}/${game.unitCap(live)}</b>Securement Pods · ${fmt(c.total)} secured</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
 <div class="bar"><i style="width:${pct}%"></i></div>
-${owner ? `<p class="snote ok" style="text-align:left">♻️ Have duplicates? Click the red <b>Scrap extras</b> button at the bottom of any card marked ×2 or more to scrap the copies you don't want (${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit each). <a href="/#scrap">How scrapping works</a></p>` : ""}<p>Each card shows your best specimen: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
+${owner ? `<p class="snote ok" style="text-align:left">♻️ Have duplicates? Click the red <b>Scrap extras</b> button at the bottom of any card marked ×2 or more to scrap the copies you don't want (${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit each). <a href="/#scrap">How scrapping works</a></p>` : ""}<p>Each card shows your top specimen — your best skin, else your best variation, else your best one: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
 <div id="shop">${webShop(p, live, viewer, msg)}</div>
 <p>Empty Securement Units: <b>${units.standard || 0}</b> · Securement Pods used: <b>${game.podsUsed(live)}/${game.unitCap(live)}</b> (caught + empty)${(() => { const g = game.bestGlove(live); return g ? ` · 🧤 <b style="color:${g.color}">${esc(g.name)}</b> (+${Math.round(g.bonus * 100)}% catch)` : ""; })()} · next free unit: ${game.nextUnitIn(live)} (1 every hour while you're in a live stream, after today's <kbd>!daily</kbd>)</p>
 ${cards}`);

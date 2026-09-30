@@ -405,6 +405,20 @@ function buy(userId, login, display, args) {
   return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units (${podsUsed(p)}/${unitCap(p)} Securement Pods used). ${bagText(p)}`;
 }
 
+// The specimen a deviation's card features: your best-rated skin if you have one, else your best-rated
+// variation, else your best-rated specimen — so the card's picture, name and traits all match.
+function featuredSpecimen(specs, dev) {
+  const kindOf = (sp) => (sp.variant ? (dev?.variants.find((v) => v.name === sp.variant)?.kind || "variation") : "base");
+  const rank = { skin: 2, variation: 1, base: 0 };
+  let best = null;
+  for (const sp of specs) {
+    if (!best) { best = sp; continue; }
+    const a = rank[kindOf(sp)], b = rank[kindOf(best)];
+    if (a > b || (a === b && (sp.power + sp.mood > best.power + best.mood || (sp.power + sp.mood === best.power + best.mood && sp.power > best.power)))) best = sp;
+  }
+  return best;
+}
+
 // A variant always carries its own trait (from the wiki's Deviation Trait Page). When the wiki adds one
 // later (e.g. Infrasonic Illusion), give it to every specimen of that variant already caught — without
 // replacing a Legendary trait. Safe to run any time; returns how many specimens changed.
@@ -575,4 +589,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

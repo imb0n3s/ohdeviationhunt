@@ -67,7 +67,7 @@ function bagFor(userId) {
   for (const c of catches) if (!count.has(c.deviation)) count.set(c.deviation, c.count); // catches from before specimens existed
 
   const deviations = all.map((d) => {
-    const sp = best.get(d.id);
+    const sp = game.featuredSpecimen(specs.filter((x) => x.deviation === d.id), d) || best.get(d.id);
     return {
       id: d.id, name: d.name, category: d.category, img: d.img,
       owned: count.has(d.id), count: count.get(d.id) || 0,
