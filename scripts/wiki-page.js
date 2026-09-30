@@ -108,6 +108,7 @@ ${table(["Command", "Effect"], [
   [cmd("!hunt off") + " / " + cmd("!hunt on"), "Pause or resume spawns. Other commands keep working."],
   [cmd("!hunt status"), "Live status, spawn timer, what's loose, and this channel's spawn/catch totals."],
   [cmd("!hunt obs"), "Posts your channel's OBS Source link (see Add Deviation Hunt to Your Channel)."],
+  [cmd("!hunt chatdelay <seconds>"), `While your OBS Source is on stream, the bot waits this long (0–30, default ${cfg.RESULT_CHAT_DELAY_SECONDS}) before posting who secured the deviation, so viewers see it on screen first. ${cmd("!hunt chatdelay 0")} posts right away.`],
   [cmd("!hunt leave"), "Remove the bot from your channel."],
   [cmd("!hunt help"), "List the mod commands in chat."],
 ])}
