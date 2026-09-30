@@ -157,10 +157,10 @@ const q = {
   totalCatches: db.prepare(`SELECT COALESCE(SUM(count),0) AS n FROM catches`),
   leaderboard: db.prepare(`SELECT p.user_id, p.display, p.login,
       COUNT(DISTINCT c.deviation) AS species,
-      SUM(CASE WHEN c.variant<>'' THEN 1 ELSE 0 END) AS variants,
+      COALESCE(SUM(CASE WHEN c.variant<>'' THEN 1 ELSE 0 END),0) AS variants,
       COALESCE(SUM(c.count),0) AS total
-    FROM players p JOIN catches c ON c.user_id=p.user_id
-    GROUP BY p.user_id ORDER BY species DESC, variants DESC, total DESC LIMIT ?`),
+    FROM players p LEFT JOIN catches c ON c.user_id=p.user_id
+    GROUP BY p.user_id ORDER BY species DESC, variants DESC, total DESC, LOWER(p.display) ASC LIMIT ?`),
 
   addSpecimen: db.prepare(`INSERT INTO specimens (user_id, deviation, variant, power, mood, t1, t1_level, t2, t3, caught_at, channel)
     VALUES (@user_id, @deviation, @variant, @power, @mood, @t1, @t1_level, @t2, @t3, @caught_at, @channel)`),

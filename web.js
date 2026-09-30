@@ -361,11 +361,11 @@ function dexPage() {
 }
 
 function topPage() {
-  const rows = db.leaderboard(50);
+  const rows = db.leaderboard(100); // top 100, including players who haven't caught anything yet
   const body = rows.length
     ? `<div class="card"><table><tr><th>#</th><th>Meta</th><th>Deviations</th><th>Variants</th><th>Total</th></tr>${rows.map((r, i) => `<tr><td>${i + 1}</td><td><a href="/u/${esc(r.login)}">${esc(r.display)}</a></td><td>${r.species}/${data.all().length}</td><td>${r.variants}</td><td>${fmt(r.total)}</td></tr>`).join("")}</table></div>`
     : `<p>No one has secured a deviation yet.</p>`;
-  return page("Leaderboard", `<h1>Leaderboard</h1>${body}`);
+  return page("Leaderboard", `<h1>Leaderboard — Top 100</h1>${body}`);
 }
 
 function createApp(pool) {
