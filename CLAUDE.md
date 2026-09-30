@@ -7,7 +7,7 @@
   from raw.githubusercontent.com/imb0n3s/ohdeviationhunt/<commit>/docs/Deviation_Hunt.wiki).
 - Pushing to main auto-deploys on Railway.
 - Twitch extension edits (details, images, zip upload) need the version in Local Test. Afterwards,
-  move it back to Hosted Test, then RELOAD the status page and confirm "Current Status: Hosted Test"
+  move it back to Hosted Test (the button opens a "Move" confirm dialog — click it), then RELOAD the status page and confirm "Current Status: Hosted Test"
   (the move can silently fail); in Local Test the panel loads from localhost and shows blank.
   Panel zip: `npm run zip:ext`, commit a copy to docs/ext-assets/ (git add -f), upload in the Files tab.
 - Site lives at https://deviationhunt.ohwikiguide.com (Railway custom domain; Cloudflare CNAME
