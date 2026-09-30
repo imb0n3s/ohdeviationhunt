@@ -84,8 +84,8 @@ function pageHtml(code, demoState, demoResult) {
   return `<!doctype html><html><head><meta charset="utf-8"><title>Deviation Hunt — OBS Source</title>
 <style>
 html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
-#card{position:absolute;left:50%;top:50%;width:420px;transform:translate(-50%,-50%) scale(.6);opacity:0;transition:opacity .35s ease,transform .45s cubic-bezier(.2,1.4,.4,1);text-align:center;color:#fff}
-#card.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#card{--s:1;position:absolute;left:50%;top:50%;width:420px;transform:translate(-50%,-50%) scale(calc(var(--s)*.6));opacity:0;transition:opacity .35s ease,transform .45s cubic-bezier(.2,1.4,.4,1);text-align:center;color:#fff}
+#card.show{opacity:1;transform:translate(-50%,-50%) scale(var(--s))}
 .tag{display:inline-block;background:#0ea5e9;color:#04121c;font-weight:900;letter-spacing:2px;font-size:15px;padding:5px 14px;border-radius:999px;text-transform:uppercase;box-shadow:0 4px 18px rgba(0,0,0,.45)}
 .glow{position:relative;width:300px;height:300px;margin:10px auto 0}
 .glow:before{content:"";position:absolute;inset:30px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.55),rgba(14,165,233,0) 70%);filter:blur(6px);animation:pulse 1.6s ease-in-out infinite}
@@ -106,11 +106,11 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 .bar{width:300px;height:8px;margin:12px auto 0;background:rgba(13,19,25,.8);border-radius:99px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#0ea5e9,#7dd3fc);transform-origin:left}
 #card.variation .bar i{background:linear-gradient(90deg,#f59e0b,#fde68a)}#card.skin .bar i{background:linear-gradient(90deg,#d946ef,#f5d0fe)}
-#res{position:absolute;left:50%;top:50%;width:580px;transform:translate(-50%,-50%) scale(.6);opacity:0;transition:opacity .35s ease,transform .45s cubic-bezier(.2,1.4,.4,1);text-align:center;color:#fff}
-#res.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#res{--s:1;position:absolute;left:50%;top:50%;width:580px;transform:translate(-50%,-50%) scale(calc(var(--s)*.6));opacity:0;transition:opacity .35s ease,transform .45s cubic-bezier(.2,1.4,.4,1);text-align:center;color:#fff}
+#res.show{opacity:1;transform:translate(-50%,-50%) scale(var(--s))}
 #res .rt{display:inline-block;font-weight:900;letter-spacing:3px;font-size:30px;padding:8px 24px;border-radius:999px;color:#04121c;background:#22c55e;box-shadow:0 4px 18px rgba(0,0,0,.6)}
 #res .rt{white-space:nowrap}#res.legend .rt{font-size:26px;letter-spacing:2px;background:linear-gradient(90deg,#fbbf24,#fde68a,#fbbf24)}
-#res .glow{width:170px;height:170px;margin:6px auto 0}#res .glow:before{background:radial-gradient(circle,rgba(34,197,94,.55),rgba(34,197,94,0) 70%)}
+#res .glow{width:220px;height:220px;margin:6px auto 0}#res .glow:before{background:radial-gradient(circle,rgba(34,197,94,.55),rgba(34,197,94,0) 70%)}
 #res.legend .glow:before{background:radial-gradient(circle,rgba(251,191,36,.7),rgba(251,191,36,0) 70%)}
 #res .rn{font-size:40px;font-weight:900;line-height:1.1;text-shadow:0 3px 10px #000,0 0 3px #000}#res .rr{font-size:24px;font-weight:800;color:#38bdf8;text-shadow:0 2px 6px #000,0 0 2px #000}#res.legend .rr{color:#fbbf24}
 #res .list{margin:10px auto 0;display:flex;flex-direction:column;gap:8px;width:580px}
@@ -138,9 +138,12 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
     document.getElementById("img").src=s.img;
     document.getElementById("name").textContent=s.name;
     document.getElementById("variant").textContent=s.variant?("\\u2728 "+(s.variant.kind==="skin"?"Skin":"Variation")+": "+s.variant.name):"";
-    card.className=(s.variant?s.variant.kind:"")+" show";
+    card.className=(s.variant?s.variant.kind:""); fit(card); card.offsetWidth; card.className+=" show";
   }
   function hide(){current=null;card.className=(card.className||"").replace("show","").trim();}
+  // scale a card so it fills the whole Browser Source (e.g. 600x600), whatever its content height
+  function fit(el){ var w=el.offsetWidth, h=el.offsetHeight; if(!w||!h)return; el.style.setProperty("--s", Math.min(innerWidth*.97/w, innerHeight*.97/h)); }
+  addEventListener("resize",function(){fit(card);fit(res);});
   function txt(id,t){document.getElementById(id).textContent=t;}
   // "who caught it" card, shown for a few seconds after the deviation is gone
   function showResult(r){
@@ -153,7 +156,7 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
     (r.winners||[]).slice(0,4).forEach(function(w){var d=document.createElement("div");d.className="row";var nb=document.createElement("b");nb.textContent="@"+w.name;d.appendChild(nb);var sp=document.createElement("span");sp.textContent=w.rating;d.appendChild(sp);list.appendChild(d);});
     if((r.winners||[]).length>4){var m=document.createElement("div");m.className="more";m.textContent="+"+(r.winners.length-4)+" more";list.appendChild(m);}
     var esc=r.escaped||[]; txt("rmiss", esc.length?("\ud83d\udca5 "+(won?"Broke free from ":"Got away from ")+esc.slice(0,4).join(", ")+(esc.length>4?" +"+(esc.length-4)+" more":"")):(r.tried?"":"Nobody tried to secure it"));
-    res.className=(won?(legend?"legend":""):"miss")+((r.winners||[]).length>=3?" many":"")+" show";
+    res.className=(won?(legend?"legend":""):"miss")+((r.winners||[]).length>=3?" many":""); fit(res); res.offsetWidth; res.className+=" show";
   }
   function hideResult(){ if(res.className.indexOf("show")>=0) res.className=res.className.replace("show","").trim(); }
   function tick(){
