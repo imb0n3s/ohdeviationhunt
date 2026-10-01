@@ -71,7 +71,7 @@ function page(code, demo) {
     const tier = chaos ? "legendary" : d.rarity;
     const T = require("./rarity").TIERS;
     const r = { id: "demo-result", name: d.name, img: (chaos && chaos.img) || d.img, tier, tierLabel: T[tier].label,
-      variant: chaos ? "🌀 Chaos Variation" : null, stars: { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 }[tier],
+      variant: chaos ? "🌀 Chaos Variation" : null, stars: chaos ? 5 : 1, legend: !!chaos,
       winners: demo === "resultmiss" ? [] : [{ name: "imbon3s", rating: "4/2" }, { name: "luna_raventhorn", rating: "5/5 ⭐" }],
       escaped: ["DeeOhGee024"], reward: T[tier].reward, tried: 3, demo: true };
     return pageHtml(code, "null", JSON.stringify(r));
@@ -148,7 +148,7 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
   // "who caught it" card, shown for a few seconds after the deviation is gone
   function showResult(r){
     if(shownResult===r.id)return; shownResult=r.id; hide();
-    var won=r.winners&&r.winners.length, legend=r.tier==="legendary";
+    var won=r.winners&&r.winners.length, legend=r.legend!=null?r.legend:!!r.variant;
     var star=legend?"\ud83c\udf1f":"\u2b50", stars=new Array(r.stars+1).join(star);
     txt("rt", won?(legend?star+" LEGENDARY SECURED! "+star:stars+" SECURED! "+stars):(r.tried?"\ud83d\udca5 GOT AWAY!":"\ud83d\udca8 SLIPPED AWAY"));
     document.getElementById("rimg").src=r.img; txt("rn",r.name); txt("rr",(r.variant?r.variant+" \u00b7 ":"")+r.tierLabel+" \u00b7 +"+r.reward);

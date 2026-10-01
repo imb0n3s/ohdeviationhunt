@@ -353,11 +353,10 @@ class Spawns {
     const list = (arr, max = 12) => arr.length > max ? `${arr.slice(0, max).join(", ")} +${arr.length - max} more` : arr.join(", ");
     let msg;
     if (caught.length) {
-      // stand-out banner: more stars for rarer catches (variations, skins and Chaos count as Legendary)
+      // banner: one ⭐ for a normal catch; variations, skins and Chaos get the 🌟🌟🌟🌟🌟 LEGENDARY banner
       const tier = variantRule(s.variant)?.rarity || s.dev.rarity;
-      const n = { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 }[tier] || 1;
-      const stars = (tier === "legendary" ? "🌟" : "⭐").repeat(n);
-      msg = `${stars} ${tier === "legendary" ? "LEGENDARY " : ""}SECURED! ${stars} ${name}${s.variant ? ` (${TIERS[tier].label})` : ""} — ${list(caught, 7)}! 🔒 +${reward} ${SC} each.`;
+      const stars = s.variant ? "🌟".repeat(5) : "⭐";
+      msg = `${stars} ${s.variant ? "LEGENDARY " : ""}SECURED! ${stars} ${name}${s.variant ? ` (${TIERS[tier].label})` : ""} — ${list(caught, 7)}! 🔒 +${reward} ${SC} each.`;
       if (firsts.length) msg += ` 📖 New entry for ${list(firsts, 8)} (+${ECONOMY.newSpeciesBonus}).`;
       if (escaped.length) msg += ` It broke free from ${list(escaped, 6)}.`;
     } else {
@@ -375,7 +374,7 @@ class Spawns {
       name: s.dev.name, img: (s.variant && s.variant.img) || s.dev.img,
       tier, tierLabel: TIERS[tier].label,
       variant: s.variant ? `${isChaos(s.variant) ? "🌀 Chaos Variation" : `✨ ${s.variant.kind === "skin" ? "Skin" : "Variation"}: ${s.variant.name}`}` : null,
-      stars: { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 }[tier] || 1,
+      stars: s.variant ? 5 : 1, legend: !!s.variant,
       winners, escaped, reward, tried: s.attempts.size,
     });
   }
