@@ -368,13 +368,19 @@ function dexPage() {
 }
 
 function topPage() {
-  // streamers (channels running the game) get their own top 10; everyone else is the top 100
-  const table = (rows, who) => rows.length
-    ? `<div class="card"><table><tr><th>#</th><th>${who}</th><th>Deviations</th><th>Variants</th><th>Total</th></tr>${rows.map((r, i) => `<tr><td>${i + 1}</td><td><a href="/u/${esc(r.login)}">${esc(r.display)}</a></td><td>${r.species}/${data.all().length}</td><td>${r.variants}</td><td>${fmt(r.total)}</td></tr>`).join("")}</table></div>`
+  // top streams = channels where the most deviations have been secured; everyone (streamers included) is in the top 100
+  const streams = db.topStreams(10);
+  const streamTable = streams.length
+    ? `<div class="card"><table><tr><th>#</th><th>Stream</th><th>Deviations secured</th><th>Spawns</th></tr>${streams.map((c, i) => `<tr><td>${i + 1}</td><td><a href="https://twitch.tv/${esc(c.login)}" target="_blank" rel="noopener">${esc(c.display_name)}</a></td><td>${fmt(c.catches)}</td><td>${fmt(c.spawns)}</td></tr>`).join("")}</table></div>`
+    : `<p>No deviations secured yet.</p>`;
+  const rows = db.leaderboard(100, "all");
+  const tag = `<span style="display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#9146ff;color:#fff;font-size:.72rem;font-weight:700;vertical-align:middle">Streamer</span>`;
+  const metaTable = rows.length
+    ? `<div class="card"><table><tr><th>#</th><th>Meta</th><th>Deviations</th><th>Variants</th><th>Total</th></tr>${rows.map((r, i) => `<tr><td>${i + 1}</td><td><a href="/u/${esc(r.login)}">${esc(r.display)}</a>${r.streamer ? tag : ""}</td><td>${r.species}/${data.all().length}</td><td>${r.variants}</td><td>${fmt(r.total)}</td></tr>`).join("")}</table></div>`
     : `<p>No one here yet.</p>`;
   return page("Leaderboard", `<h1>Leaderboard</h1>
-<h2>🎥 Streamers — Top 10</h2><p>Streamers running Deviation Hunt on their channel.</p>${table(db.leaderboard(10, "streamers"), "Streamer")}
-<h2>🏆 Metas — Top 100</h2><p>Everyone else, including players who haven't secured anything yet.</p>${table(db.leaderboard(100, "viewers"), "Meta")}`);
+<h2>🎥 Top Streams</h2><p>The streams where viewers have secured the most deviations.</p>${streamTable}
+<h2>🏆 Metas — Top 100</h2><p>Everyone who plays, including players who haven't secured anything yet. Streamers running Deviation Hunt are tagged.</p>${metaTable}`);
 }
 
 function createApp(pool) {

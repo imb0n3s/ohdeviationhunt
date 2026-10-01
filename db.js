@@ -159,11 +159,13 @@ const q = {
   leaderboard: db.prepare(`SELECT p.user_id, p.display, p.login,
       COUNT(DISTINCT c.deviation) AS species,
       COALESCE(SUM(CASE WHEN c.variant<>'' THEN 1 ELSE 0 END),0) AS variants,
-      COALESCE(SUM(c.count),0) AS total
+      COALESCE(SUM(c.count),0) AS total,
+      (p.user_id IN (SELECT broadcaster_id FROM channels WHERE enabled=1)) AS streamer
     FROM players p LEFT JOIN catches c ON c.user_id=p.user_id
     WHERE (@who = 'all' OR (p.user_id IN (SELECT broadcaster_id FROM channels WHERE enabled=1)) = (@who = 'streamers'))
     GROUP BY p.user_id ORDER BY species DESC, variants DESC, total DESC, LOWER(p.display) ASC LIMIT @n`),
 
+  topStreams: db.prepare(`SELECT login, display_name, catches, spawns FROM channels WHERE enabled=1 AND catches>0 ORDER BY catches DESC, spawns DESC LIMIT ?`),
   variantSpecimens: db.prepare(`SELECT id, deviation, variant, t1, t1_level, t2 FROM specimens WHERE variant<>''`),
   setVariantTraits: db.prepare(`UPDATE specimens SET t1=@t1, t1_level=@t1_level, t2=@t2 WHERE id=@id`),
   addSpecimen: db.prepare(`INSERT INTO specimens (user_id, deviation, variant, power, mood, t1, t1_level, t2, t3, caught_at, channel)
@@ -213,5 +215,7 @@ module.exports = {
   addSpent: (n) => { if (n > 0) q.setSetting.run("stat:starchrom_spent", String(Number(q.getSetting.get("stat:starchrom_spent")?.value || 0) + n)); },
   // who: "all" | "streamers" (channels running the game) | "viewers" (everyone else)
   leaderboard: (n = 10, who = "all") => q.leaderboard.all({ n, who }),
+  // streams where the most deviations have been secured (channels running the game)
+  topStreams: (n = 10) => q.topStreams.all(n),
   logSpawn: (bid, dev, variant, attempts, caught) => q.logSpawn.run(Date.now(), bid, dev, variant || "", attempts, caught),
 };

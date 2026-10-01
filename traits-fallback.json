@@ -1367,6 +1367,16 @@
      "fuse": null
     },
     {
+     "key": "growshroom_greentouch",
+     "name": "Toxicologist - Green Touch",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When working in a Pollution Zone, it has a 25% chance to not consume energy"
+     ],
+     "fuse": null
+    },
+    {
      "key": "heartthrob",
      "name": "Heartthrob",
      "minLevel": null,
@@ -1872,7 +1882,8 @@
    "atomic_snail"
   ],
   "Growshroom": [
-   "growshroom_shadowshroom"
+   "growshroom_shadowshroom",
+   "growshroom_greentouch"
   ]
  }
 }
