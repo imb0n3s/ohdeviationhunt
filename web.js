@@ -134,7 +134,7 @@ function chatExamples(botName) {
       line("viewer42", "!secure"), thr("viewer42", "Grumpy Bulb", 480, 7),
       line("metabones", "!secure"), thr("metabones", "Grumpy Bulb", 2310, 23, glove),
       line("nightowl", "!secure"), thr("nightowl", "Grumpy Bulb", 95, 2),
-      bot(`⭐ SECURED! ⭐ Grumpy Bulb (${TIERS[rarityOf("Grumpy Bulb")].label}) — a 3/2 by @metabones, a 5/5 ⭐ by @viewer42! 🔒 +${rew(rarityOf("Grumpy Bulb"))} Starchrom each. 📖 New entry for viewer42 (+${ECONOMY.newSpeciesBonus}). It broke free from nightowl. | !traits grumpybulb for traits`),
+      bot(`⭐ SECURED! ⭐ Grumpy Bulb — a 3/2 by @metabones, a 5/5 ⭐ by @viewer42! 🔒 +${rew(rarityOf("Grumpy Bulb"))} Starchrom each. 📖 New entry for viewer42 (+${ECONOMY.newSpeciesBonus}). It broke free from nightowl. | !traits grumpybulb for traits`),
     ]),
     ex("Nobody catches it", `If every throw misses, it gets away. You only lose the ${T} Starchrom for the throw — your Securement Pod stays empty for next time.`, [
       spawn("Lonewolf Whisper"),

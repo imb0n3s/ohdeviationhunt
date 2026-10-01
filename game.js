@@ -357,7 +357,7 @@ class Spawns {
       const tier = variantRule(s.variant)?.rarity || s.dev.rarity;
       const n = { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 }[tier] || 1;
       const stars = (tier === "legendary" ? "🌟" : "⭐").repeat(n);
-      msg = `${stars} ${tier === "legendary" ? "LEGENDARY " : ""}SECURED! ${stars} ${name} (${TIERS[tier].label}) — ${list(caught, 7)}! 🔒 +${reward} ${SC} each.`;
+      msg = `${stars} ${tier === "legendary" ? "LEGENDARY " : ""}SECURED! ${stars} ${name}${s.variant ? ` (${TIERS[tier].label})` : ""} — ${list(caught, 7)}! 🔒 +${reward} ${SC} each.`;
       if (firsts.length) msg += ` 📖 New entry for ${list(firsts, 8)} (+${ECONOMY.newSpeciesBonus}).`;
       if (escaped.length) msg += ` It broke free from ${list(escaped, 6)}.`;
     } else {
