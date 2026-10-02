@@ -118,6 +118,8 @@ function makeHandler(pool, spawns) {
     if (!isModOrOwner(ev) && Date.now() - (lastReply.get(key) || 0) < USER_CD) return;
     lastReply.set(key, Date.now());
 
+    // !daily may come right as the stream starts: ask Twitch first so where they play is recorded with this stream
+    if (cmd === "!daily" && !(spawns.live.has(bid) && spawns.streamIds?.get(bid))) await pool.refreshLive?.();
     played();
     try {
     switch (cmd) {
@@ -127,7 +129,6 @@ function makeHandler(pool, spawns) {
       case "!buy": return reply(game.buy(uid, login, name, args));
       case "!daily": {
         // the stream may have just started: ask Twitch right now instead of waiting for the next check
-        if (!(spawns.live.has(bid) && spawns.streamIds?.get(bid))) await pool.refreshLive?.();
         return reply(game.daily(uid, login, name, bid));
       }
       case "!pod":

@@ -63,8 +63,8 @@ function hourlyStatus(p) {
 }
 
 function nextUnitIn(p) {
-  if (!dailyToday(p.user_id)) return "after !daily";
-  if (!hourlyOn(p)) return "in a live stream";
+  if (!dailyToday(p.user_id)) return "after today's !daily (it resets at midnight Central)";
+  if (!hourlyOn(p)) return "in a live stream (type any game command there)";
   const ms = (p.last_unit_at || Date.now()) + HOUR - Date.now();
   return `${Math.max(1, Math.ceil(ms / 60000))}m`;
 }
@@ -510,6 +510,12 @@ function destroySpecimen(userId, specimenId) {
 function unitNotices(now = Date.now()) {
   if (cfg.PAUSED) return [];
   const byChannel = new Map();
+  // self-heal: played in a live stream in the last 15 min but the stream wasn't recorded (e.g. typed right
+  // as it went live) -> count them as in that stream
+  for (const row of db.q.missingStream.all(now - 15 * 60e3)) {
+    const cur = streamOf(row.last_channel);
+    if (cur && row.active_stream !== cur) db.q.setActiveStream.run(cur, row.user_id);
+  }
   for (const row of db.q.dueHourly.all(now - HOUR)) {
     const ch = row.last_channel;
     if (!ch || !hourlyOn(row) || !db.getChannel(ch)?.enabled) continue;

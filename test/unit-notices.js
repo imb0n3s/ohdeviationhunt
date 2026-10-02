@@ -44,7 +44,7 @@ n = game.unitNotices(); assert.deepEqual(n.map((x) => x[0]), ["CH"]); assert.equ
 // that stream ends -> paused; the next stream counts once she plays there
 streams = { CH2: "t1" }; backdate("1", H + 60e3);
 assert.equal(game.unitNotices().length, 0);
-assert.equal(game.nextUnitIn(game.loadPlayer("1")), "in a live stream");
+assert.equal(game.nextUnitIn(game.loadPlayer("1")), "in a live stream (type any game command there)");
 play("1", "CH2"); n = game.unitNotices(); assert.deepEqual(n.map((x) => x[0]), ["CH2"]);
 
 // away for hours then back: no back-pay, fresh hour
@@ -54,10 +54,17 @@ assert.match(game.nextUnitIn(game.loadPlayer("2")), /^(59|60)m$/);
 
 // !daily: once a day (Central), only while live
 assert.match(game.daily("1", "luna", "Luna", "CH2"), /already claimed today's !daily/);
-assert.equal(game.nextUnitIn(game.loadPlayer("3")), "after !daily");
+assert.equal(game.nextUnitIn(game.loadPlayer("3")), "after today's !daily (it resets at midnight Central)");
 raw.prepare("UPDATE daily_claims SET at = at - 86400000").run();          // next day
-assert.equal(game.nextUnitIn(game.loadPlayer("1")), "after !daily");       // new day needs a new !daily
+assert.equal(game.nextUnitIn(game.loadPlayer("1")), "after today's !daily (it resets at midnight Central)");       // new day needs a new !daily
 assert.match(game.daily("1", "luna", "Luna", "CH2"), /Daily supply drop/);
 streams = {};
 assert.match(game.daily("2", "bob", "Bob", "CH"), /only works while the stream is live/);
 console.log("hourly unit checks passed");
+
+// !daily typed right as the stream went live (stream not recorded) -> self-heals within a minute
+{ streams = { CH: "s9" }; db.q.touchActive.run("CH", Date.now(), null, "2");
+  raw.prepare("UPDATE daily_claims SET at = ? WHERE user_id = '2'").run(Date.now());
+  backdate("2", H + 60e3); const before = units("2");
+  const n2 = game.unitNotices(); assert.deepEqual(n2.map((x) => x[0]), ["CH"]); assert.ok(units("2") >= before);
+  console.log("self-heal check passed"); }
