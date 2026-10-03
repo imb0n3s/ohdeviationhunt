@@ -53,8 +53,8 @@ const ASSIGN = {
 // A spawn can be a Variation (from the wiki's Variations tab) or a Skin — the game's "shinies".
 const VARIANT = {
   // Every variation and skin is Legendary, whatever the base deviation's rarity.
-  variation: { chance: 1 / 12, catch: 0.12, rarity: "legendary", rewardMult: 1, label: "Variation" },
-  skin:      { chance: 1 / 40, catch: 0.09, rarity: "legendary", rewardMult: 1, label: "Skin" },
+  variation: { chance: 1 / 30, catch: 0.12, rarity: "legendary", rewardMult: 1, label: "Variation" },
+  skin:      { chance: 1 / 75, catch: 0.09, rarity: "legendary", rewardMult: 1, label: "Skin" },
   // the Chaos variation (Mini Wonder, Mr. Wish, Snowsprite, Zeno-Purifier): 1 in 750 of ALL spawns, 2.5% capture
   chaos:     { chance: 1 / 750, catch: 0.025, rarity: "legendary", rewardMult: 1, label: "Chaos Variation", names: ["Chaos"] },
 };

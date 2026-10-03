@@ -196,8 +196,8 @@ Each spawn first rolls a rarity, then a deviation of that rarity. Everyone who t
 
 * '''Every Variation and Skin is <span style="color:#fbbf24; font-weight:800;">Legendary</span>''', no matter the rarity of the deviation it belongs to — a Common deviation's variations and skins are Legendary too.
 * '''Variations and skins are a secret.''' Every spawn looks like the normal deviation (chat and the OBS Source never say otherwise); you only find out it was a variation or skin when the result is posted.
-* '''Variations''' are about 8.3% of spawns (on deviations that have them), with a flat '''12%''' capture rate and 200 Starchrom.
-* '''Skins''' are about 2.5% of spawns (on deviations that have them), with a flat '''9%''' capture rate and 200 Starchrom.
+* '''Variations''' are about 3.3% of spawns (on deviations that have them), with a flat '''12%''' capture rate and 200 Starchrom.
+* '''Skins''' are about 1.3% of spawns (on deviations that have them), with a flat '''9%''' capture rate and 200 Starchrom.
 * '''Chaos variation''' — the rarest in the game. Mini Wonder, Mr. Wish, Snowsprite, Zeno-Purifier can secretly be their ''Chaos'' variation in '''1 in 750''' of all spawns, with a flat '''2.5%''' capture rate (Legendary, 200 Starchrom).
 * Capture rates never go above 95%.
 </div>
