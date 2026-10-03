@@ -205,7 +205,7 @@ function landing(pool) {
   <a class="btn" href="/auth/twitch?action=add">Add ${esc(cfg.BOT_NAME)} to my channel</a><a class="btn secondary" href="/auth/twitch?action=remove">Remove it</a>
   <p style="margin-bottom:0">You log in with Twitch once; the bot only gets permission to read and post in your chat.${bot ? ` Prefer chat? Type <kbd>!join</kbd> in <a href="https://twitch.tv/${esc(bot.login)}">twitch.tv/${esc(bot.login)}</a>.` : ""} Then <kbd>/mod ${esc(botName)}</kbd> so it isn't rate-limited.</p>
 </div>
-<div class="stats"><div class="stat"><b>${fmt(channelList(pool).total)}</b>channels</div><div class="stat"><b>${fmt(db.countPlayers())}</b>Metas</div><div class="stat"><b>${fmt(db.totalCatches())}</b>Deviations Secured</div><div class="stat"><b>${fmt(db.totalAttempts())}</b>Deviations Attempted</div><div class="stat"><b>${data.all().length}</b>Deviations</div><div class="stat"><b>${fmt(db.starchromSpent())}</b>Starchrom spent</div></div>
+<div class="stats"><div class="stat"><b>${fmt(channelList(pool).total)}</b>Channels</div><div class="stat"><b>${fmt(db.countPlayers())}</b>Metas</div><div class="stat"><b>${fmt(db.totalCatches())}</b>Deviations Secured</div><div class="stat"><b>${fmt(db.totalAttempts())}</b>Deviations Attempted</div><div class="stat"><b>${data.all().length}</b>Deviations</div><div class="stat"><b>${fmt(db.starchromSpent())}</b>Starchrom spent</div></div>
 
 ${(() => { const c = channelList(pool, { limit: 12 }); return `<h2>Where to play <span class="sub">${c.live} live · ${c.total} channel${c.total === 1 ? "" : "s"}</span></h2>
 <p>Every Twitch channel with ${esc(cfg.BOT_NAME)}. Deviations only show up while a channel is live — your Securement Pods are the same on all of them.</p>
