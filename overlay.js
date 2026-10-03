@@ -48,8 +48,8 @@ function stateFor(pool, code) {
     ok: true, active: true, v: BOOT,
     id: `${s.dev.id}:${s.endsAt}`,             // changes for every new spawn
     name: s.dev.name,
-    variant: s.variant ? { name: s.variant.name, kind: s.variant.kind } : null,
-    img: (s.variant && s.variant.img) || s.dev.img,
+    variant: null,                              // secret until the result
+    img: s.dev.img,
     endsAt: s.shownEndsAt || s.endsAt, now: Date.now(), windowMs: cfg.SPAWN_WINDOW_SECONDS * 1000,
   };
 }
@@ -71,8 +71,8 @@ function page(code, demo) {
     const tier = chaos ? "legendary" : d.rarity;
     const T = require("./rarity").TIERS;
     const r = { id: "demo-result", name: d.name, img: (chaos && chaos.img) || d.img, tier, tierLabel: T[tier].label,
-      variant: null, stars: chaos ? 5 : 1, legend: !!chaos,
-      winners: demo === "resultmiss" ? [] : [{ name: "imbon3s", rating: "4/2" }, { name: "luna_raventhorn", rating: "5/5 ⭐", variant: chaos ? "🌀 Chaos Variation" : null }],
+      variant: chaos ? "🌀 Chaos Variation" : null, stars: chaos ? 5 : 1, legend: !!chaos,
+      winners: demo === "resultmiss" ? [] : [{ name: "imbon3s", rating: "4/2" }, { name: "luna_raventhorn", rating: "5/5 ⭐" }],
       escaped: ["DeeOhGee024"], reward: T[tier].reward, tried: 3, demo: true };
     return pageHtml(code, "null", JSON.stringify(r));
   }

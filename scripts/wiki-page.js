@@ -156,10 +156,10 @@ Each spawn first rolls a rarity, then a deviation of that rarity. Everyone who t
 ${table(["Rarity", "Spawn chance", "Capture rate", `${SC} reward`, "Deviations"], rarityRows)}
 
 * '''Every Variation and Skin is ${tierTag("legendary")}''', no matter the rarity of the deviation it belongs to — a Common deviation's variations and skins are Legendary too.
-* '''Every spawn is the normal deviation.''' Once you secure it, your specimen can turn out to be a Variation or Skin — nobody knows until the result is posted, and everyone who catches it rolls separately. Capture rates are the normal ones for that deviation.
-* '''Variations''': about ${pct(VARIANT.variation.chance)} of catches (on deviations that have them), ${TIERS[VARIANT.variation.rarity].reward * VARIANT.variation.rewardMult} ${SC}.
-* '''Skins''': about ${pct(VARIANT.skin.chance)} of catches (on deviations that have them), ${skinReward} ${SC}.
-* '''Chaos variation''' — the rarest catch in the game. A secured ${devs.filter((d) => d.variants.some(isChaos)).map((d) => d.name).join(", ")} has a '''1 in ${Math.round(1 / VARIANT.chaos.chance)}''' chance to be its ''Chaos'' variation (Legendary, ${TIERS[VARIANT.chaos.rarity].reward * VARIANT.chaos.rewardMult} ${SC}).
+* '''Variations and skins are a secret.''' Every spawn looks like the normal deviation (chat and the OBS Source never say otherwise); you only find out it was a variation or skin when the result is posted.
+* '''Variations''' are about ${pct(VARIANT.variation.chance)} of spawns (on deviations that have them), with a flat '''${pct(VARIANT.variation.catch)}''' capture rate and ${TIERS[VARIANT.variation.rarity].reward * VARIANT.variation.rewardMult} ${SC}.
+* '''Skins''' are about ${pct(VARIANT.skin.chance)} of spawns (on deviations that have them), with a flat '''${pct(VARIANT.skin.catch)}''' capture rate and ${skinReward} ${SC}.
+* '''Chaos variation''' — the rarest in the game. ${devs.filter((d) => d.variants.some(isChaos)).map((d) => d.name).join(", ")} can secretly be their ''Chaos'' variation in '''1 in ${Math.round(1 / VARIANT.chaos.chance)}''' of all spawns, with a flat '''${+(VARIANT.chaos.catch * 100).toFixed(1)}%''' capture rate (Legendary, ${TIERS[VARIANT.chaos.rarity].reward * VARIANT.chaos.rewardMult} ${SC}).
 * Capture rates never go above ${pct(ECONOMY.maxCatchChance)}.
 `));
 
@@ -169,8 +169,8 @@ ${Object.keys(TIERS).filter((k) => byTier[k]).map((k) => `\n<div style="margin-t
 `));
 
 out.push(box("Shiny", "Variations & Skins", `
-Variations and skins are Deviation Hunt's shinies — and they're a surprise. Every spawn looks like the normal deviation; only when the result is posted do you find out if '''your''' catch turned out to be a variation or skin:
-${code(`🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Grumpy Bulb — 🌟 a 3/4 ✨ Variation: Violet Robe (Legendary) by @metabones, a 2/2 by @viewer42! 🔒 +${TIERS[rarityOf("Grumpy Bulb")].reward} ${SC} each, 🌟 +${TIERS.legendary.reward} for the Legendary.`)}
+Variations and skins are Deviation Hunt's shinies — and they're a surprise. Every spawn looks like the normal deviation; the result reveals what it really was:
+${code(`🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Grumpy Bulb — it was a ✨ Variation: Violet Robe (Legendary)! — a 3/4 by @metabones! 🔒 +${TIERS.legendary.reward} ${SC} each.`)}
 
 * Each variation and skin is its own entry in your Securement Pods, and the first one of each earns the +${ECONOMY.newSpeciesBonus} new-entry bonus.
 * Your collection page and the Twitch panel count '''Variations''' and '''Skins''' separately (their own totals and their own lists on each deviation). Caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.
