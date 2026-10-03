@@ -158,6 +158,7 @@ const q = {
   dupes: db.prepare(`SELECT * FROM catches WHERE user_id=? AND count>1`),
   trimDupe: db.prepare(`UPDATE catches SET count=1 WHERE user_id=? AND deviation=? AND variant=?`),
   totalCatches: db.prepare(`SELECT COALESCE(SUM(count),0) AS n FROM catches`),
+  totalAttempts: db.prepare(`SELECT COALESCE(SUM(attempts),0) AS n FROM players`),
   leaderboard: db.prepare(`SELECT p.user_id, p.display, p.login,
       COUNT(DISTINCT c.deviation) AS species,
       COALESCE(SUM(CASE WHEN c.variant<>'' THEN 1 ELSE 0 END),0) AS variants,
@@ -211,6 +212,7 @@ module.exports = {
   q,
   countPlayers: () => q.countPlayers.get().n,
   totalCatches: () => q.totalCatches.get().n,
+  totalAttempts: () => q.totalAttempts.get().n, // every !secure throw
   totalSpawns: () => q.totalSpawns.get().n,
   // running total of all Starchrom players have spent (throws + shop), kept in settings
   starchromSpent: () => Number(q.getSetting.get("stat:starchrom_spent")?.value || 0),
