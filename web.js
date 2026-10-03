@@ -183,7 +183,7 @@ function channelList(pool, { limit } = {}) {
   const html = `<div class="chans">${shown.map((c) => `<a class="chan${c.isLive ? " live" : ""}" href="https://twitch.tv/${esc(c.login)}" target="_blank" rel="noopener">
 <img src="${esc(avatars.get(c.broadcaster_id) || "")}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
 <div class="ci"><div class="cn">${esc(c.display_name)}${c.isLive ? ` <span class="lv">LIVE</span>` : ""}</div>
-<div class="cs">${fmt(c.catches)} deviation${c.catches === 1 ? "" : "s"} secured here</div></div></a>`).join("")}</div>`;
+<div class="cs">${fmt(c.catches)} Deviation${c.catches === 1 ? "" : "s"} Secured here</div></div></a>`).join("")}</div>`;
   return { html, total: list.length, live: list.filter((c) => c.isLive).length };
 }
 
