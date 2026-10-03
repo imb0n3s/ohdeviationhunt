@@ -97,24 +97,27 @@ function weightedPick(items, weightOf) {
 function rollSpawn() {
   const all = data.all();
   if (!all.length) return null;
-  // the Chaos variation is its own 1-in-375 roll across every spawn
-  const chaosDevs = all.filter((d) => d.variants.some(isChaos));
-  if (chaosDevs.length && Math.random() < VARIANT.chaos.chance) {
-    const dev = chaosDevs[Math.floor(Math.random() * chaosDevs.length)];
-    return { dev, variant: dev.variants.find(isChaos) };
-  }
+  // spawns are always the normal deviation — variations/skins are only revealed per catch (rollCatchVariant)
   const tiersPresent = Object.keys(TIERS).filter((t) => all.some((d) => d.rarity === t));
   const tier = weightedPick(tiersPresent, (t) => TIERS[t].weight);
   const pool = all.filter((d) => d.rarity === tier);
   const dev = pool[Math.floor(Math.random() * pool.length)];
-  let variant = null;
-  const skins = dev.variants.filter((v) => v.kind === "skin");
-  const vars = dev.variants.filter((v) => v.kind === "variation" && !isChaos(v)); // Chaos only comes from its own roll
-  const r = Math.random();
-  if (skins.length && r < VARIANT.skin.chance) variant = skins[Math.floor(Math.random() * skins.length)];
-  else if (vars.length && r < VARIANT.skin.chance + VARIANT.variation.chance) variant = vars[Math.floor(Math.random() * vars.length)];
-  return { dev, variant };
+  return { dev, variant: null };
 }
+
+// Each successful catch secretly rolls whether that Meta's specimen turned out to be a Chaos
+// variation, a skin or a variation. Nobody knows until the result is posted.
+function rollCatchVariant(dev) {
+  const chaos = dev.variants.find(isChaos);
+  if (chaos && Math.random() < VARIANT.chaos.chance) return chaos;
+  const skins = dev.variants.filter((v) => v.kind === "skin");
+  const vars = dev.variants.filter((v) => v.kind === "variation" && !isChaos(v));
+  const r = Math.random();
+  if (skins.length && r < VARIANT.skin.chance) return skins[Math.floor(Math.random() * skins.length)];
+  if (vars.length && r < VARIANT.skin.chance + VARIANT.variation.chance) return vars[Math.floor(Math.random() * vars.length)];
+  return null;
+}
+const variantLabel = (v) => (isChaos(v) ? "🌀 Chaos Variation" : `✨ ${v.kind === "skin" ? "Skin" : "Variation"}: ${v.name}`);
 
 // "P4·M2", with a star for a perfect 5/5
 const ratingTag = (sp) => `${sp.power}/${sp.mood}${sp.power === 5 && sp.mood === 5 ? " ⭐" : ""}`;
@@ -324,21 +327,26 @@ class Spawns {
       this.recordResult(bid, s, [], [], 0);
       return this.sendResult(bid, `💨 ${name} slipped away. Nobody tried to secure it...`);
     }
-    const caught = [], escaped = [], firsts = [], winners = [];
+    const caught = [], escaped = [], firsts = [], winners = [], legendWins = [];
+    let legendReward = 0;
     const reward = rewardFor(s);
     db.tx(() => {
       for (const [userId, a] of s.attempts) {
         const p = loadPlayer(userId, a.login, a.display);
         if (Math.random() < catchChance(s, a.unit, a.bonus || 0)) {
-          const variant = s.variant?.name || "";
+          const v = s.variant || rollCatchVariant(s.dev); // revealed only now, per Meta
+          const variant = v?.name || "";
+          const vr = variantRule(v);
+          const got = vr ? TIERS[vr.rarity].reward * vr.rewardMult : reward;
           const had = db.q.getCatch.get(userId, s.dev.id, variant);
-          db.q.addCatch.run(userId, s.dev.id, variant, s.variant?.kind || "base", Date.now(), bid);
-          const sp = traits.rollSpecimen(s.dev.name, variant, s.dev.variants.map((v) => v.name), s.dev.category, s.legendary);
+          db.q.addCatch.run(userId, s.dev.id, variant, v?.kind || "base", Date.now(), bid);
+          const sp = traits.rollSpecimen(s.dev.name, variant, s.dev.variants.map((x) => x.name), s.dev.category, s.legendary);
           db.q.addSpecimen.run({ user_id: userId, deviation: s.dev.id, variant, ...sp, caught_at: Date.now(), channel: bid });
-          p.starchrom += reward + (had ? 0 : ECONOMY.newSpeciesBonus);
+          p.starchrom += got + (had ? 0 : ECONOMY.newSpeciesBonus);
           if (!had) firsts.push(a.display);
-          caught.push(`a ${ratingTag(sp)} by @${a.display}`);
-          winners.push({ name: a.display, rating: ratingTag(sp) });
+          if (v) { legendWins.push(a.display); legendReward = got; }
+          caught.push(v ? `🌟 a ${ratingTag(sp)} ${variantLabel(v)} (Legendary) by @${a.display}` : `a ${ratingTag(sp)} by @${a.display}`);
+          winners.push({ name: a.display, rating: ratingTag(sp), variant: v ? variantLabel(v) : null, img: (v && v.img) || null });
         } else {
           p.units[a.unit] = (p.units[a.unit] || 0) + 1; // it broke free, so the unit it was going into is still empty
           escaped.push(a.display);
@@ -353,10 +361,12 @@ class Spawns {
     const list = (arr, max = 12) => arr.length > max ? `${arr.slice(0, max).join(", ")} +${arr.length - max} more` : arr.join(", ");
     let msg;
     if (caught.length) {
-      // banner: one ⭐ for a normal catch; variations, skins and Chaos get the 🌟🌟🌟🌟🌟 LEGENDARY banner
-      const tier = variantRule(s.variant)?.rarity || s.dev.rarity;
-      const stars = s.variant ? "🌟".repeat(5) : "⭐";
-      msg = `${stars} ${s.variant ? "LEGENDARY " : ""}SECURED! ${stars} ${name}${s.variant ? ` (${TIERS[tier].label})` : ""} — ${list(caught, 7)}! 🔒 +${reward} ${SC} each.`;
+      // banner: one ⭐ for a normal catch; if anyone's turned out to be a variation/skin/Chaos, the 🌟🌟🌟🌟🌟 LEGENDARY banner
+      const legend = legendWins.length > 0;
+      const stars = legend ? "🌟".repeat(5) : "⭐";
+      const normals = caught.length - legendWins.length;
+      const pay = legend ? (normals ? `+${reward} ${SC} each, 🌟 +${legendReward} for the Legendary` : `+${legendReward} ${SC} each`) : `+${reward} ${SC} each`;
+      msg = `${stars} ${legend ? "LEGENDARY " : ""}SECURED! ${stars} ${name} — ${list(caught, 7)}! 🔒 ${pay}.`;
       if (firsts.length) msg += ` 📖 New entry for ${list(firsts, 8)} (+${ECONOMY.newSpeciesBonus}).`;
       if (escaped.length) msg += ` It broke free from ${list(escaped, 6)}.`;
     } else {
@@ -367,14 +377,15 @@ class Spawns {
   }
 
   recordResult(bid, s, winners, escaped, reward) {
-    const tier = variantRule(s.variant)?.rarity || s.dev.rarity;
-    const vr = variantRule(s.variant);
+    const tier = s.dev.rarity;
+    const legend = winners.some((w) => w.variant);
+    const lone = winners.length === 1 && winners[0].img; // a single Legendary catch shows its own picture
     this.lastResult.set(bid, {
       id: `${s.dev.id}:${s.endsAt}:done`, at: Date.now(),
-      name: s.dev.name, img: (s.variant && s.variant.img) || s.dev.img,
+      name: s.dev.name, img: lone || s.dev.img,
       tier, tierLabel: TIERS[tier].label,
-      variant: s.variant ? `${isChaos(s.variant) ? "🌀 Chaos Variation" : `✨ ${s.variant.kind === "skin" ? "Skin" : "Variation"}: ${s.variant.name}`}` : null,
-      stars: s.variant ? 5 : 1, legend: !!s.variant,
+      variant: null,
+      stars: legend ? 5 : 1, legend,
       winners, escaped, reward, tried: s.attempts.size,
     });
   }

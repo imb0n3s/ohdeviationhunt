@@ -71,8 +71,8 @@ function page(code, demo) {
     const tier = chaos ? "legendary" : d.rarity;
     const T = require("./rarity").TIERS;
     const r = { id: "demo-result", name: d.name, img: (chaos && chaos.img) || d.img, tier, tierLabel: T[tier].label,
-      variant: chaos ? "🌀 Chaos Variation" : null, stars: chaos ? 5 : 1, legend: !!chaos,
-      winners: demo === "resultmiss" ? [] : [{ name: "imbon3s", rating: "4/2" }, { name: "luna_raventhorn", rating: "5/5 ⭐" }],
+      variant: null, stars: chaos ? 5 : 1, legend: !!chaos,
+      winners: demo === "resultmiss" ? [] : [{ name: "imbon3s", rating: "4/2" }, { name: "luna_raventhorn", rating: "5/5 ⭐", variant: chaos ? "🌀 Chaos Variation" : null }],
       escaped: ["DeeOhGee024"], reward: T[tier].reward, tried: 3, demo: true };
     return pageHtml(code, "null", JSON.stringify(r));
   }
@@ -115,7 +115,7 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 #res .rn{font-size:40px;font-weight:900;line-height:1.1;text-shadow:0 3px 10px #000,0 0 3px #000}#res .rr{font-size:24px;font-weight:800;color:#38bdf8;text-shadow:0 2px 6px #000,0 0 2px #000}#res.legend .rr{color:#fbbf24}
 #res .list{margin:10px auto 0;display:flex;flex-direction:column;gap:8px;width:580px}
 #res .row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:rgba(8,14,20,.9);border:2px solid rgba(34,197,94,.7);border-radius:14px;padding:8px 16px;font-weight:900;font-size:36px;line-height:1.15;text-shadow:0 2px 4px #000}
-#res .row b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#res .row .who{display:flex;flex-direction:column;align-items:flex-start;min-width:0;text-align:left}#res .row b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;max-width:100%}#res .row i{font-style:normal;font-size:22px;color:#fde68a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}#res .row.lg{border-color:rgba(251,191,36,.9)}
 #res.legend .row{border-color:rgba(251,191,36,.8)}#res .row span{font-size:30px;color:#fde68a;white-space:nowrap}
 #res.many .row{font-size:28px;padding:5px 14px}#res.many .row span{font-size:24px}#res.many .glow{width:120px;height:120px}
 #res .more,#res .missed{margin-top:8px;font-size:22px;font-weight:700;color:rgba(255,255,255,.85);text-shadow:0 2px 6px #000,0 0 2px #000}
@@ -153,7 +153,7 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
     txt("rt", won?(legend?star+" LEGENDARY SECURED! "+star:stars+" SECURED! "+stars):(r.tried?"\ud83d\udca5 GOT AWAY!":"\ud83d\udca8 SLIPPED AWAY"));
     document.getElementById("rimg").src=r.img; txt("rn",r.name); txt("rr",(r.variant?r.variant+" \u00b7 ":"")+r.tierLabel+" \u00b7 +"+r.reward);
     var list=document.getElementById("rlist"); list.innerHTML="";
-    (r.winners||[]).slice(0,4).forEach(function(w){var d=document.createElement("div");d.className="row";var nb=document.createElement("b");nb.textContent="@"+w.name;d.appendChild(nb);var sp=document.createElement("span");sp.textContent=w.rating;d.appendChild(sp);list.appendChild(d);});
+    (r.winners||[]).slice(0,4).forEach(function(w){var d=document.createElement("div");d.className="row"+(w.variant?" lg":"");var lc=document.createElement("div");lc.className="who";var nb=document.createElement("b");nb.textContent="@"+w.name;lc.appendChild(nb);if(w.variant){var vv=document.createElement("i");vv.textContent=w.variant;lc.appendChild(vv);}d.appendChild(lc);var sp=document.createElement("span");sp.textContent=w.rating;d.appendChild(sp);list.appendChild(d);});
     if((r.winners||[]).length>4){var m=document.createElement("div");m.className="more";m.textContent="+"+(r.winners.length-4)+" more";list.appendChild(m);}
     var esc=r.escaped||[]; txt("rmiss", esc.length?("\ud83d\udca5 "+(won?"Broke free from ":"Got away from ")+esc.slice(0,4).join(", ")+(esc.length>4?" +"+(esc.length-4)+" more":"")):(r.tried?"":"Nobody tried to secure it"));
     res.className=(won?(legend?"legend":""):"miss")+((r.winners||[]).length>=3?" many":""); fit(res); res.offsetWidth; res.className+=" show";

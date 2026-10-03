@@ -1283,6 +1283,16 @@
       "It gains Max Mood +40%"
      ],
      "fuse": null
+    },
+    {
+     "key": "rebecca_aberrant",
+     "name": "Aberrant",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "When recovering Energy (Mood) while dormant, it has a 20% chance to restore 15 Deviant Power to other Territory Deviations"
+     ],
+     "fuse": null
     }
    ],
    "slot2": [
@@ -1854,6 +1864,9 @@
   ],
   "Wish Box": [
    "infrasonic"
+  ],
+  "Rebecca": [
+   "rebecca_aberrant"
   ]
  },
  "slot2ForDev": {

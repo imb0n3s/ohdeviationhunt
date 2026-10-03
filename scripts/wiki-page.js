@@ -156,9 +156,10 @@ Each spawn first rolls a rarity, then a deviation of that rarity. Everyone who t
 ${table(["Rarity", "Spawn chance", "Capture rate", `${SC} reward`, "Deviations"], rarityRows)}
 
 * '''Every Variation and Skin is ${tierTag("legendary")}''', no matter the rarity of the deviation it belongs to — a Common deviation's variations and skins are Legendary too.
-* '''Variations''' spawn about ${pct(VARIANT.variation.chance)} of the time (on deviations that have them), with a flat '''${pct(VARIANT.variation.catch)}''' capture rate and ${TIERS[VARIANT.variation.rarity].reward * VARIANT.variation.rewardMult} ${SC}.
-* '''Skins''' spawn about ${pct(VARIANT.skin.chance)} of the time (on deviations that have them), with a flat '''${pct(VARIANT.skin.catch)}''' capture rate and ${skinReward} ${SC}.
-* '''Chaos variation''' — the rarest spawn in the game. ${devs.filter((d) => d.variants.some(isChaos)).map((d) => d.name).join(", ")} can appear as their ''Chaos'' variation in '''1 in ${Math.round(1 / VARIANT.chaos.chance)}''' of all spawns, with a flat '''${+(VARIANT.chaos.catch * 100).toFixed(1)}%''' capture rate (Legendary, ${TIERS[VARIANT.chaos.rarity].reward * VARIANT.chaos.rewardMult} ${SC}). Chaos never shows up as a normal variation roll.
+* '''Every spawn is the normal deviation.''' Once you secure it, your specimen can turn out to be a Variation or Skin — nobody knows until the result is posted, and everyone who catches it rolls separately. Capture rates are the normal ones for that deviation.
+* '''Variations''': about ${pct(VARIANT.variation.chance)} of catches (on deviations that have them), ${TIERS[VARIANT.variation.rarity].reward * VARIANT.variation.rewardMult} ${SC}.
+* '''Skins''': about ${pct(VARIANT.skin.chance)} of catches (on deviations that have them), ${skinReward} ${SC}.
+* '''Chaos variation''' — the rarest catch in the game. A secured ${devs.filter((d) => d.variants.some(isChaos)).map((d) => d.name).join(", ")} has a '''1 in ${Math.round(1 / VARIANT.chaos.chance)}''' chance to be its ''Chaos'' variation (Legendary, ${TIERS[VARIANT.chaos.rarity].reward * VARIANT.chaos.rewardMult} ${SC}).
 * Capture rates never go above ${pct(ECONOMY.maxCatchChance)}.
 `));
 
@@ -168,8 +169,8 @@ ${Object.keys(TIERS).filter((k) => byTier[k]).map((k) => `\n<div style="margin-t
 `));
 
 out.push(box("Shiny", "Variations & Skins", `
-Variations and skins are Deviation Hunt's shinies. When one appears, the spawn message says so:
-${code(`👀 A Grumpy Bulb has been spotted in the wild! ✨ VARIATION: Violet Robe Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`)}
+Variations and skins are Deviation Hunt's shinies — and they're a surprise. Every spawn looks like the normal deviation; only when the result is posted do you find out if '''your''' catch turned out to be a variation or skin:
+${code(`🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Grumpy Bulb — 🌟 a 3/4 ✨ Variation: Violet Robe (Legendary) by @metabones, a 2/2 by @viewer42! 🔒 +${TIERS[rarityOf("Grumpy Bulb")].reward} ${SC} each, 🌟 +${TIERS.legendary.reward} for the Legendary.`)}
 
 * Each variation and skin is its own entry in your Securement Pods, and the first one of each earns the +${ECONOMY.newSpeciesBonus} new-entry bonus.
 * Your collection page and the Twitch panel count '''Variations''' and '''Skins''' separately (their own totals and their own lists on each deviation). Caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.
@@ -226,7 +227,7 @@ out.push(box("Streamers", "Add Deviation Hunt to Your Channel", `
 # If the bot says it needs permission, type ${cmd(`/mod ${BOT}`)} in your chat and try again.
 # That's it. Deviations appear about every '''${cfg.SPAWN_INTERVAL_MIN} minutes''' while you're '''live''' and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes. Change the timer with ${cmd("!hunt interval <minutes>")}.
 
-'''OBS Source (optional):''' type ${cmd("!hunt obs")} in your chat to get your channel's link, then in OBS add a '''Browser''' source with it (600 × 600). It shows the deviation with a countdown while it can be caught, then for 12 seconds who secured it (with their Skill/Activity ratings, gold for Legendary catches). If nobody catches it, it just disappears. While a deviation can be caught it shows its picture, name, variation or skin and a countdown; it disappears when the deviation is secured or gets away. Add ${code("?demo=1")} to the link while positioning it.
+'''OBS Source (optional):''' type ${cmd("!hunt obs")} in your chat to get your channel's link, then in OBS add a '''Browser''' source with it (600 × 600). It shows the deviation with a countdown while it can be caught, then for 12 seconds who secured it (with their Skill/Activity ratings, gold for Legendary catches). If nobody catches it, it just disappears. While a deviation can be caught it shows its picture, name and a countdown; it disappears when the deviation is secured or gets away. Add ${code("?demo=1")} to the link while positioning it.
 
 To remove it, type ${cmd("!hunt leave")} in your chat or ${cmd("!leave")} in ${BOT}'s chat.
 `));

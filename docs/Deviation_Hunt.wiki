@@ -195,9 +195,10 @@ Each spawn first rolls a rarity, then a deviation of that rarity. Everyone who t
 |}
 
 * '''Every Variation and Skin is <span style="color:#fbbf24; font-weight:800;">Legendary</span>''', no matter the rarity of the deviation it belongs to — a Common deviation's variations and skins are Legendary too.
-* '''Variations''' spawn about 8.3% of the time (on deviations that have them), with a flat '''12%''' capture rate and 200 Starchrom.
-* '''Skins''' spawn about 2.5% of the time (on deviations that have them), with a flat '''9%''' capture rate and 200 Starchrom.
-* '''Chaos variation''' — the rarest spawn in the game. Mini Wonder, Mr. Wish, Snowsprite, Zeno-Purifier can appear as their ''Chaos'' variation in '''1 in 750''' of all spawns, with a flat '''2.5%''' capture rate (Legendary, 200 Starchrom). Chaos never shows up as a normal variation roll.
+* '''Every spawn is the normal deviation.''' Once you secure it, your specimen can turn out to be a Variation or Skin — nobody knows until the result is posted, and everyone who catches it rolls separately. Capture rates are the normal ones for that deviation.
+* '''Variations''': about 8.3% of catches (on deviations that have them), 200 Starchrom.
+* '''Skins''': about 2.5% of catches (on deviations that have them), 200 Starchrom.
+* '''Chaos variation''' — the rarest catch in the game. A secured Mini Wonder, Mr. Wish, Snowsprite, Zeno-Purifier has a '''1 in 750''' chance to be its ''Chaos'' variation (Legendary, 200 Starchrom).
 * Capture rates never go above 95%.
 </div>
 </div>
@@ -235,8 +236,8 @@ Every deviation from the [[Deviation_Main_Page|Deviation database]] can spawn: 2
 <span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Variations & Skins</span>
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
-Variations and skins are Deviation Hunt's shinies. When one appears, the spawn message says so:
-<span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;">👀 A Grumpy Bulb has been spotted in the wild! ✨ VARIATION: Violet Robe Type !secure within 90s to catch it.</span>
+Variations and skins are Deviation Hunt's shinies — and they're a surprise. Every spawn looks like the normal deviation; only when the result is posted do you find out if '''your''' catch turned out to be a variation or skin:
+<span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;">🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Grumpy Bulb — 🌟 a 3/4 ✨ Variation: Violet Robe (Legendary) by @metabones, a 2/2 by @viewer42! 🔒 +10 Starchrom each, 🌟 +200 for the Legendary.</span>
 
 * Each variation and skin is its own entry in your Securement Pods, and the first one of each earns the +100 new-entry bonus.
 * Your collection page and the Twitch panel count '''Variations''' and '''Skins''' separately (their own totals and their own lists on each deviation). Caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.
@@ -343,7 +344,7 @@ Caught the same deviation more than once? Keep the best one and scrap the rest. 
 # If the bot says it needs permission, type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>/mod ohdeviationhunt</nowiki></span> in your chat and try again.
 # That's it. Deviations appear about every '''7 minutes''' while you're '''live''' and someone has chatted in the last 10 minutes. Change the timer with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt interval <minutes></nowiki></span>.
 
-'''OBS Source (optional):''' type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt obs</nowiki></span> in your chat to get your channel's link, then in OBS add a '''Browser''' source with it (600 × 600). It shows the deviation with a countdown while it can be caught, then for 12 seconds who secured it (with their Skill/Activity ratings, gold for Legendary catches). If nobody catches it, it just disappears. While a deviation can be caught it shows its picture, name, variation or skin and a countdown; it disappears when the deviation is secured or gets away. Add <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;">?demo=1</span> to the link while positioning it.
+'''OBS Source (optional):''' type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt obs</nowiki></span> in your chat to get your channel's link, then in OBS add a '''Browser''' source with it (600 × 600). It shows the deviation with a countdown while it can be caught, then for 12 seconds who secured it (with their Skill/Activity ratings, gold for Legendary catches). If nobody catches it, it just disappears. While a deviation can be caught it shows its picture, name and a countdown; it disappears when the deviation is secured or gets away. Add <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;">?demo=1</span> to the link while positioning it.
 
 To remove it, type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt leave</nowiki></span> in your chat or <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!leave</nowiki></span> in ohdeviationhunt's chat.
 </div>
