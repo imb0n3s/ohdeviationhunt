@@ -2,9 +2,12 @@
 
 - After ANY change to gameplay, commands, balance (rarity.js), economy, traits, spawn timing,
   the collection page or the Twitch panel: update scripts/wiki-page.js if wording changed,
-  run `npm run wiki`, commit, and republish https://ohwikiguide.com/Deviation_Hunt
-  (MediaWiki api.php action=edit from the owner's logged-in browser session; text fetched
-  from raw.githubusercontent.com/imb0n3s/ohdeviationhunt/<commit>/docs/Deviation_Hunt.wiki).
+  run `npm run wiki`, commit and push. The WIKI REPUBLISHES ITSELF: on every deploy wikisync.js runs
+  scripts/wiki-page.js and edits https://ohwikiguide.com/Deviation_Hunt via api.php with a bot password
+  (Railway env WIKI_BOT_USER / WIKI_BOT_PASS; only edits when the text changed; check the deploy log for
+  "[wiki] sync"). A push that ONLY touches scripts/ does not redeploy (watch paths) — bundle it with a
+  root-file change or the wiki won't update. Fallback if the env vars are missing: api.php action=edit from
+  B's logged-in browser, text from raw.githubusercontent.com/imb0n3s/ohdeviationhunt/<commit>/docs/Deviation_Hunt.wiki.
 - Pushing to main auto-deploys on Railway.
 - Twitch extension edits (details, images, zip upload) need the version in Local Test. Afterwards,
   move it back to Hosted Test (the button opens a "Move" confirm dialog — click it), then RELOAD the status page and confirm "Current Status: Hosted Test"

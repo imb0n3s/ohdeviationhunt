@@ -1293,6 +1293,26 @@
       "When recovering Energy (Mood) while dormant, it has a 20% chance to restore 15 Deviant Power to other Territory Deviations"
      ],
      "fuse": null
+    },
+    {
+     "key": "flame_essence_golden_toad",
+     "name": "Flame Essence - Golden Toad",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "It gains Mood Recovery Speed +20%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "flame_essence_prince",
+     "name": "Flame Essence - Prince",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "It gains Max Mood +35"
+     ],
+     "fuse": null
     }
    ],
    "slot2": [
@@ -1867,6 +1887,10 @@
   ],
   "Rebecca": [
    "rebecca_aberrant"
+  ],
+  "Flame Essence": [
+   "flame_essence_golden_toad",
+   "flame_essence_prince"
   ]
  },
  "slot2ForDev": {

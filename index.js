@@ -21,6 +21,7 @@ async function main() {
   const variantBackfill = () => { try { const n = require("./game").backfillVariantTraits(); if (n) console.log(`[traits] gave ${n} variant specimen(s) their variant trait`); } catch (e) { console.error("[traits] backfill:", e.message); } };
   variantBackfill();
   setInterval(async () => { await traits.refresh(); variantBackfill(); }, 6 * 60 * 60 * 1000).unref();
+  require("./wikisync").scheduleWikiSync(); // publish the player guide to ohwikiguide.com if it changed (needs WIKI_BOT_* env)
 
   pool.send = (bid, text, replyTo) => twitch.sendChat(bid, text, replyTo).catch((e) => console.error("[chat] send failed:", e.message));
   const spawns = new Spawns((bid, text) => pool.send(bid, text));
