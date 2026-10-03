@@ -38,3 +38,22 @@
 - B's call (2026-09-29): keep the extension in HOSTED TEST; only go to Local Test briefly to add testers / upload, then
   straight back (reload + confirm). In Local Test the panel is blank for everyone. (web.js also serves ext/ at /panel —
   unused for now; it would let Local Test work if Asset Hosting → Testing Base URI pointed at <BASE_URL>/panel/.)
+- Twitch console: extension client id 73v1sq51zyzp7r1fjn5y6wg8ccpjtc, version 0.0.1
+  (https://dev.twitch.tv/console/extensions/73v1sq51zyzp7r1fjn5y6wg8ccpjtc/0.0.1/status). Zip upload from a
+  cloud session: fetch the committed docs/ext-assets/deviation-bag-panel.zip from raw.githubusercontent.com in the
+  console tab, put it on the Files tab's input[type=file] via DataTransfer, dispatch change, click "Upload Assets",
+  then check the MD5 shown matches `md5sum deviation-bag-panel.zip`.
+- B's decisions (2026-09-30 → 10-03), not obvious from code:
+  - Variations/skins are SECRET: rolled per spawn (variation 1 in 30, skin 1 in 75, Chaos 1 in 750) with their own
+    capture rates (12% / 9% / 2.5%), but chat, throw replies and the OBS countdown always show the normal deviation;
+    only the result reveals "it was a ✨ Variation: X (Legendary)!" (also when it gets away).
+  - Catch banner: one ⭐ for a normal catch; 🌟×5 LEGENDARY only for variations/skins/Chaos. No rarity label on
+    normal catches.
+  - Chat delay default 14s (RESULT_CHAT_DELAY_SECONDS) while a channel's OBS Source is open: spawn announcement and
+    result both wait; the catch window is silently extended by the delay (overlay counts down the normal 90s;
+    never mention the extra time).
+  - OBS Source cards scale to fill the whole browser source (600×600 recommended).
+  - Best specimen order: skin > variation > Legendary trait (Upper Hand, Power Rewind 2) > Skill+Activity > traits.
+  - Leaderboard: Top Streams (most deviations secured per channel) above one Top 100 with a Streamer tag.
+  - Homepage stats: Channels · Metas · Deviations Secured · Deviations Attempted (all !secure throws) · Deviations ·
+    Starchrom spent (capitalized).
