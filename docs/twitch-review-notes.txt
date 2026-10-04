@@ -5,7 +5,7 @@ Deviation Hunt is a chat game run by our chat bot (OHDeviationHunt). While a str
 
 HOW TO TEST
 1. Install the panel on any channel and open it. Click "Show my Securement Pods" to share your Twitch identity (required; without it the panel only shows that button).
-2. A viewer who has never played sees "You haven't played yet" plus how to start. The Commands tab works for everyone.
+2. A viewer who has never played sees every deviation as "???" (not caught yet), and the Shop tab explains how to start. The Commands tab works for everyone.
 3. To get data: the game is live on twitch.tv/imbon3s during streams. Type !secure in chat when the bot announces a deviation; after the result is posted, the panel shows your Securement Pods, and the Shop is usable (new players start with 200 Starchrom and 5 Securement Units).
    To test on your own channel instead: add the bot at https://deviationhunt.ohwikiguide.com ("Add to my channel"), go live, and type !hunt spawn as the broadcaster to spawn a deviation right away.
 4. If you need test data on your account without going live, email ohtwitchbot@ohwikiguide.com with your Twitch username and we'll add some.
