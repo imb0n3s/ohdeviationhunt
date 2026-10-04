@@ -67,10 +67,14 @@ function makeHandler(pool, spawns) {
       const sub = (args[0] || "").toLowerCase();
       const mod = isModOrOwner(ev);
       if (mod && sub === "spawn") {
-        // !hunt spawn <deviation> releases that one (normal version); plain !hunt spawn is random
+        // !hunt spawn <deviation> [variation/skin name | skin | variation]; plain !hunt spawn is random
         const want = args.slice(1).join(" ").trim();
-        const pick = want ? data.find(want) : null;
-        if (want && !pick) return reply(`No deviation called "${want}". Try a name like "pyro dino".`);
+        const pick = want ? data.findWithVariant(want) : null;
+        if (want && !pick) return reply(`No deviation called "${want}". Try a name like "pyro dino" or "nutcracker infrasonic illusion".`);
+        if (pick && pick.error) {
+          const opts = (pick.options || []).slice(0, 8).join(", ");
+          return reply(`${pick.error}.${opts ? ` Try: ${opts}${pick.options.length > 8 ? "…" : ""}` : ""}`);
+        }
         const r = await spawns.spawn(bid, true, pick);
         if (r.error === "already") return reply("A deviation is already loose — secure it first!");
         return;

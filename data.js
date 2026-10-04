@@ -105,8 +105,39 @@ function find(q) {
   return deviations.find((d) => d.id === s) || deviations.find((d) => d.id.startsWith(s)) || deviations.find((d) => d.id.includes(s)) || null;
 }
 
+// "nutcracker infrasonic illusion" -> { dev: Nutcracker, variant: Infrasonic Illusion }. Tolerates small typos in the
+// variant name ("infransonic"); "<deviation> skin" / "<deviation> variation" picks a random one of that kind.
+// Returns { dev, variant } | { dev, error, options } | null (no deviation found).
+function lev(a, b) {
+  const m = a.length, n = b.length, dp = Array.from({ length: m + 1 }, (_, i) => [i, ...Array(n).fill(0)]);
+  for (let j = 1; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return dp[m][n];
+}
+function findWithVariant(q) {
+  const words = String(q || "").trim().split(/\s+/).filter(Boolean);
+  for (let i = words.length; i >= 1; i--) {
+    const dev = find(words.slice(0, i).join(" "));
+    if (!dev) continue;
+    const rest = words.slice(i).join(" ");
+    if (!rest) return { dev, variant: null };
+    const r = slug(rest);
+    if (r === "skin" || r === "skins" || r === "variation" || r === "variations" || r === "variant") {
+      const kind = r.startsWith("skin") ? "skin" : "variation";
+      const list = dev.variants.filter((v) => v.kind === kind && !/chaos/i.test(v.name));
+      return list.length ? { dev, variant: list[Math.floor(Math.random() * list.length)] } : { dev, error: `${dev.name} has no ${kind}s` };
+    }
+    const vs = dev.variants.map((v) => ({ v, s: slug(v.name) }));
+    const hit = vs.find((x) => x.s === r) || vs.find((x) => x.s.startsWith(r)) || vs.find((x) => x.s.includes(r))
+      || vs.map((x) => ({ ...x, d: lev(x.s, r) })).filter((x) => x.d <= Math.max(2, Math.floor(r.length / 6))).sort((a, b) => a.d - b.d)[0];
+    if (hit) return { dev, variant: hit.v };
+    return { dev, error: `${dev.name} has no variation or skin called "${rest}"`, options: dev.variants.map((v) => v.name) };
+  }
+  return null;
+}
+
 module.exports = {
-  start, refresh, find, parse, slug,
+  start, refresh, find, findWithVariant, parse, slug,
   all: () => deviations,
   get: (id) => deviations.find((d) => d.id === id),
   info: () => ({ count: deviations.length, source, loadedAt }),

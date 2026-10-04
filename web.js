@@ -211,19 +211,6 @@ ${(() => { const c = channelList(pool, { limit: 12 }); return `<h2>Where to Play
 <p>Every Twitch channel with ${esc(cfg.BOT_NAME)}. Deviations only show up while a channel is live — your Securement Pods are the same on all of them.</p>
 ${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels →</a></p>` : ""}`; })()}
 
-<h2 id="obs">OBS Source</h2>
-<div class="card"><p style="margin-top:0">Show the deviation on your stream while it can be caught: its picture, name, Variation or Skin (unless you turn on surprise mode, below), and a countdown. It appears when one is spotted and disappears when it's secured or gets away.</p>
-<p>This is what your viewers see on stream when a deviation shows up (live previews, with the real countdown), and for 12 seconds after it's gone: who secured it (gold for Legendary catches):</p>
-<div class="obsprev">${[["base", "A spawn"], ["variation", "A Variation spawns (Legendary)"], ["result", "After: who caught it"], ["resultlegend", "Caught a Legendary"]].map(([k, l]) => `<figure><div class="obsframe"><iframe src="/obs-preview?kind=${k}" title="OBS Source preview: ${l}" loading="lazy" scrolling="no"></iframe></div><figcaption>${l}</figcaption></figure>`).join("")}</div>
-<script>(function(){function fit(){document.querySelectorAll(".obsframe").forEach(function(f){var i=f.querySelector("iframe");i.style.transform="scale("+(f.clientWidth/600)+")";});}fit();addEventListener("resize",fit);})();</script>
-<p>Type <kbd>!hunt obs</kbd> in your chat (broadcaster or mods) and the bot replies with your channel's link. In OBS add a <b>Browser</b> source with that link, size <b>600 × 600</b>. Add <code>?demo=1</code> to the end while you position it so you can see it (or <code>?demo=result</code> to see the "who caught it" card), then remove it.</p>
-<h3 style="margin:18px 0 6px">Your OBS Source options</h3>
-<p style="margin-top:0">Type these in your chat (broadcaster or mods). They only change your channel.</p>
-<table class="cmds"><tr><th>Command</th><th>What it does</th></tr>
-<tr><td><kbd>!hunt surprise on</kbd></td><td><b>Surprise mode.</b> Your OBS Source shows every deviation as the normal one, so nobody knows it's a Variation or Skin until the result. <b>Off by default:</b> the OBS Source shows a Variation or Skin (picture and name) as soon as it appears. <kbd>!hunt surprise off</kbd> to switch back.</td></tr>
-<tr><td><kbd>!hunt spawnchat off</kbd></td><td><b>OBS only.</b> No chat message when a deviation appears — it only shows on your OBS Source. Who caught it (or that it got away) still posts in chat. If your OBS Source isn't open, chat still announces spawns so the game keeps working. <kbd>!hunt spawnchat on</kbd> to turn chat messages back on.</td></tr>
-<tr><td><kbd>!hunt chatdelay 14</kbd></td><td>Seconds chat waits before posting a new deviation and the result, so your stream (which runs a few seconds behind chat) shows it first. 0–30, default ${cfg.RESULT_CHAT_DELAY_SECONDS}. Only while your OBS Source is open.</td></tr>
-</table></div>
 
 
 <h2>What It Looks Like</h2>
@@ -256,10 +243,24 @@ ${chatExamples(botName)}
 <p><kbd>!traits</kbd> — your latest catch's Skill Rating, Activity Rating and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
 <p><kbd>!dev behemoth</kbd> — what a deviation does and where it drops · <kbd>!hunttop</kbd> — leaderboard · <kbd>!hunt</kbd> — help</p>
 </div>
+<h2 id="obs">OBS Source</h2>
+<div class="card"><p style="margin-top:0">Show the deviation on your stream while it can be caught: its picture, name, Variation or Skin (unless you turn on surprise mode, below), and a countdown. It appears when one is spotted and disappears when it's secured or gets away.</p>
+<p>This is what your viewers see on stream when a deviation shows up (live previews, with the real countdown), and for 12 seconds after it's gone: who secured it (gold for Legendary catches):</p>
+<div class="obsprev">${[["base", "A spawn"], ["variation", "A Variation spawns (Legendary)"], ["result", "After: who caught it"], ["resultlegend", "Caught a Legendary"]].map(([k, l]) => `<figure><div class="obsframe"><iframe src="/obs-preview?kind=${k}" title="OBS Source preview: ${l}" loading="lazy" scrolling="no"></iframe></div><figcaption>${l}</figcaption></figure>`).join("")}</div>
+<script>(function(){function fit(){document.querySelectorAll(".obsframe").forEach(function(f){var i=f.querySelector("iframe");i.style.transform="scale("+(f.clientWidth/600)+")";});}fit();addEventListener("resize",fit);})();</script>
+<p>Type <kbd>!hunt obs</kbd> in your chat (broadcaster or mods) and the bot replies with your channel's link. In OBS add a <b>Browser</b> source with that link, size <b>600 × 600</b>. Add <code>?demo=1</code> to the end while you position it so you can see it (or <code>?demo=result</code> to see the "who caught it" card), then remove it.</p>
+<h3 style="margin:18px 0 6px">Your OBS Source options</h3>
+<p style="margin-top:0">Type these in your chat (broadcaster or mods). They only change your channel.</p>
+<table class="cmds"><tr><th>Command</th><th>What it does</th></tr>
+<tr><td><kbd>!hunt surprise on</kbd></td><td><b>Surprise mode.</b> Your OBS Source shows every deviation as the normal one, so nobody knows it's a Variation or Skin until the result. <b>Off by default:</b> the OBS Source shows a Variation or Skin (picture and name) as soon as it appears. <kbd>!hunt surprise off</kbd> to switch back.</td></tr>
+<tr><td><kbd>!hunt spawnchat off</kbd></td><td><b>OBS only.</b> No chat message when a deviation appears — it only shows on your OBS Source. Who caught it (or that it got away) still posts in chat. If your OBS Source isn't open, chat still announces spawns so the game keeps working. <kbd>!hunt spawnchat on</kbd> to turn chat messages back on.</td></tr>
+<tr><td><kbd>!hunt chatdelay 14</kbd></td><td>Seconds chat waits before posting a new deviation and the result, so your stream (which runs a few seconds behind chat) shows it first. 0–30, default ${cfg.RESULT_CHAT_DELAY_SECONDS}. Only while your OBS Source is open.</td></tr>
+</table></div>
+
 <h2>Streamer & Mod Commands</h2>
 <div class="card">
 <table class="cmds"><tr><th>Command</th><th>What it does</th></tr>
-<tr><td><kbd>!hunt spawn</kbd></td><td>Release a deviation right now (<kbd>!hunt spawn pyro dino</kbd> for a specific one).</td></tr>
+<tr><td><kbd>!hunt spawn</kbd></td><td>Release a deviation right now. Pick one with <kbd>!hunt spawn pyro dino</kbd>, a Variation or Skin with <kbd>!hunt spawn nutcracker infrasonic illusion</kbd>, or a random one with <kbd>!hunt spawn nutcracker skin</kbd>.</td></tr>
 <tr><td><kbd>!hunt interval 10</kbd></td><td>Minutes between spawns (default ${cfg.SPAWN_INTERVAL_MIN}).</td></tr>
 <tr><td><kbd>!hunt off</kbd> / <kbd>!hunt on</kbd></td><td>Pause or resume spawns (commands keep working).</td></tr>
 <tr><td><kbd>!hunt status</kbd></td><td>Live status, spawn timer and what's loose right now.</td></tr>
