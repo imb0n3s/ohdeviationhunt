@@ -260,7 +260,7 @@ ${chatExamples(botName)}
 <h2>Streamer & Mod Commands</h2>
 <div class="card">
 <table class="cmds"><tr><th>Command</th><th>What it does</th></tr>
-<tr><td><kbd>!hunt spawn</kbd></td><td>Release a deviation right now. Pick one with <kbd>!hunt spawn pyro dino</kbd>, a Variation or Skin with <kbd>!hunt spawn nutcracker infrasonic illusion</kbd>, or a random one with <kbd>!hunt spawn nutcracker skin</kbd>.</td></tr>
+<tr><td><kbd>!hunt spawn</kbd></td><td>Release a deviation right now. Pick one with <kbd>!hunt spawn pyro dino</kbd>, a Variation or Skin with <kbd>!hunt spawn nutcracker infrasonic illusion</kbd>, or a random one with <kbd>!hunt spawn nutcracker skin</kbd>. All deviations you can spawn, with their Variation and Skin names, are on the <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page" target="_blank" rel="noopener">Deviation Main Page</a>.</td></tr>
 <tr><td><kbd>!hunt interval 10</kbd></td><td>Minutes between spawns (default ${cfg.SPAWN_INTERVAL_MIN}).</td></tr>
 <tr><td><kbd>!hunt off</kbd> / <kbd>!hunt on</kbd></td><td>Pause or resume spawns (commands keep working).</td></tr>
 <tr><td><kbd>!hunt status</kbd></td><td>Live status, spawn timer and what's loose right now.</td></tr>
