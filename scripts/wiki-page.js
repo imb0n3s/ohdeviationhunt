@@ -100,7 +100,7 @@ out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!hunt"), `Short help message with a link to this guide.`],
 ])));
 
-out.push(box("Mods", "Streamer & Moderator Commands", `
+out.push(box("Mods", "Streamer & Mod Commands", `
 Only the broadcaster and moderators can use these.
 ${table(["Command", "Effect"], [
   [cmd("!hunt spawn [deviation]"), `Spawn a deviation right now. Add a name (${cmd("!hunt spawn pyro dino")}) to release that one.`],

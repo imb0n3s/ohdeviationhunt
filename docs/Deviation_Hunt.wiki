@@ -67,7 +67,7 @@ Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2
 <div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
 <div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
 <span style="color:#0ea5e9; font-weight:800;">Mods</span>
-<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Streamer & Moderator Commands</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Streamer & Mod Commands</span>
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
 Only the broadcaster and moderators can use these.

@@ -107,7 +107,7 @@ form.find{display:flex;gap:8px;margin:8px 0}form.find input{flex:1;min-width:0;p
 form.find button{padding:0 18px;border-radius:9px;border:0;background:var(--accent);color:#fff;font-weight:600}
 footer{margin-top:48px;color:var(--muted);font-size:.9em}footer a{color:var(--muted)}a{color:var(--accent)}
 nav{display:flex;gap:18px;margin-bottom:24px;flex-wrap:wrap}nav a.me{color:var(--accent);font-weight:700}nav a{color:var(--muted);text-decoration:none;font-weight:600}nav a:hover{color:var(--text)}
-</style></head><body><main><nav><a href="/">${esc(cfg.BOT_NAME)}</a><a href="/commands">Commands</a><a href="/dex">All deviations</a><a href="/channels">Channels</a><a href="/top">Leaderboard</a><a href="/me" class="me">My Securement Pods</a><a href="${esc(cfg.WIKI_BASE)}">OHWikiGuide</a></nav>${body}
+</style></head><body><main><nav><a href="/">${esc(cfg.BOT_NAME)}</a><a href="/commands">Commands</a><a href="/dex">All Deviations</a><a href="/channels">Channels</a><a href="/top">Leaderboard</a><a href="/me" class="me">My Securement Pods</a><a href="${esc(cfg.WIKI_BASE)}">OHWikiGuide</a></nav>${body}
 <footer>Deviation data from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">ohwikiguide.com</a> · <a href="${esc(cfg.TERMS_URL)}">Terms</a> · <a href="${esc(cfg.PRIVACY_URL)}">Privacy</a>${cfg.DISCORD_URL ? ` · <a href="${esc(cfg.DISCORD_URL)}">Discord</a>` : ""} · Fan-made, not affiliated with Starry Studio / NetEase.</footer></main></body></html>`;
 }
 const simple = (title, heading, text, extra = "") => page(title, `<h1>${esc(heading)}</h1><p>${text}</p>${extra}<p><a href="/">&larr; Back</a></p>`);
@@ -129,20 +129,20 @@ function chatExamples(botName) {
   const glove = GLOVES.find((g) => g.id === "bbq");
   const ex = (title, note, lines) => `<div class="card"><h3 style="margin:0 0 .3em">${title}</h3><p class="muted" style="margin:0 0 .6em">${note}</p><div class="chat">${lines.join("")}</div></div>`;
   return [
-    ex("Someone secures it", `Everyone who types <kbd>!secure</kbd> gets their own roll. Each person who catches it gets their own specimen, shown as Skill/Activity rating.`, [
+    ex("Someone Secures It", `Everyone who types <kbd>!secure</kbd> gets their own roll. Each person who catches it gets their own specimen, shown as Skill/Activity rating.`, [
       spawn("Grumpy Bulb"),
       line("viewer42", "!secure"), thr("viewer42", "Grumpy Bulb", 480, 7),
       line("metabones", "!secure"), thr("metabones", "Grumpy Bulb", 2310, 23, glove),
       line("nightowl", "!secure"), thr("nightowl", "Grumpy Bulb", 95, 2),
       bot(`⭐ SECURED! ⭐ Grumpy Bulb — a 3/2 by @metabones, a 5/5 ⭐ by @viewer42! 🔒 +${rew(rarityOf("Grumpy Bulb"))} Starchrom each. 📖 New entry for viewer42 (+${ECONOMY.newSpeciesBonus}). It broke free from nightowl. | !traits grumpybulb for traits`),
     ]),
-    ex("Nobody catches it", `If every throw misses, it gets away. You only lose the ${T} Starchrom for the throw — your Securement Pod stays empty for next time.`, [
+    ex("Nobody Catches It", `If every throw misses, it gets away. You only lose the ${T} Starchrom for the throw — your Securement Pod stays empty for next time.`, [
       spawn("Lonewolf Whisper"),
       line("viewer42", "!secure"), thr("viewer42", "Lonewolf Whisper", 470, 7),
       line("nightowl", "!secure"), thr("nightowl", "Lonewolf Whisper", 85, 2),
       bot(`💥 Lonewolf Whisper got away from viewer42, nightowl! Better luck next time. | !pods to see your collection`),
     ]),
-    ex("Surprise: it was a Variation or Skin", `Chat names the normal deviation. Only the result tells you it was secretly a Variation or Skin — always Legendary (harder to catch), worth ${rew("legendary")} Starchrom.`, [
+    ex("Surprise: It Was a Variation or Skin", `Chat names the normal deviation. Only the result tells you it was secretly a Variation or Skin — always Legendary (harder to catch), worth ${rew("legendary")} Starchrom.`, [
       spawn("Lonewolf Whisper"),
       line("metabones", "!secure"), thr("metabones", "Lonewolf Whisper", 2300, 23, glove),
       bot(`🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Lonewolf Whisper — it was a ✨ Variation: Lunar Oracle (Legendary)! — a 4/4 by @metabones! 🔒 +${rew("legendary")} Starchrom each. 📖 New entry for metabones (+${ECONOMY.newSpeciesBonus}). | !traits lonewolfwhisper for traits`),
@@ -189,7 +189,7 @@ function channelList(pool, { limit } = {}) {
 
 function channelsPage(pool) {
   const c = channelList(pool);
-  return page("Channels", `<h1>Where to play</h1>
+  return page("Channels", `<h1>Where to Play</h1>
 <p>Every Twitch channel running ${esc(cfg.BOT_NAME)} — ${c.total} channel${c.total === 1 ? "" : "s"}, ${c.live} live right now. Deviations only show up while a channel is live. Your Securement Pods are the same on all of them.</p>
 ${c.html}
 <p style="margin-top:24px">Streamer? <a href="/auth/twitch?action=add">Add ${esc(cfg.BOT_NAME)} to your channel</a>.</p>`);
@@ -207,7 +207,7 @@ function landing(pool) {
 </div>
 <div class="stats"><div class="stat"><b>${fmt(channelList(pool).total)}</b>Channels</div><div class="stat"><b>${fmt(db.countPlayers())}</b>Metas</div><div class="stat"><b>${fmt(db.totalCatches())}</b>Deviations Secured</div><div class="stat"><b>${fmt(db.totalAttempts())}</b>Deviations Attempted</div><div class="stat"><b>${data.all().length}</b>Deviations</div><div class="stat"><b>${fmt(db.starchromSpent())}</b>Starchrom spent</div></div>
 
-${(() => { const c = channelList(pool, { limit: 12 }); return `<h2>Where to play <span class="sub">${c.live} live · ${c.total} channel${c.total === 1 ? "" : "s"}</span></h2>
+${(() => { const c = channelList(pool, { limit: 12 }); return `<h2>Where to Play <span class="sub">${c.live} live · ${c.total} channel${c.total === 1 ? "" : "s"}</span></h2>
 <p>Every Twitch channel with ${esc(cfg.BOT_NAME)}. Deviations only show up while a channel is live — your Securement Pods are the same on all of them.</p>
 ${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels →</a></p>` : ""}`; })()}
 
@@ -226,19 +226,19 @@ ${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels �
 </table></div>
 
 
-<h2>What it looks like</h2>
+<h2>What It Looks Like</h2>
 ${chatExamples(botName)}
 
-<h2 id="scrap">How to scrap extra deviations</h2>
+<h2 id="scrap">How to Scrap Extra Deviations</h2>
 <div class="card">
 <p style="margin-top:0">Caught the same deviation more than once? Keep the best one and scrap the rest. Each scrap gives you <b>${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit</b> and frees up a Securement Pod. You always keep at least one of every deviation, so you can't scrap your last one. Variations and skins can be scrapped too, but only if you pick them.</p>
-<div class="howto"><div><h3>On this website</h3><ol>
+<div class="howto"><div><h3>On This Website</h3><ol>
 <li>Open <a href="/me">My Securement Pods</a> (top of the page) and <b>Sign in with Twitch</b>. The Scrap buttons only show on your own page while you're signed in.</li>
 <li>Find the deviation you have extras of (the <b>×2</b>, <b>×3</b>… in the corner).</li>
 <li>Click the red <b>Scrap extras</b> button at the bottom of that card (clicking the picture doesn't do anything).</li>
 <li>Every copy you own is listed with its Skill/Activity rating, variation or skin, and traits; your best one is marked <b>Best</b> (a skin beats a variation, a variation beats a normal one, then a Legendary trait such as Upper Hand, then the higher rating, then more traits).</li>
 <li>Click <b>Scrap</b> on the one you don't want and confirm.</li></ol></div>
-<div><h3>In the Twitch panel</h3><ol>
+<div><h3>In the Twitch Panel</h3><ol>
 <li>Under the stream, open the <b>Securement Pods</b> panel and click <b>Show my Securement Pods</b> (first time only).</li>
 <li>Click the deviation you have extras of.</li>
 <li>Every copy you own is listed with its ratings and traits.</li>
@@ -246,7 +246,7 @@ ${chatExamples(botName)}
 <p>There's no chat command for scrapping — <kbd>!scrap</kbd> just tells you where to go.</p>
 </div>
 
-<h2>Viewer commands</h2>
+<h2>Viewer Commands</h2>
 <div class="card">
 <p><kbd>!daily</kbd> — free supply drop (+${ECONOMY.daily.starchrom} Starchrom and ${ECONOMY.daily.units.standard} Securement Unit), once a day (resets at midnight Central) during a live stream, plus ${ECONOMY.hourlyUnits} free Securement Unit and ${ECONOMY.hourlyStarchrom} Starchrom every hour for the rest of the day while you're in a live stream</p>
 <p><kbd>!secure</kbd> — throw a Securement Unit at the loose deviation (one throw per spawn). <kbd>!catch</kbd> works too.</p>
@@ -256,7 +256,7 @@ ${chatExamples(botName)}
 <p><kbd>!traits</kbd> — your latest catch's Skill Rating, Activity Rating and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
 <p><kbd>!dev behemoth</kbd> — what a deviation does and where it drops · <kbd>!hunttop</kbd> — leaderboard · <kbd>!hunt</kbd> — help</p>
 </div>
-<h2>Streamer & mod commands</h2>
+<h2>Streamer & Mod Commands</h2>
 <div class="card">
 <table class="cmds"><tr><th>Command</th><th>What it does</th></tr>
 <tr><td><kbd>!hunt spawn</kbd></td><td>Release a deviation right now (<kbd>!hunt spawn pyro dino</kbd> for a specific one).</td></tr>
@@ -271,7 +271,7 @@ ${chatExamples(botName)}
 </table>
 <p>Deviations only appear while your stream is live and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes.</p>
 </div>
-<h2>How catching works</h2>
+<h2>How Catching Works</h2>
 <div class="card"><table><tr><th>Rarity</th><th>Spawn weight</th><th>Capture rate</th><th>Reward</th></tr>
 ${Object.values(TIERS).map((t) => `<tr><td style="color:${t.color};font-weight:600">${t.label}</td><td>${t.weight}%</td><td>${Math.round(t.catch * 100)}%</td><td>${t.reward} Starchrom</td></tr>`).join("")}
 ${["variation", "skin", "chaos"].map((k) => `<tr><td style="color:${TIERS.legendary.color};font-weight:600">${VARIANT[k].label} (Legendary)</td><td>1 in ${Math.round(1 / VARIANT[k].chance)}</td><td>${+(VARIANT[k].catch * 100).toFixed(1)}%</td><td>${TIERS[VARIANT[k].rarity].reward * VARIANT[k].rewardMult} Starchrom</td></tr>`).join("")}</table>
@@ -381,7 +381,7 @@ ${secs.map((s) => `<h2>${esc(s.title)}</h2>${s.note ? `<p>${esc(s.note)}</p>` : 
 function dexPage() {
   const all = data.all();
   const cards = sections(all, (d) => `<div class="dev"><img loading="lazy" src="${esc(d.img || "")}" alt="${esc(d.name)}"><div class="n">${esc(d.name)}</div>${tierTag(d.rarity)}<div class="vars">${d.variants.length ? `<span>${[["variation", "variation"], ["skin", "skin"]].map(([k, l]) => { const n = d.variants.filter((v) => v.kind === k).length; return n ? `${n} ${l}${n > 1 ? "s" : ""}` : ""; }).filter(Boolean).join(" · ")} · <b style="color:${TIERS.legendary.color}">Legendary</b></span>` : ""}</div></div>`);
-  return page("All deviations", `<h1>All deviations</h1><p>All ${all.length} deviations can appear in the wild, pulled from the <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">wiki</a>.</p>${cards}`);
+  return page("All Deviations", `<h1>All Deviations</h1><p>All ${all.length} deviations can appear in the wild, pulled from the <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">wiki</a>.</p>${cards}`);
 }
 
 function topPage() {

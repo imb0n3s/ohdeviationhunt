@@ -9,7 +9,7 @@ const fmt = (n) => Number(n).toLocaleString("en-US");
 function commandSections() {
   const gloves = shop.ITEMS.filter((i) => i.kind === "gloves").map((i) => `${i.name} +${Math.round(i.bonus * 100)}% (${fmt(i.price)})`).join(" · ");
   return [
-    { id: "viewer", title: "Viewer commands", rows: [
+    { id: "viewer", title: "Viewer Commands", rows: [
       ["!daily", `Start here. Once a day (resets at midnight Central) while the stream is live: +${E.daily.starchrom} Starchrom and ${E.daily.units.standard} Securement Unit, and it turns on 1 free Securement Unit + ${E.hourlyStarchrom} Starchrom every hour you play in a live stream for the rest of the day. Also shows your check-in count (how many days you've claimed it).`],
       ["!secure", `Throw at the deviation that's spotted in the wild (you have ${cfg.SPAWN_WINDOW_SECONDS} seconds). Costs ${E.throwCost} Starchrom and needs an empty Securement Unit; if you catch it, it lives in that unit. One throw per spawn. Also \`!catch\`.`],
       ["!pods", "Your Securement Pods: how many deviations, variations and skins you've secured (each counted separately), plus a link to your collection page. Add a name (`!pods luna_raventhorn`) to see someone else's. Also `!pod`."],
@@ -22,7 +22,7 @@ function commandSections() {
       ["!hunttop", "The leaderboard link. Also `!leaderboard`."],
       ["!hunt", "A quick how-to-play reminder in chat."],
     ] },
-    { id: "streamer", title: "Streamer commands", note: "For the broadcaster and moderators, in your own chat.", rows: [
+    { id: "streamer", title: "Streamer & Mod Commands", note: "For the broadcaster and moderators, in your own chat.", rows: [
       ["!hunt spawn [deviation]", "Spawn a deviation right now. Add a name (`!hunt spawn pyro dino`) to release that one."],
       ["!hunt interval <minutes>", `How often deviations appear while you're live (2–120 minutes; default about every ${cfg.SPAWN_INTERVAL_MIN}).`],
       ["!hunt off / !hunt on", "Pause or resume spawns. Other commands keep working."],
@@ -34,7 +34,7 @@ function commandSections() {
       ["!hunt leave", "Remove Deviation Hunt from your channel. Everyone keeps their collections."],
       ["!hunt help", "Lists these mod commands in chat."],
     ] },
-    { id: "join", title: "Adding the game to your channel", rows: [
+    { id: "join", title: "Adding the Game to Your Channel", rows: [
       ["!join", "Type it in the bot's chat (twitch.tv/ohdeviationhunt) to add Deviation Hunt to your channel, or use Add to my channel on deviationhunt.ohwikiguide.com. Then `/mod ohdeviationhunt` in your chat so it isn't rate-limited."],
       ["!leave", "Type it in the bot's chat to remove the game from your channel."],
     ] },
