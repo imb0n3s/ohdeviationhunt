@@ -174,6 +174,9 @@ class Spawns {
 
   // Twitch video runs a few seconds behind chat, so on channels showing the OBS Source the result
   // message waits until the "who caught it" card is on stream. No overlay = no delay.
+  overlayOn(bid) { return Date.now() - (this.overlaySeen.get(bid) || 0) < 60000; }
+  // mods can turn off the "spotted in the wild" chat message (OBS Source only); results always post
+  spawnChatOff(bid) { return db.getSetting(`spawnchat:${bid}`) === "off"; }
   chatDelayMs(bid) {
     if (!(Date.now() - (this.overlaySeen.get(bid) || 0) < 60000)) return 0;
     const v = db.getSetting(`chatdelay:${bid}`);
@@ -278,8 +281,10 @@ class Spawns {
     this.persist(bid);
     this.scheduleNext(bid, this.intervalMs(bid) + s.windowMs);
     console.log(`[spawn] ${bid}: ${logName(s)} (${s.dev.rarity})${forced ? " [forced]" : ""}${delay ? ` [chat in ${delay / 1000}s]` : ""}`);
-    if (!delay) await this.send(bid, spawnAnnouncement(s));
-    else setTimeout(() => { if (this.active.get(bid) === s) Promise.resolve(this.send(bid, spawnAnnouncement(s))).catch((e) => console.error("[spawn] delayed send", e.message)); }, delay);
+    // "!hunt spawnchat off": with the OBS Source on stream, the spawn is only shown on screen (results still post in chat)
+    if (this.spawnChatOff(bid) && this.overlayOn(bid)) { /* quiet spawn: OBS only */ }
+    else if (!delay) await this.send(bid, spawnAnnouncement(s));
+    else setTimeout(() => { if (this.active.get(bid) === s && !(this.spawnChatOff(bid) && this.overlayOn(bid))) Promise.resolve(this.send(bid, spawnAnnouncement(s))).catch((e) => console.error("[spawn] delayed send", e.message)); }, delay);
     return { spawn: s };
   }
 

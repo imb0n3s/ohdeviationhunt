@@ -87,6 +87,8 @@ Only the broadcaster and moderators can use these.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt chatdelay <seconds></nowiki></span> || While your OBS Source is on stream, the bot waits this long (0–30, default 14) before announcing a new deviation and before posting who secured it, so viewers see it on screen first. <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt chatdelay 0</nowiki></span> posts right away.
 |-
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt spawnchat on / off</nowiki></span> || Turn off the chat message when a deviation appears, so it only shows on your OBS Source. Results (who secured it, or that it got away) always post in chat. Only applies while your OBS Source is open — without it, chat still announces spawns so the game keeps working.
+|-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt leave</nowiki></span> || Remove the bot from your channel.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt help</nowiki></span> || List the mod commands in chat.

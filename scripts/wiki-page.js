@@ -109,6 +109,7 @@ ${table(["Command", "Effect"], [
   [cmd("!hunt status"), "Live status, spawn timer, what's loose, and this channel's spawn/catch totals."],
   [cmd("!hunt obs"), "Posts your channel's OBS Source link (see Add Deviation Hunt to Your Channel)."],
   [cmd("!hunt chatdelay <seconds>"), `While your OBS Source is on stream, the bot waits this long (0–30, default ${cfg.RESULT_CHAT_DELAY_SECONDS}) before announcing a new deviation and before posting who secured it, so viewers see it on screen first. ${cmd("!hunt chatdelay 0")} posts right away.`],
+  [cmd("!hunt spawnchat on / off"), "Turn off the chat message when a deviation appears, so it only shows on your OBS Source. Results (who secured it, or that it got away) always post in chat. Only applies while your OBS Source is open — without it, chat still announces spawns so the game keeps working."],
   [cmd("!hunt leave"), "Remove the bot from your channel."],
   [cmd("!hunt help"), "List the mod commands in chat."],
 ])}
