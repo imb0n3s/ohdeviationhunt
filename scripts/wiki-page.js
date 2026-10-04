@@ -110,6 +110,7 @@ ${table(["Command", "Effect"], [
   [cmd("!hunt obs"), "Posts your channel's OBS Source link (see Add Deviation Hunt to Your Channel)."],
   [cmd("!hunt chatdelay <seconds>"), `While your OBS Source is on stream, the bot waits this long (0–30, default ${cfg.RESULT_CHAT_DELAY_SECONDS}) before announcing a new deviation and before posting who secured it, so viewers see it on screen first. ${cmd("!hunt chatdelay 0")} posts right away.`],
   [cmd("!hunt spawnchat on / off"), "Turn off the chat message when a deviation appears, so it only shows on your OBS Source. Results (who secured it, or that it got away) always post in chat. Only applies while your OBS Source is open — without it, chat still announces spawns so the game keeps working."],
+  [cmd("!hunt surprise on / off"), "Surprise mode: your OBS Source shows a variation or skin as the normal deviation until the result reveals it. Off by default — the OBS Source shows a variation or skin as soon as it appears. Chat never says it is a variation or skin until the result either way."],
   [cmd("!hunt leave"), "Remove the bot from your channel."],
   [cmd("!hunt help"), "List the mod commands in chat."],
 ])}
@@ -157,7 +158,7 @@ Each spawn first rolls a rarity, then a deviation of that rarity. Everyone who t
 ${table(["Rarity", "Spawn chance", "Capture rate", `${SC} reward`, "Deviations"], rarityRows)}
 
 * '''Every Variation and Skin is ${tierTag("legendary")}''', no matter the rarity of the deviation it belongs to — a Common deviation's variations and skins are Legendary too.
-* '''Variations and skins are a secret.''' Every spawn looks like the normal deviation (chat and the OBS Source never say otherwise); you only find out it was a variation or skin when the result is posted.
+* '''Variations and skins are a secret in chat.''' Chat always shows the normal deviation; the streamer's OBS Source shows the variation or skin as it appears (unless the streamer turned on surprise mode with !hunt surprise on). Chat reveals it when the result is posted.
 * '''Variations''' are about ${pct(VARIANT.variation.chance)} of spawns (on deviations that have them), with a flat '''${pct(VARIANT.variation.catch)}''' capture rate and ${TIERS[VARIANT.variation.rarity].reward * VARIANT.variation.rewardMult} ${SC}.
 * '''Skins''' are about ${pct(VARIANT.skin.chance)} of spawns (on deviations that have them), with a flat '''${pct(VARIANT.skin.catch)}''' capture rate and ${skinReward} ${SC}.
 * '''Chaos variation''' — the rarest in the game. ${devs.filter((d) => d.variants.some(isChaos)).map((d) => d.name).join(", ")} can secretly be their ''Chaos'' variation in '''1 in ${Math.round(1 / VARIANT.chaos.chance)}''' of all spawns, with a flat '''${+(VARIANT.chaos.catch * 100).toFixed(1)}%''' capture rate (Legendary, ${TIERS[VARIANT.chaos.rarity].reward * VARIANT.chaos.rewardMult} ${SC}).
@@ -170,7 +171,7 @@ ${Object.keys(TIERS).filter((k) => byTier[k]).map((k) => `\n<div style="margin-t
 `));
 
 out.push(box("Shiny", "Variations & Skins", `
-Variations and skins are Deviation Hunt's shinies — and they're a surprise. Every spawn looks like the normal deviation; the result reveals what it really was:
+Variations and skins are Deviation Hunt's shinies. In chat they're a surprise: every spawn message names the normal deviation and the result reveals what it really was. On a streamer's OBS Source you can see it straight away (unless they turned on surprise mode with !hunt surprise on):
 ${code(`🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Grumpy Bulb — it was a ✨ Variation: Violet Robe (Legendary)! — a 3/4 by @metabones! 🔒 +${TIERS.legendary.reward} ${SC} each.`)}
 
 * Each variation and skin is its own entry in your Securement Pods, and the first one of each earns the +${ECONOMY.newSpeciesBonus} new-entry bonus.

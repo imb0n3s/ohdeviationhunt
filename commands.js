@@ -92,6 +92,17 @@ function makeHandler(pool, spawns) {
         db.setSetting(`chatdelay:${bid}`, String(n));
         return reply(n ? `Got it — spawns and results post in chat ${n}s after the OBS Source shows them.` : "Got it — spawns and results post in chat right away.");
       }
+      if (mod && sub === "surprise") {
+        const want = (args[1] || "").toLowerCase();
+        if (want !== "on" && want !== "off") {
+          const on = db.getSetting(`surprise:${bid}`) === "on";
+          return reply(`Surprise mode is ${on ? "ON: your OBS Source shows variations/skins as the normal deviation until the result" : "OFF: your OBS Source shows a variation/skin as soon as it appears"}. Change it: !hunt surprise on / off.`);
+        }
+        db.setSetting(`surprise:${bid}`, want);
+        return reply(want === "on"
+          ? "Surprise mode on — your OBS Source shows every deviation as the normal one; variations and skins are only revealed when the result is posted."
+          : "Surprise mode off — your OBS Source shows a variation or skin as soon as it appears.");
+      }
       if (mod && sub === "spawnchat") {
         const want = (args[1] || "").toLowerCase();
         if (want !== "on" && want !== "off") {
@@ -118,7 +129,7 @@ function makeHandler(pool, spawns) {
         return reply(`Live: ${spawns.live.has(bid) ? "yes" : "no"} · spawns ${ch.spawns_on ? "on" : "off"} every ~${ch.interval_min || cfg.SPAWN_INTERVAL_MIN}m · ${st ? `${st.name} loose, ${st.secondsLeft}s left, ${st.attempts} throws` : "nothing loose"} · ${ch.spawns} spawns / ${ch.catches} catches here`);
       }
       if (mod && (sub === "obs" || sub === "overlay")) return reply(`OBS Source: in OBS add a Browser source (600×600) with ${require("./overlay").linkFor(bid)} — it shows the deviation and a countdown while it can be caught. Add ?demo=1 to the link to preview it while you position it.`);
-      if (mod && sub === "help") return reply("Mods: !hunt spawn (spawn now) · !hunt interval <min> · !hunt off / on · !hunt status · !hunt obs · !hunt chatdelay <sec> · !hunt spawnchat on/off · !hunt leave");
+      if (mod && sub === "help") return reply("Mods: !hunt spawn (spawn now) · !hunt interval <min> · !hunt off / on · !hunt status · !hunt obs · !hunt chatdelay <sec> · !hunt spawnchat on/off · !hunt surprise on/off · !hunt leave");
       return reply(HELP());
     }
 

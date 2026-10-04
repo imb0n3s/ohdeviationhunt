@@ -48,8 +48,11 @@ function stateFor(pool, code) {
     ok: true, active: true, v: BOOT,
     id: `${s.dev.id}:${s.endsAt}`,             // changes for every new spawn
     name: s.dev.name,
-    variant: null,                              // secret until the result
-    img: s.dev.img,
+    // the OBS Source shows a variation/skin as it spawns, unless the streamer turned on "!hunt surprise"
+    // (then it looks like the normal deviation until the result). Chat never says it before the result.
+    ...(s.variant && db.getSetting(`surprise:${bid}`) !== "on"
+      ? { variant: { name: s.variant.name, kind: s.variant.kind }, img: s.variant.img || s.dev.img }
+      : { variant: null, img: s.dev.img }),
     endsAt: s.shownEndsAt || s.endsAt, now: Date.now(), windowMs: cfg.SPAWN_WINDOW_SECONDS * 1000,
   };
 }
