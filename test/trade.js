@@ -37,5 +37,32 @@ const R=m=>require(require("path").join(__dirname,"..",m)); const crypto=require
  r=await go(`/trade/${t3}/accept`,B,""); assert.equal(r.loc,"/trade?m=sender_full");
  r=await go("/trade",A,`with=imbon3s&give=${a3[0].id}&get=${a3[1].id}`); console.log("self trade ->",r.loc);
  r=await go("/trade",A,`with=nobodyhere&give=${a3[0].id}&get=1`); console.log("unknown player ->",r.loc);
- r=await fetch("http://localhost:3997/trade",{method:"POST",redirect:"manual",headers:{cookie:A,origin:"https://evil.example","content-type":"application/x-www-form-urlencoded"},body:"with=luna_raventhorn"}); assert.equal(r.status,403); console.log("trade checks passed");
+ r=await fetch("http://localhost:3997/trade",{method:"POST",redirect:"manual",headers:{cookie:A,origin:"https://evil.example","content-type":"application/x-www-form-urlencoded"},body:"with=luna_raventhorn"}); assert.equal(r.status,403);
+ // ---- log + reverse ----
+ r=await go("/trade/log",B); assert.equal(r.s,200); assert.match(r.t,new RegExp(`#${tid} `)); assert.match(r.t,/Traded/); console.log("log shows",(r.t.match(/class="toffer"/g)||[]).length,"trades for B");
+ r=await go("/trade/admin",B); assert.equal(r.s,403); console.log("non-owner admin page -> 403");
+ r=await go(`/trade/${tid}/reverse`,B,"reason=x"); assert.equal(r.s,403); console.log("non-owner reverse -> 403");
+ r=await go("/trade/admin",A); assert.equal(r.s,200); assert.match(r.t,/Reverse Trade/);
+ r=await go(`/trade/${t3}/reverse`,A,""); assert.equal(r.loc,"/trade/admin?m=not_accepted");
+ // reverse the first trade: B gave get[0] and still... give[0] was deleted? no — a2[0] may be one of them; check
+ const holdsAll=give.every(id=>db.q.getSpecimen.get(id,"2"))&&get.every(id=>db.q.getSpecimen.get(id,"1"));
+ if(!holdsAll){ r=await go(`/trade/${tid}/reverse`,A,""); console.log("reverse with a scrapped specimen ->",r.loc); assert.match(r.loc,/cant_reverse&missing=/);
+   r=await go(r.loc,A); assert.match(r.t,/scrapped or traded on/); }
+ // fresh trade, accept, then reverse cleanly
+ const pa2=game.loadPlayer("1","imbon3s","imbon3s"); pa2.units={standard:5}; game.savePlayer(pa2);
+ const a4=db.q.userSpecimens.all("1"), b4=db.q.userSpecimens.all("2");
+ r=await go("/trade",A,`with=luna_raventhorn&give=${a4[0].id}&get=${b4[0].id}&get=${b4[1].id}`); const t4=R("trade").listFor("2")[0].id;
+ r=await go(`/trade/${t4}/accept`,B,""); assert.equal(r.loc,"/trade?m=accepted");
+ const cA=db.q.getCatch.get("1",b4[0].deviation,b4[0].variant||"");
+ r=await go(`/trade/${t4}/reverse`,A,"reason=Wrong+deviation+picked"); assert.equal(r.loc,"/trade/admin?m=reversed");
+ assert(db.q.getSpecimen.get(a4[0].id,"1")&&db.q.getSpecimen.get(b4[0].id,"2")&&db.q.getSpecimen.get(b4[1].id,"2"));
+ assert.deepEqual(db.q.userSpecimens.all("1").map(x=>x.id).sort(),a4.map(x=>x.id).sort()); assert.deepEqual(db.q.userSpecimens.all("2").map(x=>x.id).sort(),b4.map(x=>x.id).sort());
+ r=await go(`/trade/${t4}/reverse`,A,""); assert.equal(r.loc,"/trade/admin?m=not_accepted"); console.log("double reverse blocked");
+ r=await go("/trade/log",B); assert.match(r.t,/Reversed by the game owner.*Wrong deviation picked/); console.log("B's log shows the reversal + reason");
+ // snapshot survives scrapping
+ db.raw.prepare("DELETE FROM specimens WHERE id=?").run(get[0]); r=await go("/trade/log",A); assert.match(r.t,/tchip gone" title="Since scrapped/); console.log("scrapped specimen still shown from snapshot");
+ r=await go(`/trade/${tid}/reverse`,A,""); assert.equal(r.loc,`/trade/admin?m=cant_reverse&missing=${get[0]}`); r=await go(r.loc,A); assert.match(r.t,/scrapped or traded on since/); assert(db.q.getSpecimen.get(give[0],"2")); console.log("reverse refused (nothing moved) when a specimen is gone");
+ r=await go("/trade/admin?player=luna_raventhorn",A); assert.equal(r.s,200);
+ require("fs").writeFileSync("/tmp/dh-admin.html",(await go("/trade/admin",A)).t); require("fs").writeFileSync("/tmp/dh-log.html",(await go("/trade/log",B)).t);
+ console.log("trade checks passed");
  srv.close(); process.exit(0);})().catch(e=>{console.error(e);process.exit(1)});

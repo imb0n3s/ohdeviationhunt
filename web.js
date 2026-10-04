@@ -420,7 +420,7 @@ const TRADE_CSS = `<style>
 .tsend{margin-top:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}.tsend button{padding:12px 22px;border:0;border-radius:10px;background:#0ea5e9;color:#04121c;font-weight:900;font-size:1rem;cursor:pointer}.tsend button:disabled{opacity:.45;cursor:default}
 .toffer{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px;background:var(--card)}
 .toffer .th{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-weight:700}.toffer .st{font-size:.78rem;padding:2px 8px;border-radius:999px;background:#334155;color:#e2e8f0}
-.toffer .st.pending{background:#0ea5e9;color:#04121c}.toffer .st.accepted{background:#22c55e;color:#04121c}
+.toffer .st.pending{background:#0ea5e9;color:#04121c}.toffer .st.accepted{background:#22c55e;color:#04121c}.toffer .st.reversed{background:#f59e0b;color:#1c1204}
 .tswap{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin:10px 0}.tswap .arrow{font-size:1.4rem;color:var(--muted)}
 .tchips{display:flex;flex-wrap:wrap;gap:6px}.tchip{display:flex;align-items:center;gap:6px;background:#0e0e10;border:1px solid var(--line);border-radius:8px;padding:4px 8px;font-size:.8rem}.tchip img{width:28px;height:28px;object-fit:contain}.tchip .v{color:#fde68a}.tchip.gone{opacity:.45;text-decoration:line-through}
 .tbtns{display:flex;gap:8px;flex-wrap:wrap}.tbtns form{margin:0}.tbtns button{padding:8px 16px;border-radius:8px;border:0;font-weight:800;cursor:pointer}.tbtns .ok{background:#22c55e;color:#04121c}.tbtns .no{background:#7f1d1d;color:#fecaca}
@@ -439,32 +439,71 @@ function pickList(specs, field) {
   return ordered.map((sp) => { const L = specLabel(sp); return `<label class="tpick" data-q="${esc((L.name + " " + L.variant).toLowerCase())}"><input type="checkbox" name="${field}" value="${sp.id}"><img loading="lazy" src="${esc(L.img)}" alt=""><div class="n">${esc(L.name)}</div>${L.variant ? `<div class="v">✨ ${esc(L.variant)}</div>` : ""}<div class="r">${esc(L.rating)} Skill/Activity</div>${L.traits ? `<div class="tr">${esc(L.traits)}</div>` : ""}</label>`; }).join("") || `<p class="hint">Nothing to trade yet.</p>`;
 }
 function chips(list) {
-  return `<div class="tchips">${list.map(({ sp }) => { if (!sp) return `<span class="tchip gone">no longer available</span>`; const L = specLabel(sp); return `<span class="tchip"><img src="${esc(L.img)}" alt=""><span><b>${esc(L.name)}</b>${L.variant ? ` <span class="v">✨ ${esc(L.variant)}</span>` : ""} · ${esc(L.rating)}</span></span>`; }).join("")}</div>`;
+  return `<div class="tchips">${list.map(({ sp, snap }) => {
+    const x = sp || snap;
+    if (!x) return `<span class="tchip gone">no longer available</span>`;
+    const L = specLabel(x);
+    return `<span class="tchip${sp ? "" : " gone"}"${sp ? "" : ` title="Since scrapped or traded on"`}><img src="${esc(L.img)}" alt=""><span><b>${esc(L.name)}</b>${L.variant ? ` <span class="v">✨ ${esc(L.variant)}</span>` : ""} · ${esc(L.rating)}${L.traits ? `<br><span class="hint">${esc(L.traits)}</span>` : ""}</span></span>`;
+  }).join("")}</div>`;
 }
+const tradeWhen = (ms) => new Date(ms).toLocaleString("en-US", { timeZone: "America/Chicago", year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + " CT";
+const TRADE_LABEL = { accepted: "Traded", declined: "Declined", cancelled: "Cancelled", failed: "Couldn't Happen", expired: "Expired", reversed: "Reversed" };
+// one trade card. mode "mine" = from the viewer's side (buttons for open offers); "admin" = both names + Reverse
+function tradeCard(t, mode) {
+  const head = mode === "admin"
+    ? `<span>#${t.id} · <a href="/u/${esc(t.from.login)}">${esc(t.from.display)}</a> ⇄ <a href="/u/${esc(t.to.login)}">${esc(t.to.display)}</a></span>`
+    : `<span>#${t.id} · ${t.incoming ? "From" : "To"} <a href="/u/${esc((t.incoming ? t.from : t.to).login)}">${esc((t.incoming ? t.from : t.to).display)}</a></span>`;
+  const label = t.state === "pending" ? (mode === "admin" ? "Open" : t.incoming ? "Waiting For You" : "Waiting For Them") : TRADE_LABEL[t.state] || t.state;
+  const [lA, lB, A, B] = mode === "admin" ? [`${t.from.display} gave`, `${t.to.display} gave`, t.give, t.get]
+    : t.incoming ? ["You give", "You get", t.get, t.give] : ["You give", "You get", t.give, t.get];
+  const other = t.incoming ? t.from : t.to;
+  let btns = "";
+  if (mode === "admin" && t.state === "accepted") btns = `<div class="tbtns"><form method="post" action="/trade/${t.id}/reverse" onsubmit="var r=prompt('Reverse trade #${t.id}? Everything goes back to who had it before.\nReason (optional, shown to both players):','');if(r===null)return false;this.reason.value=r;return true"><input type="hidden" name="reason"><button class="no">↩️ Reverse Trade</button></form></div>`;
+  else if (mode === "mine" && t.state === "pending") btns = t.incoming
+    ? `<div class="tbtns"><form method="post" action="/trade/${t.id}/accept" onsubmit="return confirm('Accept this trade with ${esc(other.display).replace(/'/g, "")}?')"><button class="ok">✅ Accept</button></form><form method="post" action="/trade/${t.id}/decline"><button class="no">Decline</button></form></div>`
+    : `<div class="tbtns"><form method="post" action="/trade/${t.id}/cancel"><button class="no">Cancel Offer</button></form></div>`;
+  const notes = [`Sent ${tradeWhen(t.created_at)}`];
+  if (t.state !== "pending" && t.updated_at !== t.created_at && t.state !== "reversed") notes.push(`${TRADE_LABEL[t.state] || t.state} ${tradeWhen(t.updated_at)}`);
+  if (t.state === "failed" && t.note) notes.push(esc(tradeMod.ERR[t.note] || t.note));
+  if (t.state === "reversed") notes.push(`Reversed by the game owner ${tradeWhen(t.reversed_at || t.updated_at)}${t.note ? ` — ${esc(t.note)}` : ""}`);
+  return `<div class="toffer"><div class="th">${head}<span class="st ${t.state}">${esc(label)}</span></div>
+<div class="tswap"><div><div class="hint">${esc(lA)}</div>${chips(A)}</div><div class="arrow">⇄</div><div><div class="hint">${esc(lB)}</div>${chips(B)}</div></div>
+<div class="hint">${notes.join(" · ")}</div>${btns}</div>`;
+}
+const isOwner = (viewer) => !!viewer && cfg.OWNER_LOGINS.includes(String(viewer.login || "").toLowerCase());
 
 function tradeHomePage(viewer, msg) {
   const me = db.q.getPlayer.get(viewer.uid);
   const list = me ? tradeMod.listFor(viewer.uid) : [];
   const open = list.filter((t) => t.state === "pending"), past = list.filter((t) => t.state !== "pending").slice(0, 15);
-  const when = (ms) => new Date(ms).toLocaleString("en-US", { timeZone: "America/Chicago", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) + " CT";
-  const offer = (t) => {
-    const other = t.incoming ? t.from : t.to;
-    const youGive = t.incoming ? t.get : t.give, youGet = t.incoming ? t.give : t.get;
-    const btns = t.state !== "pending" ? "" : t.incoming
-      ? `<div class="tbtns"><form method="post" action="/trade/${t.id}/accept" onsubmit="return confirm('Accept this trade with ${esc(other.display).replace(/'/g, "")}? This can\\'t be undone.')"><button class="ok">✅ Accept</button></form><form method="post" action="/trade/${t.id}/decline"><button class="no">Decline</button></form></div>`
-      : `<div class="tbtns"><form method="post" action="/trade/${t.id}/cancel"><button class="no">Cancel offer</button></form></div>`;
-    const label = { pending: t.incoming ? "Waiting for you" : "Waiting for them", accepted: "Traded", declined: "Declined", cancelled: "Cancelled", failed: "Couldn't happen", expired: "Expired" }[t.state] || t.state;
-    return `<div class="toffer"><div class="th"><span>${t.incoming ? "From" : "To"} <a href="/u/${esc(other.login)}">${esc(other.display)}</a></span><span class="st ${t.state}">${label}</span></div>
-<div class="tswap"><div><div class="hint">You give</div>${chips(youGive)}</div><div class="arrow">⇄</div><div><div class="hint">You get</div>${chips(youGet)}</div></div>
-<div class="hint">${when(t.created_at)}${t.note && t.state === "failed" ? ` · ${esc(tradeMod.ERR[t.note] || t.note)}` : ""}</div>${btns}</div>`;
-  };
   return page("Trades", `${TRADE_CSS}<h1>🤝 Trades</h1>
 ${msg ? `<div class="snote ${msg.ok ? "ok" : "err"}">${esc(msg.text)}</div>` : ""}
-<p>Trade deviations one-to-one with another Meta. Pick up to ${tradeMod.MAX_PER_SIDE} of yours and up to ${tradeMod.MAX_PER_SIDE} of theirs and send an offer; they accept or decline here. A traded deviation keeps its Skill/Activity Rating, traits and Variation or Skin. Offers expire after 3 days.</p>
-${me ? `<form class="tstart" method="get" action="/trade/new"><input name="with" placeholder="Twitch name of the player" required><button>Start a trade</button></form>` : `<p class="snote err">You need to play first — type <kbd>!secure</kbd> in chat when a deviation shows up.</p>`}
-<h2>Open offers</h2>${open.length ? open.map(offer).join("") : "<p>No open offers.</p>"}
-${past.length ? `<h2>Recent trades</h2>${past.map(offer).join("")}` : ""}
+<p>Trade deviations one-to-one with another Meta. Pick up to ${tradeMod.MAX_PER_SIDE} of yours and up to ${tradeMod.MAX_PER_SIDE} of theirs and send an offer; they accept or decline here. A traded deviation keeps its Skill/Activity Rating, traits and Variation or Skin. Offers expire after 3 days. If something went wrong with a trade, ask in the <a href="${esc(cfg.DISCORD_URL)}" target="_blank" rel="noopener">Discord</a> with the trade number (#) from your Trade Log.</p>
+${me ? `<form class="tstart" method="get" action="/trade/new"><input name="with" placeholder="Twitch name of the player" required><button>Start a Trade</button></form>` : `<p class="snote err">You need to play first — type <kbd>!secure</kbd> in chat when a deviation shows up.</p>`}
+<p class="tradebar"><a class="tbtn ghost" href="/trade/log">📜 Trade Log</a>${isOwner(viewer) ? ` <a class="tbtn ghost" href="/trade/admin">🛠️ All Trades (Owner)</a>` : ""}</p>
+<h2>Open Offers</h2>${open.length ? open.map((t) => tradeCard(t, "mine")).join("") : "<p>No open offers.</p>"}
+${past.length ? `<h2>Recent Trades</h2>${past.map((t) => tradeCard(t, "mine")).join("")}<p><a href="/trade/log">See every trade in your Trade Log →</a></p>` : ""}
 <p><a href="/me">← My Securement Pods</a> · <a href="/logout">sign out</a></p>`);
+}
+
+function tradeLogPage(viewer) {
+  const list = db.q.getPlayer.get(viewer.uid) ? tradeMod.logFor(viewer.uid) : [];
+  const done = list.filter((t) => t.state === "accepted" || t.state === "reversed").length;
+  return page("Trade Log", `${TRADE_CSS}<h1>📜 Trade Log</h1>
+<p>Every trade you've sent or received, newest first — ${list.length} in total, ${done} completed. Each card shows the deviations exactly as they were traded (Skill/Activity Rating, traits, Variation or Skin); a faded one has since been scrapped or traded on. If something went wrong, give the trade number (#) in the <a href="${esc(cfg.DISCORD_URL)}" target="_blank" rel="noopener">Discord</a>.</p>
+${list.length ? list.map((t) => tradeCard(t, "mine")).join("") : "<p>No trades yet.</p>"}
+<p><a href="/trade">← Trades</a></p>`);
+}
+
+function tradeAdminPage(viewer, msg, q) {
+  const list = tradeMod.listAll({ login: q || "" });
+  return page("All Trades", `${TRADE_CSS}<h1>🛠️ All Trades</h1>
+${msg ? `<div class="snote ${msg.ok ? "ok" : "err"}">${esc(msg.text)}</div>` : ""}
+<p>Owner only (${esc(viewer.display || viewer.login)}). Every trade on the site, newest first. <b>Reverse Trade</b> puts every deviation back with who had it before — it only works while all of them are still with the player who received them (not scrapped or traded on). Both players see it as Reversed in their Trade Log, with your reason.</p>
+<form class="tstart" method="get" action="/trade/admin"><input name="player" placeholder="Filter by Twitch name" value="${esc(q || "")}"><button>Filter</button></form>
+${q ? `<p><a href="/trade/admin">Show all players</a></p>` : ""}
+${list.length ? list.map((t) => tradeCard(t, "admin")).join("") : "<p>No trades found.</p>"}
+<p><a href="/trade">← Trades</a></p>`);
 }
 
 function tradeNewPage(viewer, other, msg) {
@@ -573,7 +612,7 @@ function createApp(pool) {
 
   // ---- trading ----
   const sameSite = (req) => { const o = req.get("origin") || req.get("referer") || ""; return !o || o.startsWith(cfg.BASE_URL); };
-  const tradeMsg = (code) => (code === "sent" ? { ok: true, text: "Trade offer sent!" } : code === "accepted" ? { ok: true, text: "Trade done! Check your Securement Pods." } : code === "declined" ? { ok: true, text: "Trade declined." } : code === "cancelled" ? { ok: true, text: "Offer cancelled." } : code ? { ok: false, text: tradeMod.ERR[code] || "Something went wrong." } : null);
+  const tradeMsg = (code) => (code === "sent" ? { ok: true, text: "Trade offer sent!" } : code === "accepted" ? { ok: true, text: "Trade done! Check your Securement Pods." } : code === "declined" ? { ok: true, text: "Trade declined." } : code === "cancelled" ? { ok: true, text: "Offer cancelled." } : code === "reversed" ? { ok: true, text: "Trade reversed — everything is back with who had it before." } : code ? { ok: false, text: tradeMod.ERR[code] || "Something went wrong." } : null);
   app.get("/trade", (req, res) => {
     const v = viewerOf(req);
     if (!v) return res.redirect("/login?next=/trade");
@@ -608,6 +647,29 @@ function createApp(pool) {
     res.redirect(303, `/trade?m=${r.ok ? { accept: "accepted", decline: "declined", cancel: "cancelled" }[req.params.action] : r.error}`);
   });
 
+  app.get("/trade/log", (req, res) => {
+    const v = viewerOf(req);
+    if (!v) return res.redirect("/login?next=/trade/log");
+    res.set("Cache-Control", "no-store").send(tradeLogPage(v));
+  });
+  app.get("/trade/admin", (req, res) => {
+    const v = viewerOf(req);
+    if (!v) return res.redirect("/login?next=/trade/admin");
+    if (!isOwner(v)) return res.status(403).send(page("Not allowed", `<h1>Not allowed</h1><p>${esc(tradeMod.ERR.not_owner)}</p><p><a href="/trade">← Trades</a></p>`));
+    let msg = tradeMsg(req.query.m);
+    if (req.query.m === "cant_reverse" && req.query.missing) msg = { ok: false, text: `${tradeMod.ERR.cant_reverse} (specimen ${String(req.query.missing).replace(/[^0-9,]/g, "").split(",").join(", ")})` };
+    res.set("Cache-Control", "no-store").send(tradeAdminPage(v, msg, String(req.query.player || "").trim()));
+  });
+  app.post("/trade/:id/reverse", express.urlencoded({ extended: false, limit: "2kb" }), (req, res) => {
+    if (!sameSite(req)) return res.status(403).send("forbidden");
+    const v = viewerOf(req);
+    if (!v) return res.redirect(303, "/login?next=/trade/admin");
+    if (!isOwner(v)) return res.status(403).send("forbidden");
+    const r = tradeMod.reverse(v.login, req.params.id, req.body.reason);
+    if (r.ok) console.log(`[trade] #${req.params.id} REVERSED by ${v.login}${req.body.reason ? ` (${String(req.body.reason).slice(0, 200)})` : ""}`);
+    res.redirect(303, `/trade/admin?m=${r.ok ? "reversed" : r.error}${r.missing ? `&missing=${r.missing.join(",")}` : ""}`);
+  });
+
   // "My Securement Pods": your own page if you're signed in, otherwise sign in with Twitch first
   app.get("/me", (req, res) => {
     const v = viewerOf(req);
@@ -617,7 +679,7 @@ function createApp(pool) {
   });
 
   app.get("/login", (req, res) => {
-    const next = /^\/(u\/[a-z0-9_]{1,40}|me|trade)$/i.test(String(req.query.next || "")) ? req.query.next : "/";
+    const next = /^\/(u\/[a-z0-9_]{1,40}|me|trade|trade\/log|trade\/admin)$/i.test(String(req.query.next || "")) ? req.query.next : "/";
     const state = sign({ purpose: "viewer", next, nonce: crypto.randomBytes(8).toString("hex"), ts: Date.now() });
     res.setHeader("Set-Cookie", cookie(state));
     res.redirect(twitch.authorizeUrl({ scopes: [], state }));
@@ -666,7 +728,7 @@ function createApp(pool) {
         const hasPlayer = !!db.q.getPlayer.get(user.id);
         // back to where they came from: /me, the trades page, or someone else's page (e.g. "Sign in to trade with X")
         const otherPage = /^\/u\/[a-z0-9_]{1,40}$/i.test(state.next || "") && state.next.toLowerCase() !== `/u/${user.login}`;
-        return res.redirect(state.next === "/me" ? "/me" : state.next === "/trade" ? "/trade" : otherPage ? state.next : hasPlayer ? `/u/${encodeURIComponent(user.login)}#shop` : (state.next || "/"));
+        return res.redirect(state.next === "/me" ? "/me" : /^\/trade(\/log|\/admin)?$/.test(state.next || "") ? state.next : otherPage ? state.next : hasPlayer ? `/u/${encodeURIComponent(user.login)}#shop` : (state.next || "/"));
       }
       if (state.purpose === "bot") {
         const wasSetUp = !!db.getBotAccount();
