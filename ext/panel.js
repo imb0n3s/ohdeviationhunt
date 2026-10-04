@@ -227,7 +227,7 @@
       el('<div class="msg"><p>You haven’t played yet.</p><p>Type <b>!secure</b> in chat the next time a deviation shows up — you’ll start with 5 Securement Units and 200 Starchrom, then you can shop here.</p></div>');
       return;
     }
-    var html = '<div class="wallet"><div><b>' + money(p.starchrom) + '</b>Starchrom</div><div><b>' + p.units + '</b>empty Securement Units</div><div><b>' + esc(p.nextUnitIn || "—") + '</b>next free unit</div></div>';
+    var html = '<div class="wallet"><div><b>' + money(p.starchrom) + '</b>Starchrom</div><div><b>' + p.units + '</b>empty Securement Units</div><div><b>' + esc(/^\d+m$/.test(p.nextUnitIn || "") ? p.nextUnitIn : (/daily/.test(p.nextUnitIn || "") ? "!daily" : "—")) + '</b>' + (/daily/.test(p.nextUnitIn || "") ? "for free units" : "next free unit") + '</div></div>';
     if (notice) html += '<div class="notice ' + notice.kind + '">' + esc(notice.text) + '</div>';
     var gl = (bag.shop || []).filter(function (it) { return it.kind === "gloves"; });
     html += (bag.shop || []).map(function (it) {

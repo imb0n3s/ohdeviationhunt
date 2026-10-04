@@ -18,7 +18,8 @@ main { padding:10px 12px 14px; }
 .tabs button { flex:1; border:0; border-radius:6px; padding:6px 0; background:var(--card); color:var(--muted); font-weight:600; font-size:12px; cursor:pointer; }
 .tabs button.on { background:var(--accent); color:#fff; }
 .toggle { display:flex; align-items:center; gap:6px; color:var(--muted); font-size:12px; margin:0 0 8px; cursor:pointer; }
-.grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+.grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+.grid > * { min-width:0; overflow-wrap:anywhere; }
 .dev { background:var(--card); border-radius:8px; padding:6px 4px 5px; text-align:center; cursor:pointer; position:relative; border:1px solid transparent; }
 .dev:hover { border-color:var(--line); }
 .dev img { width:100%; aspect-ratio:1; object-fit:contain; display:block; }
@@ -61,7 +62,7 @@ footer a { color:var(--accent); font-size:12px; }
 .pages button { border:0; background:transparent; color:var(--muted); font-weight:700; font-size:12px; padding:5px 12px; border-radius:6px; cursor:pointer; }
 .pages button.on { background:var(--accent); color:#fff; }
 /* shop */
-.wallet { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px; }
+.wallet { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin-bottom:10px; }
 .wallet div { background:var(--card); border-radius:8px; padding:7px 4px; text-align:center; color:var(--muted); font-size:11px; }
 .wallet b { display:block; color:var(--accent); font-size:16px; }
 .item { background:var(--card); border-radius:10px; padding:10px; margin-bottom:8px; border:1px solid var(--line); }
