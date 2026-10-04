@@ -26,6 +26,8 @@
   https://deviationhunt.ohwikiguide.com/api/players with docs/tester-allowlist.txt, add anyone new in the
   console (Access tab — only editable in Local Test: move to Local Test, add, Save, reload to verify, move
   back to Hosted Test, reload and confirm), then update docs/tester-allowlist.txt.
+  An HOURLY scheduled task ("Deviation Hunt: hourly Twitch tester check", trig_01LiwN3w1y6fy7RZGGNND3XB, 2026-10-04)
+  does this automatically via Claude in Chrome; it only opens the console when someone is missing.
 - Bits: panel Shop sells Starchrom packs for Bits (rarity.js BITS_PACKS, 1 Bit = 5 Starchrom; receipts verified at
   POST /ext/bits/complete, one credit per transactionId in bits_tx). Hidden until Twitch Bits is on. TO SWITCH ON (after B
   finishes Monetization onboarding): Local Test → Monetization tab → "Bits enabled" → add one product per pack with the
