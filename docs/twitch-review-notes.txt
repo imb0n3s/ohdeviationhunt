@@ -1,0 +1,17 @@
+Deviation Hunt — notes for the Twitch Extensions reviewer (paste into "Review Notes / Testing Instructions" when submitting)
+
+WHAT IT IS
+Deviation Hunt is a chat game run by our chat bot (OHDeviationHunt). While a stream is live, the bot posts that a deviation was spotted; viewers type !secure to try to catch it. This panel shows the viewer's own collection ("Securement Pods"), lets them scrap duplicate specimens, and has a Shop where they spend Starchrom (an in-game currency earned only by playing) on Securement Units, Capture Soup and gloves. No real money and no Bits in this version (Bits support is off).
+
+HOW TO TEST
+1. Install the panel on any channel and open it. Click "Show my Securement Pods" to share your Twitch identity (required; without it the panel only shows that button).
+2. A viewer who has never played sees "You haven't played yet" plus how to start. The Commands tab works for everyone.
+3. To get data: the game is live on twitch.tv/imbon3s during streams. Type !secure in chat when the bot announces a deviation; after the result is posted, the panel shows your Securement Pods, and the Shop is usable (new players start with 200 Starchrom and 5 Securement Units).
+   To test on your own channel instead: add the bot at https://deviationhunt.ohwikiguide.com ("Add to my channel"), go live, and type !hunt spawn as the broadcaster to spawn a deviation right away.
+4. If you need test data on your account without going live, email ohtwitchbot@ohwikiguide.com with your Twitch username and we'll add some.
+
+EXTERNAL CONNECTIONS
+- API: https://deviationhunt.ohwikiguide.com (our server; requests carry the Twitch extension JWT, verified with the extension secret).
+- Images: https://ohwikiguide.com (deviation pictures from our wiki) and https://deviationhunt.ohwikiguide.com (shop item pictures).
+- The only link that leaves the panel is "Open my collection page", which opens the viewer's public collection page on deviationhunt.ohwikiguide.com in a new tab.
+- Privacy policy: https://ohwikiguide.com/Deviation_Hunt_Privacy
