@@ -48,6 +48,9 @@
   cloud session: fetch the committed docs/ext-assets/deviation-bag-panel.zip from raw.githubusercontent.com in the
   console tab, put it on the Files tab's input[type=file] via DataTransfer, dispatch change, click "Upload Assets",
   then check the MD5 shown matches `md5sum deviation-bag-panel.zip`.
+- Shop item pictures load from <BASE_URL>/panel/<file> (shop.js iconUrl), NOT the zip: a new item = drop its PNG in ext/
+  + add it in rarity.js/shop.js and push (no extension review). The console Image Domains allowlist has
+  deviationhunt.ohwikiguide.com + the railway URL; allowlists are LOCKED once the extension is submitted for review.
 - B's decisions (2026-09-30 → 10-03), not obvious from code:
   - Variations/skins are SECRET: rolled per spawn (variation 1 in 30, skin 1 in 75, Chaos 1 in 750) with their own
     capture rates (12% / 9% / 2.5%), but chat, throw replies and the OBS countdown always show the normal deviation;

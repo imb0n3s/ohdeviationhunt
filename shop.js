@@ -3,7 +3,7 @@
 //
 // To add an item: add an entry to ITEMS. `grants` says what one purchase gives; add a new
 // grant type in applyGrants() if it's something the game doesn't track yet.
-//   icon: a file bundled in the extension zip (ext/), or an https://ohwikiguide.com/ image
+//   icon: a picture file in ext/ (served by our server at /panel/<file>), or a full https:// image URL
 const { UNITS, GLOVES, ECONOMY, SOUP } = require("./rarity");
 // most Securement Units this player can hold
 const unitCap = (p) => ECONOMY.unitCap + (p.extra_cap || 0);
@@ -101,6 +101,10 @@ function purchase(p, itemId, qty) {
 }
 
 // what the panel needs to draw the shop
-const catalog = () => ITEMS.map(({ id, kind, glove, name, desc, price, maxQty, icon, bonus, rarity, color }) => ({ id, kind: kind || "item", glove, name, desc, price, maxQty, icon, bonus, rarity, color }));
+// Item pictures come from our own server (<BASE_URL>/panel/<file>, i.e. the ext/ folder) instead of the
+// extension zip, so a new item with a new picture needs no new Twitch extension version / review.
+// (The Twitch console's "Allowlist for Image Domains" includes deviationhunt.ohwikiguide.com for this.)
+const iconUrl = (icon) => (!icon || /^https?:\/\//.test(icon) ? icon : `${require("./config").BASE_URL.replace(/\/$/, "")}/panel/${icon}`);
+const catalog = () => ITEMS.map(({ id, kind, glove, name, desc, price, maxQty, icon, bonus, rarity, color }) => ({ id, kind: kind || "item", glove, name, desc, price, maxQty, icon: iconUrl(icon), bonus, rarity, color }));
 
 module.exports = { ITEMS, find, purchase, catalog, unitCap, podsUsed };
