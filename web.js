@@ -63,7 +63,7 @@ code,kbd{background:#0b1016;padding:2px 7px;border-radius:5px;color:#c9e7ff;font
 @media(max-width:600px){.cmds td{display:block;border:0;padding:4px 0}.cmds tr{display:block;padding:8px 0;border-bottom:1px solid var(--line)}}
 .stats{display:flex;gap:12px;flex-wrap:wrap}.stat{flex:1;min-width:130px;background:var(--card);border-radius:12px;padding:14px;text-align:center;color:var(--muted)}
 .stat b{display:block;font-size:1.9rem;color:var(--accent)}
-.chat{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;color:#dfe8f0;overflow-wrap:anywhere;background:#0e0e10;border-radius:8px;padding:.6em .8em}.obsprev{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}
+.chat{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em;color:#dfe8f0;overflow-wrap:anywhere;background:#0e0e10;border-radius:8px;padding:.6em .8em}.obsprev{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:12px 0}@media(max-width:800px){.obsprev{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .obsprev figure{margin:0;text-align:center}.obsprev figcaption{font-size:.85rem;color:var(--muted);margin-top:6px;font-weight:600}
 .obsframe{position:relative;aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:radial-gradient(circle at 30% 20%,#2b3a4a,#0b1016 70%),#0b1016;box-shadow:inset 0 0 0 1px var(--line)}
 .obsframe iframe{position:absolute;top:0;left:0;width:600px;height:600px;border:0;transform-origin:0 0;background:transparent}
