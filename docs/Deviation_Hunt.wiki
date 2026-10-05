@@ -19,7 +19,7 @@
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
 # Watch a stream that has '''ohdeviationhunt''' in chat — [https://deviationhunt.ohwikiguide.com/channels see every channel running it].
-# When the bot posts ''"👀 A … has been spotted in the wild!"'', type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> within '''90 seconds'''. Each throw costs 10 Starchrom; the bot replies with how many Securement Units you'll have left if you catch it.
+# When the bot posts ''"👀 A … has been spotted in the wild!"'', type <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!secure</nowiki></span> within '''90 seconds'''. Each throw costs 10 Starchrom; the bot replies with how many Securement Units you'll have left if you catch it. When time runs out the bot posts ''"⏱️ Time's up! … can no longer be captured."'' — throws after that are too late (nothing is spent).
 # When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
 # Check your collection any time with <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!pods</nowiki></span> or on your own page: <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>https://deviationhunt.ohwikiguide.com/u/</nowiki>''yourname''</span>
 

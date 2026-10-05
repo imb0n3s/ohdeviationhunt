@@ -169,6 +169,7 @@ class Spawns {
     this.lastChat = new Map();     // bid -> ts of the last viewer message
     this.live = new Set();         // bids currently live
     this.lastResult = new Map();   // bid -> who caught the last spawn (for the OBS source results card)
+    this.closed = new Map();       // bid -> { at, name, told:Set } the moment the last spawn could no longer be captured
     this.overlaySeen = new Map();  // bid -> ts the channel's OBS Source last polled (it's on their stream)
   }
 
@@ -292,7 +293,12 @@ class Spawns {
   // A viewer types !secure [unit]. Returns a reply string, or null to stay quiet.
   attempt(bid, userId, login, display, unitWord) {
     const s = this.active.get(bid);
-    if (!s) return null; // nothing out right now — stay silent so chat isn't spammed
+    if (!s) {
+      // just closed: tell a late thrower once (no Starchrom taken); otherwise stay silent so chat isn't spammed
+      const c = this.closed.get(bid);
+      if (c && Date.now() - c.at < 30000 && !c.told.has(userId)) { c.told.add(userId); return `@${display} too late — the ${c.name} can no longer be captured. Nothing was spent. Wait for the next one!`; }
+      return null;
+    }
     // tell each viewer about a problem at most once per spawn
     const warn = (msg) => { if (s.warned.has(userId)) return null; s.warned.add(userId); return msg; };
     if (s.attempts.has(userId)) return warn(`@${display} you already threw at this ${spawnName(s)} — one throw per deviation. Wait and see if you secured it!`);
@@ -326,11 +332,16 @@ class Spawns {
     db.q.deleteActive.run(bid);
     clearTimeout(s.timer);
     const name = spawnName(s);
+    // the window is over: say so in chat right away (90s after chat saw the spawn), then the result follows
+    this.closed.set(bid, { at: Date.now(), name, told: new Set() });
+    const timeUp = `⏱️ Time's up! The ${name} can no longer be captured.`;
+    if (this.chatDelayMs(bid)) Promise.resolve(this.send(bid, `${timeUp} Results coming up...`)).catch((e) => console.error("[resolve] time's up", e.message));
+    const prefix = this.chatDelayMs(bid) ? "" : `${timeUp} `;
     if (!s.attempts.size) {
       db.logSpawn(bid, s.dev.id, s.variant?.name, 0, 0);
       db.bumpChannel(bid, 0);
       this.recordResult(bid, s, [], [], 0);
-      return this.sendResult(bid, `💨 ${name} slipped away. Nobody tried to secure it...`);
+      return this.sendResult(bid, `${prefix}💨 ${name} slipped away. Nobody tried to secure it...`);
     }
     const caught = [], escaped = [], firsts = [], winners = [], legendWins = [];
     let legendReward = 0;
@@ -377,7 +388,7 @@ class Spawns {
       msg = `💥 ${name} got away from ${list(escaped, 8)}!${s.variant ? ` It was a ${variantLabel(s.variant)} (Legendary)!` : ""} Better luck next time.`;
     }
     msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !pods to see your collection`;
-    return this.sendResult(bid, msg);
+    return this.sendResult(bid, prefix + msg);
   }
 
   recordResult(bid, s, winners, escaped, reward) {
