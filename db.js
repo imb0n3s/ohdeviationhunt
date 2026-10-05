@@ -1,5 +1,6 @@
 // db.js — SQLite: joined channels, the bot account, and the game (players, units, collections)
 const fs = require("fs");
+const TOP_STREAMS_HIDE = (process.env.TOP_STREAMS_HIDE || "imbon3s").toLowerCase().split(/[\s,]+/).filter(Boolean);
 const path = require("path");
 const Database = require("better-sqlite3");
 const cfg = require("./config");
@@ -220,6 +221,7 @@ module.exports = {
   // who: "all" | "streamers" (channels running the game) | "viewers" (everyone else)
   leaderboard: (n = 10, who = "all") => q.leaderboard.all({ n, who }),
   // streams where the most deviations have been secured (channels running the game)
-  topStreams: (n = 10) => q.topStreams.all(n),
+  // the game's own channel (imbon3s) is left out of Top Streams; it still shows under Where To Play
+  topStreams: (n = 10) => q.topStreams.all(n + 5).filter((c) => !TOP_STREAMS_HIDE.includes(String(c.login).toLowerCase())).slice(0, n),
   logSpawn: (bid, dev, variant, attempts, caught) => q.logSpawn.run(Date.now(), bid, dev, variant || "", attempts, caught),
 };
