@@ -11,7 +11,7 @@ function commandSections() {
   return [
     { id: "viewer", title: "Viewer Commands", rows: [
       ["!daily", `Start here. Once a day (resets at midnight Central) while the stream is live: +${E.daily.starchrom} Starchrom and ${E.daily.units.standard} Securement Unit, and it turns on 1 free Securement Unit + ${E.hourlyStarchrom} Starchrom every hour you play in a live stream for the rest of the day. Also shows your check-in count (how many days you've claimed it).`],
-      ["!secure", `Throw at the deviation that's spotted in the wild (you have ${cfg.SPAWN_WINDOW_SECONDS} seconds). Costs ${E.throwCost} Starchrom and needs an empty Securement Unit; if you catch it, it lives in that unit. One throw per spawn. Also \`!catch\`.`],
+      ["!secure", `Throw at the deviation that's spotted in the wild (you have ${cfg.SPAWN_WINDOW_SECONDS} seconds; chat says "⏱️ Time's up!" when it can no longer be captured). Costs ${E.throwCost} Starchrom and needs an empty Securement Unit; if you catch it, it lives in that unit. One throw per spawn. Also \`!catch\`.`],
       ["!pods", "Your Securement Pods: how many deviations, variations and skins you've secured (each counted separately), plus a link to your collection page. Add a name (`!pods luna_raventhorn`) to see someone else's. Also `!pod`."],
       ["!starchrom", "How much Starchrom you have. Also `!sc`."],
       ["!units", "Your Starchrom, Securement Units and when your next free hourly unit arrives. Also `!inv`."],
