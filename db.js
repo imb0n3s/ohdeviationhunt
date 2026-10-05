@@ -106,6 +106,13 @@ try { db.exec(`ALTER TABLE players ADD COLUMN active_stream TEXT`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN gloves TEXT NOT NULL DEFAULT '[]'`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN extra_cap INTEGER NOT NULL DEFAULT 0`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN soup_until INTEGER NOT NULL DEFAULT 0`); } catch {}
+// B 2026-10-05: surprise mode is OFF by default for every channel (OBS shows variations/skins as they appear);
+// reset any channel that had it on once, then streamers/mods can turn it back on with !hunt surprise on
+if (!db.prepare(`SELECT 1 FROM settings WHERE key='migr:surprise_off'`).get()) {
+  const n = db.prepare(`DELETE FROM settings WHERE key LIKE 'surprise:%'`).run().changes;
+  db.prepare(`INSERT INTO settings (key, value) VALUES ('migr:surprise_off', ?)`).run(String(n));
+  if (n) console.log(`[db] surprise mode reset to off on ${n} channel(s)`);
+}
 // !daily claims (one per player per day, Central time; tied to the stream it was claimed in)
 // every Bits purchase, keyed by Twitch's transaction id so a receipt can never be credited twice
 db.exec(`CREATE TABLE IF NOT EXISTS bits_tx (transaction_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, sku TEXT NOT NULL, bits INTEGER NOT NULL, starchrom INTEGER NOT NULL, channel TEXT, at INTEGER NOT NULL)`);
