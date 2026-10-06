@@ -89,7 +89,7 @@ Only the broadcaster and moderators can use these.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt spawnchat on / off</nowiki></span> || Turn off the chat message when a deviation appears, so it only shows on your OBS Source. Results (who secured it, or that it got away) always post in chat. Only applies while your OBS Source is open — without it, chat still announces spawns so the game keeps working.
 |-
-| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt surprise on / off</nowiki></span> || Surprise mode: your OBS Source shows a variation or skin as the normal deviation until the result reveals it. Off by default — the OBS Source shows a variation or skin as soon as it appears. Chat never says it is a variation or skin until the result either way.
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt surprise on / off</nowiki></span> || Surprise mode: chat and your OBS Source show a variation or skin as the normal deviation until the result reveals it. Off by default — chat and the OBS Source name a variation or skin as soon as it appears.
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt leave</nowiki></span> || Remove the bot from your channel.
 |-
@@ -199,7 +199,7 @@ Each spawn first rolls a rarity, then a deviation of that rarity. Everyone who t
 |}
 
 * '''Every Variation and Skin is <span style="color:#fbbf24; font-weight:800;">Legendary</span>''', no matter the rarity of the deviation it belongs to — a Common deviation's variations and skins are Legendary too.
-* '''Variations and skins are a secret in chat.''' Chat always shows the normal deviation; the streamer's OBS Source shows the variation or skin as it appears (unless the streamer turned on surprise mode with !hunt surprise on). Chat reveals it when the result is posted.
+* '''Variations and skins are announced as they appear.''' Chat and the streamer's OBS Source name the variation or skin right away — unless the streamer turned on surprise mode (!hunt surprise on); then both show the normal deviation and the result reveals it.
 * '''Variations''' are about 3.3% of spawns (on deviations that have them), with a flat '''12%''' capture rate and 200 Starchrom.
 * '''Skins''' are about 1.3% of spawns (on deviations that have them), with a flat '''9%''' capture rate and 200 Starchrom.
 * '''Chaos variation''' — the rarest in the game. Mini Wonder, Mr. Wish, Snowsprite, Zeno-Purifier can secretly be their ''Chaos'' variation in '''1 in 750''' of all spawns, with a flat '''2.5%''' capture rate (Legendary, 200 Starchrom).
@@ -240,7 +240,7 @@ Every deviation from the [[Deviation_Main_Page|Deviation database]] can spawn: 2
 <span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Variations & Skins</span>
 </div>
 <div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
-Variations and skins are Deviation Hunt's shinies. In chat they're a surprise: every spawn message names the normal deviation and the result reveals what it really was. On a streamer's OBS Source you can see it straight away (unless they turned on surprise mode with !hunt surprise on):
+Variations and skins are Deviation Hunt's shinies. Chat and the streamer's OBS Source name them as soon as they appear — unless the streamer turned on surprise mode (!hunt surprise on), where they look like the normal deviation until the result reveals what it really was:
 <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;">🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Grumpy Bulb — it was a ✨ Variation: Violet Robe (Legendary)! — a 3/4 by @metabones! 🔒 +200 Starchrom each.</span>
 
 * Each variation and skin is its own entry in your Securement Pods, and the first one of each earns the +100 new-entry bonus.

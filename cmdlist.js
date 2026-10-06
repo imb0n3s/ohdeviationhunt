@@ -30,7 +30,7 @@ function commandSections() {
       ["!hunt obs", "Your OBS Source link — a Browser Source that shows the deviation and its countdown on stream while it can be caught."],
       ["!hunt chatdelay <seconds>", `When the OBS Source is on stream, wait this long before posting a new spawn and the catch result in chat so the overlay shows them first (0–30, default ${cfg.RESULT_CHAT_DELAY_SECONDS}).`],
       ["!hunt spawnchat on / off", "Turn off the \"spotted in the wild\" chat message so new deviations only show on your OBS Source. Who caught it / if it got away still posts in chat. Only applies while the OBS Source is open; otherwise chat still announces spawns."],
-      ["!hunt surprise on / off", "Surprise mode: your OBS Source shows a variation or skin as the normal deviation until the result reveals it. Off (default): the OBS Source shows it as soon as it appears."],
+      ["!hunt surprise on / off", "Surprise mode: chat and your OBS Source show a variation or skin as the normal deviation until the result reveals it. Off (default): chat and the OBS Source name it as soon as it appears."],
       ["!hunt leave", "Remove Deviation Hunt from your channel. Everyone keeps their collections."],
       ["!hunt help", "Lists these mod commands in chat."],
     ] },

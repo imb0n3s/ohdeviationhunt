@@ -122,7 +122,10 @@ const variantLabel = (v) => (isChaos(v) ? "🌀 Chaos Variation" : `✨ ${v.kind
 const ratingTag = (sp) => `${sp.power}/${sp.mood}${sp.power === 5 && sp.mood === 5 ? " ⭐" : ""}`;
 
 // what players see: always the normal deviation — a variation/skin is only revealed in the result
-function spawnName(s) { return s.dev.name; }
+// a variation/skin is named in chat from the start unless the channel turned on "!hunt surprise on"
+// (then chat AND the OBS Source show the normal deviation until the result) — B 2026-10-05
+const isRevealed = (bid, s) => !!s.variant && db.getSetting(`surprise:${bid}`) !== "on";
+function spawnName(s, bid) { return bid !== undefined && isRevealed(bid, s) ? `${s.dev.name} (${variantLabel(s.variant)})` : s.dev.name; }
 const logName = (s) => (s.variant ? `${s.dev.name} — ${s.variant.name}` : s.dev.name);
 
 // the best gloves a player owns (null if none)
@@ -153,8 +156,9 @@ function rewardFor(s) {
   return TIERS[s.dev.rarity].reward;
 }
 
-function spawnAnnouncement(s) {
-  // never says if it's a variation/skin — that's revealed in the result
+function spawnAnnouncement(s, bid) {
+  // surprise mode on: never says if it's a variation/skin (the result reveals it); off: says so right away
+  if (isRevealed(bid, s)) return `👀 A 🌟 LEGENDARY ${s.dev.name} (${variantLabel(s.variant)}) has been spotted in the wild! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`;
   return `👀 A ${s.dev.name} has been spotted in the wild! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`;
 }
 
@@ -218,7 +222,7 @@ class Spawns {
         if (extended || d.endsAt > Date.now()) setTimeout(() => {
           if (this.active.get(bid) !== s) return;
           const left = Math.max(1, Math.round((s.endsAt - Date.now()) / 1000));
-          Promise.resolve(this.send(bid, `🔄 The bot just restarted — the ${spawnName(s)} is still loose! If you typed !secure in the last minute, type it again. You have ${left}s.`)).catch(() => {});
+          Promise.resolve(this.send(bid, `🔄 The bot just restarted — the ${spawnName(s, bid)} is still loose! If you typed !secure in the last minute, type it again. You have ${left}s.`)).catch(() => {});
         }, 5000);
         s.timer = setTimeout(() => this.resolve(bid).catch((e) => console.error("[resolve]", e)), wait);
         this.active.set(bid, s);
@@ -285,8 +289,8 @@ class Spawns {
     console.log(`[spawn] ${bid}: ${logName(s)} (${s.dev.rarity})${forced ? " [forced]" : ""}${delay ? ` [chat in ${delay / 1000}s]` : ""}`);
     // "!hunt spawnchat off": with the OBS Source on stream, the spawn is only shown on screen (results still post in chat)
     if (this.spawnChatOff(bid) && this.overlayOn(bid)) { /* quiet spawn: OBS only */ }
-    else if (!delay) await this.send(bid, spawnAnnouncement(s));
-    else setTimeout(() => { if (this.active.get(bid) === s && !(this.spawnChatOff(bid) && this.overlayOn(bid))) Promise.resolve(this.send(bid, spawnAnnouncement(s))).catch((e) => console.error("[spawn] delayed send", e.message)); }, delay);
+    else if (!delay) await this.send(bid, spawnAnnouncement(s, bid));
+    else setTimeout(() => { if (this.active.get(bid) === s && !(this.spawnChatOff(bid) && this.overlayOn(bid))) Promise.resolve(this.send(bid, spawnAnnouncement(s, bid))).catch((e) => console.error("[spawn] delayed send", e.message)); }, delay);
     return { spawn: s };
   }
 
@@ -301,7 +305,7 @@ class Spawns {
     }
     // tell each viewer about a problem at most once per spawn
     const warn = (msg) => { if (s.warned.has(userId)) return null; s.warned.add(userId); return msg; };
-    if (s.attempts.has(userId)) return warn(`@${display} you already threw at this ${spawnName(s)} — one throw per deviation. Wait and see if you secured it!`);
+    if (s.attempts.has(userId)) return warn(`@${display} you already threw at this ${spawnName(s, bid)} — one throw per deviation. Wait and see if you secured it!`);
     const unit = "standard";
     const p = loadPlayer(userId, login, display);
     if (p.starchrom < ECONOMY.throwCost) {
@@ -320,7 +324,7 @@ class Spawns {
     s.attempts.set(userId, { login, display, unit, isNew: p.isNew, bonus: (glove ? glove.bonus : 0) + (soupMin ? SOUP.bonus : 0) });
     this.persist(bid);
     const left = p.units[unit];
-    const throwTxt = `🎯 Threw at the ${spawnName(s)} (−${ECONOMY.throwCost} ${SC}, Left: ${fmt(p.starchrom)}). You'll have ${left} Securement Pod${left === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}%` : ""}${soupMin ? ` 🍲 Capture Soup +${SOUP.bonus * 100}% (${soupMin}m left)` : ""}`;
+    const throwTxt = `🎯 Threw at the ${spawnName(s, bid)} (−${ECONOMY.throwCost} ${SC}, Left: ${fmt(p.starchrom)}). You'll have ${left} Securement Pod${left === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}%` : ""}${soupMin ? ` 🍲 Capture Soup +${SOUP.bonus * 100}% (${soupMin}m left)` : ""}`;
     if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}. ${throwTxt} Type !daily for more, plus 1 free unit every hour this stream.`;
     return `@${display} ${throwTxt}`;
   }
@@ -331,7 +335,7 @@ class Spawns {
     this.active.delete(bid);
     db.q.deleteActive.run(bid);
     clearTimeout(s.timer);
-    const name = spawnName(s);
+    const name = spawnName(s, bid);
     // the window is over: say so in chat right away (90s after chat saw the spawn), then the result follows
     this.closed.set(bid, { at: Date.now(), name, told: new Set() });
     const timeUp = `⏱️ Time's up! The ${name} can no longer be captured.`;
@@ -381,11 +385,11 @@ class Spawns {
       const legend = legendWins.length > 0;
       const stars = legend ? "🌟".repeat(5) : "⭐";
       const pay = `+${legend ? legendReward : reward} ${SC} each`;
-      msg = `${stars} ${legend ? "LEGENDARY " : ""}SECURED! ${stars} ${name}${s.variant ? ` — it was a ${variantLabel(s.variant)} (Legendary)!` : ""} — ${list(caught, 7)}! 🔒 ${pay}.`;
+      msg = `${stars} ${legend ? "LEGENDARY " : ""}SECURED! ${stars} ${name}${s.variant && !isRevealed(bid, s) ? ` — it was a ${variantLabel(s.variant)} (Legendary)!` : ""} — ${list(caught, 7)}! 🔒 ${pay}.`;
       if (firsts.length) msg += ` 📖 New entry for ${list(firsts, 8)} (+${ECONOMY.newSpeciesBonus}).`;
       if (escaped.length) msg += ` It broke free from ${list(escaped, 6)}.`;
     } else {
-      msg = `💥 ${name} got away from ${list(escaped, 8)}!${s.variant ? ` It was a ${variantLabel(s.variant)} (Legendary)!` : ""} Better luck next time.`;
+      msg = `💥 ${name} got away from ${list(escaped, 8)}!${s.variant && !isRevealed(bid, s) ? ` It was a ${variantLabel(s.variant)} (Legendary)!` : ""} Better luck next time.`;
     }
     msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !pods to see your collection`;
     return this.sendResult(bid, prefix + msg);
@@ -406,7 +410,7 @@ class Spawns {
 
   status(bid) {
     const s = this.active.get(bid);
-    return s ? { name: spawnName(s), secondsLeft: Math.max(0, Math.round((s.endsAt - Date.now()) / 1000)), attempts: s.attempts.size } : null;
+    return s ? { name: spawnName(s, bid), secondsLeft: Math.max(0, Math.round((s.endsAt - Date.now()) / 1000)), attempts: s.attempts.size } : null;
   }
 }
 
