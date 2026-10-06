@@ -18,7 +18,10 @@ function makeHandler(pool, spawns) {
 
   return async function onChat(ev) {
     if (ev.chatter_user_id === botId()) return;
-    if (ev.source_broadcaster_user_id && ev.source_broadcaster_user_id !== ev.broadcaster_user_id) return; // shared-chat echoes
+    // Shared Chat: a message typed in a partner's chat reaches us as an echo. If the partner channel runs the game
+    // itself, it handles the message there (skip, or it would count twice); otherwise we play it here.
+    if (ev.source_broadcaster_user_id && ev.source_broadcaster_user_id !== ev.broadcaster_user_id
+        && db.getChannel(ev.source_broadcaster_user_id)?.enabled) return;
     const bid = ev.broadcaster_user_id;
     spawns.noteChat(bid);
 
@@ -27,7 +30,8 @@ function makeHandler(pool, spawns) {
     const [rawCmd, ...args] = text.split(/\s+/);
     const cmd = rawCmd.toLowerCase();
     const uid = ev.chatter_user_id, login = ev.chatter_user_login, name = ev.chatter_user_name;
-    const reply = (m) => m && pool.send(bid, m, ev.message_id);
+    const echo = ev.source_broadcaster_user_id && ev.source_broadcaster_user_id !== bid;
+    const reply = (m) => m && pool.send(bid, m, echo ? undefined : ev.message_id); // can't reply-thread a partner channel's message
 
     // ---- the bot's own channel: !join / !leave ----
     if (bid === botId() && (cmd === "!join" || cmd === "!leave")) {

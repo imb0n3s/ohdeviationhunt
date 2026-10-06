@@ -142,6 +142,9 @@ async function sendChat(broadcasterId, message, replyToMessageId) {
       broadcaster_id: broadcasterId,
       sender_id: bot.user_id,
       message: message.slice(0, 500),
+      // Shared Chat (streaming together): Twitch's default for bots is to post only in our own channel,
+      // so viewers in the partner's chat never saw replies. Post to the whole shared chat instead.
+      for_source_only: false,
       ...(replyToMessageId ? { reply_parent_message_id: replyToMessageId } : {}),
     },
   });
