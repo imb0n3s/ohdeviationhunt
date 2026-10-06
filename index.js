@@ -29,6 +29,14 @@ async function main() {
   pool.onChat = makeHandler(pool, spawns);
   spawns.restore();
 
+  // The bot's own channel (OHDeviationHunt) is a game channel too, so its 24/7 stream (/live/<bot login>)
+  // gets spawns. Set BOT_CHANNEL_GAME=0 to turn that off.
+  const botAcct = db.getBotAccount();
+  if (botAcct && process.env.BOT_CHANNEL_GAME !== "0" && !db.getChannel(botAcct.user_id)?.enabled) {
+    db.addChannel({ broadcaster_id: botAcct.user_id, login: botAcct.login, display_name: botAcct.login === "ohdeviationhunt" ? "OHDeviationHunt" : botAcct.login, joined_via: "bot" });
+    console.log(`[live] ${botAcct.login} added as a game channel (24/7 stream)`);
+  }
+
   // Which joined channels are live right now? Helix /streams takes up to 100 ids per call.
   // returns the in-flight check if one is already running, so callers can wait for fresh status
   let polling = null;

@@ -1,6 +1,6 @@
 // db.js — SQLite: joined channels, the bot account, and the game (players, units, collections)
 const fs = require("fs");
-const TOP_STREAMS_HIDE = (process.env.TOP_STREAMS_HIDE || "imbon3s").toLowerCase().split(/[\s,]+/).filter(Boolean);
+const TOP_STREAMS_HIDE = (process.env.TOP_STREAMS_HIDE || "imbon3s,ohdeviationhunt").toLowerCase().split(/[\s,]+/).filter(Boolean);
 const path = require("path");
 const Database = require("better-sqlite3");
 const cfg = require("./config");

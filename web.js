@@ -553,6 +553,7 @@ function createApp(pool) {
   // (Asset Hosting → Testing Base URI = <BASE_URL>/panel/)
   app.use("/panel", express.static(require("path").join(__dirname, "ext"), { maxAge: 0, index: "panel.html" }));
   require("./overlay").mount(app, pool);
+  require("./live").mount(app, pool);
   app.get("/", async (req, res) => { await refreshAvatars(); res.send(landing(pool)); });
   app.get("/channels", async (req, res) => { await refreshAvatars(); res.send(channelsPage(pool)); });
   app.get("/dex", (req, res) => res.send(dexPage()));
