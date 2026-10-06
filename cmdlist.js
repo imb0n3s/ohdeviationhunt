@@ -23,7 +23,7 @@ function commandSections() {
       ["!hunt", "A quick how-to-play reminder in chat."],
     ] },
     { id: "streamer", title: "Streamer & Mod Commands", note: "For the broadcaster and moderators, in your own chat.", rows: [
-      ["!hunt spawn [deviation] [variation/skin]", "Spawn a deviation right now. Add a name (`!hunt spawn pyro dino`) to release that one, add a Variation or Skin name (`!hunt spawn nutcracker infrasonic illusion`) for that one, or `skin` / `variation` for a random one. All deviations and their Variation/Skin names: https://ohwikiguide.com/Deviation_Main_Page"],
+      ["!hunt spawn", "Spawn a random deviation right now."],
       ["!hunt interval <minutes>", `How often deviations appear while you're live (2–120 minutes; default about every ${cfg.SPAWN_INTERVAL_MIN}).`],
       ["!hunt off / !hunt on", "Pause or resume spawns. Other commands keep working."],
       ["!hunt status", "Live status, spawn settings, what's loose right now, and spawn/catch totals for your channel."],

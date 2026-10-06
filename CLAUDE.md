@@ -66,4 +66,5 @@
   - Leaderboard: Top Streams (most deviations secured per channel) above one Top 100 with a Streamer tag.
   - Homepage stats: Channels · Metas · Deviations Secured · Deviations Attempted (all !secure throws) · Deviations ·
     Starchrom spent (capitalized).
+- !hunt spawn is always random (B 2026-10-06 removed picking a deviation/variation/skin; data.findWithVariant is unused).
 - Trading (website, one-to-one) is built on branch `trading` (NOT merged/live; B 2026-10-04 "don't publish yet"). To launch: merge trading into main and push.
