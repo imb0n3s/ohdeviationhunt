@@ -194,6 +194,9 @@ class Spawns {
     setTimeout(() => Promise.resolve(this.send(bid, text)).catch((e) => console.error("[resolve] delayed send", e.message)), wait);
   }
 
+  // the bot's own channel (24/7 stream) keeps spawning with a quiet chat; any channel can opt in with setting alwayson:<bid>=on
+  alwaysOn(bid) { return bid === db.getBotAccount()?.user_id || db.getSetting(`alwayson:${bid}`) === "on"; }
+
   noteChat(bid) { this.lastChat.set(bid, Date.now()); }
 
   // ---- persistence: a loose deviation survives restarts/redeploys ----
@@ -259,8 +262,8 @@ class Spawns {
       if (!cfg.SPAWN_OFFLINE && !this.live.has(bid)) continue;
       if (!this.nextAt.has(bid)) this.scheduleNext(bid);
       if (now < this.nextAt.get(bid)) continue;
-      // only spawn if people are actually chatting
-      if (now - (this.lastChat.get(bid) || 0) > cfg.ACTIVITY_WINDOW_MIN * 60 * 1000) { this.scheduleNext(bid, 60 * 1000); continue; }
+      // only spawn if people are actually chatting (not on always-on channels like the 24/7 stream)
+      if (!this.alwaysOn(bid) && now - (this.lastChat.get(bid) || 0) > cfg.ACTIVITY_WINDOW_MIN * 60 * 1000) { this.scheduleNext(bid, 60 * 1000); continue; }
       this.spawn(bid).catch((e) => console.error(`[spawn] ${bid} failed:`, e.message));
     }
   }
