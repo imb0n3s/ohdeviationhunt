@@ -20,7 +20,7 @@ function liveData(pool, ch) {
   // the OBS Source shows "who caught it" for a while after a spawn ends — keep the idle timer hidden meanwhile
   const showingResult = !!(last && last.winners?.length && Date.now() - last.at < Math.max(15000, (sp?.chatDelayMs?.(bid) || 0) + 9000));
   const now = Date.now();
-  const idleChat = now - (sp?.lastChat?.get(bid) || 0) > cfg.ACTIVITY_WINDOW_MIN * 60 * 1000;
+  const idleChat = !sp?.alwaysOn?.(bid) && now - (sp?.lastChat?.get(bid) || 0) > cfg.ACTIVITY_WINDOW_MIN * 60 * 1000;
   const recent = recentQ.all(8).map((r) => {
     const d = data.get(r.deviation);
     const v = r.variant ? d?.variants.find((x) => x.name === r.variant) : null;
