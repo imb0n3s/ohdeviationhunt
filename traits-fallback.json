@@ -139,7 +139,7 @@
      "minLevel": null,
      "maxLevel": null,
      "effects": [
-      "The appearance of the Deviation has changed. It gains Energy Recovery Speed +10%"
+      "The appearance of the Deviation has changed. It gains Energy (Mood) Recovery Speed +10%"
      ],
      "fuse": null
     },
@@ -159,7 +159,7 @@
      "minLevel": null,
      "maxLevel": null,
      "effects": [
-      "Max Energy +40%"
+      "Max Energy (Mood) +40%"
      ],
      "fuse": null
     },
@@ -212,7 +212,7 @@
      "minLevel": null,
      "maxLevel": null,
      "effects": [
-      "Grumpy Bulb - Violet Robe: It gains Max Energy (Skill) +40%"
+      "Grumpy Bulb - Violet Robe: It gains Max Energy (Mood) (Skill) +40%"
      ],
      "fuse": null
     },
@@ -232,8 +232,8 @@
      "minLevel": null,
      "maxLevel": null,
      "effects": [
-      "Lonewolf's Whisper - Bursting Magma: It gains Max Energy (Skill) +40%",
-      "Lonewolf's Whisper - Distant Tears: It gains Max Energy (Skill) +40%",
+      "Lonewolf's Whisper - Bursting Magma: It gains Max Energy (Mood) (Skill) +40%",
+      "Lonewolf's Whisper - Distant Tears: It gains Max Energy (Mood) (Skill) +40%",
       "Lonewolf's Whisper - Radiant Variant: It gains Max Mood (Activity) +7%"
      ],
      "fuse": null
@@ -752,7 +752,7 @@
      "minLevel": null,
      "maxLevel": null,
      "effects": [
-      "The appearance of the Deviation has changed. It gains Energy Recovery Speed +10%"
+      "The appearance of the Deviation has changed. It gains Energy (Mood) Recovery Speed +10%"
      ],
      "fuse": null
     },
@@ -762,7 +762,7 @@
      "minLevel": null,
      "maxLevel": null,
      "effects": [
-      "Atomic Snail - Gold Lightning: The appearance of the Deviation has changed. It gains Energy Recovery Speed +15%."
+      "Atomic Snail - Gold Lightning: The appearance of the Deviation has changed. It gains Energy (Mood) Recovery Speed +15%."
      ],
      "fuse": null
     },
@@ -994,7 +994,7 @@
      "minLevel": null,
      "maxLevel": null,
      "effects": [
-      "When Crafting Deviation is working in the Pollution Zone, there is a 20% chance to not consume Energy"
+      "When Crafting Deviation is working in the Pollution Zone, there is a 20% chance to not consume Energy (Mood)"
      ],
      "fuse": null
     },
@@ -1270,7 +1270,7 @@
      "minLevel": null,
      "maxLevel": null,
      "effects": [
-      "The appearance of the Deviation has changed. It gains Energy Recovery Speed +10%"
+      "The appearance of the Deviation has changed. It gains Energy (Mood) Recovery Speed +10%"
      ],
      "fuse": null
     },
@@ -1281,6 +1281,16 @@
      "maxLevel": null,
      "effects": [
       "It gains Max Mood +40%"
+     ],
+     "fuse": null
+    },
+    {
+     "key": "growshroom_shadowshroom",
+     "name": "Growshroom - Shadowshroom",
+     "minLevel": null,
+     "maxLevel": null,
+     "effects": [
+      "The appearance of the Deviation has changed. It gains Max Energy (Mood) +40%"
      ],
      "fuse": null
     },
@@ -1387,16 +1397,6 @@
      "fuse": null
     },
     {
-     "key": "growshroom_shadowshroom",
-     "name": "Growshroom - Shadowshroom",
-     "minLevel": null,
-     "maxLevel": null,
-     "effects": [
-      "The appearance of the Deviation has changed. It gains Max Energy +40%"
-     ],
-     "fuse": null
-    },
-    {
      "key": "growshroom_greentouch",
      "name": "Toxicologist - Green Touch",
      "minLevel": null,
@@ -1432,7 +1432,7 @@
      "minLevel": null,
      "maxLevel": null,
      "effects": [
-      "When Territory Deviation is resting by water, Energy Recovery Speed is increased by 30%"
+      "When Territory Deviation is resting by water, Energy (Mood) Recovery Speed is increased by 30%"
      ],
      "fuse": null
     },
@@ -1512,7 +1512,7 @@
      "minLevel": null,
      "maxLevel": null,
      "effects": [
-      "When it's Mood (Activity) decreases there is a 10% chance that other Territorial Deviations also lose mood. When the Deviation is dormant and gaining Deviation Power (Skill), there is a 10% chance that other Territorial Deviations recieve Deviant Power (Skill) +5. (all)"
+      "When it's Mood (Activity) decreases there is a 10% chance that other Territorial Deviations also lose mood. When the Deviation is dormant and gaining Deviant Power (Skill), there is a 10% chance that other Territorial Deviations recieve Deviant Power (Skill) +5. (all)"
      ],
      "fuse": null
     },
@@ -1841,7 +1841,8 @@
    "infrasonic"
   ],
   "Growshroom": [
-   "opt_extra_large"
+   "opt_extra_large",
+   "growshroom_shadowshroom"
   ],
   "Atomic Lighter": [
    "infrasonic"
@@ -1919,7 +1920,6 @@
    "atomic_snail"
   ],
   "Growshroom": [
-   "growshroom_shadowshroom",
    "growshroom_greentouch"
   ]
  }

@@ -100,12 +100,12 @@ function makeHandler(pool, spawns) {
         const want = (args[1] || "").toLowerCase();
         if (want !== "on" && want !== "off") {
           const on = db.getSetting(`surprise:${bid}`) === "on";
-          return reply(`Surprise mode is ${on ? "ON: your OBS Source shows variations/skins as the normal deviation until the result" : "OFF: your OBS Source shows a variation/skin as soon as it appears"}. Change it: !hunt surprise on / off.`);
+          return reply(`Surprise mode is ${on ? "ON: chat and your OBS Source show variations/skins as the normal deviation until the result" : "OFF: chat and your OBS Source name a variation/skin as soon as it appears"}. Change it: !hunt surprise on / off.`);
         }
         db.setSetting(`surprise:${bid}`, want);
         return reply(want === "on"
-          ? "Surprise mode on — your OBS Source shows every deviation as the normal one; variations and skins are only revealed when the result is posted."
-          : "Surprise mode off — your OBS Source shows a variation or skin as soon as it appears.");
+          ? "Surprise mode on — chat and your OBS Source show every deviation as the normal one; variations and skins are only revealed when the result is posted."
+          : "Surprise mode off — chat and your OBS Source name a variation or skin as soon as it appears.");
       }
       if (mod && sub === "spawnchat") {
         const want = (args[1] || "").toLowerCase();

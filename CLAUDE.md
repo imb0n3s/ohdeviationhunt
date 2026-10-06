@@ -52,10 +52,10 @@
   + add it in rarity.js/shop.js and push (no extension review). The console Image Domains allowlist has
   deviationhunt.ohwikiguide.com + the railway URL; allowlists are LOCKED once the extension is submitted for review.
 - B's decisions (2026-09-30 → 10-03), not obvious from code:
-  - Variations/skins are SECRET: rolled per spawn (variation 1 in 30, skin 1 in 75, Chaos 1 in 750) with their own
-    capture rates (12% / 9% / 2.5%). Chat and throw replies always show the normal deviation; the OBS Source SHOWS the
-    variant as it spawns (B 2026-10-04) unless the channel set "!hunt surprise on" (setting surprise:<bid>);
-    only the result reveals "it was a ✨ Variation: X (Legendary)!" (also when it gets away).
+  - Variations/skins are rolled per spawn (variation 1 in 30, skin 1 in 75, Chaos 1 in 750) with their own
+    capture rates (12% / 9% / 2.5%). Surprise mode (setting surprise:<bid>, OFF by default) controls chat AND OBS together
+    (B 2026-10-05): off = spawn message, throw replies and the OBS Source name the variant right away; "!hunt surprise on" =
+    both show the normal deviation and only the result reveals "it was a ✨ Variation: X (Legendary)!".
   - Catch banner: one ⭐ for a normal catch; 🌟×5 LEGENDARY only for variations/skins/Chaos. No rarity label on
     normal catches.
   - Chat delay default 14s (RESULT_CHAT_DELAY_SECONDS) while a channel's OBS Source is open: spawn announcement and
