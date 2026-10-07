@@ -68,6 +68,13 @@ function hourlyCheck(bid) {
   out.push(cur);
   return out;
 }
+// !timercheck: when is MY next free hourly unit?
+function timerCheck(userId, login, display) {
+  const p = loadPlayer(userId, login, display);
+  if (!hourlyToday(userId)) return `@${display} your hourly timer isn't on yet today — type !hourly in a live stream to start it (your first !secure or !daily starts it too).`;
+  if (!hourlyOn(p)) return `@${display} your hourly timer is paused — type any game command in a live stream running the game to resume it.`;
+  return `@${display} ⏰ your next free Securement Unit + ${ECONOMY.hourlyStarchrom} Starchrom arrives in ${nextUnitIn(p)}. Hourly perks reset at midnight Central (in ${untilReset()}).`;
+}
 function hourly(userId, login, display, bid) {
   if (!bid || !streamOf(bid)) return `@${display} !hourly only works while the stream is live. If the stream just started, Twitch can take a minute or two to show it as live — try again shortly.`;
   if (startHourly(userId, login, display, bid)) return `@${display} ${HOURLY_ON_TEXT()} Don't forget !daily for a free supply drop.`;
@@ -709,4 +716,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

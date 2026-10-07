@@ -103,3 +103,10 @@ console.log("hourly unit checks passed");
   assert.ok(!/Off|Idle/.test(m[0]));
   streams = {}; assert.match(game.hourlyCheck("CH")[0], /only run while the stream is live/);
   console.log("!hourlycheck checks passed"); }
+
+// !timercheck
+{ streams = { CH: "k1" };
+  assert.match(game.timerCheck("7", "zed", "Zed"), /next free Securement Unit \+ 15 Starchrom arrives in 60m/);
+  assert.match(game.timerCheck("10", "idle", "Idle"), /isn't on yet today — type !hourly/);
+  streams = {}; assert.match(game.timerCheck("7", "zed", "Zed"), /paused/);
+  console.log("!timercheck checks passed"); }
