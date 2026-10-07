@@ -51,6 +51,23 @@ function startHourly(userId, login, display, bid) {
   return true;
 }
 const HOURLY_ON_TEXT = () => `⏰ Hourly perks on for today: +${ECONOMY.hourlyUnits} free Securement Unit and +${ECONOMY.hourlyStarchrom} Starchrom every hour you're in a live stream (first one in 60m).`;
+// !hourlycheck (mods/streamer): everyone whose hourly timer is running in this channel right now,
+// soonest next unit first. Returns one or more chat messages (Twitch caps a message at 500 characters).
+function hourlyCheck(bid) {
+  if (!bid || !streamOf(bid)) return ["⏰ Hourly timers only run while the stream is live."];
+  const list = db.q.playersInChannel.all(bid).filter((r) => hourlyOn(r))
+    .map((r) => ({ name: r.display, mins: Math.max(1, Math.ceil(((r.last_unit_at || Date.now()) + HOUR - Date.now()) / 60000)) }))
+    .sort((a, b) => a.mins - b.mins || a.name.localeCompare(b.name));
+  if (!list.length) return ["⏰ Nobody's hourly timer is running here right now. Viewers start it with !hourly, !secure or !daily."];
+  const out = []; let cur = `⏰ Hourly timers running here (${list.length}): `, first = true;
+  for (const x of list) {
+    const item = `${x.name} (${x.mins}m)`;
+    if (!first && (cur + " · " + item).length > 480) { out.push(cur); cur = "⏰ …" + item; continue; }
+    cur += (first ? "" : " · ") + item; first = false;
+  }
+  out.push(cur);
+  return out;
+}
 function hourly(userId, login, display, bid) {
   if (!bid || !streamOf(bid)) return `@${display} !hourly only works while the stream is live. If the stream just started, Twitch can take a minute or two to show it as live — try again shortly.`;
   if (startHourly(userId, login, display, bid)) return `@${display} ${HOURLY_ON_TEXT()} Don't forget !daily for a free supply drop.`;
@@ -692,4 +709,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

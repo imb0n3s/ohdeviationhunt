@@ -105,6 +105,7 @@ out.push(box("Mods", "Streamer & Mod Commands", `
 Only the broadcaster and moderators can use these.
 ${table(["Command", "Effect"], [
   [cmd("!hunt spawn"), "Spawn a random deviation right now."],
+  [cmd("!hourlycheck"), "Lists everyone whose hourly timer is running in this channel right now, with minutes until their next free Securement Unit."],
   [cmd("!hunt interval <minutes>"), `How often deviations appear while you're live (2–120 minutes, default ${cfg.SPAWN_INTERVAL_MIN}).`],
   [cmd("!hunt off") + " / " + cmd("!hunt on"), "Pause or resume spawns. Other commands keep working."],
   [cmd("!hunt status"), "Live status, spawn timer, what's loose, and this channel's spawn/catch totals."],

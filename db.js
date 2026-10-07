@@ -158,6 +158,7 @@ const q = {
   missingStream: db.prepare(`SELECT user_id, last_channel, active_stream FROM players WHERE last_channel IS NOT NULL AND last_active_at>=?`),
   setActiveStream: db.prepare(`UPDATE players SET active_stream=? WHERE user_id=?`),
   setHourlyOn: db.prepare(`UPDATE players SET hourly_on_at=?, last_unit_at=? WHERE user_id=?`),
+  playersInChannel: db.prepare(`SELECT * FROM players WHERE last_channel=? AND active_stream IS NOT NULL`),
   dueHourly: db.prepare(`SELECT * FROM players WHERE active_stream IS NOT NULL AND last_unit_at<=?`),
   savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at, gloves=@gloves, extra_cap=@extra_cap, soup_until=@soup_until WHERE user_id=@user_id`),
   countPlayers: db.prepare(`SELECT COUNT(*) AS n FROM players`),

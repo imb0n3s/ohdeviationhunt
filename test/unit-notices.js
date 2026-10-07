@@ -93,3 +93,13 @@ console.log("hourly unit checks passed");
   raw.prepare("UPDATE players SET hourly_on_at = hourly_on_at - 86400000 WHERE user_id='5'").run();
   assert.equal(game.hourlyStatus(game.loadPlayer("5")).state, "needs_daily");
   console.log("!hourly / !secure start checks passed"); }
+
+// !hourlycheck lists everyone with a running timer in this channel
+{ streams = { CH: "k1", CH2: "k2" };
+  for (const [id, n, ch] of [["7", "Zed", "CH"], ["8", "Amy", "CH"], ["9", "Off", "CH2"]]) { game.loadPlayer(id, n.toLowerCase(), n); play(id, ch); game.startHourly(id, n.toLowerCase(), n, ch); }
+  game.loadPlayer("10", "idle", "Idle"); play("10", "CH");    // in the channel, timer never started
+  const m = game.hourlyCheck("CH"); console.log(m);
+  assert.equal(m.length, 1); assert.match(m[0], /Amy \(60m\)/); assert.match(m[0], /Zed \(60m\)/);
+  assert.ok(!/Off|Idle/.test(m[0]));
+  streams = {}; assert.match(game.hourlyCheck("CH")[0], /only run while the stream is live/);
+  console.log("!hourlycheck checks passed"); }
