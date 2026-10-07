@@ -29,34 +29,40 @@ const sc1 = game.loadPlayer("1").starchrom;
   assert.equal(game.loadPlayer("2").starchrom, sc + 15); assert.equal(units("2"), u);
   const q = game.loadPlayer("2"); q.extra_cap = 0; game.savePlayer(q); }
 
-// Luna moves to another stream 40 min into her next hour: the timer keeps running, notice goes there
+// Luna moves to another stream: her perks belong to CH's stream, so nothing until she types !hourly in CH2 (B 2026-10-07)
 backdate("1", 40 * 60e3); play("1", "CH2");
-assert.equal(game.unitNotices().length, 0);
 backdate("1", 21 * 60e3);
+assert.equal(game.unitNotices().length, 0);
+assert.equal(game.nextUnitIn(game.loadPlayer("1")), "once you type !hourly in the live stream you're watching");
+assert.match(game.timerCheck("1", "luna", "Luna"), /isn't on in this stream — type !hourly here/);
+assert.match(game.hourly("1", "luna", "Luna", "CH2"), /Hourly perks on for this stream/);   // switched over: fresh hour
+backdate("1", H + 60e3);
 n = game.unitNotices(); console.log(n);
-assert.match(n[0][1], /^🎁 @Luna acquired an hourly Securement Unit and 15 Starchrom! You now have \d+ Securement Units and [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1); assert.equal(n[0][0], "CH2");   // one unit, in ONE stream only
+assert.match(n[0][1], /^🎁 @Luna acquired an hourly Securement Unit and 15 Starchrom! You now have \d+ Securement Units and [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1); assert.equal(n[0][0], "CH2");
 assert.equal(units("1"), u1 + 1); assert.equal(game.loadPlayer("1").starchrom, sc1 + 15);
 
-// "watching" two streams: whichever she played in last is the only one that counts
+// back in CH: her perks are on CH2's stream now, so CH pays nothing until !hourly there
 play("1", "CH"); backdate("1", H + 60e3);
+assert.equal(game.unitNotices().length, 0);
+assert.match(game.hourly("1", "luna", "Luna", "CH"), /Hourly perks on for this stream/);
+assert.match(game.hourly("1", "luna", "Luna", "CH"), /already on for this stream/);
+backdate("1", H + 60e3);
 n = game.unitNotices(); assert.deepEqual(n.map((x) => x[0]), ["CH"]); assert.equal(units("1"), u1 + 2);
 
-// that stream ends -> paused; the next stream counts once she plays there
-streams = { CH2: "t1" }; backdate("1", H + 60e3);
+// a new broadcast in the same channel needs !hourly again
+streams = { CH: "s2", CH2: "t1" }; play("1", "CH"); backdate("1", H + 60e3);
 assert.equal(game.unitNotices().length, 0);
-assert.equal(game.nextUnitIn(game.loadPlayer("1")), "in a live stream (type any game command there)");
-play("1", "CH2"); n = game.unitNotices(); assert.deepEqual(n.map((x) => x[0]), ["CH2"]);
+streams = { CH: "s1", CH2: "t1" }; { const p = game.loadPlayer("1"); p.last_unit_at = Date.now(); game.savePlayer(p); }
 
 // away for hours then back: no back-pay, fresh hour
-play("2", "CH2"); backdate("2", 5 * H); const u2 = units("2");
+play("2", "CH"); backdate("2", 5 * H); const u2 = units("2");
 assert.equal(game.unitNotices().length, 0); assert.equal(units("2"), u2);
 assert.match(game.nextUnitIn(game.loadPlayer("2")), /^(59|60)m$/);
 
 // !daily: once a day (Central), only while live
 assert.match(game.daily("1", "luna", "Luna", "CH2"), /already claimed today's !daily/);
-assert.equal(game.nextUnitIn(game.loadPlayer("3")), "once you type !hourly (or !secure / !daily) in a live stream");
+assert.equal(game.nextUnitIn(game.loadPlayer("3")), "once you type !hourly in the live stream you're watching");
 raw.prepare("UPDATE daily_claims SET at = at - 86400000").run();          // next day
-assert.equal(game.nextUnitIn(game.loadPlayer("1")), "once you type !hourly (or !secure / !daily) in a live stream");       // new day needs a new start
 assert.match(game.daily("1", "luna", "Luna", "CH2"), /Daily supply drop/);
 streams = {};
 assert.match(game.daily("2", "bob", "Bob", "CH"), /only works while the stream is live/);
@@ -65,6 +71,7 @@ console.log("hourly unit checks passed");
 // !daily typed right as the stream went live (stream not recorded) -> self-heals within a minute
 { streams = { CH: "s9" }; db.q.touchActive.run("CH", Date.now(), null, "2");
   raw.prepare("UPDATE daily_claims SET at = ? WHERE user_id = '2'").run(Date.now());
+  raw.prepare("UPDATE players SET hourly_stream = 's9' WHERE user_id = '2'").run();   // what !daily's startHourly records
   backdate("2", H + 60e3); const before = units("2");
   const n2 = game.unitNotices(); assert.deepEqual(n2.map((x) => x[0]), ["CH"]); assert.ok(units("2") >= before);
   console.log("self-heal check passed"); }
@@ -73,8 +80,8 @@ console.log("hourly unit checks passed");
 { streams = { CH: "h1" };
   game.loadPlayer("4", "nina", "Nina"); play("4", "CH");
   assert.equal(game.hourlyStatus(game.loadPlayer("4")).state, "needs_daily");
-  assert.match(game.hourly("4", "nina", "Nina", "CH"), /Hourly perks on for today/);
-  assert.match(game.hourly("4", "nina", "Nina", "CH"), /already on for today — next free Securement Unit \+ 15 Starchrom in 60m/);
+  assert.match(game.hourly("4", "nina", "Nina", "CH"), /Hourly perks on for this stream/);
+  assert.match(game.hourly("4", "nina", "Nina", "CH"), /already on for this stream — next free Securement Unit \+ 15 Starchrom in 60m/);
   assert.equal(game.hourlyStatus(game.loadPlayer("4")).state, "running");
   backdate("4", H + 60e3); const u4 = units("4");
   assert.deepEqual(game.unitNotices().map((x) => x[0]), ["CH"]); assert.equal(units("4"), u4 + 1);
@@ -90,7 +97,7 @@ console.log("hourly unit checks passed");
   assert.equal(game.startHourly("6", "pia", "Pia", "CH"), false);
   assert.match(game.hourly("6", "pia", "Pia", "CH"), /only works while the stream is live/);
   // next day it has to be switched on again
-  raw.prepare("UPDATE players SET hourly_on_at = hourly_on_at - 86400000 WHERE user_id='5'").run();
+  streams = { CH: "h2" };                                     // next broadcast: needs !hourly again
   assert.equal(game.hourlyStatus(game.loadPlayer("5")).state, "needs_daily");
   console.log("!hourly / !secure start checks passed"); }
 
@@ -107,6 +114,6 @@ console.log("hourly unit checks passed");
 // !timercheck
 { streams = { CH: "k1" };
   assert.match(game.timerCheck("7", "zed", "Zed"), /next free Securement Unit \+ 15 Starchrom arrives in 60m/);
-  assert.match(game.timerCheck("10", "idle", "Idle"), /isn't on yet today — type !hourly/);
-  streams = {}; assert.match(game.timerCheck("7", "zed", "Zed"), /paused/);
+  assert.match(game.timerCheck("10", "idle", "Idle"), /isn't on in this stream — type !hourly here/);
+  streams = {}; assert.match(game.timerCheck("7", "zed", "Zed"), /isn't on in this stream/);
   console.log("!timercheck checks passed"); }

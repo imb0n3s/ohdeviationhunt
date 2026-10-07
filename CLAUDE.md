@@ -71,5 +71,5 @@
   (Spawns.alwaysOn): spawns keep coming with a quiet chat (B 2026-10-06 "keep it up"); setting alwayson:<bid>=on does the same elsewhere.
 - !hunt spawn is always random (B 2026-10-06 removed picking a deviation/variation/skin; data.findWithVariant is unused).
 - Trading (website, one-to-one) is built on branch `trading` (NOT merged/live; B 2026-10-04 "don't publish yet"). To launch: merge trading into main and push.
-- Hourly perks (B 2026-10-07): switched on for the day by !hourly, the first !secure, or !daily in a live stream
-  (players.hourly_on_at). The panel zip still says "Type !daily…" — B: leave the panel/extension review alone, don't re-upload for this.
+- Hourly perks (B 2026-10-07): belong to ONE stream — switched on by !hourly, the first !secure, or !daily in that live
+  stream (players.hourly_stream). Another channel or the next broadcast needs !hourly again. !timercheck / !hourlycheck (mods). The panel zip still says "Type !daily…" — B: leave the panel/extension review alone, don't re-upload for this.

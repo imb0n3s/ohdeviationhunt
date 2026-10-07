@@ -92,8 +92,8 @@ out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!starchrom"), `Shows how much ${SC} you have. Also works as ${cmd("!sc")}.`],
   [cmd("!shop"), `Show what the shop sells and the prices. The Securement Pods panel has the same shop in its '''Shop''' tab.`],
   [cmd("!buy <amount>"), `Buy Securement Units for ${fmt(unitPrice)} ${SC} each, e.g. ${cmd("!buy 2")}.`],
-  [cmd("!daily"), `Claim your daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${ECONOMY.daily.units.standard} Securement Unit, and turn on ${ECONOMY.hourlyUnits} free Securement Unit + ${ECONOMY.hourlyStarchrom} ${SC} every hour for the rest of the day while you're in a live stream. '''Once a day''' — resets at midnight Central time — and only during a live stream. The bot also tells you your check-in number (how many days you've claimed it, no limit).`],
-  [cmd("!hourly"), `Turn on today's hourly perks: ${ECONOMY.hourlyUnits} free Securement Unit + ${ECONOMY.hourlyStarchrom} ${SC} every hour you're in a live stream, until midnight Central. Your first ${cmd("!secure")} or ${cmd("!daily")} of the day turns them on too, so type ${cmd("!hourly")} when you get into a channel to start the clock right away. Typed again, it shows when the next one arrives.`],
+  [cmd("!daily"), `Claim your daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${ECONOMY.daily.units.standard} Securement Unit, and turn on your hourly perks (${ECONOMY.hourlyUnits} free Securement Unit + ${ECONOMY.hourlyStarchrom} ${SC} every hour) for that stream. '''Once a day''' — resets at midnight Central time — and only during a live stream. The bot also tells you your check-in number (how many days you've claimed it, no limit).`],
+  [cmd("!hourly"), `Turn on hourly perks for the stream you\'re in: ${ECONOMY.hourlyUnits} free Securement Unit + ${ECONOMY.hourlyStarchrom} ${SC} every hour while you\'re there. Your first ${cmd("!secure")} or ${cmd("!daily")} in that stream turns them on too. \'\'\'One stream at a time\'\'\' — in another channel (or the next broadcast) type ${cmd("!hourly")} again there. Typed again in the same stream, it shows when the next one arrives.`],
   [cmd("!timercheck"), `When your next free hourly Securement Unit (+${ECONOMY.hourlyStarchrom} ${SC}) arrives, or how to start/resume your timer. Also ${cmd("!timer")}.`],
   [cmd("!pods [name]"), `Your collection count (unique deviations, variations and skins, counted separately) and a link to your collection page. Add a name to see someone else's. Also ${cmd("!pod")}.`],
   [cmd("!traits <deviation>"), `Skill Rating, Activity Rating and all three traits of your top specimen of that deviation (best skin, else best variation, else best). Also ${cmd("!stats")}.`],
@@ -133,7 +133,7 @@ You have '''${ECONOMY.unitCap} Securement Pods''' — every deviation you've cau
 '''Ways to get Securement Units'''
 ${table(["Source", "Amount"], [
   ["Starting supply", `${ECONOMY.starterUnits.standard} units`],
-  ["Free hourly unit", `+${ECONOMY.hourlyUnits} unit every hour once you've turned on today's hourly perks with ${cmd("!hourly")}, ${cmd("!secure")} or ${cmd("!daily")}, while you're in a live stream running the game (the one where you last used a game command). '''One stream at a time''' — watching several doesn't earn more, and the timer keeps running when you switch streams. Each one comes with '''+${ECONOMY.hourlyStarchrom} ${SC}''' (you still get the ${SC} if your pods are full). The bot tells you in chat each time one arrives, along with how many Securement Units and ${SC} you now have.`],
+  ["Free hourly unit", `+${ECONOMY.hourlyUnits} unit every hour in the live stream where you turned on hourly perks with ${cmd("!hourly")}, your first ${cmd("!secure")} or ${cmd("!daily")}. \'\'\'One stream at a time\'\'\' — they stop when you play in another channel until you type ${cmd("!hourly")} there, and a new broadcast needs ${cmd("!hourly")} again. Each one comes with \'\'\'+${ECONOMY.hourlyStarchrom} ${SC}\'\'\' (you still get the ${SC} if your pods are full). The bot tells you in chat each time one arrives, along with how many Securement Units and ${SC} you now have. ${cmd("!timercheck")} shows when the next one arrives.`],
   [cmd("!daily"), `+${ECONOMY.daily.units.standard} unit, once a day (resets at midnight Central)`],
   ["Scrapping an extra specimen (Twitch panel or your collection page)", `+${ECONOMY.destroyUnits} unit (plus ${fmt(ECONOMY.destroyValue)} ${SC})`],
   [cmd("!buy <amount>") + " or the panel's '''Shop''' tab", `${fmt(unitPrice)} ${SC} each`],
@@ -148,7 +148,7 @@ ${table(["How", SC], [
   ["Securing a Skin (always Legendary)", `${skinReward}`],
   ["First time you secure a deviation (or a new variant of it)", `+${ECONOMY.newSpeciesBonus} bonus`],
   [cmd("!daily"), `+${ECONOMY.daily.starchrom}`],
-  ["Every hour after !hourly / !secure / !daily, while you're in a live stream", `+${ECONOMY.hourlyStarchrom} (with your free Securement Unit)`],
+  ["Every hour in the stream where you used !hourly / !secure / !daily", `+${ECONOMY.hourlyStarchrom} (with your free Securement Unit)`],
   ["Scrapping an extra specimen (Twitch panel or your collection page)", `+${fmt(ECONOMY.destroyValue)} each, plus ${ECONOMY.destroyUnits} Securement Unit back (only while you own more than one)`],
 ])}
 `));
@@ -241,7 +241,7 @@ const faq = [
   ["How do I start?", `Just type ${cmd("!secure")} the next time a deviation shows up. Your first throw signs you up with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}.`],
   ["I typed !secure and the bot didn't answer.", `That's normal — the bot stays quiet so chat isn't spammed. Results for everyone are posted when the ${cfg.SPAWN_WINDOW_SECONDS}-second window ends. It only replies right away if you're out of units.`],
   ["Why wasn't my name in the result?", `The result names who secured it and who it broke free from. If it broke free from you, you only spent the ${ECONOMY.throwCost} ${SC} throw — your Securement Unit stays empty and ready.`],
-  ["I'm out of Securement Units.", `Claim ${cmd("!daily")} during a live stream: you get 1 right away, and 1 free every hour for the rest of the day while you're in a live stream (${cmd("!hourly")} or your first ${cmd("!secure")} turns that on too). Or ${cmd("!buy <amount>")} for ${fmt(unitPrice)} ${SC} each. ${cmd("!units")} shows when the next free one arrives.`],
+  ["I'm out of Securement Units.", `Claim ${cmd("!daily")} during a live stream: you get 1 right away, and 1 free every hour in that stream (${cmd("!hourly")} or your first ${cmd("!secure")} turns that on too). Or ${cmd("!buy <amount>")} for ${fmt(unitPrice)} ${SC} each. ${cmd("!units")} shows when the next free one arrives.`],
   ["Do better units exist?", `No — there's a single Securement Unit. Your odds depend only on the deviation's rarity and whether it's a variation or skin.`],
   ["Does my collection carry over between channels?", "Yes. It's tied to your Twitch account and shared across every channel running Deviation Hunt."],
   ["Why aren't deviations spawning?", `They only appear while the stream is live and chat has been active in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes. A mod may also have used ${cmd("!hunt off")} — ${cmd("!hunt status")} shows what's going on.`],

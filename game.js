@@ -36,21 +36,20 @@ let streamOf = () => null;
 const dayKey = (ms) => new Date(ms).toLocaleDateString("en-CA", { timeZone: ECONOMY.dailyResetTz });
 function dailyToday(userId) { const last = db.q.lastDaily.get(userId)?.at; return !!last && dayKey(last) === dayKey(Date.now()); }
 function setStreamLookup(fn) { streamOf = fn; }
-// hourly perks are switched on for the day by !daily, !hourly or !secure in a live stream (B 2026-10-07)
-function hourlyToday(userId) {
-  if (dailyToday(userId)) return true;
-  const at = db.q.getPlayer.get(userId)?.hourly_on_at;
-  return !!at && dayKey(at) === dayKey(Date.now());
-}
-// switch hourly perks on (first one lands an hour later). true = just switched on, false = already on / not live
+// Hourly perks belong to ONE live stream: the one where !hourly, the first !secure or !daily switched them on
+// (B 2026-10-07). In another channel — or the next broadcast — the player types !hourly there to move them.
+// switch hourly perks on for the stream in this channel (first one lands an hour later).
+// true = just switched on here, false = already on here / channel not live
 function startHourly(userId, login, display, bid) {
-  if (!bid || !streamOf(bid) || hourlyToday(userId)) return false;
-  loadPlayer(userId, login, display);
+  const stream = bid ? streamOf(bid) : null;
+  if (!stream) return false;
+  const row = db.q.getPlayer.get(userId) || loadPlayer(userId, login, display);
+  if (row.hourly_stream === stream) return false;
   const now = Date.now();
-  db.q.setHourlyOn.run(now, now, userId);
+  db.q.setHourlyOn.run(now, now, stream, userId);
   return true;
 }
-const HOURLY_ON_TEXT = () => `⏰ Hourly perks on for today: +${ECONOMY.hourlyUnits} free Securement Unit and +${ECONOMY.hourlyStarchrom} Starchrom every hour you're in a live stream (first one in 60m).`;
+const HOURLY_ON_TEXT = () => `⏰ Hourly perks on for this stream: +${ECONOMY.hourlyUnits} free Securement Unit and +${ECONOMY.hourlyStarchrom} Starchrom every hour while you're here (first one in 60m). Going to another channel? Type !hourly there to turn them on in that stream.`;
 // !hourlycheck (mods/streamer): everyone whose hourly timer is running in this channel right now,
 // soonest next unit first. Returns one or more chat messages (Twitch caps a message at 500 characters).
 function hourlyCheck(bid) {
@@ -71,15 +70,14 @@ function hourlyCheck(bid) {
 // !timercheck: when is MY next free hourly unit?
 function timerCheck(userId, login, display) {
   const p = loadPlayer(userId, login, display);
-  if (!hourlyToday(userId)) return `@${display} your hourly timer isn't on yet today — type !hourly in a live stream to start it (your first !secure or !daily starts it too).`;
-  if (!hourlyOn(p)) return `@${display} your hourly timer is paused — type any game command in a live stream running the game to resume it.`;
-  return `@${display} ⏰ your next free Securement Unit + ${ECONOMY.hourlyStarchrom} Starchrom arrives in ${nextUnitIn(p)}. Hourly perks reset at midnight Central (in ${untilReset()}).`;
+  if (!hourlyOn(p)) return `@${display} your hourly timer isn't on in this stream — type !hourly here to start it (your first !secure or !daily here starts it too). It runs in one stream at a time.`;
+  return `@${display} ⏰ your next free Securement Unit + ${ECONOMY.hourlyStarchrom} Starchrom arrives in ${nextUnitIn(p)} (hourly perks are on for this stream).`;
 }
 function hourly(userId, login, display, bid) {
   if (!bid || !streamOf(bid)) return `@${display} !hourly only works while the stream is live. If the stream just started, Twitch can take a minute or two to show it as live — try again shortly.`;
   if (startHourly(userId, login, display, bid)) return `@${display} ${HOURLY_ON_TEXT()} Don't forget !daily for a free supply drop.`;
   const p = loadPlayer(userId, login, display);
-  return `@${display} your hourly perks are already on for today${hourlyOn(p) ? ` — next free Securement Unit + ${ECONOMY.hourlyStarchrom} Starchrom in ${nextUnitIn(p)}` : ""}. They reset at midnight Central (in ${untilReset()}).`;
+  return `@${display} your hourly perks are already on for this stream — next free Securement Unit + ${ECONOMY.hourlyStarchrom} Starchrom in ${nextUnitIn(p)}. Going to another channel? Type !hourly there to turn them on in that stream.`;
 }
 let announce = () => {};
 function setAnnouncer(fn) { announce = fn; }
@@ -98,18 +96,16 @@ function announcePurchase(userId, item, qty = 1) {
 // Hourly free units run while the player (a) switched them on today (!daily, !hourly or !secure) and (b) is in a live
 // stream: the channel of their latest game command, during that same broadcast. It's a single
 // "current stream", so watching several streams never earns more; switching streams keeps the timer.
-const hourlyOn = (p) => hourlyToday(p.user_id) && !!p.active_stream && streamOf(p.last_channel) === p.active_stream;
+const hourlyOn = (p) => { const cur = streamOf(p.last_channel); return !!cur && p.active_stream === cur && p.hourly_stream === cur; };
 
 // for the panel: is the hourly timer running, and when does the next free unit land?
 function hourlyStatus(p) {
-  if (!hourlyToday(p.user_id)) return { state: "needs_daily" };
-  if (!hourlyOn(p)) return { state: "paused" };
+  if (!hourlyOn(p)) return { state: "needs_daily" }; // panel: "Type !daily in a live stream to start…" (still true)
   return { state: "running", at: (p.last_unit_at || Date.now()) + HOUR };
 }
 
 function nextUnitIn(p) {
-  if (!hourlyToday(p.user_id)) return "once you type !hourly (or !secure / !daily) in a live stream";
-  if (!hourlyOn(p)) return "in a live stream (type any game command there)";
+  if (!hourlyOn(p)) return "once you type !hourly in the live stream you're watching";
   const ms = (p.last_unit_at || Date.now()) + HOUR - Date.now();
   return `${Math.max(1, Math.ceil(ms / 60000))}m`;
 }
@@ -360,7 +356,7 @@ class Spawns {
       return warn(`@${display} a throw costs ${ECONOMY.throwCost} ${SC} and you have ${fmt(p.starchrom)}. ${dailyReady(userId) ? "Claim !daily for +" + ECONOMY.daily.starchrom + " " + SC + "." : "Catching deviations earns more."}`);
     }
     if (!(p.units.standard > 0)) {
-      return warn(`@${display} you have no empty Securement Unit to house a deviation. ${hourlyOn(p) ? `Your next free one arrives in ${nextUnitIn(p)}` : dailyReady(userId) ? "Claim !daily for 1 now (plus 1 free every hour while you're in a live stream)" : `Your !daily resets at midnight Central (in ${untilReset()})`}, or !buy <amount> for ${fmt(UNITS.standard.price)} ${SC} each (you have ${fmt(p.starchrom)}).`);
+      return warn(`@${display} you have no empty Securement Unit to house a deviation. ${hourlyOn(p) ? `Your next free one arrives in ${nextUnitIn(p)}` : dailyReady(userId) ? "Claim !daily for 1 now (plus 1 free every hour in this stream)" : `Your !daily resets at midnight Central (in ${untilReset()})`}, or !buy <amount> for ${fmt(UNITS.standard.price)} ${SC} each (you have ${fmt(p.starchrom)}).`);
     }
     p.starchrom -= ECONOMY.throwCost;
     db.addSpent(ECONOMY.throwCost);
@@ -485,14 +481,14 @@ function daily(userId, login, display, bid) {
   p.starchrom += ECONOMY.daily.starchrom;
   const got = [];
   for (const [k, n0] of Object.entries(ECONOMY.daily.units)) { const n = Math.min(n0, unitRoom(p)); if (!n) { got.push(`no Securement Unit (your Securement Pods are full at ${unitCap(p)})`); continue; } p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
-  if (!hourlyToday(userId)) p.last_unit_at = Date.now(); // first free hourly unit comes an hour after !daily (a clock !hourly/!secure already started keeps going)
   db.tx(() => {
     savePlayer(p);
     db.q.addDaily.run(userId, stream, bid, Date.now());
     db.q.setDailyStream.run(bid, stream, userId);
   })();
+  startHourly(userId, login, display, bid); // !daily also turns hourly perks on for this stream (keeps a clock already running here)
   const checkins = db.q.countDaily.get(userId).n;
-  return `@${display} ✅ Check-in #${fmt(checkins)}! 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}! For the rest of today you'll also get 1 free Securement Unit every hour while you're in a live stream (one stream at a time — the timer keeps going if you switch). ${bagText(p)}`;
+  return `@${display} ✅ Check-in #${fmt(checkins)}! 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}! Hourly perks are on for this stream too: 1 free Securement Unit + ${ECONOMY.hourlyStarchrom} ${SC} every hour while you're here (in another channel, type !hourly there). ${bagText(p)}`;
 }
 
 function shop() {

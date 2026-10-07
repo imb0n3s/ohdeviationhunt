@@ -108,6 +108,9 @@ try { db.exec(`ALTER TABLE players ADD COLUMN extra_cap INTEGER NOT NULL DEFAULT
 try { db.exec(`ALTER TABLE players ADD COLUMN soup_until INTEGER NOT NULL DEFAULT 0`); } catch {}
 // when the player last switched on hourly perks with !hourly or !secure (B 2026-10-07: !daily isn't required any more)
 try { db.exec(`ALTER TABLE players ADD COLUMN hourly_on_at INTEGER NOT NULL DEFAULT 0`); } catch {}
+// B 2026-10-07: hourly perks belong to ONE stream — the one where !hourly / !secure / !daily switched them on.
+// Another channel (or the next broadcast) needs !hourly again.
+try { db.exec(`ALTER TABLE players ADD COLUMN hourly_stream TEXT`); } catch {}
 // B 2026-10-05: surprise mode is OFF by default for every channel (OBS shows variations/skins as they appear);
 // reset any channel that had it on once, then streamers/mods can turn it back on with !hunt surprise on
 if (!db.prepare(`SELECT 1 FROM settings WHERE key='migr:surprise_off'`).get()) {
@@ -119,6 +122,13 @@ if (!db.prepare(`SELECT 1 FROM settings WHERE key='migr:surprise_off'`).get()) {
 // every Bits purchase, keyed by Twitch's transaction id so a receipt can never be credited twice
 db.exec(`CREATE TABLE IF NOT EXISTS bits_tx (transaction_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, sku TEXT NOT NULL, bits INTEGER NOT NULL, starchrom INTEGER NOT NULL, channel TEXT, at INTEGER NOT NULL)`);
 db.exec(`CREATE TABLE IF NOT EXISTS daily_claims (user_id TEXT NOT NULL, stream_id TEXT NOT NULL, channel TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (user_id, stream_id))`);
+if (!db.prepare(`SELECT 1 FROM settings WHERE key='migr:hourly_stream'`).get()) {
+  // keep timers that were already running: they stay on in the stream the player is in right now
+  const since = Date.now() - 20 * 3600e3;
+  const n = db.prepare(`UPDATE players SET hourly_stream=active_stream WHERE hourly_stream IS NULL AND active_stream IS NOT NULL
+    AND (hourly_on_at>=? OR user_id IN (SELECT user_id FROM daily_claims WHERE at>=?))`).run(since, since).changes;
+  db.prepare(`INSERT INTO settings (key, value) VALUES ('migr:hourly_stream', ?)`).run(String(n));
+}
 
 const q = {
   addBitsTx: db.prepare(`INSERT OR IGNORE INTO bits_tx (transaction_id, user_id, sku, bits, starchrom, channel, at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
@@ -157,7 +167,7 @@ const q = {
   // players whose next hourly free unit is due (eligibility is checked in game.js)
   missingStream: db.prepare(`SELECT user_id, last_channel, active_stream FROM players WHERE last_channel IS NOT NULL AND last_active_at>=?`),
   setActiveStream: db.prepare(`UPDATE players SET active_stream=? WHERE user_id=?`),
-  setHourlyOn: db.prepare(`UPDATE players SET hourly_on_at=?, last_unit_at=? WHERE user_id=?`),
+  setHourlyOn: db.prepare(`UPDATE players SET hourly_on_at=?, last_unit_at=?, hourly_stream=? WHERE user_id=?`),
   playersInChannel: db.prepare(`SELECT * FROM players WHERE last_channel=? AND active_stream IS NOT NULL`),
   dueHourly: db.prepare(`SELECT * FROM players WHERE active_stream IS NOT NULL AND last_unit_at<=?`),
   savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at, gloves=@gloves, extra_cap=@extra_cap, soup_until=@soup_until WHERE user_id=@user_id`),
