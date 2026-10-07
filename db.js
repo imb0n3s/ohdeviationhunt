@@ -106,6 +106,8 @@ try { db.exec(`ALTER TABLE players ADD COLUMN active_stream TEXT`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN gloves TEXT NOT NULL DEFAULT '[]'`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN extra_cap INTEGER NOT NULL DEFAULT 0`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN soup_until INTEGER NOT NULL DEFAULT 0`); } catch {}
+// when the player last switched on hourly perks with !hourly or !secure (B 2026-10-07: !daily isn't required any more)
+try { db.exec(`ALTER TABLE players ADD COLUMN hourly_on_at INTEGER NOT NULL DEFAULT 0`); } catch {}
 // B 2026-10-05: surprise mode is OFF by default for every channel (OBS shows variations/skins as they appear);
 // reset any channel that had it on once, then streamers/mods can turn it back on with !hunt surprise on
 if (!db.prepare(`SELECT 1 FROM settings WHERE key='migr:surprise_off'`).get()) {
@@ -155,6 +157,7 @@ const q = {
   // players whose next hourly free unit is due (eligibility is checked in game.js)
   missingStream: db.prepare(`SELECT user_id, last_channel, active_stream FROM players WHERE last_channel IS NOT NULL AND last_active_at>=?`),
   setActiveStream: db.prepare(`UPDATE players SET active_stream=? WHERE user_id=?`),
+  setHourlyOn: db.prepare(`UPDATE players SET hourly_on_at=?, last_unit_at=? WHERE user_id=?`),
   dueHourly: db.prepare(`SELECT * FROM players WHERE active_stream IS NOT NULL AND last_unit_at<=?`),
   savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at, gloves=@gloves, extra_cap=@extra_cap, soup_until=@soup_until WHERE user_id=@user_id`),
   countPlayers: db.prepare(`SELECT COUNT(*) AS n FROM players`),

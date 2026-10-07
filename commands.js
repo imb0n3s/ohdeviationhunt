@@ -10,7 +10,7 @@ function isModOrOwner(ev) {
   return ev.chatter_user_id === ev.broadcaster_user_id || (ev.badges || []).some((b) => b.set_id === "moderator" || b.set_id === "broadcaster");
 }
 
-const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations appear in the wild while the stream is live — type !secure to catch them. !starchrom · !units · !shop · !buy <n> · !daily · !pods · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
+const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations appear in the wild while the stream is live — type !secure to catch them. !daily · !hourly · !starchrom · !units · !shop · !buy <n> · !pods · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
 
 function makeHandler(pool, spawns) {
   const botId = () => db.getBotAccount()?.user_id;
@@ -63,7 +63,16 @@ function makeHandler(pool, spawns) {
 
     // ---- catching: always allowed, no cooldown (one throw per spawn is enforced in game.js) ----
     const played = () => db.q.touchActive.run(bid, Date.now(), spawns.streamIds?.get(bid) && spawns.live.has(bid) ? spawns.streamIds.get(bid) : null, uid); // remembers where they play (free-unit notices)
-    if (cmd === "!secure" || cmd === "!catch") { played(); const r = spawns.attempt(bid, uid, login, name, args[0]); played(); return reply(r); }
+    if (cmd === "!secure" || cmd === "!catch") {
+      played();
+      const r = spawns.attempt(bid, uid, login, name, args[0]);
+      played();
+      // any !secure in a live stream also switches on today's hourly perks (B 2026-10-07)
+      const started = game.startHourly(uid, login, name, bid);
+      if (!started) return reply(r);
+      const note = game.HOURLY_ON_TEXT();
+      return reply(r ? (r.length + note.length < 495 ? `${r} ${note}` : r) : `@${name} ${note}`);
+    }
 
     // ---- mods / broadcaster: !hunt ... ----
     if (cmd === "!hunt") {
@@ -134,14 +143,14 @@ function makeHandler(pool, spawns) {
     }
 
     // ---- everything else: light per-user cooldown ----
-    const GAME_CMDS = ["!starchrom", "!sc", "!units", "!inv", "!shop", "!buy", "!daily", "!pods", "!pod", "!scrap", "!dev", "!hunttop", "!leaderboard", "!traits", "!stats"];
+    const GAME_CMDS = ["!hourly", "!starchrom", "!sc", "!units", "!inv", "!shop", "!buy", "!daily", "!pods", "!pod", "!scrap", "!dev", "!hunttop", "!leaderboard", "!traits", "!stats"];
     if (!GAME_CMDS.includes(cmd)) return;
     const key = `${bid}:${uid}:${cmd}`;
     if (!isModOrOwner(ev) && Date.now() - (lastReply.get(key) || 0) < USER_CD) return;
     lastReply.set(key, Date.now());
 
     // !daily may come right as the stream starts: ask Twitch first so where they play is recorded with this stream
-    if (cmd === "!daily" && !(spawns.live.has(bid) && spawns.streamIds?.get(bid))) await pool.refreshLive?.();
+    if ((cmd === "!daily" || cmd === "!hourly") && !(spawns.live.has(bid) && spawns.streamIds?.get(bid))) await pool.refreshLive?.();
     played();
     try {
     switch (cmd) {
@@ -149,6 +158,7 @@ function makeHandler(pool, spawns) {
       case "!units": case "!inv": return reply(game.inventory(uid, login, name));
       case "!shop": return reply(game.shop());
       case "!buy": return reply(game.buy(uid, login, name, args));
+      case "!hourly": return reply(game.hourly(uid, login, name, bid));
       case "!daily": {
         // the stream may have just started: ask Twitch right now instead of waiting for the next check
         return reply(game.daily(uid, login, name, bid));

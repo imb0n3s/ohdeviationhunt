@@ -54,9 +54,9 @@ assert.match(game.nextUnitIn(game.loadPlayer("2")), /^(59|60)m$/);
 
 // !daily: once a day (Central), only while live
 assert.match(game.daily("1", "luna", "Luna", "CH2"), /already claimed today's !daily/);
-assert.equal(game.nextUnitIn(game.loadPlayer("3")), "after today's !daily (it resets at midnight Central)");
+assert.equal(game.nextUnitIn(game.loadPlayer("3")), "once you type !hourly (or !secure / !daily) in a live stream");
 raw.prepare("UPDATE daily_claims SET at = at - 86400000").run();          // next day
-assert.equal(game.nextUnitIn(game.loadPlayer("1")), "after today's !daily (it resets at midnight Central)");       // new day needs a new !daily
+assert.equal(game.nextUnitIn(game.loadPlayer("1")), "once you type !hourly (or !secure / !daily) in a live stream");       // new day needs a new start
 assert.match(game.daily("1", "luna", "Luna", "CH2"), /Daily supply drop/);
 streams = {};
 assert.match(game.daily("2", "bob", "Bob", "CH"), /only works while the stream is live/);
@@ -68,3 +68,28 @@ console.log("hourly unit checks passed");
   backdate("2", H + 60e3); const before = units("2");
   const n2 = game.unitNotices(); assert.deepEqual(n2.map((x) => x[0]), ["CH"]); assert.ok(units("2") >= before);
   console.log("self-heal check passed"); }
+
+// !hourly (and !secure, which calls startHourly) switch hourly perks on without !daily (B 2026-10-07)
+{ streams = { CH: "h1" };
+  game.loadPlayer("4", "nina", "Nina"); play("4", "CH");
+  assert.equal(game.hourlyStatus(game.loadPlayer("4")).state, "needs_daily");
+  assert.match(game.hourly("4", "nina", "Nina", "CH"), /Hourly perks on for today/);
+  assert.match(game.hourly("4", "nina", "Nina", "CH"), /already on for today — next free Securement Unit \+ 15 Starchrom in 60m/);
+  assert.equal(game.hourlyStatus(game.loadPlayer("4")).state, "running");
+  backdate("4", H + 60e3); const u4 = units("4");
+  assert.deepEqual(game.unitNotices().map((x) => x[0]), ["CH"]); assert.equal(units("4"), u4 + 1);
+  // !daily afterwards keeps the running clock
+  const before = game.loadPlayer("4").last_unit_at; game.daily("4", "nina", "Nina", "CH");
+  assert.equal(game.loadPlayer("4").last_unit_at, before);
+  // !secure path: startHourly true once, then false
+  game.loadPlayer("5", "omar", "Omar"); play("5", "CH");
+  assert.equal(game.startHourly("5", "omar", "Omar", "CH"), true);
+  assert.equal(game.startHourly("5", "omar", "Omar", "CH"), false);
+  // not live -> nothing
+  streams = {}; game.loadPlayer("6", "pia", "Pia");
+  assert.equal(game.startHourly("6", "pia", "Pia", "CH"), false);
+  assert.match(game.hourly("6", "pia", "Pia", "CH"), /only works while the stream is live/);
+  // next day it has to be switched on again
+  raw.prepare("UPDATE players SET hourly_on_at = hourly_on_at - 86400000 WHERE user_id='5'").run();
+  assert.equal(game.hourlyStatus(game.loadPlayer("5")).state, "needs_daily");
+  console.log("!hourly / !secure start checks passed"); }

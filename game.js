@@ -36,6 +36,27 @@ let streamOf = () => null;
 const dayKey = (ms) => new Date(ms).toLocaleDateString("en-CA", { timeZone: ECONOMY.dailyResetTz });
 function dailyToday(userId) { const last = db.q.lastDaily.get(userId)?.at; return !!last && dayKey(last) === dayKey(Date.now()); }
 function setStreamLookup(fn) { streamOf = fn; }
+// hourly perks are switched on for the day by !daily, !hourly or !secure in a live stream (B 2026-10-07)
+function hourlyToday(userId) {
+  if (dailyToday(userId)) return true;
+  const at = db.q.getPlayer.get(userId)?.hourly_on_at;
+  return !!at && dayKey(at) === dayKey(Date.now());
+}
+// switch hourly perks on (first one lands an hour later). true = just switched on, false = already on / not live
+function startHourly(userId, login, display, bid) {
+  if (!bid || !streamOf(bid) || hourlyToday(userId)) return false;
+  loadPlayer(userId, login, display);
+  const now = Date.now();
+  db.q.setHourlyOn.run(now, now, userId);
+  return true;
+}
+const HOURLY_ON_TEXT = () => `⏰ Hourly perks on for today: +${ECONOMY.hourlyUnits} free Securement Unit and +${ECONOMY.hourlyStarchrom} Starchrom every hour you're in a live stream (first one in 60m).`;
+function hourly(userId, login, display, bid) {
+  if (!bid || !streamOf(bid)) return `@${display} !hourly only works while the stream is live. If the stream just started, Twitch can take a minute or two to show it as live — try again shortly.`;
+  if (startHourly(userId, login, display, bid)) return `@${display} ${HOURLY_ON_TEXT()} Don't forget !daily for a free supply drop.`;
+  const p = loadPlayer(userId, login, display);
+  return `@${display} your hourly perks are already on for today${hourlyOn(p) ? ` — next free Securement Unit + ${ECONOMY.hourlyStarchrom} Starchrom in ${nextUnitIn(p)}` : ""}. They reset at midnight Central (in ${untilReset()}).`;
+}
 let announce = () => {};
 function setAnnouncer(fn) { announce = fn; }
 
@@ -50,20 +71,20 @@ function announcePurchase(userId, item, qty = 1) {
   announce(ch, `🛒 @${row.display} just bought ${what} from the Shop! ${item.kind === "gloves" ? "🧤" : item.kind === "soup" ? "🍲" : "🎉"}`);
   return true;
 }
-// Hourly free units run while the player (a) has claimed today's !daily and (b) is in a live
+// Hourly free units run while the player (a) switched them on today (!daily, !hourly or !secure) and (b) is in a live
 // stream: the channel of their latest game command, during that same broadcast. It's a single
 // "current stream", so watching several streams never earns more; switching streams keeps the timer.
-const hourlyOn = (p) => dailyToday(p.user_id) && !!p.active_stream && streamOf(p.last_channel) === p.active_stream;
+const hourlyOn = (p) => hourlyToday(p.user_id) && !!p.active_stream && streamOf(p.last_channel) === p.active_stream;
 
 // for the panel: is the hourly timer running, and when does the next free unit land?
 function hourlyStatus(p) {
-  if (!dailyToday(p.user_id)) return { state: "needs_daily" };
+  if (!hourlyToday(p.user_id)) return { state: "needs_daily" };
   if (!hourlyOn(p)) return { state: "paused" };
   return { state: "running", at: (p.last_unit_at || Date.now()) + HOUR };
 }
 
 function nextUnitIn(p) {
-  if (!dailyToday(p.user_id)) return "after today's !daily (it resets at midnight Central)";
+  if (!hourlyToday(p.user_id)) return "once you type !hourly (or !secure / !daily) in a live stream";
   if (!hourlyOn(p)) return "in a live stream (type any game command there)";
   const ms = (p.last_unit_at || Date.now()) + HOUR - Date.now();
   return `${Math.max(1, Math.ceil(ms / 60000))}m`;
@@ -315,7 +336,7 @@ class Spawns {
       return warn(`@${display} a throw costs ${ECONOMY.throwCost} ${SC} and you have ${fmt(p.starchrom)}. ${dailyReady(userId) ? "Claim !daily for +" + ECONOMY.daily.starchrom + " " + SC + "." : "Catching deviations earns more."}`);
     }
     if (!(p.units.standard > 0)) {
-      return warn(`@${display} you have no empty Securement Unit to house a deviation. ${hourlyOn(p) ? `Your next free one arrives in ${nextUnitIn(p)}` : dailyReady(userId) ? "Claim !daily for 1 now plus 1 free every hour while this stream is live" : `Your !daily resets at midnight Central (in ${untilReset()})`}, or !buy <amount> for ${fmt(UNITS.standard.price)} ${SC} each (you have ${fmt(p.starchrom)}).`);
+      return warn(`@${display} you have no empty Securement Unit to house a deviation. ${hourlyOn(p) ? `Your next free one arrives in ${nextUnitIn(p)}` : dailyReady(userId) ? "Claim !daily for 1 now (plus 1 free every hour while you're in a live stream)" : `Your !daily resets at midnight Central (in ${untilReset()})`}, or !buy <amount> for ${fmt(UNITS.standard.price)} ${SC} each (you have ${fmt(p.starchrom)}).`);
     }
     p.starchrom -= ECONOMY.throwCost;
     db.addSpent(ECONOMY.throwCost);
@@ -440,7 +461,7 @@ function daily(userId, login, display, bid) {
   p.starchrom += ECONOMY.daily.starchrom;
   const got = [];
   for (const [k, n0] of Object.entries(ECONOMY.daily.units)) { const n = Math.min(n0, unitRoom(p)); if (!n) { got.push(`no Securement Unit (your Securement Pods are full at ${unitCap(p)})`); continue; } p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
-  p.last_unit_at = Date.now();          // first free hourly unit comes an hour after !daily
+  if (!hourlyToday(userId)) p.last_unit_at = Date.now(); // first free hourly unit comes an hour after !daily (a clock !hourly/!secure already started keeps going)
   db.tx(() => {
     savePlayer(p);
     db.q.addDaily.run(userId, stream, bid, Date.now());
@@ -671,4 +692,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

@@ -100,6 +100,7 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   <div class="card"><h2 class="stencil">How to Play</h2><div class="how">
     <kbd>!secure</kbd><div>catch the deviation on screen</div>
     <kbd>!daily</kbd><div>free Starchrom + Securement Units</div>
+    <kbd>!hourly</kbd><div>free unit + Starchrom every hour</div>
     <kbd>!pods</kbd><div>your collection</div>
     <kbd>!shop</kbd><div>units, Capture Soup &amp; gloves</div></div></div>
   <div class="card" style="flex:1;overflow:hidden"><h2 class="stencil">Recent Catches</h2><div class="rec" id="rec"></div></div>
