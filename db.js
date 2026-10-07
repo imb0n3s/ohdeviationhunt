@@ -174,7 +174,7 @@ const q = {
       (p.user_id IN (SELECT broadcaster_id FROM channels WHERE enabled=1)) AS streamer
     FROM players p LEFT JOIN catches c ON c.user_id=p.user_id
     WHERE (@who = 'all' OR (p.user_id IN (SELECT broadcaster_id FROM channels WHERE enabled=1)) = (@who = 'streamers'))
-    GROUP BY p.user_id ORDER BY species DESC, variants DESC, total DESC, LOWER(p.display) ASC LIMIT @n`),
+    GROUP BY p.user_id HAVING species > 0 ORDER BY species DESC, variants DESC, total DESC, LOWER(p.display) ASC LIMIT @n`),
 
   topStreams: db.prepare(`SELECT login, display_name, catches, spawns FROM channels WHERE enabled=1 AND catches>0 ORDER BY catches DESC, spawns DESC LIMIT ?`),
   variantSpecimens: db.prepare(`SELECT id, deviation, variant, t1, t1_level, t2 FROM specimens WHERE variant<>''`),

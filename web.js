@@ -402,7 +402,7 @@ function topPage() {
     : `<p>No one here yet.</p>`;
   return page("Leaderboard", `<h1>Leaderboard</h1>
 <h2>🎥 Top Streams</h2><p>The streams where viewers have secured the most deviations.</p>${streamTable}
-<h2>🏆 Metas — Top 100</h2><p>Everyone who plays, including players who haven't secured anything yet. Streamers running Deviation Hunt are tagged.</p>${metaTable}`);
+<h2>🏆 Metas — Top 100</h2><p>Everyone who has secured at least one deviation. Streamers running Deviation Hunt are tagged.</p>${metaTable}`);
 }
 
 function createApp(pool) {
