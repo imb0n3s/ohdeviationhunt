@@ -179,15 +179,14 @@ function channelList(pool, { limit } = {}) {
   const bot = db.getBotAccount();
   const live = pool?.spawns?.live || new Set(), info = pool?.spawns?.streamInfo || new Map();
   const list = db.listEnabledChannels()
-    .filter((c) => c.broadcaster_id !== bot?.user_id)
-    .map((c) => ({ ...c, isLive: live.has(c.broadcaster_id), info: info.get(c.broadcaster_id) }))
-    // the home channel (FEATURED_CHANNEL, default imbon3s) always leads while it's live
-    .sort((a, b) => ((b.isLive && b.login === FEATURED) - (a.isLive && a.login === FEATURED)) || (b.isLive - a.isLive) || ((b.info?.viewers || 0) - (a.info?.viewers || 0)) || b.catches - a.catches || a.display_name.localeCompare(b.display_name));
+    .map((c) => ({ ...c, isBot: c.broadcaster_id === bot?.user_id, isLive: live.has(c.broadcaster_id), info: info.get(c.broadcaster_id) }))
+    // the 24/7 OHDeviationHunt channel is always first (B 2026-10-07), then the home channel (FEATURED_CHANNEL, default imbon3s) while it's live
+    .sort((a, b) => (b.isBot - a.isBot) || ((b.isLive && b.login === FEATURED) - (a.isLive && a.login === FEATURED)) || (b.isLive - a.isLive) || ((b.info?.viewers || 0) - (a.info?.viewers || 0)) || b.catches - a.catches || a.display_name.localeCompare(b.display_name));
   const shown = limit ? list.slice(0, limit) : list;
   if (!list.length) return { html: `<p>No channels yet — be the first to add it!</p>`, total: 0, live: 0 };
   const html = `<div class="chans">${shown.map((c) => `<a class="chan${c.isLive ? " live" : ""}" href="https://twitch.tv/${esc(c.login)}" target="_blank" rel="noopener">
 <img src="${esc(avatars.get(c.broadcaster_id) || "")}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
-<div class="ci"><div class="cn">${esc(c.display_name)}${c.isLive ? ` <span class="lv">LIVE</span>` : ""}</div>
+<div class="ci"><div class="cn">${esc(c.display_name)}${c.isLive ? ` <span class="lv">LIVE</span>` : ""}${c.isBot ? ` <span class="lv" style="background:#0e7490">24/7</span>` : ""}</div>
 <div class="cs">${fmt(c.catches)} Deviation${c.catches === 1 ? "" : "s"} Secured here</div></div></a>`).join("")}</div>`;
   return { html, total: list.length, live: list.filter((c) => c.isLive).length };
 }
