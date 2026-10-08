@@ -14,10 +14,9 @@ STREAM_KEY comes from the OHDeviationHunt Twitch dashboard (Settings → Stream)
 commit it. Optional env: PAGE_URL, BITRATE (default 3000k). ffmpeg restarts every 24h and after any drop.
 ~3 Mbps ≈ 1 TB/month of upload, so a VPS with included bandwidth is cheaper than Railway egress.
 Audio (B 2026-10-07): PulseAudio null sink "mix" in the container; Chromium (the OBS Source spawn alert on /live) and
-Spotify play into it; ffmpeg streams mix.monitor (falls back to silence if PulseAudio fails).
-Spotify = go-librespot v0.10.3 (spotify.sh) as Connect device "Deviation Hunt 24/7", logged in once with device_auth
-(the log prints `[spotify] PAIR: ... code XXXX` → spotify.com/pair while signed in as the OHDeviationHunt Spotify
-Premium account). Login + playlist + volume persist in the docker volume dh-spotify (/spotify). It keeps the playlist
-playing (shuffle + repeat, resumes if paused >1 min). `docker exec dh-stream playlist <link>`, `docker exec dh-stream musicvol 40`.
-Update the box: rerun install.sh (keeps the stream key from the running container). B accepted the DMCA risk; suggested
-turning off Store past broadcasts on the OHDeviationHunt channel. Stream title idea: "Deviation Hunt 24/7 — play in chat with !secure".
+mpv (music.sh) play into it; ffmpeg streams mix.monitor (falls back to silence if PulseAudio fails).
+Music = every song in the server folder /root/dh-music (mounted at /music) on shuffle; .zip albums dropped there are
+unpacked automatically; new songs picked up within the hour (or at once after `docker exec dh-stream musicvol N`).
+Use DMCA-free music (StreamBeats etc.). Spotify was tried (go-librespot): Spotify refuses audio keys to unofficial
+players ("refused the audio key (code 1)") and rate-limits (429) — removed. Update the box: rerun install.sh (keeps
+the stream key from the running container). Stream title idea: "Deviation Hunt 24/7 — play in chat with !secure".

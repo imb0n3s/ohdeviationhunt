@@ -2,7 +2,7 @@
 # 24/7 Deviation Hunt stream: opens PAGE_URL in a hidden browser and sends it to Twitch with ffmpeg.
 # Env: STREAM_KEY (from the Twitch dashboard — set it on the server, never commit it)
 #      PAGE_URL   (default https://deviationhunt.ohwikiguide.com/live/ohdeviationhunt)
-#      SPOTIFY_PLAYLIST (optional playlist link; see spotify.sh)   MUSIC_VOLUME (0-100, default 40)
+#      MUSIC_VOLUME (0-100, default 60; songs go in /music — see music.sh)
 #      BITRATE    (default 2500k)   OUT_RES (default 1280x720; 1920x1080 needs ~4 cores)   INGEST (default rtmp://live.twitch.tv/app)   CHROME (browser binary)
 set -u
 PAGE_URL="${PAGE_URL:-https://deviationhunt.ohwikiguide.com/live/ohdeviationhunt}"
@@ -13,14 +13,14 @@ CHROME="${CHROME:-chromium}"
 OUT="${OUT_URL:-$INGEST/${STREAM_KEY:?set STREAM_KEY}}"
 export DISPLAY=:99
 
-# Audio: a PulseAudio "mix" that the browser (spawn alert) and Spotify play into; ffmpeg streams that mix.
+# Audio: a PulseAudio "mix" that the browser (spawn alert) and the music player play into; ffmpeg streams that mix.
 AUDIO_IN=(-f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100)   # fallback: silence
 mkdir -p "${XDG_RUNTIME_DIR:-/tmp/xdg}"
 if command -v pulseaudio >/dev/null && pulseaudio -D --exit-idle-time=-1 --disallow-exit --log-target=stderr 2>/dev/null; then
   sleep 1
   pactl load-module module-null-sink sink_name=mix sink_properties=device.description=mix >/dev/null && pactl set-default-sink mix \
     && AUDIO_IN=(-thread_queue_size 1024 -f pulse -sample_rate 44100 -channels 2 -i mix.monitor) && echo "[stream] audio: PulseAudio mix"
-  command -v go-librespot >/dev/null && /spotify.sh &
+  /music.sh &
 fi
 
 Xvfb :99 -screen 0 1920x1080x24 -nolisten tcp &
@@ -31,7 +31,7 @@ while true; do
     --user-data-dir=/tmp/chrome-profile "$PAGE_URL" >/dev/null 2>&1 &
   CPID=$!
   sleep 8
-  # audio = the mix (spawn alert + Spotify), or silence if PulseAudio isn't available; 30 fps, keyframe every 2 s
+  # audio = the mix (spawn alert + music), or silence if PulseAudio isn't available; 30 fps, keyframe every 2 s
   timeout 24h ffmpeg -hide_banner -loglevel warning \
     -f x11grab -framerate 30 -video_size 1920x1080 -draw_mouse 0 -i :99.0 \
     "${AUDIO_IN[@]}" \

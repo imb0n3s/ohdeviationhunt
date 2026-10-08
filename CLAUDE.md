@@ -69,7 +69,8 @@
 - 24/7 stream: /live/<login> page (live.js) + streamer/ (Docker: Xvfb+Chromium+ffmpeg). See docs/live-stream.md. The bot's
   own channel is auto-added as a game channel (index.js) and hidden from Top Streams (TOP_STREAMS_HIDE). It is "always on"
   (Spawns.alwaysOn): spawns keep coming with a quiet chat (B 2026-10-06 "keep it up"); setting alwayson:<bid>=on does the same elsewhere.
-  Music: go-librespot Spotify Connect + PulseAudio mix in the stream box (docs/live-stream.md); the VPS is IONOS 67.217.241.137 (B SSHes in from PowerShell).
+  Music: songs in /root/dh-music on the VPS play on shuffle via mpv + PulseAudio mix (docs/live-stream.md; Spotify doesn't work —
+  it refuses unofficial players). The VPS is IONOS 67.217.241.137 (B SSHes in from PowerShell).
 - !hunt spawn is always random (B 2026-10-06 removed picking a deviation/variation/skin; data.findWithVariant is unused).
 - Trading (website, one-to-one) is built on branch `trading` (NOT merged/live; B 2026-10-04 "don't publish yet"). To launch: merge trading into main and push.
 - Hourly perks (B 2026-10-07): belong to ONE stream — switched on by !hourly, the first !secure, or !daily in that live
