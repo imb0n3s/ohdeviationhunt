@@ -3,7 +3,7 @@
 //
 //   https://<site>/obs-source/<code>          the page for OBS (checks every 1.5 s)
 //   https://<site>/obs-source/<code>?demo=1   always shows a sample, for positioning in OBS (plays the alert once)
-//   ?sound=0 = no spawn alert · ?volume=0-100 (default 70) · ?demo=base / ?demo=variation = normal / Legendary alert sample
+//   ?sound=0 = no spawn alert · ?volume=0-100 (default 100) · ?demo=base / ?demo=variation = normal / Legendary alert sample
 //   https://<site>/obs-source/<code>/state    JSON the page polls
 //
 // <code> is a random per-channel code (so the link doesn't carry the channel name, and other
@@ -137,9 +137,9 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
   function setCount(sec){ sec=Math.max(0,Math.ceil(sec)); count.firstChild.nodeValue=Math.floor(sec/60)+":"+("0"+(sec%60)).slice(-2); count.className="count"+(sec<=10?" low":""); }
   var current=null, skew=0, hideTimer=null;
   // ---- spawn alert sound (B 2026-10-07): synthesized in the page, so there's no file to load.
-  // ?sound=0 turns it off, ?volume=0-100 (default 70). Legendary spawns (variation/skin) get a sparkle.
+  // ?sound=0 turns it off, ?volume=0-100 (default 100). Legendary spawns (variation/skin) get a sparkle.
   // Never on the homepage previews. In OBS tick "Control audio via OBS" to put it on the mixer.
-  var qs=new URLSearchParams(location.search), vol=Math.max(0,Math.min(100,parseFloat(qs.get("volume")||"70")))/100;
+  var qs=new URLSearchParams(location.search), vol=Math.max(0,Math.min(100,parseFloat(qs.get("volume")||"100")))/100;
   var soundOn=code!=="preview"&&qs.get("sound")!=="0"&&vol>0, actx=null, firstPoll=true;
   function tone(t,f,dur,type,g0,f2){var o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);
     g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(g0*vol,t+0.015);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+dur+0.05);}
@@ -155,9 +155,9 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
     if(actx){
       var t=actx.currentTime+0.05;
       // scanner ping: low thump + two rising blips
-      tone(t,150,0.35,"sine",0.5,60);
-      tone(t+0.02,880,0.28,"sine",0.35);tone(t+0.02,1760,0.18,"triangle",0.08);
-      tone(t+0.32,1320,0.45,"sine",0.35);tone(t+0.32,2640,0.25,"triangle",0.08);
+      tone(t,150,0.35,"sine",0.8,60);
+      tone(t+0.02,880,0.28,"sine",0.6);tone(t+0.02,1760,0.18,"triangle",0.08);
+      tone(t+0.32,1320,0.45,"sine",0.6);tone(t+0.32,2640,0.25,"triangle",0.08);
       if(legendary){ // golden sparkle before the voice
         [1046.5,1318.5,1568,2093,2637].forEach(function(f,i){tone(t+0.8+i*0.09,f,0.6,"triangle",0.22);tone(t+0.8+i*0.09,f*2,0.35,"sine",0.05);});
       }
