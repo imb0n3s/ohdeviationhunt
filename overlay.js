@@ -146,7 +146,9 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
   // voice lines (Piper TTS, generated for the game): "A Deviation has been located." / "A Legendary Deviation has been located."
   var voice=null, voiceLeg=null;
   if(soundOn){ voice=new Audio("/panel/dh-alert.wav"); voiceLeg=new Audio("/panel/dh-alert-legendary.wav"); voice.preload=voiceLeg.preload="auto"; voice.volume=voiceLeg.volume=vol; }
-  function say(a,ms){ if(!a)return; setTimeout(function(){ try{ a.currentTime=0; var p=a.play(); if(p&&p.catch)p.catch(function(){}); }catch(e){} }, ms); }
+  // tells the server whether the alert played (shows in the server log as [obs-sound]) — for troubleshooting
+  function report(ev){ try{ fetch("/obs-source/"+encodeURIComponent(code)+"/sound?ev="+encodeURIComponent(String(ev).slice(0,120)),{method:"POST",keepalive:true}); }catch(e){} }
+  function say(a,ms){ if(!a)return; setTimeout(function(){ try{ a.currentTime=0; var p=a.play(); if(p&&p.then)p.then(function(){report("voice played, ctx="+(actx&&actx.state))},function(e){report("voice blocked: "+(e&&e.name)+" "+(e&&e.message));}); }catch(e){ report("voice error: "+e.message); } }, ms); }
   function alertSound(legendary){
     if(!soundOn)return;
     try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==="suspended")actx.resume(); }catch(e){ actx=null; }
@@ -212,6 +214,12 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 }
 
 function mount(app, pool) {
+  // troubleshooting beacon from the page: did the spawn alert play?
+  app.post("/obs-source/:code/sound", (req, res) => {
+    const bid = channelForCode(String(req.params.code).toLowerCase());
+    if (bid) console.log(`[obs-sound] ${bid}: ${String(req.query.ev || "").slice(0, 120)}`);
+    res.status(204).end();
+  });
   app.get("/obs-source/:code/state", (req, res) => {
     res.set("Cache-Control", "no-store");
     const st = stateFor(pool, req.params.code);
