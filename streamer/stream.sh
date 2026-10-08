@@ -7,7 +7,7 @@
 set -u
 PAGE_URL="${PAGE_URL:-https://deviationhunt.ohwikiguide.com/live/ohdeviationhunt}"
 BITRATE="${BITRATE:-2500k}"
-OUT_RES="${OUT_RES:-1280x720}"   # page renders at 1080p, sent at 720p (light on a 2-core server)
+OUT_RES="${OUT_RES:-1280x720}"   # the 1920x1080 page is drawn straight at this size (zoomed out), so nothing has to be rescaled
 INGEST="${INGEST:-rtmp://live.twitch.tv/app}"
 CHROME="${CHROME:-chromium}"
 OUT="${OUT_URL:-$INGEST/${STREAM_KEY:?set STREAM_KEY}}"
@@ -23,19 +23,21 @@ if command -v pulseaudio >/dev/null && pulseaudio -D --exit-idle-time=-1 --disal
   /music.sh &
 fi
 
-Xvfb :99 -screen 0 1920x1080x24 -nolisten tcp &
+W="${OUT_RES%x*}"; H="${OUT_RES#*x}"
+ZOOM=$(awk "BEGIN{printf \"%.4f\", $W/1920}")
+Xvfb :99 -screen 0 "${W}x${H}x24" -nolisten tcp &
 sleep 2
 while true; do
-  "$CHROME" --no-sandbox --kiosk --start-fullscreen --window-position=0,0 --window-size=1920,1080 \
+  "$CHROME" --no-sandbox --kiosk --start-fullscreen --window-position=0,0 --window-size=1920,1080 --force-device-scale-factor="$ZOOM" \
     --disable-infobars --noerrdialogs --hide-scrollbars --disable-session-crashed-bubble --autoplay-policy=no-user-gesture-required \
     --user-data-dir=/tmp/chrome-profile "$PAGE_URL" >/dev/null 2>&1 &
   CPID=$!
   sleep 8
   # audio = the mix (spawn alert + music), or silence if PulseAudio isn't available; 30 fps, keyframe every 2 s
   timeout 24h ffmpeg -hide_banner -loglevel warning \
-    -f x11grab -framerate 30 -video_size 1920x1080 -draw_mouse 0 -i :99.0 \
+    -f x11grab -framerate 30 -video_size "${W}x${H}" -draw_mouse 0 -i :99.0 \
     "${AUDIO_IN[@]}" \
-    -vf "scale=${OUT_RES/x/:}:flags=bicubic" -c:v libx264 -preset veryfast -tune zerolatency -b:v "$BITRATE" -maxrate "$BITRATE" -bufsize 6000k \
+    -stats -stats_period 60 -c:v libx264 -preset veryfast -tune zerolatency -b:v "$BITRATE" -maxrate "$BITRATE" -bufsize 6000k \
     -pix_fmt yuv420p -g 60 -keyint_min 60 -af aresample=async=1000 -c:a aac -b:a 128k -ar 44100 -f flv "$OUT"
   echo "[stream] ffmpeg stopped ($?) — restarting in 5s" >&2
   kill "$CPID" 2>/dev/null; sleep 5   # fresh browser each day / after any drop

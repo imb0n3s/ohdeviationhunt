@@ -138,7 +138,10 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     parts.push('<span class="it">Play here any time: <b>!hourly</b> · <b>!daily</b> · <b>!secure</b> — <b>deviationhunt.ohwikiguide.com</b></span>');
     const once=parts.join('<span class="sep">◆</span>')+'<span class="sep">◆</span>';
     if(once===tickHtml)return; tickHtml=once;
-    const run=document.getElementById("run"); run.innerHTML=once+once; runW=run.scrollWidth/2;
+    // repeat the line until it's at least as wide as the bar, so the scroll never shows a gap
+    const run=document.getElementById("run"), win=run.parentNode.clientWidth; let unit=once; run.innerHTML=unit;
+    for(let i=0;i<6&&run.scrollWidth<win;i++){unit+=once;run.innerHTML=unit;}
+    run.innerHTML=unit+unit; runW=run.scrollWidth/2;
   }
   function frame(t){ const dt=Math.min(100,t-last); last=t; if(runW){ x-=dt*0.09; if(-x>=runW)x+=runW; document.getElementById("run").style.transform="translateX("+x.toFixed(1)+"px)"; } requestAnimationFrame(frame); }
   requestAnimationFrame(frame);
