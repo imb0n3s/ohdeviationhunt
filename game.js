@@ -208,7 +208,7 @@ function rewardFor(s) {
 
 function spawnAnnouncement(s, bid) {
   // surprise mode on: never says if it's a variation/skin (the result reveals it); off: says so right away
-  if (isRevealed(bid, s)) return `👀 A 🌟 LEGENDARY ${s.dev.name} (${variantLabel(s.variant)}) has been spotted in the wild! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it. 💰 Fill the Legendary pool: !donate <amount> (up to ${fmt(ECONOMY.legendaryPoolMax)} ${SC} each) — at ${fmt(ECONOMY.legendaryPoolGoal)}, every donor who throws !secure catches it for sure!`;
+  if (isRevealed(bid, s)) return `👀 A 🌟 LEGENDARY ${s.dev.name} (${variantLabel(s.variant)}) has been spotted in the wild! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it. 💰 To add to the ${fmt(ECONOMY.legendaryPoolGoal)} ${SC} pool for a 100% catch rate, donate up to ${fmt(ECONOMY.legendaryPoolMax)} ${SC} using !donate <amount>`;
   return `👀 A ${s.dev.name} has been spotted in the wild! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`;
 }
 
