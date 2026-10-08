@@ -107,7 +107,7 @@ form.find{display:flex;gap:8px;margin:8px 0}form.find input{flex:1;min-width:0;p
 form.find button{padding:0 18px;border-radius:9px;border:0;background:var(--accent);color:#fff;font-weight:600}
 footer{margin-top:48px;color:var(--muted);font-size:.9em}footer a{color:var(--muted)}a{color:var(--accent)}
 nav{display:flex;gap:18px;margin-bottom:24px;flex-wrap:wrap}nav a.me{color:var(--accent);font-weight:700}nav a{color:var(--muted);text-decoration:none;font-weight:600}nav a:hover{color:var(--text)}
-</style></head><body><main><nav><a href="/">${esc(cfg.BOT_NAME)}</a><a href="/commands">Commands</a><a href="/dex">All Deviations</a><a href="/channels">Channels</a><a href="/streamers">For Streamers</a><a href="/top">Leaderboard</a><a href="/me" class="me">My Securement Pods</a><a href="${esc(cfg.WIKI_BASE)}">OHWikiGuide</a></nav>${body}
+</style></head><body><main><nav><a href="/">${esc(cfg.BOT_NAME)}</a><a href="/commands">Commands</a><a href="/dex">All Deviations</a><a href="/channels">Channels</a><a href="/streamers">For Streamers</a><a href="/top">Leaderboard</a><a href="/me" class="me">My Securement Pods</a><a href="${esc(cfg.WIKI_BASE)}">OHWikiGuide</a><a href="https://discord.gg/FZtkXeGeUA" target="_blank" rel="noopener">Discord</a></nav>${body}
 <footer>Deviation data from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">ohwikiguide.com</a> · <a href="${esc(cfg.TERMS_URL)}">Terms</a> · <a href="${esc(cfg.PRIVACY_URL)}">Privacy</a>${cfg.DISCORD_URL ? ` · <a href="${esc(cfg.DISCORD_URL)}">Discord</a>` : ""} · Fan-made, not affiliated with Starry Studio / NetEase.</footer></main></body></html>`;
 }
 const simple = (title, heading, text, extra = "") => page(title, `<h1>${esc(heading)}</h1><p>${text}</p>${extra}<p><a href="/">&larr; Back</a></p>`);
