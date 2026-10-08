@@ -24,7 +24,7 @@ function commandSections() {
       ["!hunttop", "The leaderboard link. Also `!leaderboard`."],
       ["!hunt", "A quick how-to-play reminder in chat."],
     ] },
-    { id: "streamer", title: "Streamer & Mod Commands", note: "For the broadcaster and moderators, in your own chat.", rows: [
+    { id: "streamer", title: "Streamer & Mod Commands", note: "For the broadcaster and moderators (Lead Moderators too), in your own chat. Setup, the OBS Source and the spawn alert: see For Streamers (deviationhunt.ohwikiguide.com/streamers).", rows: [
       ["!hunt spawn", "Spawn a random deviation right now."],
       ["!hourlycheck", "Lists everyone whose hourly timer is running in this channel right now, with minutes until their next free Securement Unit."],
       ["!hunt interval <minutes>", `How often deviations appear while you're live (2–120 minutes; default about every ${cfg.SPAWN_INTERVAL_MIN}).`],

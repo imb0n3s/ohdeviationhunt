@@ -107,7 +107,7 @@ form.find{display:flex;gap:8px;margin:8px 0}form.find input{flex:1;min-width:0;p
 form.find button{padding:0 18px;border-radius:9px;border:0;background:var(--accent);color:#fff;font-weight:600}
 footer{margin-top:48px;color:var(--muted);font-size:.9em}footer a{color:var(--muted)}a{color:var(--accent)}
 nav{display:flex;gap:18px;margin-bottom:24px;flex-wrap:wrap}nav a.me{color:var(--accent);font-weight:700}nav a{color:var(--muted);text-decoration:none;font-weight:600}nav a:hover{color:var(--text)}
-</style></head><body><main><nav><a href="/">${esc(cfg.BOT_NAME)}</a><a href="/commands">Commands</a><a href="/dex">All Deviations</a><a href="/channels">Channels</a><a href="/top">Leaderboard</a><a href="/me" class="me">My Securement Pods</a><a href="${esc(cfg.WIKI_BASE)}">OHWikiGuide</a></nav>${body}
+</style></head><body><main><nav><a href="/">${esc(cfg.BOT_NAME)}</a><a href="/commands">Commands</a><a href="/dex">All Deviations</a><a href="/channels">Channels</a><a href="/streamers">For Streamers</a><a href="/top">Leaderboard</a><a href="/me" class="me">My Securement Pods</a><a href="${esc(cfg.WIKI_BASE)}">OHWikiGuide</a></nav>${body}
 <footer>Deviation data from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">ohwikiguide.com</a> · <a href="${esc(cfg.TERMS_URL)}">Terms</a> · <a href="${esc(cfg.PRIVACY_URL)}">Privacy</a>${cfg.DISCORD_URL ? ` · <a href="${esc(cfg.DISCORD_URL)}">Discord</a>` : ""} · Fan-made, not affiliated with Starry Studio / NetEase.</footer></main></body></html>`;
 }
 const simple = (title, heading, text, extra = "") => page(title, `<h1>${esc(heading)}</h1><p>${text}</p>${extra}<p><a href="/">&larr; Back</a></p>`);
@@ -199,6 +199,68 @@ ${c.html}
 <p style="margin-top:24px">Streamer? <a href="/auth/twitch?action=add">Add ${esc(cfg.BOT_NAME)} to your channel</a>.</p>`);
 }
 
+function streamersPage() {
+  const bot = db.getBotAccount();
+  const botName = bot?.login || "the bot";
+  return page("For Streamers", `
+<h1>For Streamers</h1>
+<p>Everything you need to run ${esc(cfg.BOT_NAME)} on your channel: setup, the OBS Source, and every streamer &amp; mod command. Commands work for the broadcaster and moderators (including Lead Moderators) in your own chat.</p>
+<div class="card">
+  <a class="btn" href="/auth/twitch?action=add">Add ${esc(cfg.BOT_NAME)} to my channel</a><a class="btn secondary" href="/auth/twitch?action=remove">Remove it</a>
+  <p style="margin-bottom:0">You log in with Twitch once; the bot only gets permission to read and post in your chat.${bot ? ` Prefer chat? Type <kbd>!join</kbd> in <a href="https://twitch.tv/${esc(bot.login)}">twitch.tv/${esc(bot.login)}</a> (<kbd>!leave</kbd> there removes it).` : ""}</p>
+</div>
+
+<h2 id="setup">Setup in 4 Steps</h2>
+<div class="card"><ol style="margin:0;padding-left:20px;line-height:1.7">
+<li><b>Add the bot</b> with the button above (or <kbd>!join</kbd> in the bot's chat).</li>
+<li><b>Make it a mod:</b> type <kbd>/mod ${esc(botName)}</kbd> in your chat so its messages aren't rate-limited.</li>
+<li><b>Add the OBS Source</b> (optional, recommended): type <kbd>!hunt obs</kbd> in your chat, add a <b>Browser</b> source in OBS with that link at <b>600 × 600</b>, and tick <b>Control audio via OBS</b> so your viewers hear the spawn alert (you won't, unless you turn on monitoring). Details <a href="#obs">below</a>.</li>
+<li><b>Go live.</b> Deviations appear about every ${cfg.SPAWN_INTERVAL_MIN} minutes while you're live and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes. Test it any time with <kbd>!hunt spawn</kbd>.</li>
+</ol>
+<p style="margin-bottom:0">Tell your viewers to type <kbd>!hourly</kbd> (free Securement Unit + Starchrom every hour in your stream), <kbd>!daily</kbd> once a day, and <kbd>!secure</kbd> when a deviation shows up. Their Securement Pods follow them to every channel. Full viewer list: <a href="/commands">Commands</a>.</p>
+</div>
+
+<h2 id="obs">OBS Source</h2>
+<div class="card"><p style="margin-top:0">Show the deviation on your stream while it can be caught: its picture, name, Variation or Skin (unless you turn on surprise mode, below — it hides it in chat too), and a countdown. It appears when one is spotted and disappears when it's secured or gets away.</p>
+<p>This is what your viewers see on stream when a deviation shows up (live previews, with the real countdown), and for 12 seconds after it's gone: who secured it (gold for Legendary catches):</p>
+<div class="obsprev">${[["base", "A spawn"], ["variation", "A Variation spawns (Legendary)"], ["result", "After: who caught it"], ["resultlegend", "Caught a Legendary"]].map(([k, l]) => `<figure><div class="obsframe"><iframe src="/obs-preview?kind=${k}" title="OBS Source preview: ${l}" loading="lazy" scrolling="no"></iframe></div><figcaption>${l}</figcaption></figure>`).join("")}</div>
+<script>(function(){function fit(){document.querySelectorAll(".obsframe").forEach(function(f){var i=f.querySelector("iframe");i.style.transform="scale("+(f.clientWidth/600)+")";});}fit();addEventListener("resize",fit);})();</script>
+<p>Type <kbd>!hunt obs</kbd> in your chat (broadcaster or mods) and the bot replies with your channel's link. In OBS add a <b>Browser</b> source with that link, size <b>600 × 600</b>. Add <code>?demo=1</code> to the end while you position it so you can see it (or <code>?demo=result</code> to see the "who caught it" card), then remove it.</p>
+<p><b>🔊 Spawn alert:</b> when a deviation appears, the OBS Source plays a scanner ping and a voice says <i>"A Deviation has been located."</i> Variations and Skins get a golden sparkle and <i>"A Legendary Deviation has been located."</i> (with surprise mode on, every spawn gets the normal alert so nothing is given away). In the Browser source's properties tick <b>Control audio via OBS</b>: the alert then goes to your <b>stream only</b> — your viewers hear it, you don't (OBS doesn't play it to your speakers unless you turn on monitoring) — and it gets its own volume slider in your Audio Mixer. Link options: <code>?volume=40</code> (0–100, default 100) or <code>?sound=0</code> for no sound. <code>?demo=base</code> plays the normal alert and <code>?demo=variation</code> the Legendary one, so you can set the level.</p>
+<h3 style="margin:18px 0 6px">Your OBS Source options</h3>
+<p style="margin-top:0">Type these in your chat (broadcaster or mods). They only change your channel.</p>
+<table class="cmds"><tr><th>Command</th><th>What it does</th></tr>
+<tr><td><kbd>!hunt surprise on</kbd></td><td><b>Surprise mode.</b> Chat and your OBS Source show every deviation as the normal one, so nobody knows it's a Variation or Skin until the result. <b>Off by default:</b> chat names a Variation or Skin and the OBS Source shows it (picture and name) as soon as it appears. <kbd>!hunt surprise off</kbd> to switch back.</td></tr>
+<tr><td><kbd>!hunt spawnchat off</kbd></td><td><b>OBS only.</b> No chat message when a deviation appears — it only shows on your OBS Source. Who caught it (or that it got away) still posts in chat. If your OBS Source isn't open, chat still announces spawns so the game keeps working. <kbd>!hunt spawnchat on</kbd> to turn chat messages back on.</td></tr>
+<tr><td><kbd>!hunt chatdelay 14</kbd></td><td>Seconds chat waits before posting a new deviation and the result, so your stream (which runs a few seconds behind chat) shows it first. 0–30, default ${cfg.RESULT_CHAT_DELAY_SECONDS}. Only while your OBS Source is open.</td></tr>
+</table></div>
+
+<h2 id="commands">Streamer &amp; Mod Commands</h2>
+<div class="card">
+<table class="cmds"><tr><th>Command</th><th>What it does</th></tr>
+<tr><td><kbd>!hunt spawn</kbd></td><td>Release a random deviation right now.</td></tr>
+<tr><td><kbd>!hourlycheck</kbd></td><td>Lists everyone whose hourly timer is running in this channel right now, with minutes until their next free Securement Unit.</td></tr>
+<tr><td><kbd>!hunt interval 10</kbd></td><td>Minutes between spawns (default ${cfg.SPAWN_INTERVAL_MIN}).</td></tr>
+<tr><td><kbd>!hunt off</kbd> / <kbd>!hunt on</kbd></td><td>Pause or resume spawns (commands keep working).</td></tr>
+<tr><td><kbd>!hunt status</kbd></td><td>Live status, spawn timer and what's loose right now.</td></tr>
+<tr><td><kbd>!hunt obs</kbd></td><td>Get your OBS Source link (see <a href="#obs">OBS Source</a>).</td></tr>
+<tr><td><kbd>!hunt surprise on/off</kbd></td><td>Hide Variations/Skins in chat and on your OBS Source until the result (off by default).</td></tr>
+<tr><td><kbd>!hunt spawnchat on/off</kbd></td><td>Off = new deviations only show on your OBS Source; results always post in chat.</td></tr>
+<tr><td><kbd>!hunt chatdelay &lt;seconds&gt;</kbd></td><td>How long chat waits so your OBS Source shows things first (default ${cfg.RESULT_CHAT_DELAY_SECONDS}).</td></tr>
+<tr><td><kbd>!hunt leave</kbd></td><td>Remove the bot from your channel. Everyone keeps their collections.</td></tr>
+<tr><td><kbd>!hunt help</kbd></td><td>Lists these commands in chat.</td></tr>
+</table>
+<p>Deviations only appear while your stream is live and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes.</p>
+</div>
+<h2>Good to Know</h2>
+<div class="card">
+<p style="margin-top:0"><b>Lead Moderators and mods</b> can use every command above in your chat.</p>
+<p><b>Streaming together (Shared Chat)?</b> Viewers in your partner's chat can play in your game too, and the bot's messages show in both chats.</p>
+<p><b>Leaving:</b> <kbd>!hunt leave</kbd> in your chat (or Remove it above). Everyone keeps their Securement Pods.</p>
+<p style="margin-bottom:0">Questions? Ask in the <a href="https://twitch.tv/${esc(botName)}">24/7 channel</a> or on <a href="${esc(cfg.WIKI_BASE)}/Deviation_Hunt">the wiki page</a>.</p>
+</div>`);
+}
+
 function landing(pool) {
   const bot = db.getBotAccount();
   const botName = bot?.login || "the bot";
@@ -249,37 +311,9 @@ ${chatExamples(botName)}
 <p><kbd>!traits</kbd> — your latest catch's Skill Rating, Activity Rating and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
 <p><kbd>!dev behemoth</kbd> — what a deviation does and where it drops · <kbd>!hunttop</kbd> — leaderboard · <kbd>!hunt</kbd> — help</p>
 </div>
-<h2 id="obs">OBS Source</h2>
-<div class="card"><p style="margin-top:0">Show the deviation on your stream while it can be caught: its picture, name, Variation or Skin (unless you turn on surprise mode, below — it hides it in chat too), and a countdown. It appears when one is spotted and disappears when it's secured or gets away.</p>
-<p>This is what your viewers see on stream when a deviation shows up (live previews, with the real countdown), and for 12 seconds after it's gone: who secured it (gold for Legendary catches):</p>
-<div class="obsprev">${[["base", "A spawn"], ["variation", "A Variation spawns (Legendary)"], ["result", "After: who caught it"], ["resultlegend", "Caught a Legendary"]].map(([k, l]) => `<figure><div class="obsframe"><iframe src="/obs-preview?kind=${k}" title="OBS Source preview: ${l}" loading="lazy" scrolling="no"></iframe></div><figcaption>${l}</figcaption></figure>`).join("")}</div>
-<script>(function(){function fit(){document.querySelectorAll(".obsframe").forEach(function(f){var i=f.querySelector("iframe");i.style.transform="scale("+(f.clientWidth/600)+")";});}fit();addEventListener("resize",fit);})();</script>
-<p>Type <kbd>!hunt obs</kbd> in your chat (broadcaster or mods) and the bot replies with your channel's link. In OBS add a <b>Browser</b> source with that link, size <b>600 × 600</b>. Add <code>?demo=1</code> to the end while you position it so you can see it (or <code>?demo=result</code> to see the "who caught it" card), then remove it.</p>
-<p><b>🔊 Spawn alert:</b> when a deviation appears, the OBS Source plays a scanner ping and a voice says <i>"A Deviation has been located."</i> Variations and Skins get a golden sparkle and <i>"A Legendary Deviation has been located."</i> (with surprise mode on, every spawn gets the normal alert so nothing is given away). In the Browser source's properties tick <b>Control audio via OBS</b>: the alert then goes to your <b>stream only</b> — your viewers hear it, you don't (OBS doesn't play it to your speakers unless you turn on monitoring) — and it gets its own volume slider in your Audio Mixer. Link options: <code>?volume=40</code> (0–100, default 100) or <code>?sound=0</code> for no sound. <code>?demo=base</code> plays the normal alert and <code>?demo=variation</code> the Legendary one, so you can set the level.</p>
-<h3 style="margin:18px 0 6px">Your OBS Source options</h3>
-<p style="margin-top:0">Type these in your chat (broadcaster or mods). They only change your channel.</p>
-<table class="cmds"><tr><th>Command</th><th>What it does</th></tr>
-<tr><td><kbd>!hunt surprise on</kbd></td><td><b>Surprise mode.</b> Chat and your OBS Source show every deviation as the normal one, so nobody knows it's a Variation or Skin until the result. <b>Off by default:</b> chat names a Variation or Skin and the OBS Source shows it (picture and name) as soon as it appears. <kbd>!hunt surprise off</kbd> to switch back.</td></tr>
-<tr><td><kbd>!hunt spawnchat off</kbd></td><td><b>OBS only.</b> No chat message when a deviation appears — it only shows on your OBS Source. Who caught it (or that it got away) still posts in chat. If your OBS Source isn't open, chat still announces spawns so the game keeps working. <kbd>!hunt spawnchat on</kbd> to turn chat messages back on.</td></tr>
-<tr><td><kbd>!hunt chatdelay 14</kbd></td><td>Seconds chat waits before posting a new deviation and the result, so your stream (which runs a few seconds behind chat) shows it first. 0–30, default ${cfg.RESULT_CHAT_DELAY_SECONDS}. Only while your OBS Source is open.</td></tr>
-</table></div>
-
-<h2>Streamer & Mod Commands</h2>
-<div class="card">
-<table class="cmds"><tr><th>Command</th><th>What it does</th></tr>
-<tr><td><kbd>!hunt spawn</kbd></td><td>Release a random deviation right now.</td></tr>
-<tr><td><kbd>!hourlycheck</kbd></td><td>Lists everyone whose hourly timer is running in this channel right now, with minutes until their next free Securement Unit.</td></tr>
-<tr><td><kbd>!hunt interval 10</kbd></td><td>Minutes between spawns (default ${cfg.SPAWN_INTERVAL_MIN}).</td></tr>
-<tr><td><kbd>!hunt off</kbd> / <kbd>!hunt on</kbd></td><td>Pause or resume spawns (commands keep working).</td></tr>
-<tr><td><kbd>!hunt status</kbd></td><td>Live status, spawn timer and what's loose right now.</td></tr>
-<tr><td><kbd>!hunt obs</kbd></td><td>Get your OBS Source link (see <a href="#obs">OBS Source</a> above).</td></tr>
-<tr><td><kbd>!hunt surprise on/off</kbd></td><td>Hide Variations/Skins in chat and on your OBS Source until the result (off by default).</td></tr>
-<tr><td><kbd>!hunt spawnchat on/off</kbd></td><td>Off = new deviations only show on your OBS Source; results always post in chat.</td></tr>
-<tr><td><kbd>!hunt chatdelay &lt;seconds&gt;</kbd></td><td>How long chat waits so your OBS Source shows things first (default ${cfg.RESULT_CHAT_DELAY_SECONDS}).</td></tr>
-<tr><td><kbd>!hunt leave</kbd></td><td>Remove the bot from your channel. Everyone keeps their collections.</td></tr>
-</table>
-<p>Deviations only appear while your stream is live and someone has chatted in the last ${cfg.ACTIVITY_WINDOW_MIN} minutes.</p>
-</div>
+<h2>For Streamers</h2>
+<div class="card"><p style="margin-top:0">Want Deviation Hunt in your own chat? Setup, the OBS Source (with the spawn alert), every streamer &amp; mod command and all the settings are on one page.</p>
+<a class="btn" href="/streamers">For Streamers →</a></div>
 <h2>How Catching Works</h2>
 <div class="card"><table><tr><th>Rarity</th><th>Spawn weight</th><th>Capture rate</th><th>Reward</th></tr>
 ${Object.values(TIERS).map((t) => `<tr><td style="color:${t.color};font-weight:600">${t.label}</td><td>${t.weight}%</td><td>${Math.round(t.catch * 100)}%</td><td>${t.reward} Starchrom</td></tr>`).join("")}
@@ -433,6 +467,7 @@ function createApp(pool) {
   app.get("/channels", async (req, res) => { await refreshAvatars(); res.send(channelsPage(pool)); });
   app.get("/dex", (req, res) => res.send(dexPage()));
   app.get("/commands", (req, res) => res.send(commandsPage()));
+  app.get("/streamers", (req, res) => res.send(streamersPage()));
   app.get("/top", (req, res) => res.send(topPage()));
   app.get("/u", (req, res) => res.redirect(`/u/${encodeURIComponent(String(req.query.login || "").trim().replace(/^@/, "").toLowerCase())}`));
   app.get("/u/:login", (req, res) => {
