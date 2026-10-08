@@ -17,7 +17,9 @@ function makeHandler(pool, spawns) {
   const botLogin = () => db.getBotAccount()?.login;
 
   return async function onChat(ev) {
-    if (ev.chatter_user_id === botId()) return;
+    // ignore the bot's own posts — but if someone types a !command while logged in as the bot account, run it
+    // (the bot itself never posts a message starting with "!")
+    if (ev.chatter_user_id === botId() && !(ev.message?.text || "").trim().startsWith("!")) return;
     // Shared Chat: a message typed in a partner's chat reaches us as an echo. If the partner channel runs the game
     // itself, it handles the message there (skip, or it would count twice); otherwise we play it here.
     if (ev.source_broadcaster_user_id && ev.source_broadcaster_user_id !== ev.broadcaster_user_id
@@ -34,7 +36,7 @@ function makeHandler(pool, spawns) {
     const reply = (m) => m && pool.send(bid, m, echo ? undefined : ev.message_id); // can't reply-thread a partner channel's message
 
     // ---- the bot's own channel: !join / !leave ----
-    if (bid === botId() && (cmd === "!join" || cmd === "!leave")) {
+    if (bid === botId() && uid !== botId() && (cmd === "!join" || cmd === "!leave")) {
       if (cmd === "!leave") {
         db.removeChannel(uid);
         await pool.leave(uid);
