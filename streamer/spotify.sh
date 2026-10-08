@@ -27,7 +27,7 @@ EOF
 log() { echo "[spotify] $*"; }
 # open.spotify.com/playlist/ID?si=... or spotify:playlist:ID -> spotify:playlist:ID
 to_uri() { local s; s="$(tr -d '[:space:]' < "$CFG/playlist" 2>/dev/null)"; s="${s%%\?*}"
-  case "$s" in spotify:*) echo "$s" ;; *open.spotify.com/*) s="${s#*open.spotify.com/}"; s="${s#intl-*/}"; echo "spotify:${s//\//:}" ;; *) echo "" ;; esac; }
+  case "$s" in off|none) echo off ;; spotify:*) echo "$s" ;; *open.spotify.com/*) s="${s#*open.spotify.com/}"; s="${s#intl-*/}"; echo "spotify:${s//\//:}" ;; *) echo "" ;; esac; }
 
 # the player itself; restarts if it ever stops (expired pairing code, network drop...)
 ( while true; do go-librespot --config_dir "$CFG" 2>&1 | sed -u 's/^/[spotify] /'; log "player stopped — restarting in 10s"; sleep 10; done ) &
@@ -50,6 +50,13 @@ while true; do
     [ "$(jq -r '.paused' <<<"$body" 2>/dev/null)" = "true" ] && paused=1
     cur="$(jq -r '.context_uri // empty' <<<"$body" 2>/dev/null)"
   fi
+  # Spotify refuses unofficial players some/all tracks ("refused the audio key"): if a start ends up stopped again
+  # right away, back off for 30 min instead of hammering Spotify (it answers 429 and may flag the account)
+  if [ $stopped = 1 ] && [ -e /tmp/.started ] && [ $(( $(date +%s) - $(stat -c %Y /tmp/.started) )) -lt 120 ]; then
+    log "nothing in the playlist would play (Spotify refused the tracks) — waiting 30 minutes before trying again"
+    sleep 1800; touch -d '-1 hour' /tmp/.started; continue
+  fi
+  [ "$uri" = "off" ] && continue
   if [ $stopped = 1 ] || [ ! -e /tmp/.started ] || [ "$cur" != "$uri" -a -e /tmp/.switch ]; then
     curl -fsS -X POST -H 'content-type: application/json' -d '{"shuffle_context":true}' "$API/player/shuffle_context" >/dev/null 2>&1
     if curl -fsS -X POST -H 'content-type: application/json' -d "{\"uri\":\"$uri\"}" "$API/player/play" >/dev/null 2>&1; then
