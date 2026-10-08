@@ -131,6 +131,7 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 #res.legend .row{border-color:rgba(251,191,36,.8)}#res .row span{font-size:30px;color:#fde68a;white-space:nowrap}
 #res.many .row{font-size:28px;padding:5px 14px}#res.many .row span{font-size:24px}#res.many .glow{width:120px;height:120px}
 #res .more,#res .missed{margin-top:8px;font-size:22px;font-weight:700;color:rgba(255,255,255,.85);text-shadow:0 2px 6px #000,0 0 2px #000}
+.dcta{display:none;margin-top:6px;border-color:#f59e0b;font-size:18px;padding:4px 14px}.dcta b{color:#fde68a}.dcta.on{display:table;margin:6px auto 0}
 #pool{display:none;width:340px;margin:12px auto 0}#pool.on{display:block}
 #pool .pb{height:16px;background:rgba(13,19,25,.85);border:2px solid rgba(251,191,36,.8);border-radius:99px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 #pool .pb i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f59e0b,#fde68a);transition:width .6s ease}
@@ -156,6 +157,7 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 <div class="glow"><img id="img" alt=""></div>
 <div class="name" id="name"></div><div class="variant" id="variant"></div>
 <div class="cta">Type <b>!secure</b> to catch it</div>
+<div class="cta dcta" id="dcta"><b>!donate</b> (up to ${require("./rarity").ECONOMY.legendaryPoolMax})</div>
 <div class="bar"><i id="bar"></i></div>
 <div class="count" id="count">0:00<small>left to catch</small></div>
 <div id="pool"><div class="pb"><i id="poolbar"></i></div><div class="pt" id="pooltxt"></div></div></div>
@@ -212,11 +214,13 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
   }
   function setPool(p){
     var el=document.getElementById("pool");
-    if(!p){ if(el.className.indexOf("on")>=0){el.className="";fit(card);} return; }
+    var dc=document.getElementById("dcta");
+    if(!p){ dc.className="cta dcta"; if(el.className.indexOf("on")>=0){el.className="";fit(card);} return; }
+    dc.className="cta dcta"+(p.full?"":" on");
     var was=el.className.indexOf("on")>=0;
     el.className="on"+(p.full?" full":"");
     document.getElementById("poolbar").style.width=Math.min(100,p.total/p.goal*100).toFixed(1)+"%";
-    document.getElementById("pooltxt").textContent=p.full?"\u2705 POOL FULL \u2014 donors who !secure catch it!":"\ud83d\udcb0 Pool "+p.total.toLocaleString("en-US")+" / "+p.goal.toLocaleString("en-US")+" \u00b7 !donate";
+    document.getElementById("pooltxt").textContent=p.full?"\u2705 POOL FULL \u2014 donors who !secure catch it!":"\ud83d\udcb0 Pool "+p.total.toLocaleString("en-US")+" / "+p.goal.toLocaleString("en-US");
     if(!was)fit(card);
   }
   function show(s,quiet){
