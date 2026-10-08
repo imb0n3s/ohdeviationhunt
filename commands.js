@@ -7,7 +7,7 @@ const lastReply = new Map(); // `${bid}:${user}:${cmd}` -> ts, stops one viewer 
 const USER_CD = 5000;
 
 function isModOrOwner(ev) {
-  return ev.chatter_user_id === ev.broadcaster_user_id || (ev.badges || []).some((b) => b.set_id === "moderator" || b.set_id === "broadcaster");
+  return ev.chatter_user_id === ev.broadcaster_user_id || (ev.badges || []).some((b) => ["moderator", "lead_moderator", "broadcaster"].includes(b.set_id));
 }
 
 const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations appear in the wild while the stream is live — type !secure to catch them. !daily · !hourly · !timercheck · !starchrom · !units · !shop · !buy <n> · !pods · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
