@@ -133,7 +133,7 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   // ticker: scroll at a steady speed; rebuild only when the text changes
   let tickHtml="",x=0,runW=0,last=performance.now();
   function setTicker(){
-    const it=(st.liveNow||[]).map((c)=>'<span class="it">🔴 <b>'+esc(c.name)+'</b><span class="c">'+(c.stream!=null?c.stream.toLocaleString()+' secured this stream':'')+'</span><span class="m">'+c.total.toLocaleString()+' all-time · twitch.tv/'+esc(c.login)+'</span></span>');
+    const it=(st.liveNow||[]).map((c)=>'<span class="it">🔴 <b>'+esc(c.name)+'</b><span class="c">'+c.total.toLocaleString()+' deviation'+(c.total===1?'':'s')+' caught</span><span class="m">twitch.tv/'+esc(c.login)+'</span></span>');
     // only the channels live with the game right now (B 2026-10-08)
     const parts=it.length?it:['<span class="it"><span class="m">No other channels are live with the game right now</span></span>'];
     const once=parts.join('<span class="sep">◆</span>')+'<span class="sep">◆</span>';
