@@ -51,7 +51,7 @@ async function main() {
         const u = ids.slice(i, i + 100);
         const qs = u.map((id) => `user_id=${id}`).join("&");
         const r = await twitch.helix("GET", `/streams?first=100&${qs}`, { as: "app" });
-        for (const s of r.data || []) { live.add(s.user_id); streams.set(s.user_id, s.id); info.set(s.user_id, { title: s.title, game: s.game_name, viewers: s.viewer_count }); }
+        for (const s of r.data || []) { live.add(s.user_id); streams.set(s.user_id, s.id); info.set(s.user_id, { title: s.title, game: s.game_name, viewers: s.viewer_count, startedAt: Date.parse(s.started_at) || null }); }
       }
       for (const id of ids) spawns.setLive(id, live.has(id));
       spawns.streamIds = streams;
