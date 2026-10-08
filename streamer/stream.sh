@@ -35,7 +35,7 @@ while true; do
   sleep 8
   # audio = the mix (spawn alert + music), or silence if PulseAudio isn't available; 30 fps, keyframe every 2 s
   timeout 24h ffmpeg -hide_banner -loglevel warning \
-    -f x11grab -framerate 30 -video_size "${W}x${H}" -draw_mouse 0 -i :99.0 \
+    -thread_queue_size 1024 -f x11grab -framerate 30 -video_size "${W}x${H}" -draw_mouse 0 -i :99.0 \
     "${AUDIO_IN[@]}" \
     -stats -stats_period 60 -c:v libx264 -preset veryfast -tune zerolatency -b:v "$BITRATE" -maxrate "$BITRATE" -bufsize 6000k \
     -pix_fmt yuv420p -g 60 -keyint_min 60 -af aresample=async=1000 -c:a aac -b:a 128k -ar 44100 -f flv "$OUT"
