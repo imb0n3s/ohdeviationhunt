@@ -108,7 +108,7 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
 
 <div id="stage">
   <!-- the countdown version of the OBS Source: countdown ring → deviation card → who caught it → countdown -->
-  <iframe src="${esc(obs)}?countdown=1" allowtransparency="true" scrolling="no"></iframe>
+  <iframe src="${esc(obs)}?countdown=1&lite=1" allowtransparency="true" scrolling="no"></iframe>
 </div>
 
 <div id="side">
@@ -127,7 +127,8 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
 
 <script>
 (function(){
-  for(let i=0;i<26;i++){const d=document.createElement("div");d.className="dust";d.style.left=Math.random()*1920+"px";d.style.top=Math.random()*1080+"px";d.style.animationDelay=(-Math.random()*18)+"s";d.style.opacity=(.2+Math.random()*.5).toFixed(2);document.body.appendChild(d);}
+  // (floating dust removed — the stream box renders without a GPU, every moving thing costs frames)
+  if(0)for(let i=0;i<26;i++){const d=document.createElement("div");d.className="dust";d.style.left=Math.random()*1920+"px";d.style.top=Math.random()*1080+"px";d.style.animationDelay=(-Math.random()*18)+"s";d.style.opacity=(.2+Math.random()*.5).toFixed(2);document.body.appendChild(d);}
   const esc=(s)=>String(s==null?"":s).replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   let st=null;
   // ticker: scroll at a steady speed; rebuild only when the text changes

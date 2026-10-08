@@ -140,7 +140,10 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 #cd .cdm{display:inline-block;margin-top:14px;background:rgba(13,19,25,.85);border:2px solid #22d3ee;border-radius:12px;padding:6px 16px;font-size:21px;font-weight:800;text-shadow:0 2px 4px #000}
 #cd .cdm b{color:#7dd3fc}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet"></head><body>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+<script>if(/[?&]lite=1/.test(location.search))document.documentElement.className="lite";</script>
+<style>/* ?lite=1 (the 24/7 stream box has no GPU): no continuous blur/shadow/spin animations */
+.lite .glow:before,.lite .glow img,.lite #cd .ring,.lite #cd .ring>div{animation:none!important}.lite .glow:before{filter:none}</style></head><body>
 <div id="cd"><div class="ring"><div><div class="lbl" id="cdl">Next deviation</div><div class="big" id="cdt">—</div></div></div><div class="cdm" id="cdm">Type <b>!secure</b> when it shows up</div></div>
 <div id="card"><div class="tag">Spotted in the wild</div>
 <div class="glow"><img id="img" alt=""></div>
