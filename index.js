@@ -78,6 +78,25 @@ async function main() {
   setAnnouncer((ch, text) => pool.send(ch, text));
   try { const r = refundAllMisses("refund-misses:all-v1", { luna_raventhorn: 7 }); if (r) console.log("[refund] missed-throw units returned:", r.join(" ") || "none"); } catch (e) { console.error("[refund]", e.message); }
   setStreamLookup((ch) => (spawns.live.has(ch) && spawns.streamIds?.get(ch)) || null);
+  // one-time make-good (B 2026-10-08): OldManSauce lost his hourly units to the stream-switch timer bug —
+  // give him the missed hourly + one extra (2 Securement Units if his pods have room, +2 × hourly Starchrom)
+  try {
+    const key = "grant:oldmansauce:20261008";
+    const row = !db.getSetting(key) && db.q.getPlayerByLogin.get("oldmansauce");
+    if (row) {
+      const game = require("./game"), { ECONOMY } = require("./rarity");
+      const p = game.loadPlayer(row.user_id);
+      const units = Math.min(2 * ECONOMY.hourlyUnits, game.unitRoom(p)), sc = 2 * ECONOMY.hourlyStarchrom;
+      p.units.standard = (p.units.standard || 0) + units; p.starchrom += sc;
+      game.savePlayer(p);
+      db.setSetting(key, `units=${units} starchrom=${sc}`);
+      console.log(`[grant] OldManSauce +${units} Securement Units +${sc} Starchrom`);
+      setTimeout(() => {
+        const ch = db.getBotAccount()?.user_id;
+        if (ch) pool.send(ch, `🎁 @${p.display} here are 2 hourly rewards (+${units} Securement Unit${units === 1 ? "" : "s"} and +${sc} Starchrom) to make up for a timer bug that kept resetting your hourly clock — it's fixed now. Thanks for playing! 🎁`);
+      }, 45000);
+    }
+  } catch (e) { console.error("[grant]", e.message); }
   setInterval(() => {
     try {
       for (const [ch, msg] of unitNotices()) pool.send(ch, msg);
