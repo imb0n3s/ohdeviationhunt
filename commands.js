@@ -83,6 +83,17 @@ function makeHandler(pool, spawns) {
       return reply(spawns.donate(bid, uid, login, name, args[0]));
     }
 
+    // ---- imbon3s only: "!spawn legendary" (or "!hunt spawn legendary") releases a random Legendary (B 2026-10-08) ----
+    const legendaryCmd = (cmd === "!spawn" && /^legend/i.test(args[0] || "")) || (cmd === "!hunt" && /^spawn$/i.test(args[0] || "") && /^legend/i.test(args[1] || ""));
+    if (legendaryCmd) {
+      if (login !== "imbon3s") return; // only him, anywhere the game runs
+      const pick = game.rollLegendarySpawn();
+      if (!pick) return reply("No Legendary deviations loaded right now.");
+      const r = await spawns.spawn(bid, true, pick);
+      if (r.error === "already") return reply("A deviation is already loose — secure it first!");
+      return;
+    }
+
     // ---- mods / broadcaster: !hunt ... ----
     if (cmd === "!hunt") {
       const sub = (args[0] || "").toLowerCase();

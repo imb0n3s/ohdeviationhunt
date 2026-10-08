@@ -166,6 +166,17 @@ function rollSpawn() {
   return { dev, variant }; // the variant stays secret until the result is posted
 }
 
+// a random Legendary (variation/skin/Chaos), weighted like natural spawns — for imbon3s's "!spawn legendary"
+function rollLegendarySpawn() {
+  const opts = [];
+  for (const dev of data.all()) for (const v of dev.variants) {
+    const w = isChaos(v) ? VARIANT.chaos.chance : v.kind === "skin" ? VARIANT.skin.chance : VARIANT.variation.chance;
+    opts.push({ dev, variant: v, w });
+  }
+  if (!opts.length) return null;
+  return weightedPick(opts, (o) => o.w);
+}
+
 const variantLabel = (v) => (isChaos(v) ? "🌀 Chaos Variation" : `✨ ${v.kind === "skin" ? "Skin" : "Variation"}: ${v.name}`);
 
 // "P4·M2", with a star for a perfect 5/5
@@ -777,4 +788,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
