@@ -88,7 +88,7 @@ Your first ${cmd("!secure")} signs you up automatically — you start with '''${
 
 out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!secure"), `Throw at the deviation that's loose in chat (${ECONOMY.throwCost} ${SC}; a catch goes into one of your Securement Units). Also works as ${cmd("!catch")}. One throw per person per spawn.`],
-  [cmd("!donate <amount>"), `\'\'\'Legendary pool:\'\'\' while a Legendary (Variation or Skin) is loose, put up to ${ECONOMY.legendaryPoolMax} ${SC} into its pool (${cmd("!donate max")} for the most you can). If it reaches ${fmt(ECONOMY.legendaryPoolGoal)} ${SC} before time runs out, everyone who donated and throws ${cmd("!secure")} catches it \'\'\'100%\'\'\'. Not filled in time? Every donation is refunded. ${cmd("!pool")} shows the total.`],
+  [cmd("!donate <amount>"), `\'\'\'Legendary pool:\'\'\' while a Legendary (Variation or Skin) is loose, put up to ${ECONOMY.legendaryPoolMax} ${SC} into its pool (${cmd("!donate max")} for the most you can). If it reaches ${fmt(ECONOMY.legendaryPoolGoal)} ${SC} before time runs out, everyone who donated and throws ${cmd("!secure")} catches it \'\'\'100%\'\'\'. Donations are '''not refunded''', even if it doesn't fill. ${cmd("!pool")} shows the total.`],
   [cmd("!units"), `Show your Securement Units, ${SC}, and when your next free unit arrives. Also ${cmd("!inv")}.`],
   [cmd("!starchrom"), `Shows how much ${SC} you have. Also works as ${cmd("!sc")}.`],
   [cmd("!shop"), `Show what the shop sells and the prices. The Securement Pods panel has the same shop in its '''Shop''' tab.`],

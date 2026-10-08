@@ -1,5 +1,5 @@
 // node test/pool.js — Legendary pool: !donate up to 750 each; at 10,000 every donor who threw catches it 100%;
-// not filled in time -> everyone refunded (B 2026-10-08)
+// not filled in time -> donations still spent, no refunds (B 2026-10-08)
 Object.assign(process.env, { TWITCH_CLIENT_ID: "x", TWITCH_CLIENT_SECRET: "x", ADMIN_KEY: "x", DATA_DIR: "/tmp/dhtest-pool" });
 require("fs").rmSync("/tmp/dhtest-pool", { recursive: true, force: true }); require("fs").mkdirSync("/tmp/dhtest-pool");
 const assert = require("assert");
@@ -37,13 +37,14 @@ const assert = require("assert");
   assert.ok(!won.has("U3"));
   assert.equal(sc("3"), 5000 - 750);                                       // spent, not refunded
   console.log("pool filled: every donor who threw caught it ✓ (" + won.size + " winners)");
-  // --- Legendary that doesn't fill: refunded
+  // --- Legendary that doesn't fill: no refund
   await sp.spawn("CH", true, { dev, variant });
   give("50", 1000); sp.donate("CH", "50", "u50", "U50", "600"); assert.equal(sc("50"), 400);
   sp.attempt("CH", "50", "u50", "U50");
   await sp.resolve("CH");
-  assert.ok(sc("50") >= 990);                                              // 1000 - 10 throw (+ reward if lucky)
-  assert.ok(sent.some((t) => /pool didn't fill \(600 \/ 10,000\) — all donations were refunded/.test(t)));
-  console.log("pool not filled: refunded ✓");
+  const got = sc("50") - 390;                                              // 1000 - 600 donated - 10 throw, never refunded
+  assert.ok(got === 0 || got === require("../game").rewardFor({ dev, variant }), "balance " + sc("50"));
+  assert.ok(sent.some((t) => /pool didn't fill \(600 \/ 10,000\)\./.test(t)));
+  console.log("pool not filled: no refund ✓");
   process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });

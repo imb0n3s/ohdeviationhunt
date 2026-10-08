@@ -399,7 +399,7 @@ class Spawns {
       Promise.resolve(this.send(bid, `🎯💰 LEGENDARY POOL FILLED! ${fmt(goal)} ${SC} — every donor who throws !secure WILL secure the ${spawnName(s, bid)}! Donors: ${shown}`)).catch(() => {});
       return `@${display} 💰 you put in ${fmt(amount)} ${SC} and filled the pool!${s.attempts.has(userId) ? " You've already thrown, so it's yours." : " Now type !secure to claim it!"}`;
     }
-    return `@${display} 💰 +${fmt(amount)} ${SC} to the Legendary pool: ${fmt(now)} / ${fmt(goal)}.${s.attempts.has(userId) ? "" : " Don't forget to !secure!"} (Refunded if it doesn't fill in time.)`;
+    return `@${display} 💰 +${fmt(amount)} ${SC} to the Legendary pool: ${fmt(now)} / ${fmt(goal)}.${s.attempts.has(userId) ? "" : " Don't forget to !secure!"}`;
   }
 
   // A viewer types !secure [unit]. Returns a reply string, or null to stay quiet.
@@ -449,15 +449,12 @@ class Spawns {
     const timeUp = `⏱️ Time's up! The ${name} can no longer be captured.`;
     if (this.chatDelayMs(bid)) Promise.resolve(this.send(bid, `${timeUp} Results coming up...`)).catch((e) => console.error("[resolve] time's up", e.message));
     const prefix = this.chatDelayMs(bid) ? "" : `${timeUp} `;
-    // Legendary pool: filled -> it's spent (donors who threw catch for sure, below); not filled -> everyone gets it back
+    // Legendary pool: filled -> it's spent (donors who threw catch for sure, below); not filled -> still spent (no refunds, B 2026-10-08)
     let poolNote = "";
     if (s.pool && s.pool.size) {
       const total = this.poolTotal(s);
-      if (this.poolFull(s)) db.addSpent(total);
-      else {
-        db.tx(() => { for (const [uid, d] of s.pool) { const p = loadPlayer(uid, null, d.display); p.starchrom += d.amount; savePlayer(p); } })();
-        poolNote = ` 💰 The Legendary pool didn't fill (${fmt(total)} / ${fmt(ECONOMY.legendaryPoolGoal)}) — all donations were refunded.`;
-      }
+      db.addSpent(total);
+      if (!this.poolFull(s)) poolNote = ` 💰 The Legendary pool didn't fill (${fmt(total)} / ${fmt(ECONOMY.legendaryPoolGoal)}).`;
     }
     if (!s.attempts.size) {
       db.logSpawn(bid, s.dev.id, s.variant?.name, 0, 0);

@@ -83,7 +83,7 @@ const ECONOMY = {
   maxCatchChance: 0.95,
   // Legendary pool (B 2026-10-08): while a Legendary (variation/skin/Chaos) is loose and shown, viewers can !donate
   // Starchrom. If the pool reaches the goal, everyone who donated AND throws !secure catches it 100%.
-  // Pool doesn't fill before time runs out -> every donation is refunded.
+  // Pool doesn't fill before time runs out -> donations are still spent (no refunds).
   legendaryPoolGoal: 10000,
   legendaryPoolMax: 750,  // most one viewer can put into one Legendary's pool
 };
