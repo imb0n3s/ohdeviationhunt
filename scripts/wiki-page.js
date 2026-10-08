@@ -234,6 +234,8 @@ out.push(box("Streamers", "Add Deviation Hunt to Your Channel", `
 
 '''OBS Source (optional):''' type ${cmd("!hunt obs")} in your chat to get your channel's link, then in OBS add a '''Browser''' source with it (600 × 600). It shows the deviation with a countdown while it can be caught, then for 12 seconds who secured it (with their Skill/Activity ratings, gold for Legendary catches). If nobody catches it, it just disappears. While a deviation can be caught it shows its picture, name and a countdown; it disappears when the deviation is secured or gets away. Add ${code("?demo=1")} to the link while positioning it.
 
+'''Spawn alert:''' when a deviation appears the OBS Source plays a scanner ping and a voice: ''"A Deviation has been located."'' Variations and skins get a golden sparkle and ''"A Legendary Deviation has been located."'' (with surprise mode on, every spawn gets the normal alert). Tick '''Control audio via OBS''' on the Browser source to set its volume in the Audio Mixer. Link options: ${code("?volume=40")} (0–100, default 70) or ${code("?sound=0")} for no sound; ${code("?demo=base")} / ${code("?demo=variation")} play the normal / Legendary alert for testing.
+
 To remove it, type ${cmd("!hunt leave")} in your chat or ${cmd("!leave")} in ${BOT}'s chat.
 `));
 

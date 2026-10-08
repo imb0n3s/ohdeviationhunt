@@ -2,7 +2,8 @@
 // channel right now, with a countdown until it can't be caught any more.
 //
 //   https://<site>/obs-source/<code>          the page for OBS (checks every 1.5 s)
-//   https://<site>/obs-source/<code>?demo=1   always shows a sample, for positioning in OBS
+//   https://<site>/obs-source/<code>?demo=1   always shows a sample, for positioning in OBS (plays the alert once)
+//   ?sound=0 = no spawn alert · ?volume=0-100 (default 70) · ?demo=base / ?demo=variation = normal / Legendary alert sample
 //   https://<site>/obs-source/<code>/state    JSON the page polls
 //
 // <code> is a random per-channel code (so the link doesn't carry the channel name, and other
@@ -135,9 +136,36 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
   var code=${JSON.stringify(code)}, demo=${demoState}, demoResult=${demoResult}, res=document.getElementById("res"), shownResult=null, card=document.getElementById("card"), bar=document.getElementById("bar"), count=document.getElementById("count");
   function setCount(sec){ sec=Math.max(0,Math.ceil(sec)); count.firstChild.nodeValue=Math.floor(sec/60)+":"+("0"+(sec%60)).slice(-2); count.className="count"+(sec<=10?" low":""); }
   var current=null, skew=0, hideTimer=null;
-  function show(s){
+  // ---- spawn alert sound (B 2026-10-07): synthesized in the page, so there's no file to load.
+  // ?sound=0 turns it off, ?volume=0-100 (default 70). Legendary spawns (variation/skin) get a sparkle.
+  // Never on the homepage previews. In OBS tick "Control audio via OBS" to put it on the mixer.
+  var qs=new URLSearchParams(location.search), vol=Math.max(0,Math.min(100,parseFloat(qs.get("volume")||"70")))/100;
+  var soundOn=code!=="preview"&&qs.get("sound")!=="0"&&vol>0, actx=null, firstPoll=true;
+  function tone(t,f,dur,type,g0,f2){var o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(g0*vol,t+0.015);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+dur+0.05);}
+  // voice lines (Piper TTS, generated for the game): "A Deviation has been located." / "A Legendary Deviation has been located."
+  var voice=null, voiceLeg=null;
+  if(soundOn){ voice=new Audio("/panel/dh-alert.wav"); voiceLeg=new Audio("/panel/dh-alert-legendary.wav"); voice.preload=voiceLeg.preload="auto"; voice.volume=voiceLeg.volume=vol; }
+  function say(a,ms){ if(!a)return; setTimeout(function(){ try{ a.currentTime=0; var p=a.play(); if(p&&p.catch)p.catch(function(){}); }catch(e){} }, ms); }
+  function alertSound(legendary){
+    if(!soundOn)return;
+    try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==="suspended")actx.resume(); }catch(e){ actx=null; }
+    if(actx){
+      var t=actx.currentTime+0.05;
+      // scanner ping: low thump + two rising blips
+      tone(t,150,0.35,"sine",0.5,60);
+      tone(t+0.02,880,0.28,"sine",0.35);tone(t+0.02,1760,0.18,"triangle",0.08);
+      tone(t+0.32,1320,0.45,"sine",0.35);tone(t+0.32,2640,0.25,"triangle",0.08);
+      if(legendary){ // golden sparkle before the voice
+        [1046.5,1318.5,1568,2093,2637].forEach(function(f,i){tone(t+0.8+i*0.09,f,0.6,"triangle",0.22);tone(t+0.8+i*0.09,f*2,0.35,"sine",0.05);});
+      }
+    }
+    say(legendary?voiceLeg:voice, legendary?1450:800);
+  }
+  function show(s,quiet){
     if(current&&current.id===s.id){current=s;return;}
     current=s;
+    if(!quiet)alertSound(!!s.variant);
     document.getElementById("img").src=s.img;
     document.getElementById("name").textContent=s.name;
     document.getElementById("variant").textContent=s.variant?("\\u2728 "+(s.variant.kind==="skin"?"Skin":"Variation")+": "+s.variant.name):"";
@@ -172,8 +200,9 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
   function poll(){
     fetch("/obs-source/"+encodeURIComponent(code)+"/state",{cache:"no-store"}).then(function(r){return r.json();}).then(function(s){
       if(s.v&&s.v!==${JSON.stringify(BOOT)}&&!current){location.reload();return;} // server updated: load the new page
-      if(s.active){skew=s.now-Date.now();hideResult();show(s);}
+      if(s.active){skew=s.now-Date.now();hideResult();show(s,firstPoll);} // no sound for one already loose when the source loads
       else { if(current)hide(); if(s.result)showResult(s.result); else hideResult(); }
+      firstPoll=false;
     }).catch(function(){}).then(function(){setTimeout(poll,1500);});
   }
   setInterval(tick,100);
@@ -198,7 +227,9 @@ function mount(app, pool) {
     const code = String(req.params.code).toLowerCase().replace(/[^a-z0-9]/g, "");
     if (!channelForCode(code)) return res.status(404).send("Unknown OBS Source link. A mod can get the right one by typing !hunt obs in chat.");
     res.set("Cache-Control", "no-store");
-    res.send(page(code, req.query.demo === "result" ? "result" : req.query.demo === "1"));
+    // ?demo=1 sample card · ?demo=base = normal spawn + alert · ?demo=variation / skin = Legendary spawn + alert · ?demo=result
+    const d = req.query.demo;
+    res.send(page(code, d === "result" ? "result" : d === "base" || d === "variation" || d === "skin" ? d : d === "1"));
   });
 }
 
