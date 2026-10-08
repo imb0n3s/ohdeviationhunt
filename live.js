@@ -37,6 +37,7 @@ function liveData(pool, ch) {
     metas: db.leaderboard(5, "all").map((r) => ({ name: r.display, species: r.species, total: r.total })),
     streams: db.topStreams(3).map((c) => ({ name: c.display_name, catches: c.catches })),
     totalDevs: data.all().length,
+    v: overlay.BOOT,           // changes on every server start: the page reloads itself to pick up updates
   };
 }
 
@@ -91,9 +92,8 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   <div><div class="t stencil">Deviation Hunt</div><div class="s"><span class="badge">24/7</span>Catch Once Human deviations right here in chat</div></div></header>
 
 <div id="stage">
-  <div id="idle"><div class="ring"><div><div class="lbl">Next deviation</div><div class="big stencil" id="eta">—</div></div></div>
-    <div class="msg" id="idlemsg">Type <b>!daily</b> for free Starchrom, then <b>!secure</b> when one shows up</div></div>
-  <iframe src="${esc(obs)}" allowtransparency="true" scrolling="no"></iframe>
+  <!-- the countdown version of the OBS Source: countdown ring → deviation card → who caught it → countdown -->
+  <iframe src="${esc(obs)}?countdown=1" allowtransparency="true" scrolling="no"></iframe>
 </div>
 
 <div id="side">
@@ -114,28 +114,16 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
 (function(){
   for(let i=0;i<26;i++){const d=document.createElement("div");d.className="dust";d.style.left=Math.random()*1920+"px";d.style.top=Math.random()*1080+"px";d.style.animationDelay=(-Math.random()*18)+"s";d.style.opacity=(.2+Math.random()*.5).toFixed(2);document.body.appendChild(d);}
   const esc=(s)=>String(s==null?"":s).replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  let st=null,skew=0;
-  function tick(){
-    if(!st)return;
-    const idle=document.getElementById("idle");
-    idle.classList.toggle("hide",st.active);
-    const eta=document.getElementById("eta"),msg=document.getElementById("idlemsg");
-    if(!st.spawnsOn){eta.textContent="Paused";msg.innerHTML="Spawns are paused right now — check back soon";return;}
-    if(st.idleChat){eta.textContent="Zzz";msg.innerHTML="The deviations are asleep — <b>say hi in chat</b> to wake them up!";return;}
-    const left=st.nextAt?Math.max(0,st.nextAt-(Date.now()+skew)):null;
-    if(left==null){eta.textContent="Soon";}
-    else{const s=Math.ceil(left/1000);eta.textContent=s<=0?"Any second":Math.floor(s/60)+":"+String(s%60).padStart(2,"0");}
-    msg.innerHTML="Type <b>!daily</b> for free Starchrom, then <b>!secure</b> when one shows up";
-  }
+  let st=null;
   function render(){
     document.getElementById("rec").innerHTML=st.recent.map((r)=>'<div class="r"><img src="'+esc(r.img)+'" alt=""><div><div><span class="n">'+esc(r.name)+'</span>'+(r.variant?' <span class="v">✨ '+esc(r.variant)+'</span>':'')+'</div><div class="w">secured by '+esc(r.who)+(r.chan?' · '+esc(r.chan):'')+'</div></div><div class="rt">'+esc(r.rating)+'</div></div>').join("")||'<div class="w">Nothing secured yet — be the first!</div>';
     document.getElementById("metas").innerHTML=st.metas.map((m)=>'<li><b>'+esc(m.name)+'</b> <span>'+m.species+'/'+st.totalDevs+'</span></li>').join("");
     document.getElementById("streams").innerHTML=st.streams.map((s)=>'<li><b>'+esc(s.name)+'</b> <span>'+s.catches.toLocaleString()+'</span></li>').join("")||"<li>—</li>";
   }
   async function load(){
-    try{const r=await fetch(location.pathname.replace(/\\/$/,"")+"/data",{cache:"no-store"});if(r.ok){st=await r.json();skew=st.now-Date.now();render();tick();}}catch(e){}
+    try{const r=await fetch(location.pathname.replace(/\\/$/,"")+"/data",{cache:"no-store"});if(r.ok){const n=await r.json();if(st&&n.v&&st.v&&n.v!==st.v){location.reload();return;}st=n;render();}}catch(e){}
   }
-  load();setInterval(load,10000);setInterval(tick,1000);
+  load();setInterval(load,10000);
 })();
 </script></body></html>`;
 }

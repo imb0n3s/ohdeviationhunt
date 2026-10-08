@@ -3,6 +3,7 @@
 //
 //   https://<site>/obs-source/<code>          the page for OBS (checks every 1.5 s)
 //   https://<site>/obs-source/<code>?demo=1   always shows a sample, for positioning in OBS (plays the alert once)
+//   ?countdown=1 = between spawns show a ring counting down to the next one (default: hidden until one appears)
 //   ?sound=0 = no spawn alert · ?volume=0-100 (default 100) · ?demo=base / ?demo=variation = normal / Legendary alert sample
 //   https://<site>/obs-source/<code>/state    JSON the page polls
 //
@@ -40,10 +41,14 @@ function stateFor(pool, code) {
   pool?.spawns?.overlaySeen?.set(bid, Date.now()); // this channel has the OBS Source on stream
   const s = pool?.spawns?.active.get(bid);
   if (!s || !((s.shownEndsAt || s.endsAt) > Date.now())) {
+    // for the countdown version (?countdown=1): when the next one is due, or why it's waiting
+    const sp = pool?.spawns;
+    const next = { at: sp?.nextAt?.get(bid) || null, live: !!sp?.live?.has(bid), spawnsOn: !!ch.spawns_on,
+      idleChat: !sp?.alwaysOn?.(bid) && Date.now() - (sp?.lastChat?.get(bid) || 0) > cfg.ACTIVITY_WINDOW_MIN * 60 * 1000 };
     // just resolved? show who caught it for a few seconds (stays up past the delayed chat message)
-    const r = pool?.spawns?.lastResult?.get(bid);
-    const showMs = Math.max(RESULT_MS, (pool?.spawns?.chatDelayMs?.(bid) || 0) + 8000);
-    return r && r.winners.length && Date.now() - r.at < showMs ? { ok: true, active: false, result: r, now: Date.now(), v: BOOT } : { ok: true, active: false, v: BOOT };
+    const r = sp?.lastResult?.get(bid);
+    const showMs = Math.max(RESULT_MS, (sp?.chatDelayMs?.(bid) || 0) + 8000);
+    return r && r.winners.length && Date.now() - r.at < showMs ? { ok: true, active: false, result: r, next, now: Date.now(), v: BOOT } : { ok: true, active: false, next, now: Date.now(), v: BOOT };
   }
   return {
     ok: true, active: true, v: BOOT,
@@ -60,6 +65,7 @@ function stateFor(pool, code) {
 
 // demo: true (OBS positioning sample) or "base" | "variation" | "skin" (homepage preview)
 function page(code, demo) {
+  if (demo === "countdown") return pageHtml(code, JSON.stringify("countdown"), "null");
   const all = data.all();
   const sample = !demo ? null
     : demo === "base" ? all.find((d) => d.id === "lonewolfwhisper") || all[0]
@@ -123,7 +129,19 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 #res.legend .row{border-color:rgba(251,191,36,.8)}#res .row span{font-size:30px;color:#fde68a;white-space:nowrap}
 #res.many .row{font-size:28px;padding:5px 14px}#res.many .row span{font-size:24px}#res.many .glow{width:120px;height:120px}
 #res .more,#res .missed{margin-top:8px;font-size:22px;font-weight:700;color:rgba(255,255,255,.85);text-shadow:0 2px 6px #000,0 0 2px #000}
-</style></head><body>
+#cd{--s:1;position:absolute;left:50%;top:50%;width:420px;transform:translate(-50%,-50%) scale(calc(var(--s)*.85));opacity:0;transition:opacity .5s ease,transform .5s ease;text-align:center;color:#fff}
+#cd.show{opacity:1;transform:translate(-50%,-50%) scale(var(--s))}
+#cd .ring{width:330px;height:330px;margin:0 auto;border-radius:50%;border:11px dashed rgba(34,211,238,.6);display:flex;align-items:center;justify-content:center;animation:spin 30s linear infinite;background:radial-gradient(circle,rgba(8,14,20,.82) 58%,rgba(8,14,20,.55));box-shadow:0 0 40px rgba(34,211,238,.28) inset,0 0 34px rgba(34,211,238,.22)}
+#cd .ring>div{animation:spin 30s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+#cd .lbl{font-size:19px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#cbd5e1;text-shadow:0 2px 6px #000}
+#cd .big{font-family:"Black Ops One",Impact,sans-serif;font-size:80px;line-height:1.05;margin-top:4px;background:linear-gradient(#fff1b8,#f2c034 45%,#9a5b07);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #0b1416) drop-shadow(0 5px 8px rgba(0,0,0,.7));font-variant-numeric:tabular-nums}
+#cd .big.word{font-size:58px}
+#cd .cdm{display:inline-block;margin-top:14px;background:rgba(13,19,25,.85);border:2px solid #22d3ee;border-radius:12px;padding:6px 16px;font-size:21px;font-weight:800;text-shadow:0 2px 4px #000}
+#cd .cdm b{color:#7dd3fc}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet"></head><body>
+<div id="cd"><div class="ring"><div><div class="lbl" id="cdl">Next deviation</div><div class="big" id="cdt">—</div></div></div><div class="cdm" id="cdm">Type <b>!secure</b> when it shows up</div></div>
 <div id="card"><div class="tag">Spotted in the wild</div>
 <div class="glow"><img id="img" alt=""></div>
 <div class="name" id="name"></div><div class="variant" id="variant"></div>
@@ -136,6 +154,23 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
   var code=${JSON.stringify(code)}, demo=${demoState}, demoResult=${demoResult}, res=document.getElementById("res"), shownResult=null, card=document.getElementById("card"), bar=document.getElementById("bar"), count=document.getElementById("count");
   function setCount(sec){ sec=Math.max(0,Math.ceil(sec)); count.firstChild.nodeValue=Math.floor(sec/60)+":"+("0"+(sec%60)).slice(-2); count.className="count"+(sec<=10?" low":""); }
   var current=null, skew=0, hideTimer=null;
+  // ---- countdown version (?countdown=1): between spawns, a ring counts down to the next one (B 2026-10-08)
+  var cdOn=/[?&](countdown|timer)=1/.test(location.search), cd=document.getElementById("cd"), next=null;
+  function cdTick(){
+    if(!cdOn)return;
+    var resOn=res.className.indexOf("show")>=0, want=!current&&!resOn&&next;
+    if(!want){ if(cd.className.indexOf("show")>=0) cd.className=""; return; }
+    var t=document.getElementById("cdt"), l=document.getElementById("cdl"), m=document.getElementById("cdm");
+    function word(w,lbl,msg){ t.textContent=w; t.className="big word"; l.textContent=lbl; m.innerHTML=msg; }
+    if(!next.live) word("Offline","Deviation Hunt","Deviations appear while the stream is <b>live</b>");
+    else if(!next.spawnsOn) word("Paused","Deviation Hunt","Spawns are paused right now");
+    else if(next.idleChat) word("Zzz","The deviations are asleep","<b>Say hi in chat</b> to wake them up!");
+    else { var left=next.at?Math.max(0,next.at-(Date.now()+skew)):null, sec=left==null?null:Math.ceil(left/1000);
+      l.textContent="Next deviation"; m.innerHTML="Type <b>!secure</b> when it shows up";
+      if(sec==null){t.textContent="Soon";t.className="big word";} else if(sec<=0){t.textContent="Any sec…";t.className="big word";}
+      else {t.textContent=Math.floor(sec/60)+":"+("0"+(sec%60)).slice(-2);t.className="big";} }
+    if(cd.className.indexOf("show")<0){ fit(cd); cd.offsetWidth; cd.className="show"; }
+  }
   // ---- spawn alert sound (B 2026-10-07): synthesized in the page, so there's no file to load.
   // ?sound=0 turns it off, ?volume=0-100 (default 100). Legendary spawns (variation/skin) get a sparkle.
   // Never on the homepage previews. In OBS tick "Control audio via OBS" to put it on the mixer.
@@ -176,7 +211,7 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
   function hide(){current=null;card.className=(card.className||"").replace("show","").trim();}
   // scale a card so it fills the whole Browser Source (e.g. 600x600), whatever its content height
   function fit(el){ var w=el.offsetWidth, h=el.offsetHeight; if(!w||!h)return; el.style.setProperty("--s", Math.min(innerWidth*.97/w, innerHeight*.97/h)); }
-  addEventListener("resize",function(){fit(card);fit(res);});
+  addEventListener("resize",function(){fit(card);fit(res);fit(cd);});
   function txt(id,t){document.getElementById(id).textContent=t;}
   // "who caught it" card, shown for a few seconds after the deviation is gone
   function showResult(r){
@@ -202,13 +237,17 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
   function poll(){
     fetch("/obs-source/"+encodeURIComponent(code)+"/state",{cache:"no-store"}).then(function(r){return r.json();}).then(function(s){
       if(s.v&&s.v!==${JSON.stringify(BOOT)}&&!current){location.reload();return;} // server updated: load the new page
-      if(s.active){skew=s.now-Date.now();hideResult();show(s,firstPoll);} // no sound for one already loose when the source loads
+      if(s.now)skew=s.now-Date.now();
+      next=s.next||null;
+      if(s.active){hideResult();show(s,firstPoll);} // no sound for one already loose when the source loads
       else { if(current)hide(); if(s.result)showResult(s.result); else hideResult(); }
+      cdTick();
       firstPoll=false;
     }).catch(function(){}).then(function(){setTimeout(poll,1500);});
   }
-  setInterval(tick,100);
-  if(demoResult)showResult(demoResult);else if(demo)show(demo);else poll();
+  setInterval(tick,100); setInterval(cdTick,500);
+  if(demo==="countdown"){cdOn=true;next={live:true,spawnsOn:true,idleChat:false,at:Date.now()+272000};cdTick();}
+  else if(demoResult)showResult(demoResult);else if(demo)show(demo);else poll();
 })();
 </script></body></html>`;
 }
@@ -227,7 +266,7 @@ function mount(app, pool) {
   });
   // public preview for the homepage: /obs-preview?kind=base|variation|skin
   app.get("/obs-preview", (req, res) => {
-    const kind = ["base", "variation", "skin", "result", "resultlegend", "resultmiss"].includes(req.query.kind) ? req.query.kind : "base";
+    const kind = ["base", "variation", "skin", "result", "resultlegend", "resultmiss", "countdown"].includes(req.query.kind) ? req.query.kind : "base";
     res.set("Cache-Control", "public, max-age=300");
     res.send(page("preview", kind));
   });
@@ -237,8 +276,8 @@ function mount(app, pool) {
     res.set("Cache-Control", "no-store");
     // ?demo=1 sample card · ?demo=base = normal spawn + alert · ?demo=variation / skin = Legendary spawn + alert · ?demo=result
     const d = req.query.demo;
-    res.send(page(code, d === "result" ? "result" : d === "base" || d === "variation" || d === "skin" ? d : d === "1"));
+    res.send(page(code, d === "result" ? "result" : d === "base" || d === "variation" || d === "skin" || d === "countdown" ? d : d === "1"));
   });
 }
 
-module.exports = { mount, stateFor, linkFor, codeFor };
+module.exports = { BOOT,  mount, stateFor, linkFor, codeFor };
