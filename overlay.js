@@ -134,7 +134,7 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 #pool{display:none;width:340px;margin:12px auto 0}#pool.on{display:block}
 #pool .pb{height:16px;background:rgba(13,19,25,.85);border:2px solid rgba(251,191,36,.8);border-radius:99px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 #pool .pb i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f59e0b,#fde68a);transition:width .6s ease}
-#pool .pt{margin-top:5px;font-size:17px;font-weight:900;color:#fde68a;text-shadow:0 2px 6px #000,0 0 2px #000}
+#pool .pt{margin-top:5px;font-size:17px;white-space:nowrap;font-weight:900;color:#fde68a;text-shadow:0 2px 6px #000,0 0 2px #000}
 #pool.full .pb{border-color:#22c55e}#pool.full .pb i{background:linear-gradient(90deg,#22c55e,#86efac)}#pool.full .pt{color:#86efac}
 #cd{--s:1;position:absolute;left:50%;top:50%;width:420px;transform:translate(-50%,-50%) scale(calc(var(--s)*.85));opacity:0;transition:opacity .5s ease,transform .5s ease;text-align:center;color:#fff}
 #cd.show{opacity:1;transform:translate(-50%,-50%) scale(var(--s))}
