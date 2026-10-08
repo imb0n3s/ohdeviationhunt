@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# docker exec dh-stream musicvol 40   — music volume on the 24/7 stream (0-100; the spawn alert isn't affected)
+v="${1:-}"; [[ "$v" =~ ^[0-9]+$ ]] && [ "$v" -le 100 ] || { echo "Music volume: $(cat /spotify/volume 2>/dev/null)"; echo "Usage: musicvol <0-100>"; exit 0; }
+echo "$v" > /spotify/volume
+curl -fsS -X POST -H 'content-type: application/json' -d "{\"volume\":$v}" http://127.0.0.1:3678/player/volume >/dev/null && echo "Music volume set to $v."

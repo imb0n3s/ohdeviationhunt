@@ -13,4 +13,11 @@ The bot's own channel is a game channel automatically (index.js; BOT_CHANNEL_GAM
 STREAM_KEY comes from the OHDeviationHunt Twitch dashboard (Settings → Stream). B pastes it himself; never
 commit it. Optional env: PAGE_URL, BITRATE (default 3000k). ffmpeg restarts every 24h and after any drop.
 ~3 Mbps ≈ 1 TB/month of upload, so a VPS with included bandwidth is cheaper than Railway egress.
-Silent audio track (no music = no DMCA). Stream title idea: "Deviation Hunt 24/7 — play in chat with !secure".
+Audio (B 2026-10-07): PulseAudio null sink "mix" in the container; Chromium (the OBS Source spawn alert on /live) and
+Spotify play into it; ffmpeg streams mix.monitor (falls back to silence if PulseAudio fails).
+Spotify = go-librespot v0.10.3 (spotify.sh) as Connect device "Deviation Hunt 24/7", logged in once with device_auth
+(the log prints `[spotify] PAIR: ... code XXXX` → spotify.com/pair while signed in as the OHDeviationHunt Spotify
+Premium account). Login + playlist + volume persist in the docker volume dh-spotify (/spotify). It keeps the playlist
+playing (shuffle + repeat, resumes if paused >1 min). `docker exec dh-stream playlist <link>`, `docker exec dh-stream musicvol 40`.
+Update the box: rerun install.sh (keeps the stream key from the running container). B accepted the DMCA risk; suggested
+turning off Store past broadcasts on the OHDeviationHunt channel. Stream title idea: "Deviation Hunt 24/7 — play in chat with !secure".

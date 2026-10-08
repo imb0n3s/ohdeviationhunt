@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# docker exec dh-stream playlist <spotify playlist link>   — switch the 24/7 music to this playlist
+[ -n "${1:-}" ] || { echo "Current playlist: $(cat /spotify/playlist 2>/dev/null || echo none)"; echo "Usage: playlist <spotify playlist link>"; exit 0; }
+echo "$1" > /spotify/playlist && touch /tmp/.switch && echo "OK — switching within 15 seconds."
