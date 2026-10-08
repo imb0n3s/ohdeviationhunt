@@ -74,4 +74,4 @@
 - !hunt spawn is always random (B 2026-10-06 removed picking a deviation/variation/skin; data.findWithVariant is unused).
 - Trading (website, one-to-one) is built on branch `trading` (NOT merged/live; B 2026-10-04 "don't publish yet"). To launch: merge trading into main and push.
 - Hourly perks (B 2026-10-07): belong to ONE stream — switched on by !hourly, the first !secure, or !daily in that live
-  stream (players.hourly_stream). Another channel or the next broadcast needs !hourly again. !timercheck / !hourlycheck (mods). The panel zip still says "Type !daily…" — B: leave the panel/extension review alone, don't re-upload for this.
+  stream (players.hourly_stream). Another channel: !hourly or !secure there moves them and the timer carries over (no restart; B 2026-10-08). Next broadcast needs !hourly again. !timercheck / !hourlycheck (mods). The panel zip still says "Type !daily…" — B: leave the panel/extension review alone, don't re-upload for this.

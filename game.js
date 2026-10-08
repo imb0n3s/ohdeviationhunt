@@ -46,10 +46,19 @@ function startHourly(userId, login, display, bid) {
   const row = db.q.getPlayer.get(userId) || loadPlayer(userId, login, display);
   if (row.hourly_stream === stream) return false;
   const now = Date.now();
-  db.q.setHourlyOn.run(now, now, stream, userId);
+  // moving from another stream with a running timer: carry the timer over instead of restarting the hour,
+  // so hopping between channels never costs the hourly unit (OldManSauce, B 2026-10-08). Still one stream at a time.
+  const carry = row.hourly_stream && row.last_unit_at > now - HOUR && row.last_unit_at <= now;
+  db.q.setHourlyOn.run(now, carry ? row.last_unit_at : now, stream, userId);
   return true;
 }
-const HOURLY_ON_TEXT = () => `⏰ Hourly perks on for this stream: +${ECONOMY.hourlyUnits} free Securement Unit and +${ECONOMY.hourlyStarchrom} Starchrom every hour while you're here (first one in 60m). Going to another channel? Type !hourly there to turn them on in that stream.`;
+const HOURLY_ON_TEXT = (userId) => {
+  const row = userId && db.q.getPlayer.get(userId);
+  const mins = row ? Math.max(1, Math.ceil(((row.last_unit_at || Date.now()) + HOUR - Date.now()) / 60000)) : 60;
+  return mins < 60
+    ? `⏰ Your hourly perks moved to this stream — next free Securement Unit + ${ECONOMY.hourlyStarchrom} Starchrom in ${mins}m.`
+    : `⏰ Hourly perks on for this stream: +${ECONOMY.hourlyUnits} free Securement Unit and +${ECONOMY.hourlyStarchrom} Starchrom every hour while you're here (first one in 60m). Going to another channel? Type !hourly there to turn them on in that stream.`;
+};
 // !hourlycheck (mods/streamer): everyone whose hourly timer is running in this channel right now,
 // soonest next unit first. Returns one or more chat messages (Twitch caps a message at 500 characters).
 function hourlyCheck(bid) {
@@ -75,7 +84,7 @@ function timerCheck(userId, login, display) {
 }
 function hourly(userId, login, display, bid) {
   if (!bid || !streamOf(bid)) return `@${display} !hourly only works while the stream is live. If the stream just started, Twitch can take a minute or two to show it as live — try again shortly.`;
-  if (startHourly(userId, login, display, bid)) return `@${display} ${HOURLY_ON_TEXT()} Don't forget !daily for a free supply drop.`;
+  if (startHourly(userId, login, display, bid)) return `@${display} ${HOURLY_ON_TEXT(userId)} Don't forget !daily for a free supply drop.`;
   const p = loadPlayer(userId, login, display);
   return `@${display} your hourly perks are already on for this stream — next free Securement Unit + ${ECONOMY.hourlyStarchrom} Starchrom in ${nextUnitIn(p)}. Going to another channel? Type !hourly there to turn them on in that stream.`;
 }

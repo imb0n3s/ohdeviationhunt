@@ -117,3 +117,13 @@ console.log("hourly unit checks passed");
   assert.match(game.timerCheck("10", "idle", "Idle"), /isn't on in this stream — type !hourly here/);
   streams = {}; assert.match(game.timerCheck("7", "zed", "Zed"), /isn't on in this stream/);
   console.log("!timercheck checks passed"); }
+
+// hopping between streams carries the timer over (OldManSauce, B 2026-10-08)
+{ streams = { CH: "j1", CH2: "j2" };
+  game.loadPlayer("11", "sauce", "Sauce"); play("11", "CH"); game.startHourly("11", "sauce", "Sauce", "CH");
+  backdate("11", 40 * 60e3);                                  // 40 min into the hour in CH
+  play("11", "CH2"); assert.equal(game.startHourly("11", "sauce", "Sauce", "CH2"), true);
+  assert.match(game.HOURLY_ON_TEXT("11"), /moved to this stream — next free Securement Unit \+ 15 Starchrom in 20m/);
+  backdate("11", 21 * 60e3); const u = units("11");
+  const n = game.unitNotices(); assert.deepEqual(n.map((x) => x[0]), ["CH2"]); assert.equal(units("11"), u + 1);
+  console.log("stream-hopping carry-over check passed"); }
