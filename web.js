@@ -304,7 +304,7 @@ ${chatExamples(botName)}
 <h2>Viewer Commands</h2>
 <div class="card">
 <p><kbd>!daily</kbd> — free supply drop (+${ECONOMY.daily.starchrom} Starchrom and ${ECONOMY.daily.units.standard} Securement Unit), once a day (resets at midnight Central) during a live stream; it also turns on your hourly perks for that stream</p>
-<p><kbd>!hourly</kbd> — turns on hourly perks (${ECONOMY.hourlyUnits} free Securement Unit + ${ECONOMY.hourlyStarchrom} Starchrom every hour) for the stream you\'re in. Your first <kbd>!secure</kbd> or <kbd>!daily</kbd> there turns them on too. They\'re for one stream: in another channel, type <kbd>!hourly</kbd> again there.</p>
+<p><kbd>!hourly</kbd> — turns on hourly perks (${ECONOMY.hourlyUnits} free Securement Unit + ${ECONOMY.hourlyStarchrom} Starchrom every hour) for the stream you\'re in. Your first <kbd>!secure</kbd> or <kbd>!daily</kbd> there turns them on too. They\'re for one stream at a time: in another channel they move over when you type <kbd>!hourly</kbd> or <kbd>!secure</kbd> there, and your timer keeps going.</p>
 <p><kbd>!timercheck</kbd> — when your next free hourly Securement Unit (+${ECONOMY.hourlyStarchrom} Starchrom) arrives, or how to start/resume your timer. <kbd>!timer</kbd> works too.</p>
 <p><kbd>!secure</kbd> — throw a Securement Unit at the loose deviation (one throw per spawn). <kbd>!catch</kbd> works too.</p>
 <p><kbd>!units</kbd> — your Starchrom and Units · <kbd>!shop</kbd> — prices · <kbd>!buy 5</kbd> — buy Securement Units</p>
