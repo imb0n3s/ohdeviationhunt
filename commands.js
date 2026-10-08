@@ -10,7 +10,7 @@ function isModOrOwner(ev) {
   return ev.chatter_user_id === ev.broadcaster_user_id || (ev.badges || []).some((b) => b.set_id === "broadcaster" || /moderator/.test(b.set_id || ""));
 }
 
-const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations appear in the wild while the stream is live — type !secure to catch them. !daily · !hourly · !timercheck · !starchrom · !units · !shop · !buy <n> · !pods · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
+const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations appear in the wild while the stream is live — type !secure to catch them (Legendary? !donate to the pool). !daily · !hourly · !timercheck · !starchrom · !units · !shop · !buy <n> · !pods · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
 
 function makeHandler(pool, spawns) {
   const botId = () => db.getBotAccount()?.user_id;
@@ -74,6 +74,13 @@ function makeHandler(pool, spawns) {
       if (!started) return reply(r);
       const note = game.HOURLY_ON_TEXT(uid);
       return reply(r ? (r.length + note.length < 495 ? `${r} ${note}` : r) : `@${name} ${note}`);
+    }
+
+    // ---- Legendary pool: !donate <amount|max> while a Legendary is loose (B 2026-10-08) ----
+    if (cmd === "!donate" || cmd === "!pool") {
+      played();
+      if (cmd === "!pool" && !args[0]) { const st = spawns.poolState(bid); return reply(st ? `💰 Legendary pool: ${st.total.toLocaleString("en-US")} / ${st.goal.toLocaleString("en-US")} Starchrom from ${st.donors} donor${st.donors === 1 ? "" : "s"}${st.full ? " — FULL! Donors who !secure catch it for sure." : ". !donate <amount> to add to it."}` : null); }
+      return reply(spawns.donate(bid, uid, login, name, args[0]));
     }
 
     // ---- mods / broadcaster: !hunt ... ----

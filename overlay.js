@@ -60,6 +60,7 @@ function stateFor(pool, code) {
       ? { variant: { name: s.variant.name, kind: s.variant.kind }, img: s.variant.img || s.dev.img }
       : { variant: null, img: s.dev.img }),
     endsAt: s.shownEndsAt || s.endsAt, now: Date.now(), windowMs: cfg.SPAWN_WINDOW_SECONDS * 1000,
+    pool: pool?.spawns?.poolState?.(bid) || null,   // Legendary pool bar (only for a shown Legendary)
   };
 }
 
@@ -86,7 +87,8 @@ function page(code, demo) {
       escaped: ["DeeOhGee024"], reward: T[tier].reward, tried: 3, demo: true };
     return pageHtml(code, "null", JSON.stringify(r));
   }
-  const demoState = sample ? JSON.stringify({ ok: true, active: true, id: "demo", name: sample.name, variant: v ? { name: v.name, kind: v.kind } : null, img: (v && v.img) || sample.img, demo: true, windowMs: cfg.SPAWN_WINDOW_SECONDS * 1000 }) : "null";
+  const demoState = sample ? JSON.stringify({ ok: true, active: true, id: "demo", name: sample.name, variant: v ? { name: v.name, kind: v.kind } : null, img: (v && v.img) || sample.img, demo: true, windowMs: cfg.SPAWN_WINDOW_SECONDS * 1000,
+    pool: v ? { total: 6250, goal: require("./rarity").ECONOMY.legendaryPoolGoal, donors: 9, full: false } : null }) : "null";
   return pageHtml(code, demoState, "null");
 }
 
@@ -129,6 +131,11 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 #res.legend .row{border-color:rgba(251,191,36,.8)}#res .row span{font-size:30px;color:#fde68a;white-space:nowrap}
 #res.many .row{font-size:28px;padding:5px 14px}#res.many .row span{font-size:24px}#res.many .glow{width:120px;height:120px}
 #res .more,#res .missed{margin-top:8px;font-size:22px;font-weight:700;color:rgba(255,255,255,.85);text-shadow:0 2px 6px #000,0 0 2px #000}
+#pool{display:none;width:340px;margin:12px auto 0}#pool.on{display:block}
+#pool .pb{height:16px;background:rgba(13,19,25,.85);border:2px solid rgba(251,191,36,.8);border-radius:99px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+#pool .pb i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f59e0b,#fde68a);transition:width .6s ease}
+#pool .pt{margin-top:5px;font-size:17px;font-weight:900;color:#fde68a;text-shadow:0 2px 6px #000,0 0 2px #000}
+#pool.full .pb{border-color:#22c55e}#pool.full .pb i{background:linear-gradient(90deg,#22c55e,#86efac)}#pool.full .pt{color:#86efac}
 #cd{--s:1;position:absolute;left:50%;top:50%;width:420px;transform:translate(-50%,-50%) scale(calc(var(--s)*.85));opacity:0;transition:opacity .5s ease,transform .5s ease;text-align:center;color:#fff}
 #cd.show{opacity:1;transform:translate(-50%,-50%) scale(var(--s))}
 #cd .ring{width:330px;height:330px;margin:0 auto;border-radius:50%;border:11px dashed rgba(34,211,238,.6);display:flex;align-items:center;justify-content:center;animation:spin 30s linear infinite;background:radial-gradient(circle,rgba(8,14,20,.82) 58%,rgba(8,14,20,.55));box-shadow:0 0 40px rgba(34,211,238,.28) inset,0 0 34px rgba(34,211,238,.22)}
@@ -150,7 +157,8 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
 <div class="name" id="name"></div><div class="variant" id="variant"></div>
 <div class="cta">Type <b>!secure</b> to catch it</div>
 <div class="bar"><i id="bar"></i></div>
-<div class="count" id="count">0:00<small>left to catch</small></div></div>
+<div class="count" id="count">0:00<small>left to catch</small></div>
+<div id="pool"><div class="pb"><i id="poolbar"></i></div><div class="pt" id="pooltxt"></div></div></div>
 <div id="res"><div class="rt" id="rt"></div><div class="glow"><img id="rimg" alt=""></div><div class="rn" id="rn"></div><div class="rr" id="rr"></div><div class="list" id="rlist"></div><div class="missed" id="rmiss"></div></div>
 <script>
 (function(){
@@ -202,7 +210,17 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
     }
     say(legendary?voiceLeg:voice, legendary?1450:800);
   }
+  function setPool(p){
+    var el=document.getElementById("pool");
+    if(!p){ if(el.className.indexOf("on")>=0){el.className="";fit(card);} return; }
+    var was=el.className.indexOf("on")>=0;
+    el.className="on"+(p.full?" full":"");
+    document.getElementById("poolbar").style.width=Math.min(100,p.total/p.goal*100).toFixed(1)+"%";
+    document.getElementById("pooltxt").textContent=p.full?"\u2705 POOL FULL \u2014 donors who !secure catch it!":"\ud83d\udcb0 Legendary pool "+p.total.toLocaleString("en-US")+" / "+p.goal.toLocaleString("en-US")+" \u00b7 !donate";
+    if(!was)fit(card);
+  }
   function show(s,quiet){
+    setPool(s.pool||null);
     if(current&&current.id===s.id){current=s;return;}
     current=s;
     if(!quiet)alertSound(!!s.variant);

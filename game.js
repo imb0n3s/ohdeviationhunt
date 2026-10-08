@@ -208,7 +208,7 @@ function rewardFor(s) {
 
 function spawnAnnouncement(s, bid) {
   // surprise mode on: never says if it's a variation/skin (the result reveals it); off: says so right away
-  if (isRevealed(bid, s)) return `👀 A 🌟 LEGENDARY ${s.dev.name} (${variantLabel(s.variant)}) has been spotted in the wild! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`;
+  if (isRevealed(bid, s)) return `👀 A 🌟 LEGENDARY ${s.dev.name} (${variantLabel(s.variant)}) has been spotted in the wild! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it. 💰 Fill the Legendary pool: !donate <amount> (up to ${fmt(ECONOMY.legendaryPoolMax)} ${SC} each) — at ${fmt(ECONOMY.legendaryPoolGoal)}, every donor who throws !secure catches it for sure!`;
   return `👀 A ${s.dev.name} has been spotted in the wild! Type !secure within ${cfg.SPAWN_WINDOW_SECONDS}s to catch it.`;
 }
 
@@ -253,7 +253,7 @@ class Spawns {
   persist(bid) {
     const s = this.active.get(bid);
     if (!s) return db.q.deleteActive.run(bid);
-    db.q.saveActive.run(bid, JSON.stringify({ dev: s.dev.id, variant: s.variant ? { name: s.variant.name, kind: s.variant.kind } : null, endsAt: s.endsAt, attempts: [...s.attempts], warned: [...s.warned], legendary: s.legendary || null }));
+    db.q.saveActive.run(bid, JSON.stringify({ dev: s.dev.id, variant: s.variant ? { name: s.variant.name, kind: s.variant.kind } : null, endsAt: s.endsAt, attempts: [...s.attempts], warned: [...s.warned], legendary: s.legendary || null, pool: s.pool ? [...s.pool] : [] }));
   }
 
   // called once at startup: bring back loose deviations and finish any that ran out while we were down
@@ -264,7 +264,7 @@ class Spawns {
         const dev = data.get(d.dev);
         if (!dev) { db.q.deleteActive.run(row.broadcaster_id); continue; }
         const variant = d.variant ? dev.variants.find((v) => v.name === d.variant.name) || d.variant : null;
-        const s = { dev, variant, endsAt: d.endsAt, attempts: new Map(d.attempts), warned: new Set(d.warned), legendary: d.legendary || null };
+        const s = { dev, variant, endsAt: d.endsAt, attempts: new Map(d.attempts), warned: new Set(d.warned), legendary: d.legendary || null, pool: new Map(d.pool || []) };
         const bid = row.broadcaster_id;
         // chat typed while the bot was restarting never arrived, so give everyone a fresh chance:
         // at least RESTORE_GRACE seconds from now, and tell the channel it's still loose
@@ -328,6 +328,7 @@ class Spawns {
     if (!s) return { error: "nodata" };
     s.attempts = new Map();
     s.warned = new Set();
+    s.pool = new Map(); // Legendary pool: userId -> { display, amount }
     // With the OBS Source on stream it shows up on screen first and chat hears about it after the
     // chat delay (stream video lags chat). Behind the scenes the window is extended by that delay so
     // chat still gets the full SPAWN_WINDOW_SECONDS; the overlay and chat both just show the normal time.
@@ -345,6 +346,49 @@ class Spawns {
     else if (!delay) await this.send(bid, spawnAnnouncement(s, bid));
     else setTimeout(() => { if (this.active.get(bid) === s && !(this.spawnChatOff(bid) && this.overlayOn(bid))) Promise.resolve(this.send(bid, spawnAnnouncement(s, bid))).catch((e) => console.error("[spawn] delayed send", e.message)); }, delay);
     return { spawn: s };
+  }
+
+  // ---- Legendary pool (B 2026-10-08) ----
+  poolTotal(s) { let t = 0; for (const d of (s.pool || new Map()).values()) t += d.amount; return t; }
+  poolFull(s) { return this.poolTotal(s) >= ECONOMY.legendaryPoolGoal; }
+  poolState(bid) {
+    const s = this.active.get(bid);
+    if (!s || !isRevealed(bid, s)) return null;
+    return { total: this.poolTotal(s), goal: ECONOMY.legendaryPoolGoal, donors: (s.pool || new Map()).size, full: this.poolFull(s) };
+  }
+  // !donate <amount|max> while a Legendary is loose. Returns a reply (or null).
+  donate(bid, userId, login, display, amountWord) {
+    const s = this.active.get(bid);
+    if (!s) return null;
+    const warn = (msg) => { const k = `pool:${userId}:${msg.slice(0, 20)}`; if (s.warned.has(k)) return null; s.warned.add(k); return msg; };
+    if (!isRevealed(bid, s)) return warn(`@${display} the Legendary pool only opens when a Legendary deviation (a Variation or Skin) is spotted.`);
+    const goal = ECONOMY.legendaryPoolGoal, max = ECONOMY.legendaryPoolMax;
+    const total = this.poolTotal(s);
+    if (total >= goal) return warn(`@${display} the pool is already full! Donors who throw !secure catch the ${spawnName(s, bid)} for sure.`);
+    const mine = s.pool.get(userId)?.amount || 0;
+    const allowance = Math.min(max - mine, goal - total);
+    if (allowance <= 0) return warn(`@${display} you've already put the most you can (${fmt(max)} ${SC}) into this pool. Make sure you !secure!`);
+    const w = String(amountWord || "").toLowerCase().replace(/,/g, "");
+    let amount = w === "max" || w === "all" ? allowance : parseInt(w, 10);
+    if (!(amount > 0)) return `@${display} usage: !donate <amount> (1-${fmt(max)}) or !donate max. The pool is at ${fmt(total)} / ${fmt(goal)} ${SC}.`;
+    amount = Math.min(amount, allowance);
+    const p = loadPlayer(userId, login, display);
+    if (p.starchrom < amount) {
+      if (p.starchrom <= 0) return warn(`@${display} you don't have any ${SC} to donate.`);
+      amount = Math.min(amount, p.starchrom);
+    }
+    p.starchrom -= amount;
+    savePlayer(p);
+    s.pool.set(userId, { display, amount: mine + amount });
+    this.persist(bid);
+    const now = total + amount;
+    if (now >= goal) {
+      const names = [...s.pool.values()].map((d) => d.display);
+      const shown = names.length > 12 ? `${names.slice(0, 12).join(", ")} +${names.length - 12} more` : names.join(", ");
+      Promise.resolve(this.send(bid, `🎯💰 LEGENDARY POOL FILLED! ${fmt(goal)} ${SC} — every donor who throws !secure WILL secure the ${spawnName(s, bid)}! Donors: ${shown}`)).catch(() => {});
+      return `@${display} 💰 you put in ${fmt(amount)} ${SC} and filled the pool!${s.attempts.has(userId) ? " You've already thrown, so it's yours." : " Now type !secure to claim it!"}`;
+    }
+    return `@${display} 💰 +${fmt(amount)} ${SC} to the Legendary pool: ${fmt(now)} / ${fmt(goal)}.${s.attempts.has(userId) ? "" : " Don't forget to !secure!"} (Refunded if it doesn't fill in time.)`;
   }
 
   // A viewer types !secure [unit]. Returns a reply string, or null to stay quiet.
@@ -394,19 +438,30 @@ class Spawns {
     const timeUp = `⏱️ Time's up! The ${name} can no longer be captured.`;
     if (this.chatDelayMs(bid)) Promise.resolve(this.send(bid, `${timeUp} Results coming up...`)).catch((e) => console.error("[resolve] time's up", e.message));
     const prefix = this.chatDelayMs(bid) ? "" : `${timeUp} `;
+    // Legendary pool: filled -> it's spent (donors who threw catch for sure, below); not filled -> everyone gets it back
+    let poolNote = "";
+    if (s.pool && s.pool.size) {
+      const total = this.poolTotal(s);
+      if (this.poolFull(s)) db.addSpent(total);
+      else {
+        db.tx(() => { for (const [uid, d] of s.pool) { const p = loadPlayer(uid, null, d.display); p.starchrom += d.amount; savePlayer(p); } })();
+        poolNote = ` 💰 The Legendary pool didn't fill (${fmt(total)} / ${fmt(ECONOMY.legendaryPoolGoal)}) — all donations were refunded.`;
+      }
+    }
     if (!s.attempts.size) {
       db.logSpawn(bid, s.dev.id, s.variant?.name, 0, 0);
       db.bumpChannel(bid, 0);
       this.recordResult(bid, s, [], [], 0);
-      return this.sendResult(bid, `${prefix}💨 ${name} slipped away. Nobody tried to secure it...`);
+      return this.sendResult(bid, `${prefix}💨 ${name} slipped away. Nobody tried to secure it...${poolNote}`);
     }
     const caught = [], escaped = [], firsts = [], winners = [], legendWins = [];
     let legendReward = 0;
+    const poolFull = s.pool && s.pool.size && this.poolFull(s);
     const reward = rewardFor(s);
     db.tx(() => {
       for (const [userId, a] of s.attempts) {
         const p = loadPlayer(userId, a.login, a.display);
-        if (Math.random() < catchChance(s, a.unit, a.bonus || 0)) {
+        if ((poolFull && s.pool.has(userId)) || Math.random() < catchChance(s, a.unit, a.bonus || 0)) {
           const v = s.variant; // secret until now: the spawn looked like the normal deviation
           const variant = v?.name || "";
           const vr = variantRule(v);
@@ -444,6 +499,7 @@ class Spawns {
     } else {
       msg = `💥 ${name} got away from ${list(escaped, 8)}!${s.variant && !isRevealed(bid, s) ? ` It was a ${variantLabel(s.variant)} (Legendary)!` : ""} Better luck next time.`;
     }
+    msg += poolNote;
     msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !pods to see your collection`;
     return this.sendResult(bid, prefix + msg);
   }

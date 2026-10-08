@@ -81,6 +81,11 @@ const ECONOMY = {
   destroyValue: 500,      // Starchrom for scrapping one extra specimen in the panel (you always keep at least one)
   destroyUnits: 1,        // ...plus this many Securement Units back
   maxCatchChance: 0.95,
+  // Legendary pool (B 2026-10-08): while a Legendary (variation/skin/Chaos) is loose and shown, viewers can !donate
+  // Starchrom. If the pool reaches the goal, everyone who donated AND throws !secure catches it 100%.
+  // Pool doesn't fill before time runs out -> every donation is refunded.
+  legendaryPoolGoal: 10000,
+  legendaryPoolMax: 750,  // most one viewer can put into one Legendary's pool
 };
 
 const lookup = {};
