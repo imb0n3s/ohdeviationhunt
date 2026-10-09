@@ -38,7 +38,8 @@ const sign = (d) => { const b = Buffer.from(JSON.stringify(d)).toString("base64u
   const specs = db.q.specimensOf.all("A", "grumpybulb");
   const scrap = (cookie, id, extra = {}) => fetch(`${base}/u/alice/scrap`, { method: "POST", redirect: "manual", headers: { "Content-Type": "application/x-www-form-urlencoded", ...(cookie ? { Cookie: cookie } : {}), ...extra }, body: new URLSearchParams({ id: String(id) }) });
   html = await (await fetch(`${base}/u/alice`, { headers: { Cookie: sess("A", "alice") } })).text(); assert.ok(html.includes("Scrap extras (2)"));
-  html = await (await fetch(`${base}/u/alice`, { headers: { Cookie: sess("B", "bob") } })).text(); assert.ok(!html.includes("Scrap extras"));
+  html = await (await fetch(`${base}/u/alice`, { headers: { Cookie: sess("B", "bob") } })).text(); assert.ok(!html.includes("Scrap extras")); assert.ok(html.includes("View all 2") && html.includes("2/2</b> Skill/Activity") && html.includes("3/2</b> Skill/Activity"));
+  html = await (await fetch(`${base}/u/alice`)).text(); assert.ok(html.includes("View all 2") && !html.includes("Scrap extras")); console.log("visitors can view every specimen");
   r = await scrap(sess("B", "bob"), specs[1].id); assert.match(r.headers.get("location"), /scrap=signin/); assert.equal(db.q.specimensOf.all("A", "grumpybulb").length, 2);
   r = await scrap(sess("A", "alice"), specs[1].id, { Origin: "https://evil.example" }); assert.equal(r.status, 403);
   const sc0 = game.loadPlayer("A").starchrom;
