@@ -106,6 +106,8 @@ try { db.exec(`ALTER TABLE players ADD COLUMN active_stream TEXT`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN gloves TEXT NOT NULL DEFAULT '[]'`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN extra_cap INTEGER NOT NULL DEFAULT 0`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN soup_until INTEGER NOT NULL DEFAULT 0`); } catch {}
+// successful catches left on the gloves you wear (-1 = not set yet: pairs bought before gloves wore out get a full count)
+try { db.exec(`ALTER TABLE players ADD COLUMN glove_left INTEGER NOT NULL DEFAULT -1`); } catch {}
 // when the player last switched on hourly perks with !hourly or !secure (B 2026-10-07: !daily isn't required any more)
 try { db.exec(`ALTER TABLE players ADD COLUMN hourly_on_at INTEGER NOT NULL DEFAULT 0`); } catch {}
 // B 2026-10-07: hourly perks belong to ONE stream — the one where !hourly / !secure / !daily switched them on.
@@ -170,7 +172,7 @@ const q = {
   setHourlyOn: db.prepare(`UPDATE players SET hourly_on_at=?, last_unit_at=?, hourly_stream=? WHERE user_id=?`),
   playersInChannel: db.prepare(`SELECT * FROM players WHERE last_channel=? AND active_stream IS NOT NULL`),
   dueHourly: db.prepare(`SELECT * FROM players WHERE active_stream IS NOT NULL AND last_unit_at<=?`),
-  savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at, gloves=@gloves, extra_cap=@extra_cap, soup_until=@soup_until WHERE user_id=@user_id`),
+  savePlayer: db.prepare(`UPDATE players SET starchrom=@starchrom, units=@units, last_daily=@last_daily, attempts=@attempts, last_unit_at=@last_unit_at, gloves=@gloves, extra_cap=@extra_cap, soup_until=@soup_until, glove_left=@glove_left WHERE user_id=@user_id`),
   countPlayers: db.prepare(`SELECT COUNT(*) AS n FROM players`),
 
   addCatch: db.prepare(`INSERT INTO catches (user_id, deviation, variant, kind, count, first_at, first_channel) VALUES (?, ?, ?, ?, 1, ?, ?)

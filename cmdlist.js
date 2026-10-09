@@ -2,12 +2,12 @@
 // Twitch panel's Commands tab. Text is plain; `backticks` mark a command (rendered as <kbd>).
 const cfg = require("./config");
 const shop = require("./shop");
-const { ECONOMY: E, UNITS } = require("./rarity");
+const { ECONOMY: E, UNITS, GLOVES } = require("./rarity");
 
 const fmt = (n) => Number(n).toLocaleString("en-US");
 
 function commandSections() {
-  const gloves = shop.ITEMS.filter((i) => i.kind === "gloves").map((i) => `${i.name} +${Math.round(i.bonus * 100)}% (${fmt(i.price)})`).join(" · ");
+  const gloves = shop.ITEMS.filter((i) => i.kind === "gloves").map((i) => `${i.name} +${Math.round(i.bonus * 100)}% (${fmt(i.price)}, lasts ${GLOVES.find((g) => g.id === i.glove).catches} catches)`).join(" · ");
   return [
     { id: "viewer", title: "Viewer Commands", rows: [
       ["!daily", `Start here. Once a day (resets at midnight Central) while the stream is live: +${E.daily.starchrom} Starchrom and ${E.daily.units.standard} Securement Unit, and it turns on your hourly perks for that stream (see \`!hourly\`). Also shows your check-in count (how many days you've claimed it).`],

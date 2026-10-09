@@ -379,7 +379,7 @@ function collectionPage(p, viewer, msg) {
 <div class="bar"><i style="width:${pct}%"></i></div>
 ${owner ? `<p class="snote ok" style="text-align:left">♻️ Have duplicates? Click the red <b>Scrap extras</b> button at the bottom of any card marked ×2 or more to scrap the copies you don't want (${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit each). <a href="/#scrap">How scrapping works</a></p>` : ""}<p>Each card shows your top specimen — your best skin, else your best variation, else your best one: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
 <div id="shop">${webShop(p, live, viewer, msg)}</div>
-<p>Empty Securement Units: <b>${units.standard || 0}</b> · Securement Pods used: <b>${game.podsUsed(live)}/${game.unitCap(live)}</b> (caught + empty)${(() => { const g = game.bestGlove(live); return g ? ` · 🧤 <b style="color:${g.color}">${esc(g.name)}</b> (+${Math.round(g.bonus * 100)}% catch)` : ""; })()} · next free unit: ${game.nextUnitIn(live)} (1 every hour while you're in a live stream, after today's <kbd>!daily</kbd>)</p>
+<p>Empty Securement Units: <b>${units.standard || 0}</b> · Securement Pods used: <b>${game.podsUsed(live)}/${game.unitCap(live)}</b> (caught + empty)${(() => { const g = game.bestGlove(live); return g ? ` · 🧤 <b style="color:${g.color}">${esc(g.name)}</b> (+${Math.round(g.bonus * 100)}% catch, ${live.glove_left} catch${live.glove_left === 1 ? "" : "es"} left)` : ""; })()} · next free unit: ${game.nextUnitIn(live)} (1 every hour while you're in a live stream, after today's <kbd>!daily</kbd>)</p>
 ${cards}`);
 }
 
@@ -398,10 +398,10 @@ function webShop(p, live, viewer, msg) {
   const items = shop.ITEMS.map((it) => {
     if (it.kind === "gloves") {
       const owned = (live.gloves || []).includes(it.glove), outclassed = !owned && best && best.bonus > it.bonus;
-      const btn = owned ? `<button disabled class="owned">✓ Owned${best && best.id === it.glove ? " · active" : ""}</button>`
+      const btn = owned ? `<button disabled class="owned">✓ Owned${best && best.id === it.glove ? ` · ${live.glove_left} catch${live.glove_left === 1 ? "" : "es"} left` : ""}</button>`
         : outclassed ? `<button disabled class="owned">You wear better gloves</button>`
         : `<button ${live.starchrom < it.price ? "disabled" : ""}>${live.starchrom < it.price ? `Need ${fmt(it.price - live.starchrom)} more` : `Buy for ${fmt(it.price)}`}</button>`;
-      return `<div class="si glove" style="--gc:${esc(it.color)}"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)} <span class="rar">${esc(it.rarity)}</span></div><div class="sd">+${Math.round(it.bonus * 100)}% catch chance on every throw · ${fmt(it.price)} Starchrom · one pair at a time (a better pair replaces yours, no refund)</div>${form(it, btn)}</div></div>`;
+      return `<div class="si glove" style="--gc:${esc(it.color)}"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)} <span class="rar">${esc(it.rarity)}</span></div><div class="sd">+${Math.round(it.bonus * 100)}% catch chance on every throw · ${fmt(it.price)} Starchrom · lasts ${GLOVES.find((g) => g.id === it.glove).catches} successful catches · one pair at a time (a better pair replaces yours, no refund)</div>${form(it, btn)}</div></div>`;
     }
     if (it.kind === "soup") {
       const left = game.soupLeftMin(live);

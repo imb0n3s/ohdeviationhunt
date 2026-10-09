@@ -39,7 +39,7 @@ const ITEMS = [
     kind: "gloves",
     glove: g.id,
     name: g.name,
-    desc: `+${Math.round(g.bonus * 100)}% catch chance on every !secure throw. You wear one pair at a time — a better pair replaces it (no refund; gloves can't be scrapped).`,
+    desc: `+${Math.round(g.bonus * 100)}% catch chance on every !secure throw. Lasts ${g.catches} successful catches, then they wear out. You wear one pair at a time — a better pair replaces it (no refund; gloves can't be scrapped).`,
     price: g.price,
     grants: { gloves: g.id },
     maxQty: 1,
@@ -66,7 +66,7 @@ function applyGrants(p, grants, qty) {
       const now = Date.now();
       p.soup_until = Math.max(now, p.soup_until || 0) + SOUP.durationMs * val * qty; got.push({ kind: "soup", until: p.soup_until });
     } else if (kind === "gloves") {
-      p.gloves = [val]; got.push({ kind: "gloves", glove: val }); // one pair at a time: replaces the old pair, no refund
+      p.gloves = [val]; p.glove_left = GLOVES.find((g) => g.id === val).catches; got.push({ kind: "gloves", glove: val }); // one pair at a time: replaces the old pair, no refund
     } else if (kind === "starchrom") {
       p.starchrom += val * qty; got.push({ kind: "starchrom", n: val * qty });
     } else {

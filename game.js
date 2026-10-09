@@ -24,6 +24,7 @@ function loadPlayer(userId, login, display) {
   p.units = JSON.parse(p.units || "{}");
   try { p.gloves = JSON.parse(p.gloves || "[]"); } catch { p.gloves = []; }
   if (p.gloves.length > 1) { const top = GLOVES.filter((g) => p.gloves.includes(g.id)).sort((a, b) => b.bonus - a.bonus)[0]; p.gloves = top ? [top.id] : []; } // one pair only
+  { const g = GLOVES.find((x) => p.gloves.includes(x.id)); if (!g) p.glove_left = -1; else if (!(p.glove_left > 0)) p.glove_left = g.catches; } // older pairs start with a full count
   // older saves had Advanced/Elite/Anomaly units: fold them into plain Securement Units
   for (const k of ["advanced", "elite", "anomaly"]) if (p.units[k]) { p.units.standard = (p.units.standard || 0) + p.units[k]; delete p.units[k]; }
   return p;
@@ -120,7 +121,7 @@ function nextUnitIn(p) {
 }
 
 function savePlayer(p) {
-  db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts, last_unit_at: p.last_unit_at || Date.now(), gloves: JSON.stringify(p.gloves || []), extra_cap: p.extra_cap || 0, soup_until: p.soup_until || 0 });
+  db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts, last_unit_at: p.last_unit_at || Date.now(), gloves: JSON.stringify(p.gloves || []), extra_cap: p.extra_cap || 0, soup_until: p.soup_until || 0, glove_left: p.glove_left ?? -1 });
 }
 
 // "303 Starchrom | 21 deviations (12/61 unique)" — used where the full unit list is too noisy
@@ -429,10 +430,10 @@ class Spawns {
     savePlayer(p);
     const glove = bestGlove(p);
     const soupMin = soupLeftMin(p);
-    s.attempts.set(userId, { login, display, unit, isNew: p.isNew, bonus: (glove ? glove.bonus : 0) + (soupMin ? SOUP.bonus : 0) });
+    s.attempts.set(userId, { login, display, unit, isNew: p.isNew, glove: glove ? glove.id : null, bonus: (glove ? glove.bonus : 0) + (soupMin ? SOUP.bonus : 0) });
     this.persist(bid);
     const left = p.units[unit];
-    const throwTxt = `🎯 Threw at the ${spawnName(s, bid)} (−${ECONOMY.throwCost} ${SC}, Left: ${fmt(p.starchrom)}). You'll have ${left} Securement Pod${left === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}%` : ""}${soupMin ? ` 🍲 Capture Soup +${SOUP.bonus * 100}% (${soupMin}m left)` : ""}`;
+    const throwTxt = `🎯 Threw at the ${spawnName(s, bid)} (−${ECONOMY.throwCost} ${SC}, Left: ${fmt(p.starchrom)}). You'll have ${left} Securement Pod${left === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}% (${p.glove_left} catch${p.glove_left === 1 ? "" : "es"} left)` : ""}${soupMin ? ` 🍲 Capture Soup +${SOUP.bonus * 100}% (${soupMin}m left)` : ""}`;
     if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}. ${throwTxt} Type !daily for more, plus 1 free unit every hour this stream.`;
     return `@${display} ${throwTxt}`;
   }
@@ -462,7 +463,7 @@ class Spawns {
       this.recordResult(bid, s, [], [], 0);
       return this.sendResult(bid, `${prefix}💨 ${name} slipped away. Nobody tried to secure it...${poolNote}`);
     }
-    const caught = [], escaped = [], firsts = [], winners = [], legendWins = [];
+    const caught = [], escaped = [], firsts = [], winners = [], legendWins = [], wornOut = [];
     let legendReward = 0;
     const poolFull = s.pool && s.pool.size && this.poolFull(s);
     const reward = rewardFor(s);
@@ -483,6 +484,11 @@ class Spawns {
           if (v) { legendWins.push(a.display); legendReward = got; }
           caught.push(`a ${ratingTag(sp)} by @${a.display}`);
           winners.push({ name: a.display, rating: ratingTag(sp) });
+          // gloves wear out: a successful catch made wearing them uses one up
+          if (a.glove && p.gloves.includes(a.glove) && p.glove_left > 0 && --p.glove_left === 0) {
+            wornOut.push(`@${a.display}'s ${GLOVES.find((g) => g.id === a.glove).name}`);
+            p.gloves = []; p.glove_left = -1;
+          }
         } else {
           p.units[a.unit] = (p.units[a.unit] || 0) + 1; // it broke free, so the unit it was going into is still empty
           escaped.push(a.display);
@@ -508,6 +514,7 @@ class Spawns {
       msg = `💥 ${name} got away from ${list(escaped, 8)}!${s.variant && !isRevealed(bid, s) ? ` It was a ${variantLabel(s.variant)} (Legendary)!` : ""} Better luck next time.`;
     }
     msg += poolNote;
+    if (wornOut.length) msg += ` 🧤 ${list(wornOut, 6)} wore out — !buy a new pair.`;
     msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !pods to see your collection`;
     return this.sendResult(bid, prefix + msg);
   }
@@ -565,8 +572,8 @@ function daily(userId, login, display, bid) {
 }
 
 function shop() {
-  const items = shopCatalog.ITEMS.map((i) => `${i.name}${i.bonus ? ` (+${+(i.bonus * 100).toFixed(1)}% catch${i.kind === "soup" ? " for 1 hour" : ""})` : ""}: ${fmt(i.price)} ${SC}`).join(" · ");
-  return `🛒 ${items} — !buy <amount> for units, !buy soup, !buy rustic / bbq / savior for gloves (or use the Securement Pods panel's Shop tab). You wear one pair at a time: a better pair replaces yours (no refunds, gloves can't be scrapped).`;
+  const items = shopCatalog.ITEMS.map((i) => `${i.name}${i.bonus ? ` (+${+(i.bonus * 100).toFixed(1)}% catch${i.kind === "soup" ? " for 1 hour" : i.kind === "gloves" ? `, ${GLOVES.find((g) => g.id === i.glove).catches} catches` : ""})` : ""}: ${fmt(i.price)} ${SC}`).join(" · ");
+  return `🛒 ${items} — !buy <amount> for units, !buy soup, !buy rustic / bbq / savior for gloves (or the panel's Shop tab). One pair at a time; gloves wear out after that many successful catches (no refunds).`;
 }
 
 // !buy 3  /  !buy unit 3  /  !buy savior — defaults to Securement Units
@@ -587,7 +594,7 @@ function buy(userId, login, display, args) {
   savePlayer(p);
   if (item.kind === "gloves") {
     const old = r.replaced ? ` They replace your ${r.replaced.name}.` : "";
-    return `@${display} 🧤 bought ${item.name} for ${fmt(r.cost)} ${SC}! +${Math.round(item.bonus * 100)}% catch chance on every throw from now on.${old} You have ${fmt(p.starchrom)} ${SC} left.`;
+    return `@${display} 🧤 bought ${item.name} for ${fmt(r.cost)} ${SC}! +${Math.round(item.bonus * 100)}% catch chance on every throw for your next ${GLOVES.find((g) => g.id === item.glove).catches} successful catches.${old} You have ${fmt(p.starchrom)} ${SC} left.`;
   }
   if (item.kind === "soup") return `@${display} 🍲 bought ${label} for ${fmt(r.cost)} ${SC}! +${SOUP.bonus * 100}% catch chance on every throw for the next ${soupLeftMin(p)} minutes (stacks with gloves). You have ${fmt(p.starchrom)} ${SC} left.`;
   return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units (${podsUsed(p)}/${unitCap(p)} Securement Pods used). ${bagText(p)}`;

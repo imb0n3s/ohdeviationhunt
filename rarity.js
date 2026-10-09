@@ -78,7 +78,7 @@ const ECONOMY = {
   unitCap: 100,           // most Securement Units a player can hold (+ players.extra_cap, for future Bits capacity blocks)
   throwCost: 10,          // Starchrom per !secure throw. A Securement Unit is only used to HOUSE a caught deviation;
                           // a throw that misses costs just the Starchrom.
-  destroyValue: 500,      // Starchrom for scrapping one extra specimen in the panel (you always keep at least one)
+  destroyValue: 300,      // B 2026-10-08 (was 500). Starchrom for scrapping one extra specimen in the panel (you always keep at least one)
   destroyUnits: 1,        // ...plus this many Securement Units back
   maxCatchChance: 0.95,
   // Legendary pool (B 2026-10-08): while a Legendary (variation/skin/Chaos) is loose and shown, viewers can !donate
@@ -95,7 +95,7 @@ const rarityOf = (name) => lookup[String(name).toLowerCase().replace(/[^a-z0-9]/
 // Only one unit type now; anything typed after !secure is ignored
 function unitKey() { return "standard"; }
 
-// Gloves: you wear ONE pair at a time. Buying a better pair replaces yours (no refund, no scrapping); its bonus is added
+// Gloves: you wear ONE pair at a time. Buying a better pair replaces yours (no refund, no scrapping) and a pair wears out after its catches (below); its bonus is added
 // straight onto every throw's catch chance (still capped at ECONOMY.maxCatchChance).
 // AT BITS LAUNCH (B, 2026-09-30) raise glove prices to match real money at 5 Starchrom/Bit:
 //   Rustic 5,000 ($10) · BBQ 10,000 ($20) · Savior 17,500 ($35). Until then they stay at 3,000 / 7,500 / 10,000.
@@ -107,6 +107,12 @@ const GLOVES = [
   { id: "bbq",    name: "BBQ Gloves",    bonus: 0.05, price: 7500, rarity: "Uncommon",  color: "#c084fc", icon: "bbq.png" },
   { id: "savior", name: "Savior Gloves", bonus: 0.09, price: 10000, rarity: "Legendary", color: "#fbbf24", icon: "savior.png" },
 ];
+// Gloves wear out (B 2026-10-08): Savior Gloves last 30 successful catches, then you buy a new pair. The others last
+// the same Starchrom-per-catch: catches = price / (Savior price / 30), rounded down — 10,000 / 30 = 333 Starchrom per
+// catch, a bit more than a scrapped deviation (300), so Rustic 3,000 = 9 catches, BBQ 7,500 = 22, Savior 10,000 = 30.
+// Recomputed automatically if the prices change (e.g. at Bits launch). Only catches made wearing the pair count.
+const SAVIOR_CATCHES = 30;
+for (const g of GLOVES) g.catches = Math.floor((g.price * SAVIOR_CATCHES) / GLOVES[GLOVES.length - 1].price);
 
 // Starchrom bought with Bits in the Twitch panel (5 Bits = 100 Starchrom). Each pack must also exist as a
 // Bits product with the same SKU and Bits amount in the extension's Monetization tab.

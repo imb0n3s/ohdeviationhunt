@@ -77,3 +77,7 @@
 - Trading (website, one-to-one) is built on branch `trading` (NOT merged/live; B 2026-10-04 "don't publish yet"). To launch: merge trading into main and push.
 - Hourly perks (B 2026-10-07): belong to ONE stream — switched on by !hourly, the first !secure, or !daily in that live
   stream (players.hourly_stream). Another channel: !hourly or !secure there moves them and the timer carries over (no restart; B 2026-10-08). Next broadcast needs !hourly again. !timercheck / !hourlycheck (mods). The panel zip still says "Type !daily…" — B: leave the panel/extension review alone, don't re-upload for this.
+- Gloves wear out + scrap value (B 2026-10-08): scrapping a deviation = 300 Starchrom (ECONOMY.destroyValue). Savior Gloves last 30
+  successful catches; the others get the same Starchrom per catch: catches = floor(price × 30 / Savior price) → Rustic 9, BBQ 22
+  (GLOVES[].catches, computed in rarity.js — it rescales by itself when glove prices rise at Bits launch). Counted in players.glove_left;
+  only catches made wearing that pair count; at 0 the pair is removed and the result message says it wore out.

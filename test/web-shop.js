@@ -25,7 +25,7 @@ const sign = (d) => { const b = Buffer.from(JSON.stringify(d)).toString("base64u
   r = await fetch(`${base}/u/alice/buy`, { method: "POST", redirect: "manual", headers: { Origin: "https://evil.example", Cookie: sess("A", "alice"), "Content-Type": "application/x-www-form-urlencoded" }, body: "item=unit&qty=1" });
   assert.equal(r.status, 403); console.log("cross-site post blocked");
   let html = await (await fetch(`${base}/u/alice?shop=ok:saviorgloves:1`, { headers: { Cookie: sess("A", "alice") } })).text();
-  assert.ok(html.includes("Bought Savior Gloves!") && html.includes("✓ Owned · active"));
+  assert.ok(html.includes("Bought Savior Gloves!") && html.includes("✓ Owned · 30 catches left"));
   html = await (await fetch(`${base}/u/alice`)).text(); assert.ok(html.includes("Sign in with Twitch") && !html.includes('name="item"'));
   html = await (await fetch(`${base}/u/alice`, { headers: { Cookie: sess("B", "bob") } })).text(); assert.ok(!html.includes('name="item"'));
   require("fs").writeFileSync("/tmp/webshop.html", (await (await fetch(`${base}/u/alice`, { headers: { Cookie: sess("A", "alice") } })).text()));
@@ -42,8 +42,8 @@ const sign = (d) => { const b = Buffer.from(JSON.stringify(d)).toString("base64u
   r = await scrap(sess("B", "bob"), specs[1].id); assert.match(r.headers.get("location"), /scrap=signin/); assert.equal(db.q.specimensOf.all("A", "grumpybulb").length, 2);
   r = await scrap(sess("A", "alice"), specs[1].id, { Origin: "https://evil.example" }); assert.equal(r.status, 403);
   const sc0 = game.loadPlayer("A").starchrom;
-  r = await scrap(sess("A", "alice"), specs[1].id); assert.match(r.headers.get("location"), /scrap=ok/); assert.equal(game.loadPlayer("A").starchrom, sc0 + 500);
-  html = await (await fetch(`${base}${r.headers.get("location")}`, { headers: { Cookie: sess("A", "alice") } })).text(); assert.ok(html.includes("Scrapped — +500 Starchrom"));
+  r = await scrap(sess("A", "alice"), specs[1].id); assert.match(r.headers.get("location"), /scrap=ok/); assert.equal(game.loadPlayer("A").starchrom, sc0 + 300);
+  html = await (await fetch(`${base}${r.headers.get("location")}`, { headers: { Cookie: sess("A", "alice") } })).text(); assert.ok(html.includes("Scrapped — +300 Starchrom"));
   r = await scrap(sess("A", "alice"), specs[0].id); assert.match(r.headers.get("location"), /scrap=last_one/); console.log("web scrap works, keeps the last one");
   console.log("all web shop checks passed"); srv.close(); process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });
