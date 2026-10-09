@@ -51,6 +51,8 @@ function liveData(pool, ch) {
     }),
     // imbon3s (the game's owner) is left off both lists (B 2026-10-08)
     metas: db.leaderboard(6, "all").filter((r) => !isOwner(r.display)).slice(0, 5).map((r) => ({ name: r.display, species: r.species, total: r.total })),
+    // most deviations collected in total (every catch, duplicates and scrapped ones too)
+    most: db.mostCaught(6).filter((r) => !isOwner(r.display)).slice(0, 5).map((r) => ({ name: r.display, total: r.total })),
     streams: db.topStreams(5).map((c) => ({ name: c.display_name, catches: c.catches })),
     totalDevs: data.all().length,
     // the Shop takes a turn in the leaderboard box, with how much Starchrom has been spent in total (B 2026-10-08)
@@ -163,7 +165,8 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     <kbd>!shop</kbd><div>units, Capture Soup &amp; gloves</div></div></div>
   <div class="card" style="flex:1;overflow:hidden"><h2 class="stencil">Recent Catches</h2><div class="rec" id="rec"></div></div>
   <div class="card"><div class="lbw" id="lbw">
-    <div class="rk" id="metav"><h2 class="stencil">Top Metas <small>collected · caught</small></h2><div id="metas"></div></div>
+    <div class="rk" id="metav"><h2 class="stencil">Collection Champions <small>⭐ = all ${data.all().length}</small></h2><div id="metas"></div></div>
+    <div class="rk off" id="mostv"><h2 class="stencil">Most Collected <small>deviations caught in total</small></h2><div id="most"></div></div>
     <div class="rk off" id="streamv"><h2 class="stencil">Top Streams <small>deviations secured</small></h2><div id="streams"></div></div>
     <div class="shopv off" id="shopv"><h2 class="stencil">🛒 Shop <small>!shop · !buy &lt;item&gt; in chat</small></h2><div class="spent">🔥 <b id="spent">0</b> Starchrom spent so far</div><div class="sgrid" id="sgrid"></div></div></div></div>
 </div>
@@ -206,16 +209,18 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   }
   function frame(t){ const dt=Math.min(100,t-last); last=t; if(runW){ x-=dt*0.09; if(-x>=runW)x+=runW; document.getElementById("run").style.transform="translateX("+x.toFixed(1)+"px)"; } requestAnimationFrame(frame); }
   requestAnimationFrame(frame);
-  // the box rotates every 7.5s: Top Metas (collected 58/61 + caught) -> Top Streams -> Shop + Starchrom spent (B 2026-10-09)
+  // the box rotates every 7.5s: Collection Champions (58/61, ⭐ at 61) -> Most Collected (total caught) -> Top Streams -> Shop (B 2026-10-09)
   let metaMode=0;
   function renderMetas(){
-    ["metav","streamv","shopv"].forEach((id,i)=>document.getElementById(id).classList.toggle("off",i!==metaMode));
+    ["metav","mostv","streamv","shopv"].forEach((id,i)=>document.getElementById(id).classList.toggle("off",i!==metaMode));
     document.getElementById("spent").textContent=Number(st.spent||0).toLocaleString();
     const sg=(st.shop||[]).map((i)=>'<div class="si"><img src="'+esc(i.icon)+'" alt=""><div><div class="nm">'+esc(i.name)+'</div><div class="pr">'+Number(i.price).toLocaleString()+' Starchrom</div><div class="nt">'+esc(i.note)+'</div></div></div>').join(""), sgEl=document.getElementById("sgrid"); if(sgEl.dataset.h!==sg){sgEl.dataset.h=sg;sgEl.innerHTML=sg;}
-    document.getElementById("metas").innerHTML=st.metas.map((m,i)=>'<div class="rr"><span class="n">'+(i+1)+'.</span><b>'+esc(m.name)+'</b><span class="a">'+m.species+'/'+st.totalDevs+'</span><span class="c">'+Number(m.total).toLocaleString()+' caught</span></div>').join("");
+    // Collection Champions: how many of the deviations they have (x/61); a ⭐ once they have them all (B 2026-10-09)
+    document.getElementById("metas").innerHTML=st.metas.map((m,i)=>'<div class="rr s"><span class="n">'+(i+1)+'.</span><b>'+(m.species>=st.totalDevs?'⭐ ':'')+esc(m.name)+'</b><span class="a">'+m.species+'/'+st.totalDevs+'</span></div>').join("");
+    document.getElementById("most").innerHTML=(st.most||[]).map((m,i)=>'<div class="rr s"><span class="n">'+(i+1)+'.</span><b>'+esc(m.name)+'</b><span class="a">'+Number(m.total).toLocaleString()+'</span></div>').join("")||'<div class="rr s"><span class="n"></span><b>—</b></div>';
     document.getElementById("streams").innerHTML=st.streams.map((s,i)=>'<div class="rr s"><span class="n">'+(i+1)+'.</span><b>'+esc(s.name)+'</b><span class="a">'+s.catches.toLocaleString()+'</span></div>').join("")||'<div class="rr"><span class="n"></span><b>—</b></div>';
   }
-  setInterval(()=>{ if(!st)return; metaMode=(metaMode+1)%3; renderMetas(); if(metaMode===2){const w=document.getElementById("lbw");w.classList.remove("flash");void w.offsetWidth;w.classList.add("flash");} },7500);
+  setInterval(()=>{ if(!st)return; metaMode=(metaMode+1)%4; renderMetas(); if(metaMode===3){const w=document.getElementById("lbw");w.classList.remove("flash");void w.offsetWidth;w.classList.add("flash");} },7500);
   function render(){
     setTicker();
     document.getElementById("rec").innerHTML=st.recent.map((r)=>'<div class="r"><img src="'+esc(r.img)+'" alt=""><div><div><span class="n">'+esc(r.name)+'</span>'+(r.variant?' <span class="v">✨ '+esc(r.variant)+'</span>':'')+'</div><div class="w">secured by '+esc(r.who)+(r.chan?' · '+esc(r.chan):'')+'</div></div><div class="rt">'+esc(r.rating)+'</div></div>').join("")||'<div class="w">Nothing secured yet — be the first!</div>';
