@@ -639,6 +639,24 @@ function backfillVariantTraits() {
   return n;
 }
 
+// Specimens rolled before the no-repeat rule could have the same trait in slot 3 as in slot 1/2 (crafting
+// Eureka Moment is listed for slots 2 and 3): give them a different slot 3 trait (B 2026-10-08).
+function fixDuplicateTraits() {
+  let n = 0;
+  db.tx(() => {
+    for (const sp of db.q.slot3Specimens.all()) {
+      const dev = data.get(sp.deviation);
+      if (!dev) continue;
+      const taken = new Set([traits.nameOf(1, sp.t1, dev.category), traits.nameOf(2, sp.t2, dev.category)].filter(Boolean));
+      if (!taken.has(traits.nameOf(3, sp.t3, dev.category))) continue;
+      const pool = traits.allowed(dev.name, dev.category).slot3.filter((t) => !taken.has(t.name));
+      db.q.setT3.run(pool.length ? pool[Math.floor(Math.random() * pool.length)].key : null, sp.id);
+      n++;
+    }
+  })();
+  return n;
+}
+
 // Destroy one specimen for Starchrom. Only allowed while you own more than one of that deviation,
 // so a deviation never leaves your Securement Pods this way.
 function destroySpecimen(userId, specimenId) {
@@ -796,4 +814,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

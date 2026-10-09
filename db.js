@@ -197,6 +197,8 @@ const q = {
 
   topStreams: db.prepare(`SELECT login, display_name, catches, spawns FROM channels WHERE enabled=1 AND catches>0 ORDER BY catches DESC, spawns DESC LIMIT ?`),
   variantSpecimens: db.prepare(`SELECT id, deviation, variant, t1, t1_level, t2 FROM specimens WHERE variant<>''`),
+  slot3Specimens: db.prepare(`SELECT id, deviation, t1, t2, t3 FROM specimens WHERE t3 IS NOT NULL`),
+  setT3: db.prepare(`UPDATE specimens SET t3=? WHERE id=?`),
   setVariantTraits: db.prepare(`UPDATE specimens SET t1=@t1, t1_level=@t1_level, t2=@t2 WHERE id=@id`),
   addSpecimen: db.prepare(`INSERT INTO specimens (user_id, deviation, variant, power, mood, t1, t1_level, t2, t3, caught_at, channel)
     VALUES (@user_id, @deviation, @variant, @power, @mood, @t1, @t1_level, @t2, @t3, @caught_at, @channel)`),

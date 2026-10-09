@@ -196,14 +196,21 @@ function rollSpecimen(devName, variant, variants = [], cat = "combat", legendary
   const a = allowed(devName, cat);
   let t1 = rollSlot(a.slot1General, ownOptions(a.slot1Own, variants), variant, SPECIFIC_CHANCE.slot1, SLOT_CHANCE[1]);
   let t2 = rollSlot(a.slot2General, ownOptions(a.slot2Own, variants), variant, SPECIFIC_CHANCE.slot2, SLOT_CHANCE[2]);
-  const t3 = Math.random() < SLOT_CHANCE[3] ? pick(a.slot3).key : null;
   const g = t1 && T.global.find((t) => t.key === t1);
   let lvl = g?.maxLevel ? g.minLevel + Math.floor(Math.random() * (g.maxLevel - g.minLevel + 1)) : null;
   if (t1 === "power_rewind") lvl = g.minLevel;                  // level 2 is Legendary-only
   if (legendary?.slot === 1) { t1 = legendary.key; lvl = legendary.level; }
   if (legendary?.slot === 2) t2 = legendary.key;
+  // never the same trait twice on one specimen: some names are listed for more than one slot on the wiki
+  // (e.g. crafting Eureka Moment in slots 2 and 3), so slot 3 only picks from names slots 1-2 don't already have
+  const taken = new Set([nameOf(1, t1, cat), nameOf(2, t2, cat)].filter(Boolean));
+  const pool3 = a.slot3.filter((t) => !taken.has(t.name));
+  const t3 = Math.random() < SLOT_CHANCE[3] && pool3.length ? pick(pool3).key : null;
   return { power: rating(), mood: rating(), t1, t1_level: lvl, t2, t3 };
 }
+
+// base name of a trait (no level) — used to keep one specimen from having the same trait twice
+const nameOf = (slot, key, cat) => (key ? find(slot, key, cat)?.name || key : null);
 
 // ---------- display ----------
 
@@ -248,4 +255,4 @@ const shortTraits = (s, cat) => {
   return t.some(Boolean) ? t.map((x, i) => `Slot ${i + 1}: ${x || "None"}`).join(" · ") : "Traits: none";
 };
 
-module.exports = { variantTraits, LEGENDARY_KEYS, refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, rollLegendary, LEGENDARY_CHANCE, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS, SLOT_CHANCE };
+module.exports = { nameOf, variantTraits, LEGENDARY_KEYS, refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, rollLegendary, LEGENDARY_CHANCE, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS, SLOT_CHANCE };
