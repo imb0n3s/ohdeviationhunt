@@ -85,4 +85,5 @@
 - Artisan's Touch (B 2026-10-08): 250 Bits ($2.50) restores the gloves you wear to their full catches (BITS_PACKS artisan250,
   restoreGloves; wearing none = 1,250 Starchrom instead). Until Bits go on, the website shop shows it as "Coming Soon" (rarity.js ARTISAN,
   picture ext/artisan.png). The panel code that sells it (ext/panel.js bitsHtml) is NOT in the uploaded zip yet — at Bits launch
-  rebuild + upload the panel zip so the panel can sell it, and add it to the wiki page.
+  rebuild + upload the panel zip so the panel can sell it, and add it to the wiki page. B 2026-10-08: "we'll wait" — don't upload
+  it now. If the extension gets approved without it, selling it later needs a new version + review.
