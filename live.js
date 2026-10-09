@@ -14,6 +14,12 @@ const recentQ = db.raw.prepare(`SELECT s.deviation, s.variant, s.power, s.mood, 
   FROM specimens s JOIN players p ON p.user_id=s.user_id LEFT JOIN channels c ON c.broadcaster_id=s.channel
   ORDER BY s.caught_at DESC LIMIT ?`);
 
+// Legendary catches (variations / skins / Chaos) on OTHER channels in the last few minutes -> BREAKING NEWS on the ticker (B 2026-10-08)
+const BREAKING_MS = 3 * 60 * 1000;
+const breakingQ = db.raw.prepare(`SELECT s.id, s.deviation, s.variant, s.power, s.mood, s.caught_at, p.display, c.display_name AS chan, c.login
+  FROM specimens s JOIN players p ON p.user_id=s.user_id JOIN channels c ON c.broadcaster_id=s.channel
+  WHERE s.variant<>'' AND s.channel<>? AND s.caught_at>=? ORDER BY s.caught_at DESC LIMIT 6`);
+
 function liveData(pool, ch) {
   const sp = pool?.spawns;
   const bid = ch.broadcaster_id;
@@ -36,6 +42,11 @@ function liveData(pool, ch) {
     nextAt: sp?.nextAt?.get(bid) || null,
     idleChat,
     recent,
+    breaking: breakingQ.all(bid, now - BREAKING_MS).map((r) => {
+      const d = data.get(r.deviation);
+      const v = d?.variants.find((x) => x.name === r.variant);
+      return { id: r.id, who: r.display, name: d?.name || r.deviation, variant: `${v?.kind === "skin" ? "Skin" : "Variation"}: ${r.variant}`, rating: `${r.power}/${r.mood}`, chan: r.chan, login: r.login };
+    }),
     // imbon3s (the game's owner) is left off both lists (B 2026-10-08)
     metas: db.leaderboard(6, "all").filter((r) => !isOwner(r.display)).slice(0, 5).map((r) => ({ name: r.display, species: r.species, total: r.total })),
     most: db.mostCaught(6).filter((r) => !isOwner(r.display)).slice(0, 5).map((r) => ({ name: r.display, total: r.total })),
@@ -104,6 +115,14 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
 #ticker .it{font-size:28px;font-weight:700;color:#e6edf5;padding:0 34px;display:flex;align-items:center;gap:12px}
 #ticker .it b{color:var(--cyan)}#ticker .it .c{color:#fde68a;font-weight:800}#ticker .it .m{color:var(--muted);font-size:22px}
 #ticker .sep{color:var(--gold);font-size:22px}
+/* BREAKING NEWS: a Legendary was secured on another stream */
+#ticker.news{border-top-color:var(--gold);background:linear-gradient(90deg,#2a1d02,#3b2a05 50%,#2a1d02)}
+#ticker.news .lab{background:var(--gold);color:#1a1200;animation:newsflash .7s steps(1) infinite}
+#ticker.news .lab i{background:#1a1200}
+#ticker .it.bn{color:#fff8e1}#ticker .it.bn b{color:var(--gold)}#ticker .it.bn .v{color:#fde68a}#ticker .it.bn .c{color:var(--cyan)}
+@keyframes newsflash{0%{background:var(--gold);color:#1a1200}50%{background:#e11d48;color:#fff}}
+#ticker.flash::after{content:"";position:absolute;inset:0;background:var(--gold);opacity:0;animation:tflash 1.6s ease-out}
+@keyframes tflash{0%,30%,60%{opacity:.85}15%,45%,100%{opacity:0}}
 </style></head><body>
 <div id="bg"></div>
 <header><img src="/panel/dh-logo.png" alt="">
@@ -126,7 +145,7 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     <div><h2 class="stencil" id="metah">Top Metas</h2><ol id="metas"></ol></div>
     <div><h2 class="stencil">Top Streams</h2><ol id="streams"></ol></div></div></div>
 </div>
-<div id="ticker"><div class="lab"><i></i>LIVE NOW</div><div class="win"><div class="run" id="run"></div></div></div>
+<div id="ticker"><div class="lab"><i></i><span id="tlab">LIVE NOW</span></div><div class="win"><div class="run" id="run"></div></div></div>
 
 <script>
 (function(){
@@ -136,12 +155,25 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   let st=null;
   // ticker: scroll at a steady speed; rebuild only when the text changes
   let tickHtml="",x=0,runW=0,last=performance.now();
+  let seenNews=null;
   function setTicker(){
+    const news=st.breaking||[], tk=document.getElementById("ticker");
+    // BREAKING NEWS while someone on another stream has just secured a Legendary (B 2026-10-08)
+    tk.classList.toggle("news",news.length>0); document.getElementById("tlab").textContent=news.length?"BREAKING NEWS":"LIVE NOW";
+    const ids=news.map((n)=>n.id).join(",");
+    if(seenNews!==null&&news.some((n)=>seenNews.indexOf(","+n.id+",")<0)){tk.classList.remove("flash");void tk.offsetWidth;tk.classList.add("flash");}
+    seenNews=","+ids+",";
+    if(news.length){
+      const once=news.map((n)=>'<span class="it bn">🌟 <b>@'+esc(n.who)+'</b> secured a LEGENDARY <span class="v">✨ '+esc(n.name)+' ('+esc(n.variant)+')</span><span class="c">'+esc(n.rating)+'</span>on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span></span>').join('<span class="sep">🌟</span>')+'<span class="sep">🌟</span>';
+      return runTicker(once);
+    }
     const it=(st.liveNow||[]).map((c)=>'<span class="it">🔴 <b>'+esc(c.name)+'</b><span class="c">'+c.total.toLocaleString()+' deviation'+(c.total===1?'':'s')+' caught</span><span class="m">twitch.tv/'+esc(c.login)+'</span></span>');
     // only the channels live with the game right now (B 2026-10-08)
     const parts=it.length?it:['<span class="it"><span class="m">No other channels are live with the game right now</span></span>'];
-    const once=parts.join('<span class="sep">◆</span>')+'<span class="sep">◆</span>';
-    if(once===tickHtml)return; tickHtml=once;
+    runTicker(parts.join('<span class="sep">◆</span>')+'<span class="sep">◆</span>');
+  }
+  function runTicker(once){
+    if(once===tickHtml)return; tickHtml=once; x=0;
     // repeat the line until it's at least as wide as the bar, so the scroll never shows a gap
     const run=document.getElementById("run"), win=run.parentNode.clientWidth; let unit=once; run.innerHTML=unit;
     for(let i=0;i<6&&run.scrollWidth<win;i++){unit+=once;run.innerHTML=unit;}

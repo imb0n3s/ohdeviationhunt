@@ -69,6 +69,8 @@
 - 24/7 stream: /live/<login> page (live.js) + streamer/ (Docker: Xvfb+Chromium+ffmpeg). See docs/live-stream.md. The bot's
   own channel is auto-added as a game channel (index.js) and hidden from Top Streams (TOP_STREAMS_HIDE). It is "always on"
   (Spawns.alwaysOn): spawns keep coming with a quiet chat (B 2026-10-06 "keep it up"); setting alwayson:<bid>=on does the same elsewhere.
+  Ticker: Legendaries caught on OTHER streams in the last 3 min turn it into a flashing BREAKING NEWS line (who, deviation + variant,
+  Skill/Activity, which stream; live.js breakingQ; B 2026-10-08), then it goes back to LIVE NOW.
   Music: songs in /root/dh-music on the VPS play on shuffle via mpv + PulseAudio mix (docs/live-stream.md; Spotify doesn't work —
   it refuses unofficial players). The VPS is IONOS 67.217.241.137 (B SSHes in from PowerShell).
 - Legendary pool (B 2026-10-08): !donate up to 750 Starchrom per viewer while a shown Legendary is loose; at 10,000 every donor who
