@@ -79,7 +79,7 @@ function makeHandler(pool, spawns) {
     // ---- Legendary pool: !donate <amount|max> while a Legendary is loose (B 2026-10-08) ----
     if (cmd === "!donate" || cmd === "!pool") {
       played();
-      if (cmd === "!pool" && !args[0]) { const st = spawns.poolState(bid); return reply(st ? `💰 Legendary pool: ${st.total.toLocaleString("en-US")} / ${st.goal.toLocaleString("en-US")} Starchrom from ${st.donors} donor${st.donors === 1 ? "" : "s"}${st.full ? " — FULL! Donors who !secure catch it for sure." : ". !donate <amount> to add to it."}` : null); }
+      if (cmd === "!pool" && !args[0]) { const st = spawns.poolState(bid); return reply(st ? `💰 Legendary pool: ${st.total.toLocaleString("en-US")} / ${st.goal.toLocaleString("en-US")} Starchrom from ${st.donors} donor${st.donors === 1 ? "" : "s"}${st.full ? " — FULL! Donors who !secure catch it for sure." : ` (+${+(st.bonus * 100).toFixed(2)}% catch chance for donors). !donate <amount> to add to it.`}` : null); }
       return reply(spawns.donate(bid, uid, login, name, args[0]));
     }
 

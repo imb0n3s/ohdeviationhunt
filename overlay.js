@@ -220,7 +220,7 @@ html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:
     var was=el.className.indexOf("on")>=0;
     el.className="on"+(p.full?" full":"");
     document.getElementById("poolbar").style.width=Math.min(100,p.total/p.goal*100).toFixed(1)+"%";
-    document.getElementById("pooltxt").textContent=p.full?"\u2705 POOL FULL \u2014 donors who !secure catch it!":"\ud83d\udcb0 Pool "+p.total.toLocaleString("en-US")+" / "+p.goal.toLocaleString("en-US");
+    document.getElementById("pooltxt").textContent=p.full?"\u2705 POOL FULL \u2014 donors who !secure catch it!":"\ud83d\udcb0 Pool "+p.total.toLocaleString("en-US")+" / "+p.goal.toLocaleString("en-US")+(p.bonus?" \u00b7 +"+(+(p.bonus*100).toFixed(2))+"%":"");
     if(!was)fit(card);
   }
   function show(s,quiet){

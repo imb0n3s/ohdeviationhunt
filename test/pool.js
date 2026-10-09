@@ -46,5 +46,19 @@ const assert = require("assert");
   assert.ok(got === 0 || got === require("../game").rewardFor({ dev, variant }), "balance " + sc("50"));
   assert.ok(sent.some((t) => /pool didn't fill \(600 \/ 10,000\)\./.test(t)));
   console.log("pool not filled: no refund ✓");
+  // --- not full: +1.75% per donor for donors only. Rig the roll just above the base rate: donors catch, the non-donor doesn't
+  await sp.spawn("CH", true, { dev, variant });
+  for (const id of ["60", "61", "62", "63"]) give(id, 1000);
+  assert.match(sp.donate("CH", "60", "u60", "U60", "10"), /1 donor = \+1\.75% catch chance/);
+  assert.match(sp.donate("CH", "61", "u61", "U61", "10"), /2 donors = \+3\.5% catch chance/);
+  sp.donate("CH", "62", "u62", "U62", "10");
+  assert.equal(sp.poolState("CH").bonus.toFixed(4), "0.0525");
+  for (const id of ["60", "61", "62", "63"]) sp.attempt("CH", id, "u" + id, "U" + id);
+  const base = game.catchChance(sp.active.get("CH"), "standard", 0), rnd = Math.random;
+  Math.random = () => base + 0.05;                     // misses at the base rate, catches with +5.25%
+  sent.length = 0; await sp.resolve("CH"); Math.random = rnd;
+  const out = sent.join(" ");
+  assert.ok(/@U60/.test(out) && /@U61/.test(out) && /@U62/.test(out) && /broke free from U63/.test(out), out);
+  console.log("pool not full: +1.75% per donor, donors only ✓");
   process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });

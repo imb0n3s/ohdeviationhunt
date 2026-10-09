@@ -31,6 +31,7 @@ function loadPlayer(userId, login, display) {
 }
 
 const HOUR = 3600 * 1000;
+const pctTxt = (x) => `${+(x * 100).toFixed(2)}%`;
 // Hourly free units run only while the stream the player did !daily in is still live.
 // index.js tells us each live channel's current Twitch stream id.
 let streamOf = () => null;
@@ -363,10 +364,12 @@ class Spawns {
   // ---- Legendary pool (B 2026-10-08) ----
   poolTotal(s) { let t = 0; for (const d of (s.pool || new Map()).values()) t += d.amount; return t; }
   poolFull(s) { return this.poolTotal(s) >= ECONOMY.legendaryPoolGoal; }
+  // catch bonus for donors while the pool isn't full: +1.75% per donor
+  poolBonus(s) { return (s.pool ? s.pool.size : 0) * ECONOMY.legendaryPoolPerDonor; }
   poolState(bid) {
     const s = this.active.get(bid);
     if (!s || !isRevealed(bid, s)) return null;
-    return { total: this.poolTotal(s), goal: ECONOMY.legendaryPoolGoal, donors: (s.pool || new Map()).size, full: this.poolFull(s) };
+    return { total: this.poolTotal(s), goal: ECONOMY.legendaryPoolGoal, donors: (s.pool || new Map()).size, full: this.poolFull(s), bonus: this.poolBonus(s) };
   }
   // !donate <amount|max> while a Legendary is loose. Returns a reply (or null).
   donate(bid, userId, login, display, amountWord) {
@@ -400,7 +403,7 @@ class Spawns {
       Promise.resolve(this.send(bid, `🎯💰 LEGENDARY POOL FILLED! ${fmt(goal)} ${SC} — every donor who throws !secure WILL secure the ${spawnName(s, bid)}! Donors: ${shown}`)).catch(() => {});
       return `@${display} 💰 you put in ${fmt(amount)} ${SC} and filled the pool!${s.attempts.has(userId) ? " You've already thrown, so it's yours." : " Now type !secure to claim it!"}`;
     }
-    return `@${display} 💰 +${fmt(amount)} ${SC} to the Legendary pool: ${fmt(now)} / ${fmt(goal)}.${s.attempts.has(userId) ? "" : " Don't forget to !secure!"}`;
+    return `@${display} 💰 +${fmt(amount)} ${SC} to the Legendary pool: ${fmt(now)} / ${fmt(goal)}. ${s.pool.size} donor${s.pool.size === 1 ? "" : "s"} = +${pctTxt(this.poolBonus(s))} catch chance for every donor until it fills.${s.attempts.has(userId) ? "" : " Don't forget to !secure!"}`;
   }
 
   // A viewer types !secure [unit]. Returns a reply string, or null to stay quiet.
@@ -470,7 +473,8 @@ class Spawns {
     db.tx(() => {
       for (const [userId, a] of s.attempts) {
         const p = loadPlayer(userId, a.login, a.display);
-        if ((poolFull && s.pool.has(userId)) || Math.random() < catchChance(s, a.unit, a.bonus || 0)) {
+        const donor = s.pool && s.pool.has(userId);
+        if ((poolFull && donor) || Math.random() < catchChance(s, a.unit, (a.bonus || 0) + (donor ? this.poolBonus(s) : 0))) {
           const v = s.variant; // secret until now: the spawn looked like the normal deviation
           const variant = v?.name || "";
           const vr = variantRule(v);

@@ -86,6 +86,8 @@ const ECONOMY = {
   // Pool doesn't fill before time runs out -> donations are still spent (no refunds).
   legendaryPoolGoal: 10000,
   legendaryPoolMax: 750,  // most one viewer can put into one Legendary's pool
+  // Until it fills, every donor adds +1.75% catch chance to every donor who throws (B 2026-10-08); full = 100%.
+  legendaryPoolPerDonor: 0.0175,
 };
 
 const lookup = {};
