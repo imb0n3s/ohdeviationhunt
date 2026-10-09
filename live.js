@@ -206,7 +206,7 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   }
   function frame(t){ const dt=Math.min(100,t-last); last=t; if(runW){ x-=dt*0.09; if(-x>=runW)x+=runW; document.getElementById("run").style.transform="translateX("+x.toFixed(1)+"px)"; } requestAnimationFrame(frame); }
   requestAnimationFrame(frame);
-  // the box rotates every 12s: Top Metas (collected 58/61 + caught) -> Top Streams -> Shop + Starchrom spent (B 2026-10-09)
+  // the box rotates every 7.5s: Top Metas (collected 58/61 + caught) -> Top Streams -> Shop + Starchrom spent (B 2026-10-09)
   let metaMode=0;
   function renderMetas(){
     ["metav","streamv","shopv"].forEach((id,i)=>document.getElementById(id).classList.toggle("off",i!==metaMode));
@@ -215,7 +215,7 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     document.getElementById("metas").innerHTML=st.metas.map((m,i)=>'<div class="rr"><span class="n">'+(i+1)+'.</span><b>'+esc(m.name)+'</b><span class="a">'+m.species+'/'+st.totalDevs+'</span><span class="c">'+Number(m.total).toLocaleString()+' caught</span></div>').join("");
     document.getElementById("streams").innerHTML=st.streams.map((s,i)=>'<div class="rr s"><span class="n">'+(i+1)+'.</span><b>'+esc(s.name)+'</b><span class="a">'+s.catches.toLocaleString()+'</span></div>').join("")||'<div class="rr"><span class="n"></span><b>—</b></div>';
   }
-  setInterval(()=>{ if(!st)return; metaMode=(metaMode+1)%3; renderMetas(); if(metaMode===2){const w=document.getElementById("lbw");w.classList.remove("flash");void w.offsetWidth;w.classList.add("flash");} },12000);
+  setInterval(()=>{ if(!st)return; metaMode=(metaMode+1)%3; renderMetas(); if(metaMode===2){const w=document.getElementById("lbw");w.classList.remove("flash");void w.offsetWidth;w.classList.add("flash");} },7500);
   function render(){
     setTicker();
     document.getElementById("rec").innerHTML=st.recent.map((r)=>'<div class="r"><img src="'+esc(r.img)+'" alt=""><div><div><span class="n">'+esc(r.name)+'</span>'+(r.variant?' <span class="v">✨ '+esc(r.variant)+'</span>':'')+'</div><div class="w">secured by '+esc(r.who)+(r.chan?' · '+esc(r.chan):'')+'</div></div><div class="rt">'+esc(r.rating)+'</div></div>').join("")||'<div class="w">Nothing secured yet — be the first!</div>';

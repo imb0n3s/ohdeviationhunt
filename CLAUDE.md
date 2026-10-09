@@ -72,7 +72,7 @@
   Ticker: Legendaries caught on OTHER streams in the last 3 min turn it into a flashing BREAKING NEWS line (who, deviation + variant,
   Skill/Activity, which stream; live.js breakingQ; B 2026-10-08), then it goes back to LIVE NOW. Shop and Bits purchases on ANY stream
   show there too (purchase_log, logged in shop.purchase + /ext/bits/complete; who, what, which stream; B 2026-10-09).
-  Leaderboard box rotates every 12s, one view at a time: Top Metas (collected x/61 + caught) -> Top Streams (top 5) -> Shop
+  Leaderboard box rotates every 7.5s (B 2026-10-09), one view at a time: Top Metas (collected x/61 + caught) -> Top Streams (top 5) -> Shop
   (flashes in, shows total Starchrom spent; B 2026-10-09). imbon3s is left off Top Metas (but shown in Top Streams).
   Music: songs in /root/dh-music on the VPS play on shuffle via mpv + PulseAudio mix (docs/live-stream.md; Spotify doesn't work —
   it refuses unofficial players). The VPS is IONOS 67.217.241.137 (B SSHes in from PowerShell).
