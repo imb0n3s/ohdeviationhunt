@@ -35,6 +35,9 @@ function makeHandler(pool, spawns) {
     const echo = ev.source_broadcaster_user_id && ev.source_broadcaster_user_id !== bid;
     const reply = (m) => m && pool.send(bid, m, echo ? undefined : ev.message_id); // can't reply-thread a partner channel's message
 
+    // blocked accounts (blocklist.js) can't play or add the game: ignore them completely
+    if (require("./blocklist").isBlocked(uid, login)) return;
+
     // ---- the bot's own channel: !join / !leave ----
     if (bid === botId() && uid !== botId() && (cmd === "!join" || cmd === "!leave")) {
       if (cmd === "!leave") {

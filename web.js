@@ -584,6 +584,7 @@ function createApp(pool) {
       if (!state || getCookie(req, "dh_state") !== req.query.state) return res.status(400).send(simple("Error", "Login expired", "Please start again."));
       const tok = await twitch.exchangeCode(req.query.code);
       const user = await twitch.getUser(tok.access_token);
+      if (require("./blocklist").isBlocked(user.id, user.login)) return res.status(403).send(simple("Not available", "Not available", "This Twitch account can't use Deviation Hunt."));
 
       if (state.purpose === "viewer") {
         const v = sign({ purpose: "session", uid: user.id, login: user.login, exp: Date.now() + SESSION_DAYS * 864e5, ts: Date.now() });

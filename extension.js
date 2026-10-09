@@ -101,6 +101,7 @@ function bagFor(userId) {
 function auth(req) {
   const jwt = verifyExtJwt((req.headers.authorization || "").replace(/^Bearer\s+/i, ""));
   if (!jwt.user_id) throw Object.assign(new Error("share your Twitch identity with the panel first"), { status: 403, needsIdentity: true });
+  if (require("./blocklist").isBlocked(jwt.user_id)) throw Object.assign(new Error("blocked"), { status: 403 });
   return jwt;
 }
 

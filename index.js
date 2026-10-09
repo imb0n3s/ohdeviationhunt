@@ -64,8 +64,12 @@ async function main() {
   };
 
 
+  // blocked accounts (blocklist.js): wipe them from the game before joining channels, then make sure the bot isn't in their chat
+  const blocklist = require("./blocklist");
+  try { blocklist.purge(); } catch (e) { console.error("[blocklist] purge failed:", e.message); }
   if (db.getBotAccount()) {
     await pool.joinAllFromDb().catch((e) => console.error("[eventsub] startup failed:", e.message));
+    for (const id of blocklist.ids()) await pool.leave(id).catch(() => {});
   } else {
     console.log(`[setup] No bot account yet. Open ${cfg.BASE_URL}/setup?key=<ADMIN_KEY> and log in as the bot's Twitch account.`);
   }
