@@ -130,12 +130,6 @@ const BITS_PACKS = [
   { sku: "starchrom17500", bits: 3500, starchrom: 17500 },  // = Savior Gloves ($35)
   // raises the most Securement Units you can hold (ECONOMY.unitCap) by 5, permanently
   { sku: "pods5",         bits: 50,  capacity: 5 },
-  // Artisan's Touch: restores the gloves you wear to a full count of catches (B 2026-10-08, $2.50). No gloves on ->
-  // you get the same value in Starchrom instead (250 Bits × 5 = 1,250), so the Bits are never wasted.
-  { sku: "artisan250",    bits: 250, restoreGloves: true },
 ];
-// shown in the website shop as "Coming Soon" until Bits are switched on (BITS_ENABLED=1)
-const ARTISAN = { id: "artisan", name: "Artisan's Touch", bits: 250, sku: "artisan250", icon: "artisan.png", color: "#22d3ee",
-  desc: "Fully restores the gloves you wear — like new again, back to all their catches." };
 
-module.exports = { TIERS, ASSIGN, VARIANT, isChaos, variantRule, UNITS, ECONOMY, GLOVES, SOUP, BITS_PACKS, ARTISAN, rarityOf, unitKey };
+module.exports = { TIERS, ASSIGN, VARIANT, isChaos, variantRule, UNITS, ECONOMY, GLOVES, SOUP, BITS_PACKS, rarityOf, unitKey };

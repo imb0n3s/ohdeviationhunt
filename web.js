@@ -9,7 +9,7 @@ const twitch = require("./twitch");
 const data = require("./data");
 const game = require("./game");
 const traits = require("./traits");
-const { TIERS, UNITS, VARIANT, ECONOMY, GLOVES, ARTISAN, rarityOf } = require("./rarity");
+const { TIERS, UNITS, VARIANT, ECONOMY, GLOVES, rarityOf } = require("./rarity");
 
 // ---------- signed OAuth state ----------
 function sign(d) {
@@ -415,10 +415,7 @@ function webShop(p, live, viewer, msg) {
     if (!room) return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div><button disabled>Securement Pods full (${game.podsUsed(live)}/${game.unitCap(live)})</button></div></div>`;
     return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div>${form(it, `<input type="number" name="qty" min="1" max="${Math.min(it.maxQty, room)}" value="1"><button ${live.starchrom < it.price ? "disabled" : ""}>${live.starchrom < it.price ? `Need ${fmt(it.price - live.starchrom)} more` : "Buy"}</button> <span class="muted">you can buy ${max} (${game.podsUsed(live)}/${game.unitCap(live)} pods used)</span>`)}</div></div>`;
   }).join("");
-  // Artisan's Touch (Bits only): restores your gloves — "Coming Soon" until Bits are switched on
-  const A = ARTISAN, g = best;
-  const artisanHtml = `<div class="si glove" style="--gc:${A.color}"><img src="${IMG_BASE}${A.icon}" alt=""><div class="sb"><div class="sn">${esc(A.name)} <span class="rar">Bits</span></div><div class="sd">${esc(A.desc)}${g ? ` Your ${esc(g.name)}: ${live.glove_left}/${g.catches} catches left.` : ""} · ${A.bits} Bits ($${(A.bits / 100).toFixed(2)})</div><button disabled class="owned">${cfg.BITS_ENABLED ? "Buy with Bits in the stream's Securement Pods panel" : "Coming Soon"}</button></div></div>`;
-  return `<div class="card shopbox">${note}<div class="shophead"><b>🛒 Shop</b><span>${fmt(live.starchrom)} Starchrom · ${live.units.standard || 0} Securement Units</span><span class="muted">Signed in as ${esc(viewer.login)} · <a href="/logout?next=${encodeURIComponent("/u/" + p.login)}">sign out</a></span></div><div class="shopgrid">${items}${artisanHtml}</div></div>`;
+  return `<div class="card shopbox">${note}<div class="shophead"><b>🛒 Shop</b><span>${fmt(live.starchrom)} Starchrom · ${live.units.standard || 0} Securement Units</span><span class="muted">Signed in as ${esc(viewer.login)} · <a href="/logout?next=${encodeURIComponent("/u/" + p.login)}">sign out</a></span></div><div class="shopgrid">${items}</div></div>`;
 }
 
 function commandsPage() {
