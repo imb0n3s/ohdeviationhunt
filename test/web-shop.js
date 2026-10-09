@@ -43,7 +43,10 @@ const sign = (d) => { const b = Buffer.from(JSON.stringify(d)).toString("base64u
   r = await scrap(sess("B", "bob"), specs[1].id); assert.match(r.headers.get("location"), /scrap=signin/); assert.equal(db.q.specimensOf.all("A", "grumpybulb").length, 2);
   r = await scrap(sess("A", "alice"), specs[1].id, { Origin: "https://evil.example" }); assert.equal(r.status, 403);
   const sc0 = game.loadPlayer("A").starchrom;
+  const tot0 = db.leaderboard(100).find((r) => r.user_id === "A").total, all0 = db.totalCatches(), most0 = db.mostCaught(50).find((r) => r.display === "Alice")?.total;
   r = await scrap(sess("A", "alice"), specs[1].id); assert.match(r.headers.get("location"), /scrap=ok/); assert.equal(game.loadPlayer("A").starchrom, sc0 + 300);
+  // scrapping doesn't lower what you've caught (B 2026-10-09)
+  assert.equal(db.leaderboard(100).find((r) => r.user_id === "A").total, tot0); assert.equal(db.totalCatches(), all0); assert.ok(most0 > 0); assert.equal(db.mostCaught(50).find((r) => r.display === "Alice")?.total, most0);
   html = await (await fetch(`${base}${r.headers.get("location")}`, { headers: { Cookie: sess("A", "alice") } })).text(); assert.ok(html.includes("Scrapped — +300 Starchrom"));
   r = await scrap(sess("A", "alice"), specs[0].id); assert.match(r.headers.get("location"), /scrap=last_one/); console.log("web scrap works, keeps the last one");
   console.log("all web shop checks passed"); srv.close(); process.exit(0);

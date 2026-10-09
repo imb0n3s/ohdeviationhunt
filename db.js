@@ -123,6 +123,9 @@ if (!db.prepare(`SELECT 1 FROM settings WHERE key='migr:surprise_off'`).get()) {
 // !daily claims (one per player per day, Central time; tied to the stream it was claimed in)
 // every Bits purchase, keyed by Twitch's transaction id so a receipt can never be credited twice
 db.exec(`CREATE TABLE IF NOT EXISTS bits_tx (transaction_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, sku TEXT NOT NULL, bits INTEGER NOT NULL, starchrom INTEGER NOT NULL, channel TEXT, at INTEGER NOT NULL)`);
+// every scrapped specimen: scrapping frees a Pod but the catch still counts towards "caught" totals (B 2026-10-09)
+db.exec(`CREATE TABLE IF NOT EXISTS scrapped (id INTEGER PRIMARY KEY, user_id TEXT NOT NULL, deviation TEXT NOT NULL, variant TEXT NOT NULL DEFAULT '', channel TEXT, caught_at INTEGER NOT NULL, scrapped_at INTEGER NOT NULL)`);
+db.exec(`CREATE INDEX IF NOT EXISTS scrapped_user ON scrapped(user_id)`);
 // every shop / Bits purchase, for the 24/7 stream's BREAKING NEWS ticker (B 2026-10-09)
 db.exec(`CREATE TABLE IF NOT EXISTS purchase_log (id INTEGER PRIMARY KEY AUTOINCREMENT, at INTEGER NOT NULL, user_id TEXT NOT NULL, display TEXT NOT NULL, channel TEXT, what TEXT NOT NULL)`);
 db.exec(`CREATE TABLE IF NOT EXISTS daily_claims (user_id TEXT NOT NULL, stream_id TEXT NOT NULL, channel TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (user_id, stream_id))`);
@@ -183,19 +186,19 @@ const q = {
   listCatches: db.prepare(`SELECT * FROM catches WHERE user_id=? ORDER BY deviation, variant`),
   dupes: db.prepare(`SELECT * FROM catches WHERE user_id=? AND count>1`),
   trimDupe: db.prepare(`UPDATE catches SET count=1 WHERE user_id=? AND deviation=? AND variant=?`),
-  totalCatches: db.prepare(`SELECT COALESCE(SUM(count),0) AS n FROM catches`),
+  totalCatches: db.prepare(`SELECT COALESCE((SELECT SUM(count) FROM catches),0) + (SELECT COUNT(*) FROM scrapped) AS n`),
   totalAttempts: db.prepare(`SELECT COALESCE(SUM(attempts),0) AS n FROM players`),
   leaderboard: db.prepare(`SELECT p.user_id, p.display, p.login,
       COUNT(DISTINCT c.deviation) AS species,
       COALESCE(SUM(CASE WHEN c.variant<>'' THEN 1 ELSE 0 END),0) AS variants,
-      COALESCE(SUM(c.count),0) AS total,
+      COALESCE(SUM(c.count),0) + (SELECT COUNT(*) FROM scrapped s WHERE s.user_id=p.user_id) AS total,
       (p.user_id IN (SELECT broadcaster_id FROM channels WHERE enabled=1)) AS streamer
     FROM players p LEFT JOIN catches c ON c.user_id=p.user_id
     WHERE (@who = 'all' OR (p.user_id IN (SELECT broadcaster_id FROM channels WHERE enabled=1)) = (@who = 'streamers'))
     GROUP BY p.user_id HAVING species > 0 ORDER BY species DESC, variants DESC, total DESC, LOWER(p.display) ASC LIMIT @n`),
   // most deviations secured in total (every catch counts, duplicates too)
-  mostCaught: db.prepare(`SELECT p.display, SUM(c.count) AS total FROM catches c JOIN players p ON p.user_id=c.user_id
-    GROUP BY c.user_id ORDER BY total DESC, LOWER(p.display) ASC LIMIT ?`),
+  mostCaught: db.prepare(`SELECT p.display, COALESCE((SELECT SUM(count) FROM catches c WHERE c.user_id=p.user_id),0) + (SELECT COUNT(*) FROM scrapped s WHERE s.user_id=p.user_id) AS total
+    FROM players p WHERE total>0 ORDER BY total DESC, LOWER(p.display) ASC LIMIT ?`),
 
   topStreams: db.prepare(`SELECT login, display_name, catches, spawns FROM channels WHERE enabled=1 AND catches>0 ORDER BY catches DESC, spawns DESC LIMIT ?`),
   variantSpecimens: db.prepare(`SELECT id, deviation, variant, t1, t1_level, t2 FROM specimens WHERE variant<>''`),

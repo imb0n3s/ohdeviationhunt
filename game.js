@@ -667,6 +667,8 @@ function destroySpecimen(userId, specimenId) {
   let p, gotUnits = 0;
   db.tx(() => {
     p = loadPlayer(userId, row.login, row.display);
+    // the catch still counts as caught (leaderboards, !todaysleader): keep a record of it
+    db.raw.prepare(`INSERT INTO scrapped (user_id, deviation, variant, channel, caught_at, scrapped_at) VALUES (?, ?, ?, ?, ?, ?)`).run(userId, sp.deviation, sp.variant, sp.channel, sp.caught_at, Date.now());
     db.q.deleteSpecimen.run(sp.id);
     db.q.decCatch.run(userId, sp.deviation, sp.variant);
     db.q.dropEmptyCatch.run(userId, sp.deviation, sp.variant);
@@ -792,7 +794,8 @@ function specimenText(userId, login, display, query, baseUrl) {
 // !todaysleader: who has secured the most deviations in this channel during the current broadcast (B 2026-10-09)
 function todaysLeader(bid, startedAt, display) {
   if (!startedAt) return `@${display} the stream isn't live right now — !todaysleader shows who has secured the most deviations during the current stream.`;
-  const rows = db.raw.prepare(`SELECT p.display, COUNT(*) AS n FROM specimens s JOIN players p ON p.user_id=s.user_id
+  const rows = db.raw.prepare(`SELECT p.display, COUNT(*) AS n FROM (SELECT user_id, channel, caught_at FROM specimens UNION ALL SELECT user_id, channel, caught_at FROM scrapped) s
+    JOIN players p ON p.user_id=s.user_id
     WHERE s.channel=? AND s.caught_at>=? GROUP BY s.user_id ORDER BY n DESC, MIN(s.caught_at) ASC LIMIT 5`).all(bid, startedAt);
   if (!rows.length) return `@${display} nobody has secured a deviation this stream yet — be the first with !secure!`;
   const medal = ["🥇", "🥈", "🥉", "4.", "5."];

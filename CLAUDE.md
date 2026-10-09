@@ -91,3 +91,5 @@
   More via Railway env BLOCKED_LOGINS. Other players' catches made in a blocked channel are kept (channel name cleared).
   Channel-only block (B 2026-10-09: nobles_tv): can NEVER add the game to their channel (!join and the website refuse; removed if
   present on start) but can still play in other streams. More via Railway env NO_CHANNEL_LOGINS.
+- Scrapping never lowers "caught" (B 2026-10-09): scrapped specimens are copied to the `scrapped` table; leaderboard totals,
+  Most Caught, homepage Deviations Secured and !todaysleader count specimens + scrapped. (Scraps before 2026-10-09 weren't recorded.)

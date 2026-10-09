@@ -38,7 +38,7 @@ function purge() {
     const had = R.prepare(`SELECT (SELECT COUNT(*) FROM players WHERE user_id=?) + (SELECT COUNT(*) FROM channels WHERE broadcaster_id=?) AS n`).get(id, id).n;
     if (!had) continue;
     db.tx(() => {
-      for (const t of ["players", "catches", "specimens", "daily_claims", "bits_tx"]) R.prepare(`DELETE FROM ${t} WHERE user_id=?`).run(id);
+      for (const t of ["players", "catches", "specimens", "scrapped", "daily_claims", "bits_tx"]) R.prepare(`DELETE FROM ${t} WHERE user_id=?`).run(id);
       R.prepare(`DELETE FROM channels WHERE broadcaster_id=?`).run(id);
       R.prepare(`DELETE FROM spawn_log WHERE broadcaster_id=?`).run(id);
       R.prepare(`DELETE FROM active_spawns WHERE broadcaster_id=?`).run(id);
