@@ -443,7 +443,8 @@ function topPage() {
     ? `<div class="card"><table><tr><th>#</th><th>Stream</th><th>Deviations secured</th><th>Spawns</th></tr>${streams.map((c, i) => `<tr><td>${i + 1}</td><td><a href="https://twitch.tv/${esc(c.login)}" target="_blank" rel="noopener">${esc(c.display_name)}</a></td><td>${fmt(c.catches)}</td><td>${fmt(c.spawns)}</td></tr>`).join("")}</table></div>`
     : `<p>No deviations secured yet.</p>`;
   // ranked by deviations caught in total, duplicates included (B 2026-10-08), then species collected
-  const rows = db.leaderboard(100000, "all").sort((a, b) => b.total - a.total || b.species - a.species || b.variants - a.variants).slice(0, 100);
+  // imbon3s (the game's owner) is left off the Top 100 (B 2026-10-08)
+  const rows = db.leaderboard(100000, "all").filter((r) => String(r.login).toLowerCase() !== "imbon3s").sort((a, b) => b.total - a.total || b.species - a.species || b.variants - a.variants).slice(0, 100);
   const tag = `<span style="display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#9146ff;color:#fff;font-size:.72rem;font-weight:700;vertical-align:middle">Streamer</span>`;
   const metaTable = rows.length
     ? `<div class="card"><table><tr><th>#</th><th>Meta</th><th>Caught</th><th>Deviations</th><th>Variants</th></tr>${rows.map((r, i) => `<tr><td>${i + 1}</td><td><a href="/u/${esc(r.login)}">${esc(r.display)}</a>${r.streamer ? tag : ""}</td><td><b>${fmt(r.total)}</b></td><td>${r.species}/${data.all().length}</td><td>${r.variants}</td></tr>`).join("")}</table></div>`
