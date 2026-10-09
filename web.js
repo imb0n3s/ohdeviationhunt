@@ -511,7 +511,7 @@ function createApp(pool) {
   // buy from your own collection page (signed-in owner only; same-site form posts only)
   app.post("/u/:login/buy", express.urlencoded({ extended: false, limit: "2kb" }), (req, res) => {
     const login = String(req.params.login).toLowerCase();
-    const back = (code) => res.redirect(303, `/u/${encodeURIComponent(login)}?shop=${encodeURIComponent(code)}#shop`);
+    const back = (code) => res.set("Cache-Control", "no-store").redirect(303, `/u/${encodeURIComponent(login)}?shop=${encodeURIComponent(code)}&t=${Date.now().toString(36)}#shop`);
     const origin = req.get("origin") || req.get("referer") || "";
     if (origin && !origin.startsWith(cfg.BASE_URL)) return res.status(403).send("forbidden");
     const viewer = viewerOf(req);
@@ -538,7 +538,8 @@ function createApp(pool) {
     const viewer = viewerOf(req);
     const row = db.q.getPlayerByLogin.get(login);
     if (!row) return res.status(404).send("not found");
-    const back = (code, dev) => res.redirect(303, `/u/${encodeURIComponent(login)}?scrap=${encodeURIComponent(code)}${dev ? `:${encodeURIComponent(dev)}` : ""}${dev ? `#d-${encodeURIComponent(dev)}` : ""}`);
+    // a fresh URL every time (&t=), so no browser ever shows an older copy of the page after a scrap (B 2026-10-09: OldManSauce had to refresh)
+    const back = (code, dev) => res.set("Cache-Control", "no-store").redirect(303, `/u/${encodeURIComponent(login)}?scrap=${encodeURIComponent(code)}${dev ? `:${encodeURIComponent(dev)}` : ""}&t=${Date.now().toString(36)}${dev ? `#d-${encodeURIComponent(dev)}` : ""}`);
     if (!viewer || viewer.uid !== row.user_id) return back("signin");
     const r = game.destroySpecimen(row.user_id, req.body.id);
     if (!r.ok) return back(r.error);
