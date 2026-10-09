@@ -237,6 +237,17 @@ function streamersPage() {
 <tr><td><kbd>!hunt chatdelay 14</kbd></td><td>Seconds chat waits before posting a new deviation and the result, so your stream (which runs a few seconds behind chat) shows it first. 0–30, default ${cfg.RESULT_CHAT_DELAY_SECONDS}. Only while your OBS Source is open.</td></tr>
 </table></div>
 
+<h2 id="shop-overlay">Shop Overlay (for your break scene)</h2>
+<div class="card">
+<p style="margin-top:0">A second OBS source that shows the <b>Deviation Hunt Shop</b>: every item with its price and <kbd>!buy</kbd> command, how much Starchrom everyone has spent so far, and the latest purchase. Perfect for a <b>Be Right Back / break scene</b> so viewers spend their Starchrom while you're away. It's the same link for every channel and updates by itself.</p>
+<ol style="margin:0 0 10px;padding-left:22px;line-height:1.7">
+<li>In OBS, open your break scene and add a <b>Browser</b> source.</li>
+<li>URL: <code>${esc(cfg.BASE_URL)}/obs-shop</code> — width <b>800</b>, height <b>450</b> (any size works; it scales to fit).</li>
+<li>The background is transparent so it sits on top of your scene. Want a dark box behind it? Use <code>${esc(cfg.BASE_URL)}/obs-shop?bg=1</code>.</li>
+</ol>
+<p style="margin-bottom:0"><a href="/obs-shop?bg=1" target="_blank" rel="noopener">Preview the Shop overlay →</a></p>
+</div>
+
 <h2 id="commands">Streamer &amp; Mod Commands</h2>
 <div class="card">
 <table class="cmds"><tr><th>Command</th><th>What it does</th></tr>

@@ -74,6 +74,8 @@
   show there too (purchase_log, logged in shop.purchase + /ext/bits/complete; who, what, which stream; B 2026-10-09).
   Leaderboard box rotates every 7.5s (B 2026-10-09), one view at a time: Top Metas (collected x/61 + caught) -> Top Streams (top 5) -> Shop
   (flashes in, shows total Starchrom spent; B 2026-10-09). imbon3s is left off Top Metas (but shown in Top Streams).
+  Shop OBS overlay (B 2026-10-09): <BASE_URL>/obs-shop (live.js shopPage; ?bg=1 dark background) — same link for every streamer, for a
+  break scene; items + !buy commands, total Starchrom spent, latest purchase. Explained on For Streamers (#shop-overlay) and the wiki.
   Music: songs in /root/dh-music on the VPS play on shuffle via mpv + PulseAudio mix (docs/live-stream.md; Spotify doesn't work —
   it refuses unofficial players). The VPS is IONOS 67.217.241.137 (B SSHes in from PowerShell).
 - Legendary pool (B 2026-10-08): !donate up to 750 Starchrom per viewer while a shown Legendary is loose; at 10,000 every donor who

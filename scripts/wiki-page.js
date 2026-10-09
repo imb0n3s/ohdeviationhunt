@@ -239,6 +239,7 @@ out.push(box("Streamers", "Add Deviation Hunt to Your Channel", `
 '''Countdown version:''' add ${code("?countdown=1")} to the link and, between spawns, the OBS Source shows a ring counting down to the next deviation (or "Zzz — say hi in chat" when chat has been quiet), then the deviation, who caught it, and back to the countdown. Without it, the OBS Source stays hidden until a deviation appears.
 
 '''Spawn alert:''' when a deviation appears the OBS Source plays a scanner ping and a voice: ''"A Deviation has been located."'' Variations and skins get a golden sparkle and ''"A Legendary Deviation has been located."'' (with surprise mode on, every spawn gets the normal alert). Tick '''Control audio via OBS''' on the Browser source: the alert then goes to the '''stream only''' (viewers hear it, the streamer doesn't) and gets its own volume slider in the Audio Mixer. Link options: ${code("?volume=40")} (0–100, default 100) or ${code("?sound=0")} for no sound; ${code("?demo=base")} / ${code("?demo=variation")} play the normal / Legendary alert for testing.
+'''Shop overlay (break scene):''' add a second Browser source with ${code("<nowiki>"+URL+"/obs-shop</nowiki>")} (800×450) to show the Shop, every item's price and ${cmd("!buy")} command, the total Starchrom spent and the latest purchase. Same link for every channel; ${code("?bg=1")} adds a dark background.
 
 To remove it, type ${cmd("!hunt leave")} in your chat or ${cmd("!leave")} in ${BOT}'s chat.
 `));

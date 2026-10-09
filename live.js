@@ -229,7 +229,66 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
 </script></body></html>`;
 }
 
+// ---- Shop OBS Source (B 2026-10-09): one link for every streamer, made for a break / BRB scene ----
+// /obs-shop — transparent background, scales to fill the Browser source (800×450 recommended). Shows the Shop items,
+// the total Starchrom spent and the latest purchase. ?bg=1 adds a dark background.
+function shopData() {
+  const last = db.recentPurchases(Date.now() - 6 * 3600e3, 1)[0];
+  return {
+    shop: require("./shop").ITEMS.map((i) => ({ name: i.name, price: i.price, icon: "/panel/" + i.icon,
+      cmd: i.kind === "gloves" ? `!buy ${i.glove}` : i.kind === "soup" ? "!buy soup" : "!buy 3",
+      note: i.kind === "gloves" ? `+${Math.round(i.bonus * 100)}% · ${GLOVES.find((g) => g.id === i.glove).catches} catches` : i.kind === "soup" ? `+${+(i.bonus * 100).toFixed(1)}% for 1 hour` : "holds 1 deviation" })),
+    spent: db.starchromSpent(),
+    last: last ? { who: last.display, what: last.what, chan: last.chan } : null,
+    v: overlay.BOOT,
+  };
+}
+function shopPage(bg) {
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Deviation Hunt — Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=block" rel="stylesheet">
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:${bg ? "#05080a" : "transparent"};font-family:"Segoe UI",system-ui,"Noto Sans",sans-serif;color:#e6edf5}
+#wrap{position:absolute;left:50%;top:50%;width:800px;transform:translate(-50%,-50%) scale(var(--s,1));transform-origin:center}
+.card{background:rgba(11,21,25,.9);border:2px solid rgba(34,211,238,.35);border-radius:22px;padding:20px 24px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+.hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.stencil{font-family:"Black Ops One",Impact,sans-serif;font-size:38px;background:linear-gradient(#fff1b8,#f2c034 45%,#9a5b07);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 0 #0b1416)}
+.hint{font-size:20px;color:#94a3b8}.hint b{color:#22d3ee}
+.spent{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 16px;border-radius:14px;background:rgba(242,192,52,.12);border:1px solid rgba(242,192,52,.45);font-size:23px;font-weight:700}
+.spent b{color:#f2c034;font-size:34px;font-weight:900}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}
+.it{display:flex;align-items:center;gap:12px;min-width:0}.it img{width:58px;height:58px;border-radius:10px;object-fit:cover;flex:none;background:#0b1519}
+.it .nm{font-size:22px;font-weight:800;color:#22d3ee}.it .pr{font-size:19px;color:#fde68a;font-weight:700}.it .nt{font-size:16px;color:#94a3b8;white-space:nowrap}.it .nt b{color:#e6edf5}
+.last{margin-top:14px;padding-top:12px;border-top:1px solid rgba(34,211,238,.2);font-size:19px;color:#cbd5e1;min-height:24px}.last b{color:#f2c034}
+</style></head><body><div id="wrap"><div class="card">
+<div class="hd"><div class="stencil">🛒 Deviation Hunt Shop</div><div class="hint">type <b>!buy</b> in chat</div></div>
+<div class="spent">🔥 <b id="spent">0</b> Starchrom spent so far</div>
+<div class="grid" id="grid"></div>
+<div class="last" id="last"></div>
+</div></div>
+<script>
+(function(){
+  const esc=(s)=>String(s==null?"":s).replace(/[&<>"']/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const wrap=document.getElementById("wrap"); let v=null, gridH="";
+  function fit(){ const w=wrap.offsetWidth, h=wrap.offsetHeight; if(w&&h) wrap.style.setProperty("--s", Math.min(innerWidth*.98/w, innerHeight*.98/h)); }
+  addEventListener("resize", fit);
+  async function load(){
+    try{ const r=await fetch("/obs-shop/data",{cache:"no-store"}); if(!r.ok) return; const d=await r.json();
+      if(v&&d.v&&d.v!==v){ location.reload(); return; } v=d.v;
+      document.getElementById("spent").textContent=Number(d.spent||0).toLocaleString();
+      const g=d.shop.map((i)=>'<div class="it"><img src="'+esc(i.icon)+'" alt=""><div><div class="nm">'+esc(i.name)+'</div><div class="pr">'+Number(i.price).toLocaleString()+' Starchrom</div><div class="nt"><b>'+esc(i.cmd)+'</b> · '+esc(i.note)+'</div></div></div>').join("");
+      if(g!==gridH){ gridH=g; document.getElementById("grid").innerHTML=g; }
+      document.getElementById("last").innerHTML=d.last?'🛒 Latest: <b>@'+esc(d.last.who)+'</b> bought '+esc(d.last.what)+(d.last.chan?' on '+esc(d.last.chan):''):'Units, Capture Soup &amp; Gloves — your Starchrom works on every stream.';
+      fit();
+    }catch(e){}
+  }
+  load(); setInterval(load, 15000); setTimeout(fit, 300);
+})();
+</script></body></html>`;
+}
+
 function mount(app, pool) {
+  app.get("/obs-shop", (req, res) => res.set("Cache-Control", "no-store").send(shopPage(req.query.bg === "1")));
+  app.get("/obs-shop/data", (req, res) => res.set("Cache-Control", "no-store").json(shopData()));
   const find = (login) => db.getChannelByLogin(String(login || "").toLowerCase());
   app.get("/live/:login", (req, res) => {
     const ch = find(req.params.login);
