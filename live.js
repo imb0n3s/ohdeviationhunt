@@ -36,6 +36,7 @@ function liveData(pool, ch) {
     idleChat,
     recent,
     metas: db.leaderboard(5, "all").map((r) => ({ name: r.display, species: r.species, total: r.total })),
+    most: db.mostCaught(5).map((r) => ({ name: r.display, total: r.total })),
     streams: db.topStreams(3).map((c) => ({ name: c.display_name, catches: c.catches })),
     totalDevs: data.all().length,
     // bottom ticker: the other channels live with the game right now, and what's been secured there
@@ -120,7 +121,7 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     <kbd>!shop</kbd><div>units, Capture Soup &amp; gloves</div></div></div>
   <div class="card" style="flex:1;overflow:hidden"><h2 class="stencil">Recent Catches</h2><div class="rec" id="rec"></div></div>
   <div class="card"><div class="lb">
-    <div><h2 class="stencil">Top Metas</h2><ol id="metas"></ol></div>
+    <div><h2 class="stencil" id="metah">Top Metas</h2><ol id="metas"></ol></div>
     <div><h2 class="stencil">Top Streams</h2><ol id="streams"></ol></div></div></div>
 </div>
 <div id="ticker"><div class="lab"><i></i>LIVE NOW</div><div class="win"><div class="run" id="run"></div></div></div>
@@ -146,10 +147,20 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   }
   function frame(t){ const dt=Math.min(100,t-last); last=t; if(runW){ x-=dt*0.09; if(-x>=runW)x+=runW; document.getElementById("run").style.transform="translateX("+x.toFixed(1)+"px)"; } requestAnimationFrame(frame); }
   requestAnimationFrame(frame);
+  // Top Metas box rotates every 12s: most species collected (55/61) <-> most deviations caught in total (B 2026-10-08)
+  let metaMode=0;
+  function renderMetas(){
+    const most=metaMode&&st.most&&st.most.length;
+    document.getElementById("metah").textContent=most?"Most Caught":"Top Metas";
+    document.getElementById("metas").innerHTML=most
+      ?st.most.map((m)=>'<li><b>'+esc(m.name)+'</b> <span>'+Number(m.total).toLocaleString()+' caught</span></li>').join("")
+      :st.metas.map((m)=>'<li><b>'+esc(m.name)+'</b> <span>'+m.species+'/'+st.totalDevs+'</span></li>').join("");
+  }
+  setInterval(()=>{ if(!st)return; metaMode^=1; renderMetas(); },12000);
   function render(){
     setTicker();
     document.getElementById("rec").innerHTML=st.recent.map((r)=>'<div class="r"><img src="'+esc(r.img)+'" alt=""><div><div><span class="n">'+esc(r.name)+'</span>'+(r.variant?' <span class="v">✨ '+esc(r.variant)+'</span>':'')+'</div><div class="w">secured by '+esc(r.who)+(r.chan?' · '+esc(r.chan):'')+'</div></div><div class="rt">'+esc(r.rating)+'</div></div>').join("")||'<div class="w">Nothing secured yet — be the first!</div>';
-    document.getElementById("metas").innerHTML=st.metas.map((m)=>'<li><b>'+esc(m.name)+'</b> <span>'+m.species+'/'+st.totalDevs+'</span></li>').join("");
+    renderMetas();
     document.getElementById("streams").innerHTML=st.streams.map((s)=>'<li><b>'+esc(s.name)+'</b> <span>'+s.catches.toLocaleString()+'</span></li>').join("")||"<li>—</li>";
   }
   async function load(){

@@ -191,6 +191,9 @@ const q = {
     FROM players p LEFT JOIN catches c ON c.user_id=p.user_id
     WHERE (@who = 'all' OR (p.user_id IN (SELECT broadcaster_id FROM channels WHERE enabled=1)) = (@who = 'streamers'))
     GROUP BY p.user_id HAVING species > 0 ORDER BY species DESC, variants DESC, total DESC, LOWER(p.display) ASC LIMIT @n`),
+  // most deviations secured in total (every catch counts, duplicates too)
+  mostCaught: db.prepare(`SELECT p.display, SUM(c.count) AS total FROM catches c JOIN players p ON p.user_id=c.user_id
+    GROUP BY c.user_id ORDER BY total DESC, LOWER(p.display) ASC LIMIT ?`),
 
   topStreams: db.prepare(`SELECT login, display_name, catches, spawns FROM channels WHERE enabled=1 AND catches>0 ORDER BY catches DESC, spawns DESC LIMIT ?`),
   variantSpecimens: db.prepare(`SELECT id, deviation, variant, t1, t1_level, t2 FROM specimens WHERE variant<>''`),
@@ -243,6 +246,7 @@ module.exports = {
   addSpent: (n) => { if (n > 0) q.setSetting.run("stat:starchrom_spent", String(Number(q.getSetting.get("stat:starchrom_spent")?.value || 0) + n)); },
   // who: "all" | "streamers" (channels running the game) | "viewers" (everyone else)
   leaderboard: (n = 10, who = "all") => q.leaderboard.all({ n, who }),
+  mostCaught: (n = 5) => q.mostCaught.all(n),
   // streams where the most deviations have been secured (channels running the game)
   // the game's own channel (imbon3s) is left out of Top Streams; it still shows under Where To Play
   topStreams: (n = 10) => q.topStreams.all(n + 5).filter((c) => !TOP_STREAMS_HIDE.includes(String(c.login).toLowerCase())).slice(0, n),
