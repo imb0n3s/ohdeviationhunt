@@ -23,7 +23,26 @@ async function main() {
   setInterval(async () => { await traits.refresh(); variantBackfill(); }, 6 * 60 * 60 * 1000).unref();
   require("./wikisync").scheduleWikiSync(); // publish the player guide to ohwikiguide.com if it changed (needs WIKI_BOT_* env)
 
-  pool.send = (bid, text, replyTo) => twitch.sendChat(bid, text, replyTo).catch((e) => console.error("[chat] send failed:", e.message));
+  // Chat sends go out one at a time per channel. Where the bot isn't a mod, Twitch allows ~1 message a second and
+  // answers 429 "sending messages too quickly" (B 2026-10-09: a !secure reply got lost in OldManSauce's chat right after
+  // the spawn message). After a 429 that channel is paced at 1.1s between messages, and the message is retried.
+  const sendQ = new Map(), slow = new Set(), lastSent = new Map();
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  pool.send = (bid, text, replyTo) => {
+    const job = (sendQ.get(bid) || Promise.resolve()).then(async () => {
+      for (let tries = 0; tries < 4; tries++) {
+        if (slow.has(bid)) { const gap = 1100 - (Date.now() - (lastSent.get(bid) || 0)); if (gap > 0) await wait(gap); }
+        try { const d = await twitch.sendChat(bid, text, replyTo); lastSent.set(bid, Date.now()); return d; }
+        catch (e) {
+          lastSent.set(bid, Date.now());
+          if (/429/.test(e.message) && tries < 3) { if (!slow.has(bid)) console.warn(`[chat] ${bid} is rate limited (bot not a mod there?) — pacing messages`); slow.add(bid); await wait(1500); continue; }
+          console.error("[chat] send failed:", e.message); return null;
+        }
+      }
+    });
+    sendQ.set(bid, job.catch(() => {}));
+    return job;
+  };
   const spawns = new Spawns((bid, text) => pool.send(bid, text));
   pool.spawns = spawns;
   pool.onChat = makeHandler(pool, spawns);
