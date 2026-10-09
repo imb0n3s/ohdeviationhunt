@@ -29,6 +29,7 @@ function commandSections() {
     { id: "streamer", title: "Streamer & Mod Commands", note: "For the broadcaster and moderators (Lead Moderators too), in your own chat. Setup, the OBS Source and the spawn alert: see For Streamers (deviationhunt.ohwikiguide.com/streamers).", rows: [
       ["!hunt spawn", "Spawn a random deviation right now."],
       ["!hourlycheck", "Lists everyone whose hourly timer is running in this channel right now, with minutes until their next free Securement Unit."],
+      ["!todaysleader", "Who has secured the most deviations in this stream so far (top 5)."],
       ["!hunt interval <minutes>", `How often deviations appear while you're live (2–120 minutes; default about every ${cfg.SPAWN_INTERVAL_MIN}).`],
       ["!hunt off / !hunt on", "Pause or resume spawns. Other commands keep working."],
       ["!hunt status", "Live status, spawn settings, what's loose right now, and spawn/catch totals for your channel."],
