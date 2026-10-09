@@ -173,15 +173,18 @@ function mount(app) {
       if (!pack || Number(d.product?.cost?.amount) !== pack.bits) return res.status(400).json({ error: "unknown_product" });
       const row = db.q.getPlayer.get(jwt.user_id);
       if (!row) return res.status(404).json({ error: "no_player" });
-      let credited = false, player;
+      let credited = false, player, sc = 0, restored = null;
       db.tx(() => {
         const p = game.loadPlayer(row.user_id, row.login, row.display);
-        credited = db.q.addBitsTx.run(d.transactionId, row.user_id, pack.sku, pack.bits, pack.starchrom || 0, jwt.channel_id || null, Date.now()).changes === 1;
-        if (credited) { p.starchrom += pack.starchrom || 0; p.extra_cap = (p.extra_cap || 0) + (pack.capacity || 0); game.savePlayer(p); }
+        // Artisan's Touch: back to a full pair; wearing none -> the same value in Starchrom
+        const glove = pack.restoreGloves ? game.bestGlove(p) : null;
+        sc = pack.restoreGloves && !glove ? pack.bits * 5 : pack.starchrom || 0;
+        credited = db.q.addBitsTx.run(d.transactionId, row.user_id, pack.sku, pack.bits, sc, jwt.channel_id || null, Date.now()).changes === 1;
+        if (credited) { p.starchrom += sc; p.extra_cap = (p.extra_cap || 0) + (pack.capacity || 0); if (glove) { p.glove_left = glove.catches; restored = glove.name; } game.savePlayer(p); }
         player = playerInfo(p);
       })();
       console.log(`[ext] bits ${credited ? "credited" : "duplicate"}: ${row.login} ${pack.sku} (${pack.bits} bits) tx=${d.transactionId}`);
-      res.json({ ok: true, credited, starchrom: pack.starchrom || 0, capacity: pack.capacity || 0, player });
+      res.json({ ok: true, credited, starchrom: sc, capacity: pack.capacity || 0, restored, player });
     } catch (e) {
       if (e.needsIdentity) return res.status(403).json({ error: "needs_identity" });
       console.warn(`[ext] bits failed ${e.status || 500}: ${e.message}`);

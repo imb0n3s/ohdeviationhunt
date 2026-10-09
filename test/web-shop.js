@@ -25,7 +25,7 @@ const sign = (d) => { const b = Buffer.from(JSON.stringify(d)).toString("base64u
   r = await fetch(`${base}/u/alice/buy`, { method: "POST", redirect: "manual", headers: { Origin: "https://evil.example", Cookie: sess("A", "alice"), "Content-Type": "application/x-www-form-urlencoded" }, body: "item=unit&qty=1" });
   assert.equal(r.status, 403); console.log("cross-site post blocked");
   let html = await (await fetch(`${base}/u/alice?shop=ok:saviorgloves:1`, { headers: { Cookie: sess("A", "alice") } })).text();
-  assert.ok(html.includes("Bought Savior Gloves!") && html.includes("✓ Owned · 30 catches left"));
+  assert.ok(html.includes("Bought Savior Gloves!") && html.includes("✓ Owned · 30 catches left") && html.includes("Artisan&#39;s Touch") && html.includes("Coming Soon"));
   html = await (await fetch(`${base}/u/alice`)).text(); assert.ok(html.includes("Sign in with Twitch") && !html.includes('name="item"'));
   html = await (await fetch(`${base}/u/alice`, { headers: { Cookie: sess("B", "bob") } })).text(); assert.ok(!html.includes('name="item"'));
   require("fs").writeFileSync("/tmp/webshop.html", (await (await fetch(`${base}/u/alice`, { headers: { Cookie: sess("A", "alice") } })).text()));

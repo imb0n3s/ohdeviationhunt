@@ -24,5 +24,12 @@ const receipt = (tx, userId, sku, amount) => sign({ topic: "bits_transaction_rec
   assert.equal(s, 401); console.log("forged receipt rejected");
   [s, j] = await post(tA, { receipt: receipt("tx6", "A", "pods5", 50) });
   assert.equal(j.credited, true); assert.equal(j.player.unitCap, 105); console.log("capacity block: cap 100 → 105");
+  // Artisan's Touch: restores the gloves you wear; no gloves -> 1,250 Starchrom instead
+  let p = game.loadPlayer("A"); p.gloves = ["bbq"]; p.glove_left = 3; game.savePlayer(p);
+  [s, j] = await post(tA, { receipt: receipt("tx7", "A", "artisan250", 250) });
+  assert.equal(j.credited, true); assert.equal(j.restored, "BBQ Gloves"); assert.equal(game.loadPlayer("A").glove_left, 22); assert.equal(j.player.gloveLeft, 22);
+  p = game.loadPlayer("A"); p.gloves = []; game.savePlayer(p); const sc1 = p.starchrom;
+  [s, j] = await post(tA, { receipt: receipt("tx8", "A", "artisan250", 250) });
+  assert.equal(j.restored, null); assert.equal(j.player.starchrom, sc1 + 1250); console.log("Artisan's Touch restores gloves (or 1,250 Starchrom without gloves)");
   console.log("all bits checks passed"); srv.close(); process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });

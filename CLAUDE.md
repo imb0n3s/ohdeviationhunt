@@ -31,7 +31,7 @@
 - Bits: panel Shop sells Starchrom packs for Bits (rarity.js BITS_PACKS, 1 Bit = 5 Starchrom; receipts verified at
   POST /ext/bits/complete, one credit per transactionId in bits_tx). Hidden until Twitch Bits is on. TO SWITCH ON (after B
   finishes Monetization onboarding): Local Test → Monetization tab → "Bits enabled" → add one product per pack with the
-  SAME sku + Bits amount (starchrom25/5, starchrom125/25, starchrom250/50, starchrom500/100, starchrom2500/500, starchrom5000/1000, starchrom10000/2000, starchrom17500/3500, pods5/50), In Development = No,
+  SAME sku + Bits amount (starchrom25/5, starchrom125/25, starchrom250/50, starchrom500/100, starchrom2500/500, starchrom5000/1000, starchrom10000/2000, starchrom17500/3500, pods5/50, artisan250/250), In Development = No,
   Save All → back to Hosted Test (reload/confirm) → set BITS_ENABLED=1 → RAISE GLOVE PRICES (rarity.js GLOVES:
   Rustic 5,000 = $10, BBQ 10,000 = $20, Savior 17,500 = $35; B 2026-09-30) → add Bits to the wiki page.
   Server kill switch: Bits are refused unless Railway env BITS_ENABLED=1 (unset = off; packs hidden, /ext/bits/complete → 403) —
@@ -39,7 +39,7 @@
   approved/released (in Local/Hosted Test Twitch makes Bits purchases free). Onboarding was submitted 2026-09-28.
 - Pod cap: ECONOMY.unitCap = 100 Securement Pods = caught deviations + empty Securement Units (+ players.extra_cap). Extra room is sold for Bits:
   pods5 = +5 capacity for 50 Bits (in BITS_PACKS; decided by B 2026-09-28). When switching Bits on, the Twitch
-  products are: starchrom25/5, starchrom125/25, starchrom250/50, starchrom500/100, starchrom2500/500, starchrom5000/1000, starchrom10000/2000, starchrom17500/3500 AND pods5/50.
+  products are: starchrom25/5, starchrom125/25, starchrom250/50, starchrom500/100, starchrom2500/500, starchrom5000/1000, starchrom10000/2000, starchrom17500/3500, pods5/50 AND artisan250/250.
 - B's call (2026-09-29): keep the extension in HOSTED TEST; only go to Local Test briefly to add testers / upload, then
   straight back (reload + confirm). In Local Test the panel is blank for everyone. (web.js also serves ext/ at /panel —
   unused for now; it would let Local Test work if Asset Hosting → Testing Base URI pointed at <BASE_URL>/panel/.)
@@ -82,3 +82,7 @@
   successful catches; the others get the same Starchrom per catch: catches = floor(price × 30 / Savior price) → Rustic 9, BBQ 22
   (GLOVES[].catches, computed in rarity.js — it rescales by itself when glove prices rise at Bits launch). Counted in players.glove_left;
   only catches made wearing that pair count; at 0 the pair is removed and the result message says it wore out.
+- Artisan's Touch (B 2026-10-08): 250 Bits ($2.50) restores the gloves you wear to their full catches (BITS_PACKS artisan250,
+  restoreGloves; wearing none = 1,250 Starchrom instead). Until Bits go on, the website shop shows it as "Coming Soon" (rarity.js ARTISAN,
+  picture ext/artisan.png). The panel code that sells it (ext/panel.js bitsHtml) is NOT in the uploaded zip yet — at Bits launch
+  rebuild + upload the panel zip so the panel can sell it, and add it to the wiki page.

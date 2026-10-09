@@ -273,6 +273,8 @@
     return '<div class="sect">Starchrom with Bits</div><div class="item bits"><div class="id">1 Bit = 5 Starchrom · 50 Bits = 5 more Securement Pods (permanent). Bits used here support the streamer.</div><div class="packs">' +
       packs.map(function (x) {
         var cost = bitsProducts[x.sku].cost && bitsProducts[x.sku].cost.amount || x.bits;
+        // Artisan's Touch: restores the gloves you wear (only when they've used some catches)
+        if (x.restoreGloves) { var gp = bag.player, worn = !!gp.glove; return '<button class="btn bitsbuy" data-sku="' + esc(x.sku) + '"' + (busy || !worn ? " disabled" : "") + '><b>Artisan’s Touch</b> ' + (worn ? "restore your gloves (" + (gp.gloveLeft || 0) + " catches left)" : "wear gloves to use it") + '<span>' + cost + ' Bits</span></button>'; }
         return '<button class="btn bitsbuy" data-sku="' + esc(x.sku) + '"' + (busy ? " disabled" : "") + '><b>' + (x.capacity ? "+" + x.capacity : money(x.starchrom)) + '</b> ' + (x.capacity ? "Securement Pod space" : "Starchrom") + '<span>' + cost + ' Bits</span></button>';
       }).join("") + '</div></div>';
   }
@@ -298,7 +300,7 @@
           busy = false;
           if (res.j.error === "wrong_user") return;
           if (res.j.player) bag.player = res.j.player;
-          notice = res.ok ? { kind: "ok", text: (res.j.capacity ? "+" + res.j.capacity + " Securement Pod space" : "+" + money(res.j.starchrom) + " Starchrom") + " — thanks for the Bits!" } : { kind: "err", text: "Your Bits went through but the Starchrom didn’t arrive yet. Refresh the panel; if it’s still missing, tell the streamer." };
+          notice = res.ok ? { kind: "ok", text: (res.j.restored ? res.j.restored + " restored — like new again!" : res.j.capacity ? "+" + res.j.capacity + " Securement Pod space" : "+" + money(res.j.starchrom) + " Starchrom") + " — thanks for the Bits!" } : { kind: "err", text: "Your Bits went through but the Starchrom didn’t arrive yet. Refresh the panel; if it’s still missing, tell the streamer." };
           whoLine(); if (view.page === "shop") renderShop();
         })
         .catch(function () { busy = false; notice = { kind: "err", text: "Couldn’t reach the game to add your Starchrom. Refresh the panel in a minute." }; renderShop(); });
