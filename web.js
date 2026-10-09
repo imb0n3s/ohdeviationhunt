@@ -242,6 +242,7 @@ function streamersPage() {
 <table class="cmds"><tr><th>Command</th><th>What it does</th></tr>
 <tr><td><kbd>!hunt spawn</kbd></td><td>Release a random deviation right now.</td></tr>
 <tr><td><kbd>!hourlycheck</kbd></td><td>Lists everyone whose hourly timer is running in this channel right now, with minutes until their next free Securement Unit.</td></tr>
+<tr><td><kbd>!todaysleader</kbd></td><td>Who has secured the most deviations in this stream so far (top 5).</td></tr>
 <tr><td><kbd>!hunt interval 10</kbd></td><td>Minutes between spawns (default ${cfg.SPAWN_INTERVAL_MIN}).</td></tr>
 <tr><td><kbd>!hunt off</kbd> / <kbd>!hunt on</kbd></td><td>Pause or resume spawns (commands keep working).</td></tr>
 <tr><td><kbd>!hunt status</kbd></td><td>Live status, spawn timer and what's loose right now.</td></tr>
