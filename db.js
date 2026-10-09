@@ -123,6 +123,8 @@ if (!db.prepare(`SELECT 1 FROM settings WHERE key='migr:surprise_off'`).get()) {
 // !daily claims (one per player per day, Central time; tied to the stream it was claimed in)
 // every Bits purchase, keyed by Twitch's transaction id so a receipt can never be credited twice
 db.exec(`CREATE TABLE IF NOT EXISTS bits_tx (transaction_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, sku TEXT NOT NULL, bits INTEGER NOT NULL, starchrom INTEGER NOT NULL, channel TEXT, at INTEGER NOT NULL)`);
+// every shop / Bits purchase, for the 24/7 stream's BREAKING NEWS ticker (B 2026-10-09)
+db.exec(`CREATE TABLE IF NOT EXISTS purchase_log (id INTEGER PRIMARY KEY AUTOINCREMENT, at INTEGER NOT NULL, user_id TEXT NOT NULL, display TEXT NOT NULL, channel TEXT, what TEXT NOT NULL)`);
 db.exec(`CREATE TABLE IF NOT EXISTS daily_claims (user_id TEXT NOT NULL, stream_id TEXT NOT NULL, channel TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (user_id, stream_id))`);
 if (!db.prepare(`SELECT 1 FROM settings WHERE key='migr:hourly_stream'`).get()) {
   // keep timers that were already running: they stay on in the stream the player is in right now
@@ -245,6 +247,8 @@ module.exports = {
   totalSpawns: () => q.totalSpawns.get().n,
   // running total of all Starchrom players have spent (throws + shop), kept in settings
   starchromSpent: () => Number(q.getSetting.get("stat:starchrom_spent")?.value || 0),
+  logPurchase: (userId, display, channel, what) => db.prepare(`INSERT INTO purchase_log (at, user_id, display, channel, what) VALUES (?, ?, ?, ?, ?)`).run(Date.now(), userId, display, channel || null, what),
+  recentPurchases: (since, n = 6) => db.prepare(`SELECT l.id, l.at, l.display, l.what, c.display_name AS chan, c.login FROM purchase_log l LEFT JOIN channels c ON c.broadcaster_id=l.channel WHERE l.at>=? ORDER BY l.at DESC LIMIT ?`).all(since, n),
   addSpent: (n) => { if (n > 0) q.setSetting.run("stat:starchrom_spent", String(Number(q.getSetting.get("stat:starchrom_spent")?.value || 0) + n)); },
   // who: "all" | "streamers" (channels running the game) | "viewers" (everyone else)
   leaderboard: (n = 10, who = "all") => q.leaderboard.all({ n, who }),

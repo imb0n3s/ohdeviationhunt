@@ -43,6 +43,7 @@ function liveData(pool, ch) {
     nextAt: sp?.nextAt?.get(bid) || null,
     idleChat,
     recent,
+    buys: db.recentPurchases(now - BREAKING_MS).map((r) => ({ id: "b" + r.id, who: r.display, what: r.what, chan: r.chan, login: r.login })),
     breaking: breakingQ.all(bid, now - BREAKING_MS).map((r) => {
       const d = data.get(r.deviation);
       const v = d?.variants.find((x) => x.name === r.variant);
@@ -174,14 +175,17 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   let tickHtml="",x=0,runW=0,last=performance.now();
   let seenNews=null;
   function setTicker(){
-    const news=st.breaking||[], tk=document.getElementById("ticker");
+    const news=(st.breaking||[]).concat(st.buys||[]), tk=document.getElementById("ticker");
     // BREAKING NEWS while someone on another stream has just secured a Legendary (B 2026-10-08)
     tk.classList.toggle("news",news.length>0); document.getElementById("tlab").textContent=news.length?"BREAKING NEWS":"LIVE NOW";
     const ids=news.map((n)=>n.id).join(",");
     if(seenNews!==null&&news.some((n)=>seenNews.indexOf(","+n.id+",")<0)){tk.classList.remove("flash");void tk.offsetWidth;tk.classList.add("flash");}
     seenNews=","+ids+",";
     if(news.length){
-      const once=news.map((n)=>'<span class="it bn">🌟 <b>@'+esc(n.who)+'</b> secured a LEGENDARY <span class="v">✨ '+esc(n.name)+' ('+esc(n.variant)+')</span><span class="c">'+esc(n.rating)+'</span>on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span></span>').join('<span class="sep">🌟</span>')+'<span class="sep">🌟</span>';
+      const once=news.map((n)=>n.what
+        // a Shop / Bits purchase (B 2026-10-09)
+        ?'<span class="it bn">🛒 <b>@'+esc(n.who)+'</b> bought <span class="v">'+esc(n.what)+'</span>'+(n.chan?'on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span>':'<span class="m">on the website</span>')+'</span>'
+        :'<span class="it bn">🌟 <b>@'+esc(n.who)+'</b> secured a LEGENDARY <span class="v">✨ '+esc(n.name)+' ('+esc(n.variant)+')</span><span class="c">'+esc(n.rating)+'</span>on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span></span>').join('<span class="sep">🌟</span>')+'<span class="sep">🌟</span>';
       return runTicker(once);
     }
     const it=(st.liveNow||[]).map((c)=>'<span class="it">🔴 <b>'+esc(c.name)+'</b><span class="c">'+c.total.toLocaleString()+' deviation'+(c.total===1?'':'s')+' caught</span><span class="m">twitch.tv/'+esc(c.login)+'</span></span>');

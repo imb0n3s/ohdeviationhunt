@@ -178,6 +178,7 @@ function mount(app) {
       db.tx(() => {
         const p = game.loadPlayer(row.user_id, row.login, row.display);
         credited = db.q.addBitsTx.run(d.transactionId, row.user_id, pack.sku, pack.bits, pack.starchrom || 0, jwt.channel_id || null, Date.now()).changes === 1;
+        if (credited) db.logPurchase(row.user_id, row.display, jwt.channel_id || p.last_channel, pack.capacity ? `+${pack.capacity} Securement Pods with ${pack.bits} Bits` : `${pack.starchrom.toLocaleString("en-US")} Starchrom with ${pack.bits} Bits`);
         if (credited) { p.starchrom += pack.starchrom || 0; p.extra_cap = (p.extra_cap || 0) + (pack.capacity || 0); game.savePlayer(p); }
         player = playerInfo(p);
       })();

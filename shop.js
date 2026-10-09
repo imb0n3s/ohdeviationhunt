@@ -97,6 +97,9 @@ function purchase(p, itemId, qty) {
   p.starchrom -= cost;
   require("./db").addSpent(cost);
   applyGrants(p, item.grants, qty);
+  // BREAKING NEWS on the 24/7 stream: who bought what, in the stream they're playing in
+  const what = item.kind === "gloves" ? item.name : item.kind === "soup" ? `${qty > 1 ? `${qty} bowls of ` : "a bowl of "}${item.name}` : `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
+  try { require("./db").logPurchase(p.user_id, p.display, p.last_channel, what); } catch {}
   return { ok: true, item, qty, cost, replaced };
 }
 

@@ -18,12 +18,17 @@ const assert = require("assert");
   const st = live.liveData({ spawns: null }, ch);
   assert.equal(st.breaking.length, 1);
   assert.deepEqual({ ...st.breaking[0], id: 0 }, { id: 0, who: "MetaRyder", name: d.name, variant: "Variation: " + v.name, rating: "5/4", chan: "luna_raventhorn", login: "luna_raventhorn" });
+  // a shop purchase shows too (any stream), with the stream the buyer is playing in
+  db.q.touchActive.run("OTHER", Date.now(), null, "P");
+  const p = game.loadPlayer("P"); p.starchrom = 20000; assert.ok(require("../shop").purchase(p, "savior", 1).ok); game.savePlayer(p);
+  const st2 = live.liveData({ spawns: null }, ch);
+  assert.equal(st2.buys.length, 1); assert.equal(st2.buys[0].what, "Savior Gloves"); assert.equal(st2.buys[0].who, "MetaRyder"); assert.equal(st2.buys[0].login, "luna_raventhorn");
   if (process.argv[2] === "shot") {
     const express = require("express"); const app = express(); live.mount(app, { spawns: null });
     const srv = app.listen(0); const { chromium } = require(require.resolve("playwright", { paths: [__dirname + "/.."] }));
     const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1920, height: 1080 } });
     await p.goto(`http://127.0.0.1:${srv.address().port}/live/ohdeviationhunt`); await p.waitForTimeout(3000);
-    await p.screenshot({ path: process.argv[3], clip: { x: 0, y: 960, width: 1920, height: 120 } }); await b.close(); srv.close();
+    await p.screenshot({ path: process.argv[3], clip: { x: 0, y: 960, width: 1920, height: 120 } }); console.log(await p.evaluate(() => document.getElementById("run").textContent.slice(0, 260))); await b.close(); srv.close();
   }
   console.log("breaking news: only Legendaries from other streams in the last 3 minutes ✓");
   process.exit(0);
