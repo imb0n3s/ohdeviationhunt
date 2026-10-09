@@ -67,7 +67,7 @@
   - Homepage stats: Channels · Metas · Deviations Secured · Deviations Attempted (all !secure throws) · Deviations ·
     Starchrom spent (capitalized).
 - 24/7 stream: /live/<login> page (live.js) + streamer/ (Docker: Xvfb+Chromium+ffmpeg). See docs/live-stream.md. The bot's
-  own channel is auto-added as a game channel (index.js) and hidden from Top Streams (TOP_STREAMS_HIDE). It is "always on"
+  own channel is auto-added as a game channel (index.js) and hidden from Top Streams (TOP_STREAMS_HIDE; imbon3s IS shown there, B 2026-10-09). It is "always on"
   (Spawns.alwaysOn): spawns keep coming with a quiet chat (B 2026-10-06 "keep it up"); setting alwayson:<bid>=on does the same elsewhere.
   Ticker: Legendaries caught on OTHER streams in the last 3 min turn it into a flashing BREAKING NEWS line (who, deviation + variant,
   Skill/Activity, which stream; live.js breakingQ; B 2026-10-08), then it goes back to LIVE NOW.
