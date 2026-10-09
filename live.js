@@ -3,6 +3,7 @@
 // countdown), and around it shows how to play, the next-spawn timer, recent catches and the leaderboards.
 // A headless browser + ffmpeg on a small server sends this page to Twitch (see docs/live-stream.md).
 const cfg = require("./config");
+const { GLOVES } = require("./rarity");
 const isOwner = (name) => String(name).toLowerCase() === "imbon3s";
 const db = require("./db");
 const data = require("./data");
@@ -52,6 +53,10 @@ function liveData(pool, ch) {
     most: db.mostCaught(6).filter((r) => !isOwner(r.display)).slice(0, 5).map((r) => ({ name: r.display, total: r.total })),
     streams: db.topStreams(3).map((c) => ({ name: c.display_name, catches: c.catches })),
     totalDevs: data.all().length,
+    // the Shop takes a turn in the leaderboard box, with how much Starchrom has been spent in total (B 2026-10-08)
+    shop: require("./shop").ITEMS.map((i) => ({ name: i.name, price: i.price, icon: "/panel/" + i.icon,
+      note: i.kind === "gloves" ? `+${Math.round(i.bonus * 100)}% · ${GLOVES.find((g) => g.id === i.glove).catches} catches` : i.kind === "soup" ? `+${+(i.bonus * 100).toFixed(1)}% for 1 hour` : "holds 1 deviation" })),
+    spent: db.starchromSpent(),
     // bottom ticker: the other channels live with the game right now, and what's been secured there
     liveNow: db.listEnabledChannels().filter((c) => c.broadcaster_id !== bid && sp?.live?.has(c.broadcaster_id)).map((c) => {
       const info = sp?.streamInfo?.get(c.broadcaster_id) || {};
@@ -103,6 +108,17 @@ header .s{font-size:24px;color:#cbd5e1;font-weight:600;margin-top:6px}
 .r .rt{margin-left:auto;color:#fde68a;font-weight:800}
 @keyframes in{from{opacity:0;transform:translateX(16px)}}
 .lb{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* leaderboard box takes turns: Top Metas -> Most Caught -> Shop (all stacked in one cell so the card never changes size) */
+.lbw{display:grid}.lbw>*{grid-area:1/1;transition:opacity .5s}.lbw>.off{opacity:0;visibility:hidden}
+.shopv h2{display:flex;justify-content:space-between;align-items:baseline}.shopv h2 small{font-family:"Segoe UI",system-ui,sans-serif;font-size:18px;color:var(--muted);letter-spacing:0}
+.spent{display:flex;align-items:center;gap:12px;margin:2px 0 12px;padding:8px 14px;border-radius:12px;background:rgba(242,192,52,.12);border:1px solid rgba(242,192,52,.45);font-size:21px;font-weight:700}
+.spent b{color:var(--gold);font-size:30px;font-weight:900}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}
+.si{display:flex;align-items:center;gap:10px;min-width:0}.si img{width:46px;height:46px;border-radius:9px;object-fit:cover;flex:none;background:#0b1519}
+.si div{min-width:0;line-height:1.2}.si .nm{font-size:19px;font-weight:800;color:var(--cyan);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.si .pr{font-size:17px;color:#fde68a;font-weight:700}.si .nt{font-size:15px;color:var(--muted)}
+.lbw.flash .shopv{animation:shopflash 1.4s ease-out}
+@keyframes shopflash{0%,40%{filter:brightness(1.8) drop-shadow(0 0 18px rgba(242,192,52,.8))}100%{filter:none}}
 .lb ol{margin:0;padding-left:30px;font-size:22px;line-height:1.55}.lb ol b{color:var(--cyan)}.lb li span{color:var(--muted);font-size:18px}
 footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
 /* bottom ticker: who else is live with the game */
@@ -141,9 +157,10 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     <kbd>!pods</kbd><div>your collection</div>
     <kbd>!shop</kbd><div>units, Capture Soup &amp; gloves</div></div></div>
   <div class="card" style="flex:1;overflow:hidden"><h2 class="stencil">Recent Catches</h2><div class="rec" id="rec"></div></div>
-  <div class="card"><div class="lb">
+  <div class="card"><div class="lbw" id="lbw"><div class="lb" id="lbv">
     <div><h2 class="stencil" id="metah">Top Metas</h2><ol id="metas"></ol></div>
-    <div><h2 class="stencil">Top Streams</h2><ol id="streams"></ol></div></div></div>
+    <div><h2 class="stencil">Top Streams</h2><ol id="streams"></ol></div></div>
+    <div class="shopv off" id="shopv"><h2 class="stencil">🛒 Shop <small>!shop · !buy &lt;item&gt; in chat</small></h2><div class="spent">🔥 <b id="spent">0</b> Starchrom spent so far</div><div class="sgrid" id="sgrid"></div></div></div></div>
 </div>
 <div id="ticker"><div class="lab"><i></i><span id="tlab">LIVE NOW</span></div><div class="win"><div class="run" id="run"></div></div></div>
 
@@ -181,16 +198,20 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   }
   function frame(t){ const dt=Math.min(100,t-last); last=t; if(runW){ x-=dt*0.09; if(-x>=runW)x+=runW; document.getElementById("run").style.transform="translateX("+x.toFixed(1)+"px)"; } requestAnimationFrame(frame); }
   requestAnimationFrame(frame);
-  // Top Metas box rotates every 12s: most species collected (55/61) <-> most deviations caught in total (B 2026-10-08)
+  // the box rotates every 12s: Top Metas (55/61) -> Most Caught (total) -> Shop + Starchrom spent (B 2026-10-08)
   let metaMode=0;
   function renderMetas(){
-    const most=metaMode&&st.most&&st.most.length;
+    const shopOn=metaMode===2, lbw=document.getElementById("lbw");
+    document.getElementById("lbv").classList.toggle("off",shopOn); document.getElementById("shopv").classList.toggle("off",!shopOn);
+    document.getElementById("spent").textContent=Number(st.spent||0).toLocaleString();
+    const sg=(st.shop||[]).map((i)=>'<div class="si"><img src="'+esc(i.icon)+'" alt=""><div><div class="nm">'+esc(i.name)+'</div><div class="pr">'+Number(i.price).toLocaleString()+' Starchrom</div><div class="nt">'+esc(i.note)+'</div></div></div>').join(""), sgEl=document.getElementById("sgrid"); if(sgEl.dataset.h!==sg){sgEl.dataset.h=sg;sgEl.innerHTML=sg;}
+    const most=metaMode===1&&st.most&&st.most.length;
     document.getElementById("metah").textContent=most?"Most Caught":"Top Metas";
     document.getElementById("metas").innerHTML=most
       ?st.most.map((m)=>'<li><b>'+esc(m.name)+'</b> <span>'+Number(m.total).toLocaleString()+' caught</span></li>').join("")
       :st.metas.map((m)=>'<li><b>'+esc(m.name)+'</b> <span>'+m.species+'/'+st.totalDevs+'</span></li>').join("");
   }
-  setInterval(()=>{ if(!st)return; metaMode^=1; renderMetas(); },12000);
+  setInterval(()=>{ if(!st)return; metaMode=(metaMode+1)%3; renderMetas(); if(metaMode===2){const w=document.getElementById("lbw");w.classList.remove("flash");void w.offsetWidth;w.classList.add("flash");} },12000);
   function render(){
     setTicker();
     document.getElementById("rec").innerHTML=st.recent.map((r)=>'<div class="r"><img src="'+esc(r.img)+'" alt=""><div><div><span class="n">'+esc(r.name)+'</span>'+(r.variant?' <span class="v">✨ '+esc(r.variant)+'</span>':'')+'</div><div class="w">secured by '+esc(r.who)+(r.chan?' · '+esc(r.chan):'')+'</div></div><div class="rt">'+esc(r.rating)+'</div></div>').join("")||'<div class="w">Nothing secured yet — be the first!</div>';
