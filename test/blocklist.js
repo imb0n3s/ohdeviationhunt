@@ -25,6 +25,14 @@ const assert = require("assert");
   assert.equal(n(`SELECT COUNT(*) n FROM channels WHERE broadcaster_id='OK'`), 1);
   assert.ok(bl.isBlocked("AUR") && bl.isBlocked(null, "Auravella") && !bl.isBlocked("P2", "someone"));
   assert.ok(bl.ids().includes("AUR"));
-  console.log("blocked account wiped and ignored ✓");
+  // nobles_tv: can't have the game in their channel, but can still play elsewhere
+  db.addChannel({ broadcaster_id: "NOB", login: "nobles_tv", display_name: "Nobles_TV", joined_via: "test" });
+  game.loadPlayer("NOB", "nobles_tv", "Nobles_TV");
+  bl.purge();
+  assert.equal(n(`SELECT COUNT(*) n FROM channels WHERE broadcaster_id='NOB'`), 0);
+  assert.equal(n(`SELECT COUNT(*) n FROM players WHERE user_id='NOB'`), 1);
+  assert.ok(bl.isChannelBlocked("NOB") && bl.isChannelBlocked(null, "Nobles_TV") && !bl.isBlocked("NOB", "nobles_tv"));
+  assert.ok(bl.isChannelBlocked("AUR") && !bl.isChannelBlocked("OK", "goodstreamer"));
+  console.log("blocked account wiped and ignored ✓, nobles_tv can't add the game ✓");
   process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });

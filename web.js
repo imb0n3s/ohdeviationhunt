@@ -608,6 +608,7 @@ function createApp(pool) {
         await pool.leave(user.id);
         return res.send(simple("Removed", `Removed from ${user.display_name}'s channel`, "The game has left your chat. Collections are kept, so you can add it back any time."));
       }
+      if (require("./blocklist").isChannelBlocked(user.id, user.login)) return res.status(403).send(simple("Not available", "Not available", "Deviation Hunt isn't available for this channel."));
       db.addChannel({ broadcaster_id: user.id, login: user.login, display_name: user.display_name, joined_via: "web" });
       try { await pool.join(user.id); }
       catch (e) {

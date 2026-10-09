@@ -45,6 +45,7 @@ function makeHandler(pool, spawns) {
         await pool.leave(uid);
         return reply(`@${name} left your channel. Come back any time with !join.`);
       }
+      if (require("./blocklist").isChannelBlocked(uid, login)) return reply(`@${name} sorry, Deviation Hunt isn't available for your channel.`);
       try {
         db.addChannel({ broadcaster_id: uid, login, display_name: name, joined_via: "chat" });
         await pool.join(uid);

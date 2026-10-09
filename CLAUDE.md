@@ -89,3 +89,5 @@
 - Blocked accounts (B 2026-10-09: auravella): blocklist.js. On every start their player, collection, channel, spawn stats and
   settings are deleted and the bot leaves their chat; their commands are ignored, the website login and the panel refuse them.
   More via Railway env BLOCKED_LOGINS. Other players' catches made in a blocked channel are kept (channel name cleared).
+  Channel-only block (B 2026-10-09: nobles_tv): can NEVER add the game to their channel (!join and the website refuse; removed if
+  present on start) but can still play in other streams. More via Railway env NO_CHANNEL_LOGINS.

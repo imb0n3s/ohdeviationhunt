@@ -6,6 +6,16 @@ const db = require("./db");
 
 const DEFAULT = ["auravella"];
 const logins = new Set([...DEFAULT, ...String(process.env.BLOCKED_LOGINS || "").toLowerCase().split(/[\s,]+/).filter(Boolean)]);
+// Channels that may never ADD the game (B 2026-10-09: nobles_tv). They can still play in other streams.
+// More via Railway env NO_CHANNEL_LOGINS="name1,name2".
+const noChannel = new Set(["nobles_tv", ...String(process.env.NO_CHANNEL_LOGINS || "").toLowerCase().split(/[\s,]+/).filter(Boolean)]);
+const noChannelIds = new Set(JSON.parse(db.getSetting("nochannel:ids") || "[]"));
+function isChannelBlocked(userId, login) {
+  if (isBlocked(userId, login)) return true;
+  if (userId && noChannelIds.has(String(userId))) return true;
+  if (login && noChannel.has(String(login).toLowerCase())) { if (userId && !noChannelIds.has(String(userId))) { noChannelIds.add(String(userId)); db.q.setSetting.run("nochannel:ids", JSON.stringify([...noChannelIds])); } return true; }
+  return false;
+}
 // Twitch user ids we've seen for them, so a renamed account stays blocked too
 const ids = new Set(JSON.parse(db.getSetting("blocked:ids") || "[]"));
 const saveIds = () => db.q.setSetting.run("blocked:ids", JSON.stringify([...ids]));
@@ -41,7 +51,20 @@ function purge() {
     leave.push(id);
   }
   saveIds();
+  // channel-blocked streamers: if the game is in their channel, take it out (their own player stays)
+  for (const login of noChannel) {
+    const c = R.prepare(`SELECT broadcaster_id FROM channels WHERE lower(login)=?`).get(login);
+    if (c) noChannelIds.add(String(c.broadcaster_id));
+  }
+  db.q.setSetting.run("nochannel:ids", JSON.stringify([...noChannelIds]));
+  for (const id of noChannelIds) {
+    if (!R.prepare(`SELECT 1 FROM channels WHERE broadcaster_id=?`).get(id)) continue;
+    R.prepare(`DELETE FROM channels WHERE broadcaster_id=?`).run(id);
+    R.prepare(`DELETE FROM active_spawns WHERE broadcaster_id=?`).run(id);
+    console.log(`[blocklist] removed the game from channel ${id} (not allowed to add it)`);
+    leave.push(id);
+  }
   return leave;
 }
 
-module.exports = { isBlocked, purge, logins, ids: () => [...ids] };
+module.exports = { isBlocked, isChannelBlocked, purge, logins, ids: () => [...ids, ...noChannelIds] };
