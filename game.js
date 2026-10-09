@@ -789,6 +789,16 @@ function specimenText(userId, login, display, query, baseUrl) {
   return `@${display} ${label} · ${ratingTag(sp)} · ${traits.shortTraits(sp, dev?.category)} ${baseUrl}/u/${login}`;
 }
 
+// !todaysleader: who has secured the most deviations in this channel during the current broadcast (B 2026-10-09)
+function todaysLeader(bid, startedAt, display) {
+  if (!startedAt) return `@${display} the stream isn't live right now — !todaysleader shows who has secured the most deviations during the current stream.`;
+  const rows = db.raw.prepare(`SELECT p.display, COUNT(*) AS n FROM specimens s JOIN players p ON p.user_id=s.user_id
+    WHERE s.channel=? AND s.caught_at>=? GROUP BY s.user_id ORDER BY n DESC, MIN(s.caught_at) ASC LIMIT 5`).all(bid, startedAt);
+  if (!rows.length) return `@${display} nobody has secured a deviation this stream yet — be the first with !secure!`;
+  const medal = ["🥇", "🥈", "🥉", "4.", "5."];
+  return `🏆 Today's leader: @${rows[0].display} with ${rows[0].n} deviation${rows[0].n === 1 ? "" : "s"} secured this stream! ${rows.map((r, i) => `${medal[i]} ${r.display} (${r.n})`).join(" · ")}`;
+}
+
 function top(baseUrl) {
   const rows = db.leaderboard(5);
   if (!rows.length) return "No one has secured a deviation yet. Be the first!";
@@ -814,4 +824,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { todaysLeader, fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

@@ -313,7 +313,7 @@ ${chatExamples(botName)}
 <p><kbd>!pods</kbd> — your Securement Pods and collection link · <kbd>!pods name</kbd> — someone else's</p>
 <p><b>Scrapping</b> — got duplicates? Scrap the ones you don't want for ${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit each (see <a href="#scrap">How to scrap</a> below).</p>
 <p><kbd>!traits</kbd> — your latest catch's Skill Rating, Activity Rating and traits · <kbd>!traits lonewolf</kbd> — your best Lonewolf Whisper</p>
-<p><kbd>!dev behemoth</kbd> — what a deviation does and where it drops · <kbd>!hunttop</kbd> — leaderboard · <kbd>!hunt</kbd> — help</p>
+<p><kbd>!dev behemoth</kbd> — what a deviation does and where it drops · <kbd>!hunttop</kbd> — leaderboard · <kbd>!todaysleader</kbd> — who has secured the most this stream · <kbd>!hunt</kbd> — help</p>
 </div>
 <h2>For Streamers</h2>
 <div class="card"><p style="margin-top:0">Want Deviation Hunt in your own chat? Setup, the OBS Source (with the spawn alert), every streamer &amp; mod command and all the settings are on one page.</p>

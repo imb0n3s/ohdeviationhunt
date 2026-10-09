@@ -64,6 +64,8 @@ Your first <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2
 |-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunttop</nowiki></span> || Top collectors across every channel. Also <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!leaderboard</nowiki></span>.
 |-
+| <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!todaysleader</nowiki></span> || Who has secured the most deviations in the current stream (top 5).
+|-
 | <span style="background:#131c27; color:#7dd3fc; border:1px solid #1f2a35; border-radius:6px; padding:1px 6px; font-family:monospace; font-size:13px;"><nowiki>!hunt</nowiki></span> || Short help message with a link to this guide.
 |}
 </div>

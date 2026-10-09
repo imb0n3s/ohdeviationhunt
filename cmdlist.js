@@ -23,6 +23,7 @@ function commandSections() {
       ["!traits [deviation]", "Skill Rating, Activity Rating and traits of your latest catch, or of a deviation you've secured (`!traits grumpy bulb`). Also `!stats`."],
       ["!dev <deviation>", "Info about any deviation: rarity, type, variations and skins."],
       ["!hunttop", "The leaderboard link. Also `!leaderboard`."],
+      ["!todaysleader", "Who has secured the most deviations in this stream so far (top 5)."],
       ["!hunt", "A quick how-to-play reminder in chat."],
     ] },
     { id: "streamer", title: "Streamer & Mod Commands", note: "For the broadcaster and moderators (Lead Moderators too), in your own chat. Setup, the OBS Source and the spawn alert: see For Streamers (deviationhunt.ohwikiguide.com/streamers).", rows: [

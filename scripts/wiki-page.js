@@ -100,6 +100,7 @@ out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!traits <deviation>"), `Skill Rating, Activity Rating and all three traits of your top specimen of that deviation (best skin, else best variation, else best). Also ${cmd("!stats")}.`],
   [cmd("!dev <deviation>"), `Info about a deviation: what it does, its variations and skins, and a wiki link.`],
   [cmd("!hunttop"), `Top collectors across every channel. Also ${cmd("!leaderboard")}.`],
+  [cmd("!todaysleader"), `Who has secured the most deviations in the current stream (top 5).`],
   [cmd("!hunt"), `Short help message with a link to this guide.`],
 ])));
 

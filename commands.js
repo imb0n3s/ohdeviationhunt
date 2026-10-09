@@ -10,7 +10,7 @@ function isModOrOwner(ev) {
   return ev.chatter_user_id === ev.broadcaster_user_id || (ev.badges || []).some((b) => b.set_id === "broadcaster" || /moderator/.test(b.set_id || ""));
 }
 
-const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations appear in the wild while the stream is live — type !secure to catch them (Legendary? !donate to the pool). !daily · !hourly · !timercheck · !starchrom · !units · !shop · !buy <n> · !pods · !traits <name> · !dev <name> · !hunttop. Full guide: ${cfg.BASE_URL}`;
+const HELP = () => `🎯 ${cfg.BOT_NAME}: deviations appear in the wild while the stream is live — type !secure to catch them (Legendary? !donate to the pool). !daily · !hourly · !timercheck · !starchrom · !units · !shop · !buy <n> · !pods · !traits <name> · !dev <name> · !hunttop · !todaysleader. Full guide: ${cfg.BASE_URL}`;
 
 function makeHandler(pool, spawns) {
   const botId = () => db.getBotAccount()?.user_id;
@@ -177,7 +177,7 @@ function makeHandler(pool, spawns) {
     }
 
     // ---- everything else: light per-user cooldown ----
-    const GAME_CMDS = ["!hourly", "!timercheck", "!timer", "!starchrom", "!sc", "!units", "!inv", "!shop", "!buy", "!daily", "!pods", "!pod", "!scrap", "!dev", "!hunttop", "!leaderboard", "!traits", "!stats"];
+    const GAME_CMDS = ["!hourly", "!timercheck", "!timer", "!starchrom", "!sc", "!units", "!inv", "!shop", "!buy", "!daily", "!pods", "!pod", "!scrap", "!dev", "!hunttop", "!leaderboard", "!traits", "!stats", "!todaysleader", "!todayleader"];
     if (!GAME_CMDS.includes(cmd)) return;
     const key = `${bid}:${uid}:${cmd}`;
     if (!isModOrOwner(ev) && Date.now() - (lastReply.get(key) || 0) < USER_CD) return;
@@ -214,6 +214,7 @@ function makeHandler(pool, spawns) {
       }
       case "!traits": case "!stats": return reply(game.specimenText(uid, login, name, args.join(" "), cfg.BASE_URL));
       case "!hunttop": case "!leaderboard": return reply(game.top(cfg.BASE_URL));
+      case "!todaysleader": case "!todayleader": return reply(game.todaysLeader(bid, spawns.live.has(bid) ? spawns.streamInfo?.get(bid)?.startedAt : null, name));
     }
     } finally { played(); }
   };
