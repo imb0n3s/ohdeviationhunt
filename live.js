@@ -3,6 +3,7 @@
 // countdown), and around it shows how to play, the next-spawn timer, recent catches and the leaderboards.
 // A headless browser + ffmpeg on a small server sends this page to Twitch (see docs/live-stream.md).
 const cfg = require("./config");
+const isOwner = (name) => String(name).toLowerCase() === "imbon3s";
 const db = require("./db");
 const data = require("./data");
 const overlay = require("./overlay");
@@ -35,8 +36,9 @@ function liveData(pool, ch) {
     nextAt: sp?.nextAt?.get(bid) || null,
     idleChat,
     recent,
-    metas: db.leaderboard(5, "all").map((r) => ({ name: r.display, species: r.species, total: r.total })),
-    most: db.mostCaught(5).map((r) => ({ name: r.display, total: r.total })),
+    // imbon3s (the game's owner) is left off both lists (B 2026-10-08)
+    metas: db.leaderboard(6, "all").filter((r) => !isOwner(r.display)).slice(0, 5).map((r) => ({ name: r.display, species: r.species, total: r.total })),
+    most: db.mostCaught(6).filter((r) => !isOwner(r.display)).slice(0, 5).map((r) => ({ name: r.display, total: r.total })),
     streams: db.topStreams(3).map((c) => ({ name: c.display_name, catches: c.catches })),
     totalDevs: data.all().length,
     // bottom ticker: the other channels live with the game right now, and what's been secured there
