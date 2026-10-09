@@ -235,17 +235,16 @@ function streamersPage() {
 <tr><td><kbd>!hunt surprise on</kbd></td><td><b>Surprise mode.</b> Chat and your OBS Source show every deviation as the normal one, so nobody knows it's a Variation or Skin until the result. <b>Off by default:</b> chat names a Variation or Skin and the OBS Source shows it (picture and name) as soon as it appears. <kbd>!hunt surprise off</kbd> to switch back.</td></tr>
 <tr><td><kbd>!hunt spawnchat off</kbd></td><td><b>OBS only.</b> No chat message when a deviation appears — it only shows on your OBS Source. Who caught it (or that it got away) still posts in chat. If your OBS Source isn't open, chat still announces spawns so the game keeps working. <kbd>!hunt spawnchat on</kbd> to turn chat messages back on.</td></tr>
 <tr><td><kbd>!hunt chatdelay 14</kbd></td><td>Seconds chat waits before posting a new deviation and the result, so your stream (which runs a few seconds behind chat) shows it first. 0–30, default ${cfg.RESULT_CHAT_DELAY_SECONDS}. Only while your OBS Source is open.</td></tr>
-</table></div>
-
-<h2 id="shop-overlay">Shop Overlay (for your break scene)</h2>
-<div class="card">
+</table>
+<h3 id="shop-overlay" style="margin:22px 0 6px">🛒 Shop Overlay (for your break scene)</h3>
 <p style="margin-top:0">A second OBS source that shows the <b>Deviation Hunt Shop</b>: every item with its price and <kbd>!buy</kbd> command, how much Starchrom everyone has spent so far, and the latest purchase. Perfect for a <b>Be Right Back / break scene</b> so viewers spend their Starchrom while you're away. It's the same link for every channel and updates by itself.</p>
 <ol style="margin:0 0 10px;padding-left:22px;line-height:1.7">
 <li>In OBS, open your break scene and add a <b>Browser</b> source.</li>
 <li>URL: <code>${esc(cfg.BASE_URL)}/obs-shop</code> — width <b>800</b>, height <b>450</b> (any size works; it scales to fit).</li>
 <li>The background is transparent so it sits on top of your scene. Want a dark box behind it? Use <code>${esc(cfg.BASE_URL)}/obs-shop?bg=1</code>.</li>
 </ol>
-<p style="margin-bottom:0"><a href="/obs-shop?bg=1" target="_blank" rel="noopener">Preview the Shop overlay →</a></p>
+<iframe src="/obs-shop?bg=1" title="Shop overlay preview" loading="lazy" scrolling="no" style="display:block;width:100%;max-width:560px;aspect-ratio:16/9;border:1px solid var(--line);border-radius:12px;background:#05080a"></iframe>
+<p style="margin-bottom:0"><a href="/obs-shop?bg=1" target="_blank" rel="noopener">Open the Shop overlay in a new tab →</a></p>
 </div>
 
 <h2 id="commands">Streamer &amp; Mod Commands</h2>
