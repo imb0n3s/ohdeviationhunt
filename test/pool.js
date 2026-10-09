@@ -43,7 +43,8 @@ const assert = require("assert");
   sp.attempt("CH", "50", "u50", "U50");
   await sp.resolve("CH");
   const got = sc("50") - 390;                                              // 1000 - 600 donated - 10 throw, never refunded
-  assert.ok(got === 0 || got === require("../game").rewardFor({ dev, variant }), "balance " + sc("50"));
+  const rw = require("../game").rewardFor({ dev, variant });
+  assert.ok(got === 0 || got === rw || got === rw + ECONOMY.newSpeciesBonus, "balance " + sc("50"));   // a catch pays the reward (+ first-time bonus)
   assert.ok(sent.some((t) => /pool didn't fill \(600 \/ 10,000\)\./.test(t)));
   console.log("pool not filled: no refund ✓");
   // --- not full: +1.75% per donor for donors only. Rig the roll just above the base rate: donors catch, the non-donor doesn't
