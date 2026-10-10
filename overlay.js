@@ -34,16 +34,17 @@ const RESULT_MS = 12000;
 // changes on every server start: an OBS source still running an older page reloads itself
 const BOOT = Date.now().toString(36); // how long the "who caught it" card stays up
 
-function stateFor(pool, code) {
+function stateFor(pool, code, opts = {}) {
   const bid = channelForCode(code);
   const ch = bid && db.getChannel(bid);
   if (!ch) return { ok: false, error: "unknown_channel", v: BOOT };
-  pool?.spawns?.overlaySeen?.set(bid, Date.now()); // this channel has the OBS Source on stream
+  // this channel has the OBS Source on stream (the progress bar alone doesn't count: it doesn't show the deviation)
+  if (!opts.bar) pool?.spawns?.overlaySeen?.set(bid, Date.now());
   const s = pool?.spawns?.active.get(bid);
   if (!s || !((s.shownEndsAt || s.endsAt) > Date.now())) {
     // for the countdown version (?countdown=1): when the next one is due, or why it's waiting
     const sp = pool?.spawns;
-    const next = { at: sp?.nextAt?.get(bid) || null, live: !!sp?.live?.has(bid), spawnsOn: !!ch.spawns_on,
+    const next = { at: sp?.nextAt?.get(bid) || null, from: sp?.nextFrom?.get(bid) || null, live: !!sp?.live?.has(bid), spawnsOn: !!ch.spawns_on,
       idleChat: !sp?.alwaysOn?.(bid) && Date.now() - (sp?.lastChat?.get(bid) || 0) > cfg.ACTIVITY_WINDOW_MIN * 60 * 1000 };
     // just resolved? show who caught it for a few seconds (stays up past the delayed chat message)
     const r = sp?.lastResult?.get(bid);
@@ -286,7 +287,7 @@ function mount(app, pool) {
   });
   app.get("/obs-source/:code/state", (req, res) => {
     res.set("Cache-Control", "no-store");
-    const st = stateFor(pool, req.params.code);
+    const st = stateFor(pool, req.params.code, { bar: req.query.bar === "1" });
     res.status(st.ok ? 200 : 404).json(st);
   });
   // public preview for the homepage: /obs-preview?kind=base|variation|skin
@@ -294,6 +295,12 @@ function mount(app, pool) {
     const kind = ["base", "variation", "skin", "result", "resultlegend", "resultmiss", "countdown"].includes(req.query.kind) ? req.query.kind : "base";
     res.set("Cache-Control", "public, max-age=300");
     res.send(page("preview", kind));
+  });
+  // Progress bar (B 2026-10-10): /obs-source/<code>/bar — a see-through bar that fills up until the next deviation.
+  app.get("/obs-source/:code/bar", (req, res) => {
+    const code = String(req.params.code).toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (code !== "demo" && !channelForCode(code)) return res.status(404).send("Unknown OBS Source link. A mod can get the right one by typing !hunt obs in chat.");
+    res.set("Cache-Control", "no-store").send(barPage(code));
   });
   app.get("/obs-source/:code", (req, res) => {
     const code = String(req.params.code).toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -303,6 +310,47 @@ function mount(app, pool) {
     const d = req.query.demo;
     res.send(page(code, d === "result" ? "result" : d === "base" || d === "variation" || d === "skin" || d === "countdown" ? d : d === "1"));
   });
+}
+
+// ---- the progress-bar OBS source: just a bar, see-through, filling up as the next deviation gets closer ----
+// Empty right after a spawn, full when the next one is due. While a deviation is loose it says so (full, pulsing).
+// Fills the whole Browser source (recommended 600 × 50). ?demo in the code ("demo") shows a 60-second sample loop.
+function barPage(code) {
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Deviation Hunt — Next Deviation</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:"Segoe UI",system-ui,"Noto Sans",sans-serif}
+#bar{position:absolute;inset:4px;border-radius:999px;background:rgba(10,18,28,.55);border:2px solid rgba(255,255,255,.18);overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+#fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:999px;background:linear-gradient(90deg,rgba(14,165,233,.75),rgba(34,211,238,.9));transition:width 1s linear}
+#bar.loose #fill{background:linear-gradient(90deg,rgba(242,192,52,.85),rgba(253,224,71,.95));animation:pulse 1.2s ease-in-out infinite}
+#bar.idle #fill{background:rgba(148,163,184,.35)}
+@keyframes pulse{50%{opacity:.6}}
+#txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 4%;color:#fff;font-weight:900;letter-spacing:.08em;text-transform:uppercase;text-shadow:0 1px 3px rgba(0,0,0,.8);font-size:var(--fs,18px);white-space:nowrap}
+</style></head><body><div id="bar"><div id="fill"></div><div id="txt"><span id="l">Next Deviation</span><span id="r"></span></div></div>
+<script>
+(function(){
+  var code=${JSON.stringify(code)}, st=null, skew=0, bar=document.getElementById("bar"), fill=document.getElementById("fill"), L=document.getElementById("l"), R=document.getElementById("r"), v=null;
+  function size(){ document.documentElement.style.setProperty("--fs", Math.max(10, Math.min(innerHeight*0.42, innerWidth/22))+"px"); }
+  addEventListener("resize", size); size();
+  function draw(){
+    if(!st) return;
+    var now=Date.now()+skew;
+    if(st.active){ bar.className="loose"; fill.style.width="100%"; L.textContent="Deviation spotted!"; R.textContent="!secure"; return; }
+    var n=st.next||{};
+    if(!n.live||!n.spawnsOn||n.idleChat){ bar.className="idle"; fill.style.width="0%"; L.textContent=!n.live?"Deviation Hunt":!n.spawnsOn?"Spawns paused":"Say hi to wake them"; R.textContent=!n.live?"offline":""; return; }
+    bar.className=""; L.textContent="Next Deviation";
+    if(!n.at){ fill.style.width="0%"; R.textContent="soon"; return; }
+    var from=n.from||(n.at-600000), p=Math.max(0,Math.min(1,(now-from)/Math.max(1,n.at-from))), left=Math.max(0,Math.ceil((n.at-now)/1000));
+    fill.style.width=(p*100).toFixed(2)+"%";
+    R.textContent=left>0?Math.floor(left/60)+":"+("0"+(left%60)).slice(-2):"any sec…";
+  }
+  async function poll(){
+    if(code==="demo"){ var t=Date.now(), cyc=60000, start=t-(t%cyc); st={active:(t%cyc)>50000,next:{live:true,spawnsOn:true,idleChat:false,from:start,at:start+50000}}; draw(); return; }
+    try{ var r=await fetch("/obs-source/"+encodeURIComponent(code)+"/state?bar=1",{cache:"no-store"}); if(!r.ok) return; var d=await r.json();
+      if(v&&d.v&&d.v!==v){ location.reload(); return; } v=d.v; if(d.now) skew=d.now-Date.now(); st=d; draw(); }catch(e){}
+  }
+  poll(); setInterval(poll, 3000); setInterval(draw, 1000);
+})();
+</script></body></html>`;
 }
 
 module.exports = { BOOT,  mount, stateFor, linkFor, codeFor };

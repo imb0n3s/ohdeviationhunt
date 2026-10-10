@@ -75,6 +75,9 @@
   /ext/bits/complete; who, what, which stream; B 2026-10-09).
   Leaderboard box rotates every 7.5s (B 2026-10-09), one view at a time: Collection Champions (x/61, ⭐ when they have all) -> Most Collected (top 5 by total caught)
   -> Top Streams (top 5) -> Shop (flashes in, shows total Starchrom spent; B 2026-10-09). imbon3s is left off the player lists (shown in Top Streams).
+  OBS progress bar (B 2026-10-10): <obs link>/bar (overlay.js barPage; demo at /obs-source/demo/bar) — see-through bar filling from
+  the last spawn (Spawns.nextFrom) to nextAt; polls state?bar=1 so it does NOT count as the OBS Source being open (no chat delay).
+  The normal link (no options) = deviation only, no countdown to the next one.
   Shop OBS overlay (B 2026-10-09): <BASE_URL>/obs-shop (live.js shopPage; ?bg=1 dark background) — same link for every streamer, for a
   break scene; items + !buy commands, total Starchrom spent, latest purchase. Explained inside the OBS Source section of For Streamers (#shop-overlay) and the wiki.
   Music: songs in /root/dh-music on the VPS play on shuffle via mpv + PulseAudio mix (docs/live-stream.md; Spotify doesn't work —

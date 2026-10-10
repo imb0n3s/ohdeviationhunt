@@ -233,6 +233,7 @@ class Spawns {
     this.send = send;              // (broadcasterId, text) => Promise
     this.active = new Map();       // bid -> { dev, variant, endsAt, attempts: Map(userId -> {name, unit}) , timer }
     this.nextAt = new Map();       // bid -> ts of the next spawn
+    this.nextFrom = new Map();     // bid -> when that wait started (the OBS progress bar fills from here to nextAt)
     this.lastChat = new Map();     // bid -> ts of the last viewer message
     this.live = new Set();         // bids currently live
     this.lastResult = new Map();   // bid -> who caught the last spawn (for the OBS source results card)
@@ -307,7 +308,7 @@ class Spawns {
     return min * 60 * 1000 * (0.8 + Math.random() * 0.4); // ±20% so it doesn't feel mechanical
   }
 
-  scheduleNext(bid, fromNow) { this.nextAt.set(bid, Date.now() + (fromNow ?? this.intervalMs(bid))); }
+  scheduleNext(bid, fromNow) { this.nextFrom.set(bid, Date.now()); this.nextAt.set(bid, Date.now() + (fromNow ?? this.intervalMs(bid))); }
 
   setLive(bid, isLive) {
     const was = this.live.has(bid);
