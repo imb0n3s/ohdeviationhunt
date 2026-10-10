@@ -181,20 +181,31 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   // ticker: scroll at a steady speed; rebuild only when the text changes
   let tickHtml="",x=0,runW=0,last=performance.now();
   let seenNews=null;
+  // Shop purchases go across the ticker ONCE (B 2026-10-09): a one-shot pass that starts at the right edge and
+  // ends when it has scrolled off the left, then they're never shown again. Legendary news repeats for 3 minutes.
+  let doneBuys=null, oneShot=null;
+  const buyHtml=(n)=>'<span class="it bn">🛒 <b>@'+esc(n.who)+'</b> bought <span class="v">'+esc(n.what)+'</span>'+(n.chan?'on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span>':'<span class="m">on the website</span>')+'</span>';
+  const legendHtml=(n)=>'<span class="it bn">🌟 <b>@'+esc(n.who)+'</b> secured a LEGENDARY <span class="v">✨ '+esc(n.name)+' ('+esc(n.variant)+')</span><span class="c">'+esc(n.rating)+'</span>on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span></span>';
+  function flash(){ const tk=document.getElementById("ticker"); tk.classList.remove("flash"); void tk.offsetWidth; tk.classList.add("flash"); }
+  function setLabel(news){ const tk=document.getElementById("ticker"); tk.classList.toggle("news",news); document.getElementById("tlab").textContent=news?"BREAKING NEWS":"LIVE NOW"; }
   function setTicker(){
-    const news=(st.breaking||[]).concat(st.buys||[]), tk=document.getElementById("ticker");
-    // BREAKING NEWS while someone on another stream has just secured a Legendary (B 2026-10-08)
-    tk.classList.toggle("news",news.length>0); document.getElementById("tlab").textContent=news.length?"BREAKING NEWS":"LIVE NOW";
-    const ids=news.map((n)=>n.id).join(",");
-    if(seenNews!==null&&news.some((n)=>seenNews.indexOf(","+n.id+",")<0)){tk.classList.remove("flash");void tk.offsetWidth;tk.classList.add("flash");}
-    seenNews=","+ids+",";
-    if(news.length){
-      const once=news.map((n)=>n.what
-        // a Shop / Bits purchase (B 2026-10-09)
-        ?'<span class="it bn">🛒 <b>@'+esc(n.who)+'</b> bought <span class="v">'+esc(n.what)+'</span>'+(n.chan?'on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span>':'<span class="m">on the website</span>')+'</span>'
-        :'<span class="it bn">🌟 <b>@'+esc(n.who)+'</b> secured a LEGENDARY <span class="v">✨ '+esc(n.name)+' ('+esc(n.variant)+')</span><span class="c">'+esc(n.rating)+'</span>on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span></span>').join('<span class="sep">🌟</span>')+'<span class="sep">🌟</span>';
-      return runTicker(once);
+    const buys=st.buys||[];
+    if(doneBuys===null) doneBuys=new Set(buys.map((b)=>b.id)); // purchases from before this page loaded aren't replayed
+    if(oneShot) return;                                       // a purchase is crossing the bar right now
+    const fresh=buys.filter((b)=>!doneBuys.has(b.id)).reverse();   // oldest first
+    if(fresh.length){
+      oneShot={ids:fresh.map((b)=>b.id)}; setLabel(true); flash(); tickHtml="";
+      const run=document.getElementById("run"); run.innerHTML=fresh.map(buyHtml).join('<span class="sep">🛒</span>');
+      x=run.parentNode.clientWidth; runW=0; run.style.transform="translateX("+x+"px)";
+      return;
     }
+    const news=st.breaking||[];
+    // BREAKING NEWS while someone on another stream has just secured a Legendary (B 2026-10-08)
+    setLabel(news.length>0);
+    const ids=news.map((n)=>n.id).join(",");
+    if(seenNews!==null&&news.some((n)=>seenNews.indexOf(","+n.id+",")<0)) flash();
+    seenNews=","+ids+",";
+    if(news.length) return runTicker(news.map(legendHtml).join('<span class="sep">🌟</span>')+'<span class="sep">🌟</span>');
     const it=(st.liveNow||[]).map((c)=>'<span class="it">🔴 <b>'+esc(c.name)+'</b><span class="c">'+c.total.toLocaleString()+' deviation'+(c.total===1?'':'s')+' caught</span><span class="m">twitch.tv/'+esc(c.login)+'</span></span>');
     // only the channels live with the game right now (B 2026-10-08)
     const parts=it.length?it:['<span class="it"><span class="m">No other channels are live with the game right now</span></span>'];
@@ -207,7 +218,14 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     for(let i=0;i<6&&run.scrollWidth<win;i++){unit+=once;run.innerHTML=unit;}
     run.innerHTML=unit+unit; runW=run.scrollWidth/2;
   }
-  function frame(t){ const dt=Math.min(100,t-last); last=t; if(runW){ x-=dt*0.09; if(-x>=runW)x+=runW; document.getElementById("run").style.transform="translateX("+x.toFixed(1)+"px)"; } requestAnimationFrame(frame); }
+  function frame(t){
+    const dt=Math.min(100,t-last); last=t; const run=document.getElementById("run");
+    if(oneShot){
+      x-=dt*0.09; run.style.transform="translateX("+x.toFixed(1)+"px)";
+      if(x < -run.scrollWidth){ oneShot.ids.forEach((id)=>doneBuys.add(id)); oneShot=null; if(st) setTicker(); }
+    } else if(runW){ x-=dt*0.09; if(-x>=runW)x+=runW; run.style.transform="translateX("+x.toFixed(1)+"px)"; }
+    requestAnimationFrame(frame);
+  }
   requestAnimationFrame(frame);
   // the box rotates every 7.5s: Collection Champions (58/61, ⭐ at 61) -> Most Collected (total caught) -> Top Streams -> Shop (B 2026-10-09)
   let metaMode=0;

@@ -71,7 +71,8 @@
   (Spawns.alwaysOn): spawns keep coming with a quiet chat (B 2026-10-06 "keep it up"); setting alwayson:<bid>=on does the same elsewhere.
   Ticker: Legendaries caught on OTHER streams in the last 3 min turn it into a flashing BREAKING NEWS line (who, deviation + variant,
   Skill/Activity, which stream; live.js breakingQ; B 2026-10-08), then it goes back to LIVE NOW. Shop and Bits purchases on ANY stream
-  show there too (purchase_log, logged in shop.purchase + /ext/bits/complete; who, what, which stream; B 2026-10-09).
+  show there too, but cross the bar only ONCE (one-shot pass, then gone; purchase_log, logged in shop.purchase +
+  /ext/bits/complete; who, what, which stream; B 2026-10-09).
   Leaderboard box rotates every 7.5s (B 2026-10-09), one view at a time: Collection Champions (x/61, ⭐ when they have all) -> Most Collected (top 5 by total caught)
   -> Top Streams (top 5) -> Shop (flashes in, shows total Starchrom spent; B 2026-10-09). imbon3s is left off the player lists (shown in Top Streams).
   Shop OBS overlay (B 2026-10-09): <BASE_URL>/obs-shop (live.js shopPage; ?bg=1 dark background) — same link for every streamer, for a
