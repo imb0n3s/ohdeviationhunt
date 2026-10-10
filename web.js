@@ -72,6 +72,11 @@ code,kbd{background:#0b1016;padding:2px 7px;border-radius:5px;color:#c9e7ff;font
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .xtra{margin-top:8px;text-align:left;font-size:.78rem}.xtra summary{cursor:pointer;color:#f87171;font-weight:700;text-align:center;padding:4px;border:1px solid #7f1d1d;border-radius:8px}
 .xtra.view summary{color:var(--accent);border-color:var(--line)}.xt span[title]{cursor:help;border-bottom:1px dotted var(--muted)}
+.cpy{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:space-between;padding:10px 12px;margin:6px 0;border:1px solid var(--line);border-radius:10px;background:#0b1016}
+.cpl{display:flex;flex-direction:column;min-width:170px}.cpl span{color:var(--muted);font-size:.8rem}
+.cpr{display:flex;gap:8px;align-items:center;flex:1 1 100%;min-width:0}.cpr code{flex:1;min-width:0;white-space:normal;word-break:break-all;font-size:.9rem;padding:6px 8px}
+.cpb{flex:none;cursor:pointer;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:8px;padding:5px 12px;font-weight:700}.cpb:hover{background:var(--accent);color:#fff}.cpb.ok{border-color:#22c55e;color:#22c55e}
+.cpn{margin:4px 0 8px}.cpn.ok{color:#86efac}
 .xh{margin:6px 0;font-size:.72rem}.xs{background:#0b1016;border-radius:8px;padding:6px 8px;margin:6px 0}.xs.best{box-shadow:0 0 0 1px var(--accent)}
 .xr b{color:#fde68a}.bt{background:var(--accent);color:#04121c;border-radius:99px;padding:0 6px;font-size:.65rem;font-weight:800;margin-left:4px}
 .xv{color:#fde68a;font-size:.7rem}.xt{font-size:.72rem;margin:2px 0 6px}.xt .tr li{padding:1px 0}
@@ -200,7 +205,28 @@ ${c.html}
 <p style="margin-top:24px">Streamer? <a href="/auth/twitch?action=add">Add ${esc(cfg.BOT_NAME)} to your channel</a>.</p>`);
 }
 
-function streamersPage() {
+// full OBS links with a Copy button (B 2026-10-10). Signed in as a streamer running the game = your real links;
+// otherwise the full link with YOURCODE in it (type !hunt obs in your chat to get your code).
+function obsLinksHtml(viewer) {
+  const ch = viewer && db.getChannel(viewer.uid);
+  const base = ch && ch.enabled ? require("./overlay").linkFor(ch.broadcaster_id) : `${cfg.BASE_URL}/obs-source/YOURCODE`;
+  const row = (label, url, note) => `<div class="cpy"><div class="cpl"><b>${label}</b>${note ? `<span>${note}</span>` : ""}</div><div class="cpr"><code>${esc(url)}</code><button type="button" class="cpb" data-url="${esc(url)}">📋 Copy</button></div></div>`;
+  const who = ch && ch.enabled
+    ? `<p class="cpn ok">✅ These are <b>your</b> links, ${esc(ch.display_name)} — copy and paste them straight into OBS.</p>`
+    : `<p class="cpn">Replace <b>YOURCODE</b> with your channel's code: type <kbd>!hunt obs</kbd> in your chat and the bot replies with your link. Or <a href="/login?next=%2Fstreamers">sign in with Twitch</a> on this page to see your own links ready to copy.</p>`;
+  return `<div id="obs-links">${who}
+${row("Deviation only", base, "hidden until a deviation appears · 600 × 600")}
+${row("Countdown version", base + "?countdown=1", "ring counting down between spawns · 600 × 600")}
+${row("Progress bar", base + "/bar", "see-through bar that fills until the next deviation · 600 × 50")}
+${row("Shop overlay", cfg.BASE_URL + "/obs-shop", "for your break scene · same for everyone · 800 × 450")}
+</div>
+<script>document.addEventListener("click",function(e){var b=e.target.closest(".cpb");if(!b)return;var u=b.getAttribute("data-url");
+function done(){var t=b.textContent;b.textContent="✅ Copied!";b.classList.add("ok");setTimeout(function(){b.textContent=t;b.classList.remove("ok");},1500);}
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(u).then(done,function(){fb();});}else fb();
+function fb(){var ta=document.createElement("textarea");ta.value=u;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done();}catch(x){}ta.remove();}});</script>`;
+}
+
+function streamersPage(viewer) {
   const bot = db.getBotAccount();
   const botName = bot?.login || "the bot";
   return page("For Streamers", `
@@ -227,11 +253,12 @@ function streamersPage() {
 <div class="obsprev">${[["base", "A spawn"], ["variation", "A Variation spawns (Legendary)"], ["result", "After: who caught it"], ["resultlegend", "Caught a Legendary"], ["countdown", "Countdown version, between spawns"]].map(([k, l]) => `<figure><div class="obsframe"><iframe src="/obs-preview?kind=${k}" title="OBS Source preview: ${l}" loading="lazy" scrolling="no"></iframe></div><figcaption>${l}</figcaption></figure>`).join("")}</div>
 <script>(function(){function fit(){document.querySelectorAll(".obsframe").forEach(function(f){var i=f.querySelector("iframe");i.style.transform="scale("+(f.clientWidth/600)+")";});}fit();addEventListener("resize",fit);})();</script>
 <p>Type <kbd>!hunt obs</kbd> in your chat (broadcaster or mods) and the bot replies with your channel's link. In OBS add a <b>Browser</b> source with that link, size <b>600 × 600</b>. Add <code>?demo=1</code> to the end while you position it so you can see it (or <code>?demo=result</code> to see the "who caught it" card), then remove it.</p>
-<p><b>⏱️ Three versions</b> of your link (use one, or mix them in different scenes):</p>
-<ul style="margin-top:0;line-height:1.7">
-<li><b>Deviation only</b> — your normal link: <code>…/obs-source/yourcode</code>. Stays <b>hidden until a deviation appears</b>, shows just the deviation while it can be caught (and who caught it), then hides again. No countdown to the next one.</li>
-<li><b>Countdown version</b> — add <code>?countdown=1</code>: between spawns a ring counts down to the next deviation.</li>
-<li><b>Progress bar</b> — add <code>/bar</code> to the end: <code>…/obs-source/yourcode/bar</code>. A simple <b>see-through bar</b> that starts empty and fills up as the next deviation gets closer (with the time left), — it's <b>one bar</b>: when a deviation appears, that same bar turns gold and says <b>"Deviation spotted! !secure"</b> until it's gone, then empties and fills up again. Browser source <b>600 × 50</b> (any size works).</li>
+<p><b>⏱️ Your OBS links</b> — add each one as a <b>Browser</b> source (use one, or mix them in different scenes):</p>
+${obsLinksHtml(viewer)}
+<ul style="margin-top:6px;line-height:1.7">
+<li><b>Deviation only</b> stays <b>hidden until a deviation appears</b>, shows just the deviation while it can be caught (and who caught it), then hides again. No countdown to the next one.</li>
+<li><b>Countdown version</b>: between spawns a ring counts down to the next deviation.</li>
+<li><b>Progress bar</b>: a simple <b>see-through bar</b> that starts empty and fills up as the next deviation gets closer (with the time left) — it's <b>one bar</b>: when a deviation appears, that same bar turns gold and says <b>"Deviation spotted! !secure"</b> until it's gone, then empties and fills up again.</li>
 </ul>
 <div style="margin:4px 0 14px;padding:14px;border-radius:12px;background:linear-gradient(135deg,#2c3e2d,#1d2b38);max-width:640px">
 <iframe src="/obs-source/demo/bar" title="Progress bar demo" loading="lazy" scrolling="no" style="display:block;width:100%;height:50px;border:0;background:transparent" allowtransparency="true"></iframe>
@@ -497,7 +524,7 @@ function createApp(pool) {
   app.get("/channels", async (req, res) => { await refreshAvatars(); res.send(channelsPage(pool)); });
   app.get("/dex", (req, res) => res.send(dexPage()));
   app.get("/commands", (req, res) => res.send(commandsPage()));
-  app.get("/streamers", (req, res) => res.send(streamersPage()));
+  app.get("/streamers", (req, res) => res.set("Cache-Control", "no-store").send(streamersPage(viewerOf(req))));
   app.get("/top", (req, res) => res.send(topPage()));
   app.get("/u", (req, res) => res.redirect(`/u/${encodeURIComponent(String(req.query.login || "").trim().replace(/^@/, "").toLowerCase())}`));
   app.get("/u/:login", (req, res) => {
@@ -565,7 +592,7 @@ function createApp(pool) {
   });
 
   app.get("/login", (req, res) => {
-    const next = /^\/(u\/[a-z0-9_]{1,40}|me)$/i.test(String(req.query.next || "")) ? req.query.next : "/";
+    const next = /^\/(u\/[a-z0-9_]{1,40}|me|streamers)$/i.test(String(req.query.next || "")) ? req.query.next : "/";
     const state = sign({ purpose: "viewer", next, nonce: crypto.randomBytes(8).toString("hex"), ts: Date.now() });
     res.setHeader("Set-Cookie", cookie(state));
     res.redirect(twitch.authorizeUrl({ scopes: [], state }));
@@ -613,7 +640,7 @@ function createApp(pool) {
         const v = sign({ purpose: "session", uid: user.id, login: user.login, exp: Date.now() + SESSION_DAYS * 864e5, ts: Date.now() });
         res.setHeader("Set-Cookie", sessionCookie(v, SESSION_DAYS * 86400));
         const hasPlayer = !!db.q.getPlayer.get(user.id);
-        return res.redirect(state.next === "/me" ? "/me" : hasPlayer ? `/u/${encodeURIComponent(user.login)}#shop` : (state.next || "/"));
+        return res.redirect(state.next === "/me" ? "/me" : state.next === "/streamers" ? "/streamers#obs-links" : hasPlayer ? `/u/${encodeURIComponent(user.login)}#shop` : (state.next || "/"));
       }
       if (state.purpose === "bot") {
         const wasSetUp = !!db.getBotAccount();
