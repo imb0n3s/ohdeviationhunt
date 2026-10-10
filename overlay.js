@@ -319,7 +319,7 @@ function barPage(code) {
   return `<!doctype html><html><head><meta charset="utf-8"><title>Deviation Hunt — Next Deviation</title>
 <style>
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:"Segoe UI",system-ui,"Noto Sans",sans-serif}
-#bar{position:absolute;inset:4px;border-radius:999px;background:rgba(10,18,28,.55);border:2px solid rgba(255,255,255,.18);overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+#bar{position:absolute;left:4px;right:4px;top:50%;height:var(--bh,42px);transform:translateY(-50%);border-radius:999px;background:rgba(10,18,28,.55);border:2px solid rgba(255,255,255,.18);overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.35)}
 #fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:999px;background:linear-gradient(90deg,rgba(14,165,233,.75),rgba(34,211,238,.9));transition:width 1s linear}
 #bar.loose #fill{background:linear-gradient(90deg,rgba(242,192,52,.85),rgba(253,224,71,.95));animation:pulse 1.2s ease-in-out infinite}
 #bar.idle #fill{background:rgba(148,163,184,.35)}
@@ -329,7 +329,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 <script>
 (function(){
   var code=${JSON.stringify(code)}, st=null, skew=0, bar=document.getElementById("bar"), fill=document.getElementById("fill"), L=document.getElementById("l"), R=document.getElementById("r"), v=null;
-  function size(){ document.documentElement.style.setProperty("--fs", Math.max(10, Math.min(innerHeight*0.42, innerWidth/22))+"px"); }
+  // always a thin strip, whatever size the Browser source is (a tall/square source used to turn it into a circle)
+  function size(){ var h=Math.max(16, Math.min(innerHeight-8, (innerWidth-8)/12)); var de=document.documentElement.style; de.setProperty("--bh", h+"px"); de.setProperty("--fs", Math.max(10, Math.min(h*0.42, innerWidth/22))+"px"); }
   addEventListener("resize", size); size();
   function draw(){
     if(!st) return;
