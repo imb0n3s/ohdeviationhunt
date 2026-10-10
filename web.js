@@ -40,7 +40,10 @@ const fmt = (n) => Number(n).toLocaleString("en-US");
 
 function page(title, body) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(title)}</title>
+<title>${esc(title === cfg.BOT_NAME ? "Deviation Hunt — the Once Human deviation-catching game for Twitch chat" : `${title} · Deviation Hunt`)}</title>
+<meta name="description" content="Deviation Hunt (OH Deviation Hunt): catch Once Human deviations in Twitch chat with !secure. Collect all 61, find Legendary variations and skins, climb the leaderboard, and add the free game to your own stream.">
+<meta property="og:title" content="Deviation Hunt — catch Once Human deviations in Twitch chat"><meta property="og:type" content="website">
+<meta property="og:description" content="A free Twitch chat game: deviations appear while the stream is live, type !secure to catch them and build your collection."><meta property="og:site_name" content="Deviation Hunt">
 <style>
 :root{--bg:#0d1319;--card:#1f2a35;--line:#2a3a4a;--accent:#0ea5e9;--text:#e6edf3;--muted:#9fb0c0;--twitch:#9146ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -525,6 +528,12 @@ function createApp(pool) {
   app.get("/channels", async (req, res) => { await refreshAvatars(); res.send(channelsPage(pool)); });
   app.get("/dex", (req, res) => res.send(dexPage()));
   app.get("/commands", (req, res) => res.send(commandsPage()));
+  // search engines (B 2026-10-10: the site didn't show up on Google)
+  app.get("/robots.txt", (req, res) => res.type("text/plain").send(`User-agent: *\nAllow: /\nDisallow: /auth/\nDisallow: /admin\nDisallow: /ext/\nDisallow: /obs-source/\nSitemap: ${cfg.BASE_URL}/sitemap.xml\n`));
+  app.get("/sitemap.xml", (req, res) => {
+    const pages = ["/", "/streamers", "/commands", "/dex", "/channels", "/top", ...db.raw.prepare(`SELECT login FROM players p WHERE EXISTS (SELECT 1 FROM catches c WHERE c.user_id=p.user_id) ORDER BY login LIMIT 2000`).all().map((r) => `/u/${encodeURIComponent(r.login)}`)];
+    res.type("application/xml").send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${pages.map((p) => `<url><loc>${esc(cfg.BASE_URL + p)}</loc></url>`).join("")}</urlset>`);
+  });
   app.get("/streamers", (req, res) => res.set("Cache-Control", "no-store").send(streamersPage(viewerOf(req))));
   app.get("/top", (req, res) => res.send(topPage()));
   app.get("/u", (req, res) => res.redirect(`/u/${encodeURIComponent(String(req.query.login || "").trim().replace(/^@/, "").toLowerCase())}`));
