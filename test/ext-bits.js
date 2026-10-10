@@ -23,6 +23,6 @@ const receipt = (tx, userId, sku, amount) => sign({ topic: "bits_transaction_rec
   [s, j] = await post(tA, { receipt: sign({ topic: "bits_transaction_receipt", data: { transactionId: "tx5", userId: "A", product: { sku: "starchrom100", cost: { amount: 5 } } } }, Buffer.from("forged-forged-forged-forged-forg").toString("base64")) });
   assert.equal(s, 401); console.log("forged receipt rejected");
   [s, j] = await post(tA, { receipt: receipt("tx6", "A", "pods5", 50) });
-  assert.equal(j.credited, true); assert.equal(j.player.unitCap, 105); console.log("capacity block: cap 100 → 105");
+  assert.equal(j.credited, true); assert.equal(j.player.unitCap, 255); console.log("capacity block: cap 250 → 255");
   console.log("all bits checks passed"); srv.close(); process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });

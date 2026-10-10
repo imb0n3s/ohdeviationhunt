@@ -25,7 +25,7 @@ const sc1 = game.loadPlayer("1").starchrom;
 // pods full: the hour still pays 15 Starchrom, no unit
 { const p = game.loadPlayer("2"); p.extra_cap = -(game.unitCap(p) - game.podsUsed(p)); game.savePlayer(p);
   const sc = p.starchrom, u = p.units.standard; backdate("2", H + 60e3); play("1", "CH");
-  n = game.unitNotices(); assert.match(n[0][1], /^🎁 @Bob acquired an hourly 15 Starchrom! \(Securement Pods full, so no unit\) You now have [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1);
+  n = game.unitNotices(); assert.match(n[0][1], /^🎁 @Bob acquired an hourly 15 Starchrom! \(free units stop at 75 Securement Pods — !buy more with Starchrom\) You now have [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1);
   assert.equal(game.loadPlayer("2").starchrom, sc + 15); assert.equal(units("2"), u);
   const q = game.loadPlayer("2"); q.extra_cap = 0; game.savePlayer(q); }
 

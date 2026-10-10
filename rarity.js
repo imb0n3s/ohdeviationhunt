@@ -75,7 +75,8 @@ const ECONOMY = {
   daily: { starchrom: 100, units: { standard: 1 } },
   dailyResetTz: "America/Chicago", // !daily resets at midnight in this time zone
   newSpeciesBonus: 100,   // first time you secure a deviation (or a new variant of it)
-  unitCap: 100,           // most Securement Units a player can hold (+ players.extra_cap, for future Bits capacity blocks)
+  unitCap: 250,           // most Securement Pods a player can fill (+ players.extra_cap from Bits) — B 2026-10-10 (was 100)
+  freeUnitCap: 75,        // free Securement Units (hourly, !daily) only while you use fewer than this many Pods; past it, buy units with Starchrom
   throwCost: 10,          // Starchrom per !secure throw. A Securement Unit is only used to HOUSE a caught deviation;
                           // a throw that misses costs just the Starchrom.
   destroyValue: 300,      // B 2026-10-08 (was 500). Starchrom for scrapping one extra specimen in the panel (you always keep at least one)

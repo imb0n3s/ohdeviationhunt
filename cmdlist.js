@@ -19,7 +19,7 @@ function commandSections() {
       ["!starchrom", "How much Starchrom you have. Also `!sc`."],
       ["!units", "Your Starchrom, Securement Units and when your next free hourly unit arrives. Also `!inv`."],
       ["!shop", `What the shop sells: Securement Units (${fmt(UNITS.standard.price)} Starchrom each) and Gloves — ${gloves}.`],
-      ["!buy <amount>", `Buy Securement Units, e.g. \`!buy 3\`. Buy gloves with \`!buy rustic\`, \`!buy bbq\` or \`!buy savior\`. You can hold ${E.unitCap} Securement Pods in total (caught deviations + empty units).`],
+      ["!buy <amount>", `Buy Securement Units, e.g. \`!buy 3\`. Buy gloves with \`!buy rustic\`, \`!buy bbq\` or \`!buy savior\`. Free units (hourly, !daily) stop at ${E.freeUnitCap} Securement Pods (caught deviations + empty units); after that you buy units with Starchrom, up to ${E.unitCap}.`],
       ["!traits [deviation]", "Skill Rating, Activity Rating and traits of your latest catch, or of a deviation you've secured (`!traits grumpy bulb`). Also `!stats`."],
       ["!dev <deviation>", "Info about any deviation: rarity, type, variations and skins."],
       ["!hunttop", "The leaderboard link. Also `!leaderboard`."],

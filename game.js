@@ -195,6 +195,8 @@ const logName = (s) => (s.variant ? `${s.dev.name} — ${s.variant.name}` : s.de
 const unitCap = (p) => shopCatalog.unitCap(p);
 const podsUsed = (p) => shopCatalog.podsUsed(p);
 const unitRoom = (p) => Math.max(0, unitCap(p) - podsUsed(p));
+// free units (hourly, !daily) stop at ECONOMY.freeUnitCap Pods; after that it's Starchrom only, up to the full cap (B 2026-10-10)
+const freeRoom = (p) => Math.max(0, Math.min(unitRoom(p), ECONOMY.freeUnitCap - podsUsed(p)));
 
 // Capture Soup: minutes left (0 = none active)
 const soupLeftMin = (p, now = Date.now()) => Math.max(0, Math.ceil(((p.soup_until || 0) - now) / 60000));
@@ -565,7 +567,7 @@ function daily(userId, login, display, bid) {
   p.last_daily = Date.now();
   p.starchrom += ECONOMY.daily.starchrom;
   const got = [];
-  for (const [k, n0] of Object.entries(ECONOMY.daily.units)) { const n = Math.min(n0, unitRoom(p)); if (!n) { got.push(`no Securement Unit (your Securement Pods are full at ${unitCap(p)})`); continue; } p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
+  for (const [k, n0] of Object.entries(ECONOMY.daily.units)) { const n = Math.min(n0, freeRoom(p)); if (!n) { got.push(`no Securement Unit (free units stop at ${ECONOMY.freeUnitCap} Securement Pods — !buy more with ${SC}, up to ${unitCap(p)})`); continue; } p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
   db.tx(() => {
     savePlayer(p);
     db.q.addDaily.run(userId, stream, bid, Date.now());
@@ -701,7 +703,7 @@ function unitNotices(now = Date.now()) {
     // away for a while (not in any live stream)? start a fresh hour instead of paying for the gap
     if (now - p.last_unit_at > 2 * HOUR) { p.last_unit_at = now; savePlayer(p); continue; }
     p.last_unit_at += HOUR;
-    const got = Math.min(ECONOMY.hourlyUnits, unitRoom(p)); // full at the cap: Starchrom only
+    const got = Math.min(ECONOMY.hourlyUnits, freeRoom(p)); // past the free limit (75 Pods): Starchrom only
     p.units.standard = (p.units.standard || 0) + got;
     p.starchrom += ECONOMY.hourlyStarchrom;
     savePlayer(p);
@@ -714,8 +716,8 @@ function unitNotices(now = Date.now()) {
   const unitsTxt = (n) => `${fmt(n)} Securement Unit${n === 1 ? "" : "s"}`;
   const one = (x) => x.got
     ? `🎁 ${x.name} acquired ${x.got === 1 ? "an hourly Securement Unit" : `${x.got} hourly Securement Units`} and ${sc}! You now have ${unitsTxt(x.units)} and ${fmt(x.starchrom)} ${SC}. 🎁`
-    : `🎁 ${x.name} acquired an hourly ${sc}! (Securement Pods full, so no unit) You now have ${fmt(x.starchrom)} ${SC}. 🎁`;
-  const short = (x) => `${x.name} now ${fmt(x.units)} unit${x.units === 1 ? "" : "s"} · ${fmt(x.starchrom)} ${SC}${x.got ? "" : " (pods full, no unit)"}`;
+    : `🎁 ${x.name} acquired an hourly ${sc}! (free units stop at ${ECONOMY.freeUnitCap} Securement Pods — !buy more with ${SC}) You now have ${fmt(x.starchrom)} ${SC}. 🎁`;
+  const short = (x) => `${x.name} now ${fmt(x.units)} unit${x.units === 1 ? "" : "s"} · ${fmt(x.starchrom)} ${SC}${x.got ? "" : ` (${ECONOMY.freeUnitCap}+ pods, no free unit)`}`;
   const head = `🎁 Hourly gift (+${ECONOMY.hourlyUnits} Securement Unit, +${sc}): `;
   const out = [];
   for (const [ch, list] of byChannel) {
@@ -828,4 +830,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { todaysLeader, fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { freeRoom, todaysLeader, fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
