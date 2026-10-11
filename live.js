@@ -13,6 +13,19 @@ const shopRows = (withCmd) => {
     ...(withCmd ? { cmd: "!buy grenade" } : {}), note: "Lv.3 +2.5% · Lv.5 +5%" });
   return rows;
 };
+// the 24/7 Shop turn is three slides (B 2026-10-10): Securement (units + Capture Soup), Binding Grenades, Gloves
+const shopSlides = () => {
+  const I = require("./shop").ITEMS, row = (i) => ({ name: i.kind === "grenades" ? `Binding Grenade Lv.${i.level}` : i.name, price: i.price, icon: "/panel/" + i.icon,
+    note: i.kind === "gloves" ? `+${Math.round(i.bonus * 100)}% · ${GLOVES.find((g) => g.id === i.glove).catches} catches · !buy ${i.glove}`
+      : i.kind === "soup" ? `+${+(i.bonus * 100).toFixed(1)}% for 1 hour · !buy soup`
+      : i.kind === "grenades" ? `${i.bonus ? `+${+(i.bonus * 100).toFixed(1)}%` : "no bonus"} · pack of ${GRENADE_PACK} · !buy grenade${i.level === 1 ? "" : i.level}`
+      : "holds 1 deviation · !buy 3" });
+  return [
+    { title: "Securement", sub: "units + Capture Soup", items: I.filter((i) => !i.kind || i.kind === "soup").map(row) },
+    { title: "Binding Grenades", sub: "1 per throw", items: I.filter((i) => i.kind === "grenades").map(row) },
+    { title: "Gloves", sub: "catch bonus, wear out", items: I.filter((i) => i.kind === "gloves").map(row) },
+  ];
+};
 const isOwner = (name) => String(name).toLowerCase() === "imbon3s";
 const db = require("./db");
 const data = require("./data");
@@ -65,7 +78,7 @@ function liveData(pool, ch) {
     streams: db.topStreams(5).map((c) => ({ name: c.display_name, catches: c.catches })),
     totalDevs: data.all().length,
     // the Shop takes a turn in the leaderboard box, with how much Starchrom has been spent in total (B 2026-10-08)
-    shop: shopRows(false),
+    shopSlides: shopSlides(),
     spent: db.starchromSpent(),
     // bottom ticker: the other channels live with the game right now, and what's been secured there
     liveNow: db.listEnabledChannels().filter((c) => c.broadcaster_id !== bid && sp?.live?.has(c.broadcaster_id)).map((c) => {
@@ -128,8 +141,8 @@ header .s{font-size:24px;color:#cbd5e1;font-weight:600;margin-top:6px}
 .shopv h2{display:flex;justify-content:space-between;align-items:baseline}.shopv h2 small{font-family:"Segoe UI",system-ui,sans-serif;font-size:18px;color:var(--muted);letter-spacing:0}
 .spent{display:flex;align-items:center;gap:12px;margin:2px 0 12px;padding:8px 14px;border-radius:12px;background:rgba(242,192,52,.12);border:1px solid rgba(242,192,52,.45);font-size:21px;font-weight:700}
 .spent b{color:var(--gold);font-size:30px;font-weight:900}
-.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}
-.si{display:flex;align-items:center;gap:10px;min-width:0}.si img{width:46px;height:46px;border-radius:9px;object-fit:cover;flex:none;background:#0b1519}
+.sgrid{display:grid;grid-template-columns:1fr;gap:8px;align-content:start}
+.si{display:flex;align-items:center;gap:10px;min-width:0}.si img{width:52px;height:52px;border-radius:9px;object-fit:cover;flex:none;background:#0b1519}
 .si div{min-width:0;line-height:1.2}.si .nm{font-size:19px;font-weight:800;color:var(--cyan);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .si .pr{font-size:17px;color:#fde68a;font-weight:700}.si .nt{font-size:15px;color:var(--muted)}
 .lbw.flash .shopv{animation:shopflash 1.4s ease-out}
@@ -170,13 +183,13 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     <kbd>!daily</kbd><div>free Starchrom + Securement Units</div>
     <kbd>!hourly</kbd><div>free unit + Starchrom every hour</div>
     <kbd>!pods</kbd><div>your collection</div>
-    <kbd>!shop</kbd><div>units, Capture Soup &amp; gloves</div></div></div>
+    <kbd>!shop</kbd><div>units, grenades, soup &amp; gloves</div></div></div>
   <div class="card" style="flex:1;overflow:hidden"><h2 class="stencil">Recent Catches</h2><div class="rec" id="rec"></div></div>
   <div class="card"><div class="lbw" id="lbw">
     <div class="rk" id="metav"><h2 class="stencil">Collection Champions <small>⭐ = all ${data.all().length}</small></h2><div id="metas"></div></div>
     <div class="rk off" id="mostv"><h2 class="stencil">Most Collected <small>deviations caught in total</small></h2><div id="most"></div></div>
     <div class="rk off" id="streamv"><h2 class="stencil">Top Streams <small>deviations secured</small></h2><div id="streams"></div></div>
-    <div class="shopv off" id="shopv"><h2 class="stencil">🛒 Shop <small>!shop · !buy &lt;item&gt; in chat</small></h2><div class="spent">🔥 <b id="spent">0</b> Starchrom spent so far</div><div class="sgrid" id="sgrid"></div></div></div></div>
+    <div class="shopv off" id="shopv"><h2 class="stencil"><span id="shopt">🛒 Shop</span> <small id="shops">!buy in chat</small></h2><div class="spent">🔥 <b id="spent">0</b> Starchrom spent so far</div><div class="sgrid" id="sgrid"></div></div></div></div>
 </div>
 <div id="ticker"><div class="lab"><i></i><span id="tlab">LIVE NOW</span></div><div class="win"><div class="run" id="run"></div></div></div>
 
@@ -235,18 +248,24 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
-  // the box rotates every 7.5s: Collection Champions (58/61, ⭐ at 61) -> Most Collected (total caught) -> Top Streams -> Shop (B 2026-10-09)
+  // the box rotates every 7.5s: Collection Champions (58/61, ⭐ at 61) -> Most Collected (total caught) -> Top Streams -> Shop: Securement -> Grenades -> Gloves (B 2026-10-10)
   let metaMode=0;
   function renderMetas(){
-    ["metav","mostv","streamv","shopv"].forEach((id,i)=>document.getElementById(id).classList.toggle("off",i!==metaMode));
+    const SL=st.shopSlides||[], shopI=metaMode-3;
+    ["metav","mostv","streamv"].forEach((id,i)=>document.getElementById(id).classList.toggle("off",i!==metaMode));
+    document.getElementById("shopv").classList.toggle("off",shopI<0||!SL[shopI]);
     document.getElementById("spent").textContent=Number(st.spent||0).toLocaleString();
-    const sg=(st.shop||[]).map((i)=>'<div class="si"><img src="'+esc(i.icon)+'" alt=""><div><div class="nm">'+esc(i.name)+'</div><div class="pr">'+(i.priceText||Number(i.price).toLocaleString())+' Starchrom</div><div class="nt">'+esc(i.note)+'</div></div></div>').join(""), sgEl=document.getElementById("sgrid"); if(sgEl.dataset.h!==sg){sgEl.dataset.h=sg;sgEl.innerHTML=sg;}
+    // when the Shop isn't showing, keep the tallest slide laid out (hidden) so the card never changes size
+    const sgEl=document.getElementById("sgrid"), slI=shopI>=0&&SL[shopI]?shopI:(sgEl.dataset.h?-1:SL.length-1);
+    if(slI>=0&&SL[slI]){ const sl=SL[slI];
+      document.getElementById("shopt").textContent="🛒 Shop · "+sl.title; document.getElementById("shops").textContent=sl.sub;
+      const sg=sl.items.map((i)=>'<div class="si"><img src="'+esc(i.icon)+'" alt=""><div><div class="nm">'+esc(i.name)+'</div><div class="pr">'+Number(i.price).toLocaleString()+' Starchrom</div><div class="nt">'+esc(i.note)+'</div></div></div>').join(""); if(sgEl.dataset.h!==sg){sgEl.dataset.h=sg;sgEl.innerHTML=sg;} if(slI===SL.length-1&&shopI<0&&!sgEl.style.minHeight) sgEl.style.minHeight=sgEl.offsetHeight+"px"; }
     // Collection Champions: how many of the deviations they have (x/61); a ⭐ once they have them all (B 2026-10-09)
     document.getElementById("metas").innerHTML=st.metas.map((m,i)=>'<div class="rr s"><span class="n">'+(i+1)+'.</span><b>'+(m.species>=st.totalDevs?'⭐ ':'')+esc(m.name)+'</b><span class="a">'+m.species+'/'+st.totalDevs+'</span></div>').join("");
     document.getElementById("most").innerHTML=(st.most||[]).map((m,i)=>'<div class="rr s"><span class="n">'+(i+1)+'.</span><b>'+esc(m.name)+'</b><span class="a">'+Number(m.total).toLocaleString()+'</span></div>').join("")||'<div class="rr s"><span class="n"></span><b>—</b></div>';
     document.getElementById("streams").innerHTML=st.streams.map((s,i)=>'<div class="rr s"><span class="n">'+(i+1)+'.</span><b>'+esc(s.name)+'</b><span class="a">'+s.catches.toLocaleString()+'</span></div>').join("")||'<div class="rr"><span class="n"></span><b>—</b></div>';
   }
-  setInterval(()=>{ if(!st)return; metaMode=(metaMode+1)%4; renderMetas(); if(metaMode===3){const w=document.getElementById("lbw");w.classList.remove("flash");void w.offsetWidth;w.classList.add("flash");} },7500);
+  setInterval(()=>{ if(!st)return; metaMode=(metaMode+1)%(3+((st.shopSlides||[]).length||1)); renderMetas(); if(metaMode===3){const w=document.getElementById("lbw");w.classList.remove("flash");void w.offsetWidth;w.classList.add("flash");} },7500);
   function render(){
     setTicker();
     document.getElementById("rec").innerHTML=st.recent.map((r)=>'<div class="r"><img src="'+esc(r.img)+'" alt=""><div><div><span class="n">'+esc(r.name)+'</span>'+(r.variant?' <span class="v">✨ '+esc(r.variant)+'</span>':'')+'</div><div class="w">secured by '+esc(r.who)+(r.chan?' · '+esc(r.chan):'')+'</div></div><div class="rt">'+esc(r.rating)+'</div></div>').join("")||'<div class="w">Nothing secured yet — be the first!</div>';

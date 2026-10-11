@@ -75,7 +75,7 @@
   show there too, but cross the bar only ONCE (one-shot pass, then gone; purchase_log, logged in shop.purchase +
   /ext/bits/complete; who, what, which stream; B 2026-10-09).
   Leaderboard box rotates every 7.5s (B 2026-10-09), one view at a time: Collection Champions (x/61, ⭐ when they have all) -> Most Collected (top 5 by total caught)
-  -> Top Streams (top 5) -> Shop (flashes in, shows total Starchrom spent; B 2026-10-09). imbon3s is left off the player lists (shown in Top Streams).
+  -> Top Streams (top 5) -> Shop as 3 slides: Securement (units + Capture Soup) -> Binding Grenades -> Gloves (flashes in, shows total Starchrom spent; B 2026-10-09/10). imbon3s is left off the player lists (shown in Top Streams).
   OBS progress bar (B 2026-10-10): <obs link>/bar (overlay.js barPage; demo at /obs-source/demo/bar) — see-through bar filling from
   the last spawn (Spawns.nextFrom) to nextAt; polls state?bar=1 so it does NOT count as the OBS Source being open (no chat delay).
   The normal link (no options) = deviation only, no countdown to the next one.
