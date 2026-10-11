@@ -608,12 +608,15 @@ function createApp(pool) {
   app.get("/login", (req, res) => {
     const next = /^\/(u\/[a-z0-9_]{1,40}|me|streamers)$/i.test(String(req.query.next || "")) ? req.query.next : "/";
     const state = sign({ purpose: "viewer", next, nonce: crypto.randomBytes(8).toString("hex"), ts: Date.now() });
-    res.setHeader("Set-Cookie", cookie(state));
-    res.redirect(twitch.authorizeUrl({ scopes: [], state }));
+    // after a sign-out, make Twitch ask which account (force_verify shows "Not you?"); otherwise Twitch silently
+    // signs you straight back in as whoever is logged in to twitch.tv in that browser (B 2026-10-11, phone)
+    const switching = getCookie(req, "dh_switch") === "1";
+    res.setHeader("Set-Cookie", [cookie(state), ...(switching ? [`dh_switch=; Path=/; Max-Age=0`] : [])]);
+    res.redirect(twitch.authorizeUrl({ scopes: [], state, forceVerify: switching }));
   });
   app.get("/logout", (req, res) => {
     const next = /^\/u\/[a-z0-9_]{1,40}$/i.test(String(req.query.next || "")) ? req.query.next : "/";
-    res.setHeader("Set-Cookie", sessionCookie("", 0));
+    res.setHeader("Set-Cookie", [sessionCookie("", 0), `dh_switch=1; Path=/; SameSite=Lax; Max-Age=86400${cfg.BASE_URL.startsWith("https") ? "; Secure" : ""}`]);
     res.redirect(next);
   });
   app.get("/health", (req, res) => res.json({ ok: true, channels: pool.channelCount, botSetUp: !!db.getBotAccount(), data: data.info() }));
