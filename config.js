@@ -16,7 +16,7 @@ const cfg = {
   DATA_DIR: process.env.DATA_DIR || "./data",
   BOT_NAME: process.env.BOT_NAME || "Deviation Hunt",
   WIKI_BASE: process.env.WIKI_BASE || "https://ohwikiguide.com",
-  DEVIATION_PAGE: process.env.DEVIATION_PAGE || "Deviation_Main_Page",
+  DEVIATION_PAGE: process.env.DEVIATION_PAGE || "Deviation",
 
   // Spawns
   SPAWN_INTERVAL_MIN: Number(process.env.SPAWN_INTERVAL_MIN || 7),  // default per channel; mods can change it

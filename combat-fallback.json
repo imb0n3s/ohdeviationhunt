@@ -106,7 +106,7 @@
   "img": "https://ohwikiguide.com/images/5/51/Butterfly_Emissary.png",
   "fn": "Can participate in combat to mark enemy Weakspots, increasing the damage they receive.",
   "drops": [
-   "Manibus: Securement Units",
+   "Manibus: Securement Units, Sigma",
    "Way of Winter: Securement Units, EX-1 Elite Drop",
    "Monolith: N/A"
   ],
@@ -968,6 +968,11 @@
     "name": "Silver River",
     "kind": "skin",
     "img": "https://ohwikiguide.com/images/a/ab/Silver_River.png"
+   },
+   {
+    "name": "Collapse Meowster",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/Special:FilePath/Collapse_Meowster.png?width=600"
    }
   ]
  },

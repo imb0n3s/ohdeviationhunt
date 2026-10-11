@@ -108,3 +108,6 @@
   (shop.js webOnly; B: don't restart the extension review). Pictures: ext/grenade1/3/5.png.
 - 24/7 chat timer (B 2026-10-10): index.js posts TIMER_DEFAULT (the Binding Grenades message) in the bot's own chat every 15 min
   while that channel is live. Override the text with setting "timer:msg" (empty string = off).
+- Deviation data source (2026-10-10): the wiki page moved from Deviation_Main_Page to "Deviation" (the old title is a redirect);
+  config DEVIATION_PAGE defaults to "Deviation" and data.js follows #REDIRECTs. New wiki variations/skins join the game on the
+  next refresh (6h) or deploy. Added that way: Mini Wonder skin "Collapse Meowster" (B 2026-10-10).

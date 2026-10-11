@@ -73,10 +73,18 @@ function parseCategory(raw, objName, category) {
 
 async function refresh() {
   try {
-    const url = `${cfg.WIKI_BASE}/index.php?title=${encodeURIComponent(cfg.DEVIATION_PAGE)}&action=raw`;
-    const res = await fetch(url, { headers: { "User-Agent": "OHDeviationHunt/1.0 (+https://ohwikiguide.com)" } });
-    if (!res.ok) throw new Error(`wiki ${res.status}`);
-    deviations = parse(await res.text());
+    // follows wiki redirects (the page moved from Deviation_Main_Page to Deviation, 2026-10)
+    let title = cfg.DEVIATION_PAGE, text = "";
+    for (let hop = 0; hop < 3; hop++) {
+      const url = `${cfg.WIKI_BASE}/index.php?title=${encodeURIComponent(title)}&action=raw`;
+      const res = await fetch(url, { headers: { "User-Agent": "OHDeviationHunt/1.0 (+https://ohwikiguide.com)" } });
+      if (!res.ok) throw new Error(`wiki ${res.status}`);
+      text = await res.text();
+      const r = text.match(/^\s*#REDIRECT\s*\[\[([^\]|#]+)/i);
+      if (!r) break;
+      title = r[1].trim().replace(/ /g, "_");
+    }
+    deviations = parse(text);
     source = "wiki";
     loadedAt = Date.now();
     try { fs.writeFileSync(FALLBACK, JSON.stringify(deviations, null, 1)); } catch {}
