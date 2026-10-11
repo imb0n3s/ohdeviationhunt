@@ -101,3 +101,8 @@
   present on start) but can still play in other streams. More via Railway env NO_CHANNEL_LOGINS.
 - Scrapping never lowers "caught" (B 2026-10-09): scrapped specimens are copied to the `scrapped` table; leaderboard totals,
   Most Caught, homepage Deviations Secured and !todaysleader count specimens + scrapped. (Scraps before 2026-10-09 weren't recorded.)
+- Binding Grenades (B 2026-10-10): every !secure throw needs 1 Binding Grenade + an empty Securement Unit (+ the 10 Starchrom).
+  rarity.js GRENADES: Lv.1 +0% (5 for 200), Lv.3 +2.5% (5 for 750), Lv.5 +5% (5 for 1,500); GRENADE_PACK=5. players.grenades JSON
+  (default {"1":15} = every player starts with 15 Lv.1). Hourly gives +1 Lv.1 (ECONOMY.hourlyGrenades). !secure uses the best owned;
+  !secure 1/3/5 picks a level. Sold on the website shop, chat (!buy grenade / grenade3 / grenade5) and obs-shop — NOT the panel
+  (shop.js webOnly; B: don't restart the extension review). Pictures: ext/grenade1/3/5.png.

@@ -8,7 +8,7 @@ for (const k of ["TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET", "ADMIN_KEY", "SESSI
 process.env.BASE_URL ||= "https://deviationhunt.ohwikiguide.com";
 const path = require("path");
 const cfg = require("../config");
-const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, SOUP, rarityOf, isChaos } = require("../rarity");
+const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, SOUP, GRENADES, GRENADE_PACK, rarityOf, isChaos } = require("../rarity");
 const { RATING_WEIGHTS, SLOT_CHANCE } = require("../traits");
 const devs = require(path.join(__dirname, "..", "combat-fallback.json"));
 
@@ -79,15 +79,15 @@ out.push(`<div style="max-width:1000px; margin:0 auto;">
 
 out.push(box("Start", "How to Play", `
 # Watch a stream that has '''${BOT}''' in chat — [${URL}/channels see every channel running it].
-# When the bot posts ''"👀 A … has been spotted in the wild!"'', type ${cmd("!secure")} within '''${cfg.SPAWN_WINDOW_SECONDS} seconds'''. Each throw costs ${ECONOMY.throwCost} ${SC}; the bot replies with how many Securement Units you'll have left if you catch it. When time runs out the bot posts ''"⏱️ Time's up! … can no longer be captured."'' — throws after that are too late (nothing is spent).
+# When the bot posts ''"👀 A … has been spotted in the wild!"'', type ${cmd("!secure")} within '''${cfg.SPAWN_WINDOW_SECONDS} seconds'''. Each throw costs ${ECONOMY.throwCost} ${SC} and '''1 Binding Grenade'''; the bot replies with how many Securement Units you'll have left if you catch it. When time runs out the bot posts ''"⏱️ Time's up! … can no longer be captured."'' — throws after that are too late (nothing is spent).
 # When the timer ends the bot posts who secured it, along with each new specimen's Skill and Activity Rating.
 # Check your collection any time with ${cmd("!pods")} or on your own page: ${code(`<nowiki>${URL}/u/</nowiki>''yourname''`)}
 
-Your first ${cmd("!secure")} signs you up automatically — you start with '''${ECONOMY.starterUnits.standard} Securement Units''' and '''${ECONOMY.starterStarchrom} ${SC}'''. Every ${cmd("!secure")} throw costs '''${ECONOMY.throwCost} ${SC}'''. A Securement Unit is only used to '''house''' a deviation you catch — if it breaks free, you keep the unit. You need at least one empty unit to throw, and you get one throw per spawn.
+Your first ${cmd("!secure")} signs you up automatically — you start with '''${ECONOMY.starterUnits.standard} Securement Units''', '''${ECONOMY.starterGrenades} Lv.1 Binding Grenades''' and '''${ECONOMY.starterStarchrom} ${SC}'''. Every ${cmd("!secure")} throw costs '''${ECONOMY.throwCost} ${SC} and 1 Binding Grenade''' (used up whether you catch it or not) — you need a grenade '''and''' an empty Securement Unit to throw. ${cmd("!secure")} throws your best grenade; ${cmd("!secure 1")}, ${cmd("!secure 3")} or ${cmd("!secure 5")} picks the level. You get +${ECONOMY.hourlyGrenades} Lv.1 Binding Grenade with every hourly gift; buy more in packs of ${GRENADE_PACK}: ${GRENADES.map((g) => `Lv.${g.level} ${fmt(g.packPrice)} ${SC}${g.bonus ? ` (+${+(g.bonus * 100).toFixed(1)}% catch chance)` : " (no extra catch chance)"}`).join(", ")} with ${cmd("!buy grenade")}, ${cmd("!buy grenade3")} or ${cmd("!buy grenade5")}, or on your collection page. A Securement Unit is only used to '''house''' a deviation you catch — if it breaks free, you keep the unit. You need at least one empty unit to throw, and you get one throw per spawn.
 `));
 
 out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
-  [cmd("!secure"), `Throw at the deviation that's loose in chat (${ECONOMY.throwCost} ${SC}; a catch goes into one of your Securement Units). Also works as ${cmd("!catch")}. One throw per person per spawn.`],
+  [cmd("!secure"), `Throw at the deviation that's loose in chat (${ECONOMY.throwCost} ${SC} + 1 Binding Grenade — your best one, or pick with ${cmd("!secure 1")} / ${cmd("!secure 3")} / ${cmd("!secure 5")}; a catch goes into one of your Securement Units). Also works as ${cmd("!catch")}. One throw per person per spawn.`],
   [cmd("!donate <amount>"), `\'\'\'Legendary pool:\'\'\' while a Legendary (Variation or Skin) is loose, put up to ${ECONOMY.legendaryPoolMax} ${SC} into its pool (${cmd("!donate max")} for the most you can). If it reaches ${fmt(ECONOMY.legendaryPoolGoal)} ${SC} before time runs out, everyone who donated and throws ${cmd("!secure")} catches it \'\'\'100%\'\'\'. Until it fills, each donor adds '''+${+(ECONOMY.legendaryPoolPerDonor * 100).toFixed(2)}% catch chance''' for every donor who throws. Donations are '''not refunded''', even if it doesn't fill. ${cmd("!pool")} shows the total.`],
   [cmd("!units"), `Show your Securement Units, ${SC}, and when your next free unit arrives. Also ${cmd("!inv")}.`],
   [cmd("!starchrom"), `Shows how much ${SC} you have. Also works as ${cmd("!sc")}.`],
@@ -121,10 +121,11 @@ ${table(["Command", "Effect"], [
 ])}
 `));
 
-out.push(box("Shop", "Securement Units, Capture Soup & Gloves", `
+out.push(box("Shop", "Securement Units, Binding Grenades, Capture Soup & Gloves", `
 Buy with ${cmd("!buy")} in chat, in the Securement Pods panel's '''Shop''' tab, or on your own collection page (signed in with Twitch). Buying gloves in the panel or on the website is announced in the chat of the live stream you're playing in.
 ${table(["Item", "Description", "Price"], [
   ["'''Securement Unit'''", "Houses one deviation you catch. Only used when a catch succeeds; you need an empty one to throw. " + cmd("!buy <amount>"), `${fmt(unitPrice)} ${SC}`],
+  ...GRENADES.map((g) => [`'''<span style="color:${g.color};">${g.name}</span>''' <small>(pack of ${GRENADE_PACK})</small>`, `Every ${cmd("!secure")} throw uses one Binding Grenade.${g.bonus ? ` Lv.${g.level} adds '''+${+(g.bonus * 100).toFixed(1)}% catch chance'''.` : " Lv.1 adds no extra catch chance."} ${cmd(g.level === 1 ? "!buy grenade" : "!buy grenade" + g.level)} · use it with ${cmd("!secure " + g.level)}`, `${fmt(g.packPrice)} ${SC}`]),
   [`'''<span style="color:#fb923c;">Capture Soup</span>'''`, `+${SOUP.bonus * 100}% catch chance on every throw for '''1 hour''' after you buy it. Stacks with your gloves; each extra bowl adds another hour. ${cmd("!buy soup")}`, `${fmt(SOUP.price)} ${SC}`],
   ...GLOVES.map((g) => [`'''<span style="color:${g.color};">${g.name}</span>''' <small>(${g.rarity})</small>`, `+${Math.round(g.bonus * 100)}% catch chance on every throw. Lasts '''${g.catches} successful catches'''. ${cmd("!buy " + g.id)}`, `${fmt(g.price)} ${SC}`]),
 ])}

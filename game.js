@@ -3,7 +3,11 @@ const cfg = require("./config");
 const db = require("./db");
 const data = require("./data");
 const traits = require("./traits");
-const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, SOUP, unitKey, isChaos, variantRule } = require("./rarity");
+const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, SOUP, GRENADES, GRENADE_PACK, unitKey, isChaos, variantRule } = require("./rarity");
+// Binding Grenades helpers
+const grenadeCount = (p, lvl) => Math.max(0, Number((p.grenades || {})[lvl]) || 0);
+const grenadeTotal = (p) => GRENADES.reduce((n, g) => n + grenadeCount(p, g.level), 0);
+const grenadeText = (p) => GRENADES.map((g) => `Lv.${g.level}×${grenadeCount(p, g.level)}`).join(" ");
 
 const SC = "Starchrom";
 const shopCatalog = require("./shop");
@@ -22,6 +26,7 @@ function loadPlayer(userId, login, display) {
     p.login = login; p.display = display;
   }
   p.units = JSON.parse(p.units || "{}");
+  try { p.grenades = JSON.parse(p.grenades || "{}"); } catch { p.grenades = {}; }
   try { p.gloves = JSON.parse(p.gloves || "[]"); } catch { p.gloves = []; }
   if (p.gloves.length > 1) { const top = GLOVES.filter((g) => p.gloves.includes(g.id)).sort((a, b) => b.bonus - a.bonus)[0]; p.gloves = top ? [top.id] : []; } // one pair only
   { const g = GLOVES.find((x) => p.gloves.includes(x.id)); if (!g) p.glove_left = -1; else if (!(p.glove_left > 0)) p.glove_left = g.catches; } // older pairs start with a full count
@@ -122,7 +127,7 @@ function nextUnitIn(p) {
 }
 
 function savePlayer(p) {
-  db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts, last_unit_at: p.last_unit_at || Date.now(), gloves: JSON.stringify(p.gloves || []), extra_cap: p.extra_cap || 0, soup_until: p.soup_until || 0, glove_left: p.glove_left ?? -1 });
+  db.q.savePlayer.run({ user_id: p.user_id, starchrom: p.starchrom, units: JSON.stringify(p.units), last_daily: p.last_daily, attempts: p.attempts, last_unit_at: p.last_unit_at || Date.now(), gloves: JSON.stringify(p.gloves || []), extra_cap: p.extra_cap || 0, soup_until: p.soup_until || 0, glove_left: p.glove_left ?? -1, grenades: JSON.stringify(p.grenades || {}) });
 }
 
 // "303 Starchrom | 21 deviations (12/61 unique)" — used where the full unit list is too noisy
@@ -132,7 +137,7 @@ function bagText(p) {
 }
 
 function unitsText(p) {
-  const parts = [`${p.units.standard || 0} Securement Units`];
+  const parts = [`${p.units.standard || 0} Securement Units`, `Binding Grenades ${grenadeText(p)}`];
   return `${fmt(p.starchrom)} ${SC} | ${parts.join(", ")}`;
 }
 
@@ -426,21 +431,32 @@ class Spawns {
     if (p.starchrom < ECONOMY.throwCost) {
       return warn(`@${display} a throw costs ${ECONOMY.throwCost} ${SC} and you have ${fmt(p.starchrom)}. ${dailyReady(userId) ? "Claim !daily for +" + ECONOMY.daily.starchrom + " " + SC + "." : "Catching deviations earns more."}`);
     }
+    // Binding Grenade: the best one you have, or the level you ask for with !secure 1 / 3 / 5 (B 2026-10-10)
+    const want = parseInt(String(unitWord || "").replace(/\D/g, ""), 10);
+    const gren = GRENADES.some((g) => g.level === want)
+      ? (grenadeCount(p, want) > 0 ? GRENADES.find((g) => g.level === want) : null)
+      : [...GRENADES].reverse().find((g) => grenadeCount(p, g.level) > 0) || null;
+    if (!gren) {
+      return warn(GRENADES.some((g) => g.level === want) && grenadeTotal(p) > 0
+        ? `@${display} you have no Lv.${want} Binding Grenades (you have ${grenadeText(p)}). Type !secure to throw your best one.`
+        : `@${display} you're out of Binding Grenades — every throw needs one. !buy grenade (${GRENADE_PACK} for ${fmt(GRENADES[0].packPrice)} ${SC}), or wait for your free hourly one.`);
+    }
     if (!(p.units.standard > 0)) {
       return warn(`@${display} you have no empty Securement Unit to house a deviation. ${hourlyOn(p) ? `Your next free one arrives in ${nextUnitIn(p)}` : dailyReady(userId) ? "Claim !daily for 1 now (plus 1 free every hour in this stream)" : `Your !daily resets at midnight Central (in ${untilReset()})`}, or !buy <amount> for ${fmt(UNITS.standard.price)} ${SC} each (you have ${fmt(p.starchrom)}).`);
     }
     p.starchrom -= ECONOMY.throwCost;
     db.addSpent(ECONOMY.throwCost);
     p.units[unit] -= 1; // held for this spawn: kept if you catch it (the deviation lives in it), returned if it breaks free
+    p.grenades[gren.level] = grenadeCount(p, gren.level) - 1; // the Binding Grenade is used up, caught or not
     p.attempts += 1;
     savePlayer(p);
     const glove = bestGlove(p);
     const soupMin = soupLeftMin(p);
-    s.attempts.set(userId, { login, display, unit, isNew: p.isNew, glove: glove ? glove.id : null, bonus: (glove ? glove.bonus : 0) + (soupMin ? SOUP.bonus : 0) });
+    s.attempts.set(userId, { login, display, unit, isNew: p.isNew, glove: glove ? glove.id : null, grenade: gren.level, bonus: (glove ? glove.bonus : 0) + (soupMin ? SOUP.bonus : 0) + gren.bonus });
     this.persist(bid);
     const left = p.units[unit];
-    const throwTxt = `🎯 Threw at the ${spawnName(s, bid)} (−${ECONOMY.throwCost} ${SC}, Left: ${fmt(p.starchrom)}). You'll have ${left} Securement Pod${left === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}% (${p.glove_left} catch${p.glove_left === 1 ? "" : "es"} left)` : ""}${soupMin ? ` 🍲 Capture Soup +${SOUP.bonus * 100}% (${soupMin}m left)` : ""}`;
-    if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units and ${ECONOMY.starterStarchrom} ${SC}. ${throwTxt} Type !daily for more, plus 1 free unit every hour this stream.`;
+    const throwTxt = `🎯 Threw a Lv.${gren.level} Binding Grenade${gren.bonus ? ` (+${+(gren.bonus * 100).toFixed(1)}%)` : ""} at the ${spawnName(s, bid)} (−${ECONOMY.throwCost} ${SC}, Left: ${fmt(p.starchrom)}; ${grenadeCount(p, gren.level)} Lv.${gren.level} left). You'll have ${left} Securement Pod${left === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}% (${p.glove_left} catch${p.glove_left === 1 ? "" : "es"} left)` : ""}${soupMin ? ` 🍲 Capture Soup +${SOUP.bonus * 100}% (${soupMin}m left)` : ""}`;
+    if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units, ${ECONOMY.starterGrenades} Binding Grenades and ${ECONOMY.starterStarchrom} ${SC}. ${throwTxt} Type !daily for more, plus 1 free unit every hour this stream.`;
     return `@${display} ${throwTxt}`;
   }
 
@@ -579,8 +595,9 @@ function daily(userId, login, display, bid) {
 }
 
 function shop() {
-  const items = shopCatalog.ITEMS.map((i) => `${i.name}${i.bonus ? ` (+${+(i.bonus * 100).toFixed(1)}% catch${i.kind === "soup" ? " for 1 hour" : i.kind === "gloves" ? `, ${GLOVES.find((g) => g.id === i.glove).catches} catches` : ""})` : ""}: ${fmt(i.price)} ${SC}`).join(" · ");
-  return `🛒 ${items} — !buy <amount> for units, !buy soup, !buy rustic / bbq / savior for gloves (or the panel's Shop tab). One pair at a time; gloves wear out after that many successful catches (no refunds).`;
+  const items = shopCatalog.ITEMS.filter((i) => i.kind !== "grenades").map((i) => `${i.name}${i.bonus ? ` (+${+(i.bonus * 100).toFixed(1)}%${i.kind === "soup" ? " 1h" : i.kind === "gloves" ? `, ${GLOVES.find((g) => g.id === i.glove).catches} catches` : ""})` : ""}: ${fmt(i.price)}`).join(" · ");
+  const gren = `Binding Grenades ×${GRENADE_PACK}: ${GRENADES.map((g) => `Lv.${g.level} ${fmt(g.packPrice)}`).join(" / ")}`;
+  return `🛒 ${items} · ${gren} (${SC}) — !buy <amount> for units, !buy soup, !buy rustic/bbq/savior, !buy grenade / grenade3 / grenade5. Every throw needs a Binding Grenade + an empty Securement Unit.`;
 }
 
 // !buy 3  /  !buy unit 3  /  !buy savior — defaults to Securement Units
@@ -596,13 +613,14 @@ function buy(userId, login, display, args) {
   if (!r.ok && r.error === "full") return `@${display} your Securement Pods are full (${r.cap}/${r.cap} — caught deviations and empty units both count). Scrap extras in the Securement Pods panel under the stream to free some up.`;
   if (!r.ok && r.error === "too_many") return `@${display} you have ${r.cap} Securement Pods (caught deviations + empty units), so you can buy up to ${r.room} more Securement Units right now.`;
   if (!r.ok && r.error === "outclassed") return `@${display} you already wear ${r.better.name} (+${Math.round(r.better.bonus * 100)}%), which beat ${item.name}. You wear one pair at a time.`;
-  const label = item.kind === "gloves" ? item.name : item.kind === "soup" ? `${qty} bowl${qty > 1 ? "s" : ""} of ${item.name}` : `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
+  const label = item.kind === "grenades" ? `${qty * GRENADE_PACK} Lv.${item.level} Binding Grenades` : item.kind === "gloves" ? item.name : item.kind === "soup" ? `${qty} bowl${qty > 1 ? "s" : ""} of ${item.name}` : `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
   if (!r.ok) return `@${display} ${label} ${qty > 1 || item.kind === "gloves" ? "cost" : "costs"} ${fmt(item.price * qty)} ${SC} but you have ${fmt(p.starchrom)}. Earn more by securing deviations and !daily, or scrap extras in the Securement Pods panel.`;
   savePlayer(p);
   if (item.kind === "gloves") {
     const old = r.replaced ? ` They replace your ${r.replaced.name}.` : "";
     return `@${display} 🧤 bought ${item.name} for ${fmt(r.cost)} ${SC}! +${Math.round(item.bonus * 100)}% catch chance on every throw for your next ${GLOVES.find((g) => g.id === item.glove).catches} successful catches.${old} You have ${fmt(p.starchrom)} ${SC} left.`;
   }
+  if (item.kind === "grenades") return `@${display} 💣 bought ${label} for ${fmt(r.cost)} ${SC}! You now have Binding Grenades ${grenadeText(p)}. Use a level with !secure ${item.level} (plain !secure throws your best one). ${fmt(p.starchrom)} ${SC} left.`;
   if (item.kind === "soup") return `@${display} 🍲 bought ${label} for ${fmt(r.cost)} ${SC}! +${SOUP.bonus * 100}% catch chance on every throw for the next ${soupLeftMin(p)} minutes (stacks with gloves). You have ${fmt(p.starchrom)} ${SC} left.`;
   return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units (${podsUsed(p)}/${unitCap(p)} Securement Pods used). ${bagText(p)}`;
 }
@@ -705,20 +723,21 @@ function unitNotices(now = Date.now()) {
     p.last_unit_at += HOUR;
     const got = Math.min(ECONOMY.hourlyUnits, freeRoom(p)); // past the free limit (75 Pods): Starchrom only
     p.units.standard = (p.units.standard || 0) + got;
+    p.grenades[1] = grenadeCount(p, 1) + ECONOMY.hourlyGrenades; // + a Lv.1 Binding Grenade every hour (B 2026-10-10)
     p.starchrom += ECONOMY.hourlyStarchrom;
     savePlayer(p);
     if (!byChannel.has(ch)) byChannel.set(ch, []);
-    byChannel.get(ch).push({ name: `@${p.display}`, got, units: p.units.standard || 0, starchrom: p.starchrom });
+    byChannel.get(ch).push({ name: `@${p.display}`, got, units: p.units.standard || 0, gren: grenadeCount(p, 1), starchrom: p.starchrom });
   }
   // one player:  "🎁 @luna acquired an hourly Securement Unit and 15 Starchrom! You now have 8 Securement Units and 1,240 Starchrom. 🎁"
   // several at once: "🎁 Hourly gift (+1 Securement Unit, +15 Starchrom): @luna now 8 units · 1,240 Starchrom | @bob now 3 units · 95 Starchrom 🎁"
   const sc = `${ECONOMY.hourlyStarchrom} ${SC}`;
   const unitsTxt = (n) => `${fmt(n)} Securement Unit${n === 1 ? "" : "s"}`;
   const one = (x) => x.got
-    ? `🎁 ${x.name} acquired ${x.got === 1 ? "an hourly Securement Unit" : `${x.got} hourly Securement Units`} and ${sc}! You now have ${unitsTxt(x.units)} and ${fmt(x.starchrom)} ${SC}. 🎁`
-    : `🎁 ${x.name} acquired an hourly ${sc}! (free units stop at ${ECONOMY.freeUnitCap} Securement Pods — !buy more with ${SC}) You now have ${fmt(x.starchrom)} ${SC}. 🎁`;
+    ? `🎁 ${x.name} acquired ${x.got === 1 ? "an hourly Securement Unit" : `${x.got} hourly Securement Units`}, a Binding Grenade and ${sc}! You now have ${unitsTxt(x.units)}, ${fmt(x.gren)} Lv.1 grenades and ${fmt(x.starchrom)} ${SC}. 🎁`
+    : `🎁 ${x.name} acquired an hourly Binding Grenade and ${sc}! (free units stop at ${ECONOMY.freeUnitCap} Securement Pods — !buy more with ${SC}) You now have ${fmt(x.gren)} Lv.1 grenades and ${fmt(x.starchrom)} ${SC}. 🎁`;
   const short = (x) => `${x.name} now ${fmt(x.units)} unit${x.units === 1 ? "" : "s"} · ${fmt(x.starchrom)} ${SC}${x.got ? "" : ` (${ECONOMY.freeUnitCap}+ pods, no free unit)`}`;
-  const head = `🎁 Hourly gift (+${ECONOMY.hourlyUnits} Securement Unit, +${sc}): `;
+  const head = `🎁 Hourly gift (+${ECONOMY.hourlyUnits} Securement Unit, +1 Binding Grenade, +${sc}): `;
   const out = [];
   for (const [ch, list] of byChannel) {
     if (list.length === 1) { out.push([ch, one(list[0])]); continue; }
@@ -830,4 +849,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { freeRoom, todaysLeader, fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { grenadeCount, grenadeText, grenadeTotal, freeRoom, todaysLeader, fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };

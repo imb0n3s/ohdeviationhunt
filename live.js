@@ -3,7 +3,16 @@
 // countdown), and around it shows how to play, the next-spawn timer, recent catches and the leaderboards.
 // A headless browser + ffmpeg on a small server sends this page to Twitch (see docs/live-stream.md).
 const cfg = require("./config");
-const { GLOVES } = require("./rarity");
+const { GLOVES, GRENADES, GRENADE_PACK } = require("./rarity");
+const shopRows = (withCmd) => {
+  const rows = require("./shop").ITEMS.filter((i) => i.kind !== "grenades").map((i) => ({ name: i.name, price: i.price, icon: "/panel/" + i.icon,
+    ...(withCmd ? { cmd: i.kind === "gloves" ? `!buy ${i.glove}` : i.kind === "soup" ? "!buy soup" : "!buy 3" } : {}),
+    note: i.kind === "gloves" ? `+${Math.round(i.bonus * 100)}% · ${GLOVES.find((g) => g.id === i.glove).catches} catches` : i.kind === "soup" ? `+${+(i.bonus * 100).toFixed(1)}% for 1 hour` : "holds 1 deviation" }));
+  // Binding Grenades (B 2026-10-10): one row for the three packs
+  rows.splice(1, 0, { name: `Binding Grenades ×${GRENADE_PACK}`, priceText: GRENADES.map((g) => g.packPrice.toLocaleString("en-US")).join(" / "), icon: "/panel/" + GRENADES[0].icon,
+    ...(withCmd ? { cmd: "!buy grenade" } : {}), note: "Lv.3 +2.5% · Lv.5 +5%" });
+  return rows;
+};
 const isOwner = (name) => String(name).toLowerCase() === "imbon3s";
 const db = require("./db");
 const data = require("./data");
@@ -56,8 +65,7 @@ function liveData(pool, ch) {
     streams: db.topStreams(5).map((c) => ({ name: c.display_name, catches: c.catches })),
     totalDevs: data.all().length,
     // the Shop takes a turn in the leaderboard box, with how much Starchrom has been spent in total (B 2026-10-08)
-    shop: require("./shop").ITEMS.map((i) => ({ name: i.name, price: i.price, icon: "/panel/" + i.icon,
-      note: i.kind === "gloves" ? `+${Math.round(i.bonus * 100)}% · ${GLOVES.find((g) => g.id === i.glove).catches} catches` : i.kind === "soup" ? `+${+(i.bonus * 100).toFixed(1)}% for 1 hour` : "holds 1 deviation" })),
+    shop: shopRows(false),
     spent: db.starchromSpent(),
     // bottom ticker: the other channels live with the game right now, and what's been secured there
     liveNow: db.listEnabledChannels().filter((c) => c.broadcaster_id !== bid && sp?.live?.has(c.broadcaster_id)).map((c) => {
@@ -232,7 +240,7 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   function renderMetas(){
     ["metav","mostv","streamv","shopv"].forEach((id,i)=>document.getElementById(id).classList.toggle("off",i!==metaMode));
     document.getElementById("spent").textContent=Number(st.spent||0).toLocaleString();
-    const sg=(st.shop||[]).map((i)=>'<div class="si"><img src="'+esc(i.icon)+'" alt=""><div><div class="nm">'+esc(i.name)+'</div><div class="pr">'+Number(i.price).toLocaleString()+' Starchrom</div><div class="nt">'+esc(i.note)+'</div></div></div>').join(""), sgEl=document.getElementById("sgrid"); if(sgEl.dataset.h!==sg){sgEl.dataset.h=sg;sgEl.innerHTML=sg;}
+    const sg=(st.shop||[]).map((i)=>'<div class="si"><img src="'+esc(i.icon)+'" alt=""><div><div class="nm">'+esc(i.name)+'</div><div class="pr">'+(i.priceText||Number(i.price).toLocaleString())+' Starchrom</div><div class="nt">'+esc(i.note)+'</div></div></div>').join(""), sgEl=document.getElementById("sgrid"); if(sgEl.dataset.h!==sg){sgEl.dataset.h=sg;sgEl.innerHTML=sg;}
     // Collection Champions: how many of the deviations they have (x/61); a ⭐ once they have them all (B 2026-10-09)
     document.getElementById("metas").innerHTML=st.metas.map((m,i)=>'<div class="rr s"><span class="n">'+(i+1)+'.</span><b>'+(m.species>=st.totalDevs?'⭐ ':'')+esc(m.name)+'</b><span class="a">'+m.species+'/'+st.totalDevs+'</span></div>').join("");
     document.getElementById("most").innerHTML=(st.most||[]).map((m,i)=>'<div class="rr s"><span class="n">'+(i+1)+'.</span><b>'+esc(m.name)+'</b><span class="a">'+Number(m.total).toLocaleString()+'</span></div>').join("")||'<div class="rr s"><span class="n"></span><b>—</b></div>';
@@ -258,9 +266,7 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
 function shopData() {
   const last = db.recentPurchases(Date.now() - 6 * 3600e3, 1)[0];
   return {
-    shop: require("./shop").ITEMS.map((i) => ({ name: i.name, price: i.price, icon: "/panel/" + i.icon,
-      cmd: i.kind === "gloves" ? `!buy ${i.glove}` : i.kind === "soup" ? "!buy soup" : "!buy 3",
-      note: i.kind === "gloves" ? `+${Math.round(i.bonus * 100)}% · ${GLOVES.find((g) => g.id === i.glove).catches} catches` : i.kind === "soup" ? `+${+(i.bonus * 100).toFixed(1)}% for 1 hour` : "holds 1 deviation" })),
+    shop: shopRows(true),
     spent: db.starchromSpent(),
     last: last ? { who: last.display, what: last.what, chan: last.chan } : null,
     v: overlay.BOOT,
@@ -298,9 +304,9 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:${bg ? "#05
     try{ const r=await fetch("/obs-shop/data",{cache:"no-store"}); if(!r.ok) return; const d=await r.json();
       if(v&&d.v&&d.v!==v){ location.reload(); return; } v=d.v;
       document.getElementById("spent").textContent=Number(d.spent||0).toLocaleString();
-      const g=d.shop.map((i)=>'<div class="it"><img src="'+esc(i.icon)+'" alt=""><div><div class="nm">'+esc(i.name)+'</div><div class="pr">'+Number(i.price).toLocaleString()+' Starchrom</div><div class="nt"><b>'+esc(i.cmd)+'</b> · '+esc(i.note)+'</div></div></div>').join("");
+      const g=d.shop.map((i)=>'<div class="it"><img src="'+esc(i.icon)+'" alt=""><div><div class="nm">'+esc(i.name)+'</div><div class="pr">'+(i.priceText||Number(i.price).toLocaleString())+' Starchrom</div><div class="nt"><b>'+esc(i.cmd)+'</b> · '+esc(i.note)+'</div></div></div>').join("");
       if(g!==gridH){ gridH=g; document.getElementById("grid").innerHTML=g; }
-      document.getElementById("last").innerHTML=d.last?'🛒 Latest: <b>@'+esc(d.last.who)+'</b> bought '+esc(d.last.what)+(d.last.chan?' on '+esc(d.last.chan):''):'Units, Capture Soup &amp; Gloves — your Starchrom works on every stream.';
+      document.getElementById("last").innerHTML=d.last?'🛒 Latest: <b>@'+esc(d.last.who)+'</b> bought '+esc(d.last.what)+(d.last.chan?' on '+esc(d.last.chan):''):'Units, Binding Grenades, Capture Soup &amp; Gloves — your Starchrom works on every stream.';
       fit();
     }catch(e){}
   }

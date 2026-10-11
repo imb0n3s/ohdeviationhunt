@@ -19,13 +19,13 @@ play("3", "CH"); backdate("3", 3 * H);                   // playing but no !dail
 assert.equal(game.unitNotices().length, 0);               // under an hour
 backdate("1", H + 60e3); backdate("2", H + 60e3);
 let n = game.unitNotices(); console.log(n);
-assert.deepEqual(n, [["CH", "🎁 Hourly gift (+1 Securement Unit, +15 Starchrom): @Luna now 7 units · 315 Starchrom | @Bob now 7 units · 315 Starchrom 🎁"]]);
+assert.deepEqual(n, [["CH", "🎁 Hourly gift (+1 Securement Unit, +1 Binding Grenade, +15 Starchrom): @Luna now 7 units · 315 Starchrom | @Bob now 7 units · 315 Starchrom 🎁"]]);
 const u1 = units("1");
 const sc1 = game.loadPlayer("1").starchrom;
 // pods full: the hour still pays 15 Starchrom, no unit
 { const p = game.loadPlayer("2"); p.extra_cap = -(game.unitCap(p) - game.podsUsed(p)); game.savePlayer(p);
   const sc = p.starchrom, u = p.units.standard; backdate("2", H + 60e3); play("1", "CH");
-  n = game.unitNotices(); assert.match(n[0][1], /^🎁 @Bob acquired an hourly 15 Starchrom! \(free units stop at 75 Securement Pods — !buy more with Starchrom\) You now have [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1);
+  n = game.unitNotices(); assert.match(n[0][1], /^🎁 @Bob acquired an hourly Binding Grenade and 15 Starchrom! \(free units stop at 75 Securement Pods — !buy more with Starchrom\) You now have \d+ Lv\.1 grenades and [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1);
   assert.equal(game.loadPlayer("2").starchrom, sc + 15); assert.equal(units("2"), u);
   const q = game.loadPlayer("2"); q.extra_cap = 0; game.savePlayer(q); }
 
@@ -38,7 +38,7 @@ assert.match(game.timerCheck("1", "luna", "Luna"), /isn't on in this stream — 
 assert.match(game.hourly("1", "luna", "Luna", "CH2"), /Hourly perks on for this stream/);   // switched over: fresh hour
 backdate("1", H + 60e3);
 n = game.unitNotices(); console.log(n);
-assert.match(n[0][1], /^🎁 @Luna acquired an hourly Securement Unit and 15 Starchrom! You now have \d+ Securement Units and [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1); assert.equal(n[0][0], "CH2");
+assert.match(n[0][1], /^🎁 @Luna acquired an hourly Securement Unit, a Binding Grenade and 15 Starchrom! You now have \d+ Securement Units, \d+ Lv\.1 grenades and [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1); assert.equal(n[0][0], "CH2");
 assert.equal(units("1"), u1 + 1); assert.equal(game.loadPlayer("1").starchrom, sc1 + 15);
 
 // back in CH: her perks are on CH2's stream now, so CH pays nothing until !hourly there

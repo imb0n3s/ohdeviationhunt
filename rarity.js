@@ -67,8 +67,20 @@ const UNITS = {
   standard: { label: "Securement Unit", price: 500, mult: 1.0, aliases: [] },
 };
 
+// Binding Grenades (B 2026-10-10): every !secure throw also uses 1 grenade. Higher levels add catch chance (on top of
+// gloves/soup, still capped at ECONOMY.maxCatchChance). Sold in packs of 5 on the website and in chat — NOT in the
+// Twitch panel (B: don't restart the extension review). Everyone got 15 Level 1 to start; +1 Level 1 every hour.
+const GRENADES = [
+  { level: 1, name: "Binding Grenade Lv.1", bonus: 0,     packPrice: 200,  icon: "grenade1.png", color: "#38bdf8" },
+  { level: 3, name: "Binding Grenade Lv.3", bonus: 0.025, packPrice: 750,  icon: "grenade3.png", color: "#a78bfa" },
+  { level: 5, name: "Binding Grenade Lv.5", bonus: 0.05,  packPrice: 1500, icon: "grenade5.png", color: "#fbbf24" },
+];
+const GRENADE_PACK = 5;
+
 const ECONOMY = {
   starterStarchrom: 200,
+  starterGrenades: 15,      // Level 1 Binding Grenades every player starts with (existing players got them too)
+  hourlyGrenades: 1,        // Level 1 Binding Grenades with every hourly gift
   starterUnits: { standard: 5 },
   hourlyStarchrom: 15,      // Starchrom that comes with each hourly unit (paid even when your pods are full)
   hourlyUnits: 1,            // free Securement Units every hour, only while the stream you did !daily in is live (no cap)
@@ -133,4 +145,4 @@ const BITS_PACKS = [
   { sku: "pods5",         bits: 50,  capacity: 5 },
 ];
 
-module.exports = { TIERS, ASSIGN, VARIANT, isChaos, variantRule, UNITS, ECONOMY, GLOVES, SOUP, BITS_PACKS, rarityOf, unitKey };
+module.exports = { GRENADES, GRENADE_PACK, TIERS, ASSIGN, VARIANT, isChaos, variantRule, UNITS, ECONOMY, GLOVES, SOUP, BITS_PACKS, rarityOf, unitKey };

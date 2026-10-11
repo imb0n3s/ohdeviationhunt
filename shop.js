@@ -4,7 +4,7 @@
 // To add an item: add an entry to ITEMS. `grants` says what one purchase gives; add a new
 // grant type in applyGrants() if it's something the game doesn't track yet.
 //   icon: a picture file in ext/ (served by our server at /panel/<file>), or a full https:// image URL
-const { UNITS, GLOVES, ECONOMY, SOUP } = require("./rarity");
+const { UNITS, GLOVES, ECONOMY, SOUP, GRENADES, GRENADE_PACK } = require("./rarity");
 // most Securement Units this player can hold
 const unitCap = (p) => ECONOMY.unitCap + (p.extra_cap || 0);
 // Securement Pods in use = deviations you've caught (each lives in one) + empty Securement Units
@@ -34,6 +34,22 @@ const ITEMS = [
     icon: SOUP.icon,
     aliases: ["soup", "capturesoup", "soups"],
   },
+  // Binding Grenades (B 2026-10-10): packs of 5. webOnly = website + chat, never sent to the Twitch panel (no new extension review)
+  ...GRENADES.map((g) => ({
+    id: `grenade${g.level}`,
+    kind: "grenades",
+    level: g.level,
+    name: `${g.name} (pack of ${GRENADE_PACK})`,
+    desc: `Every !secure throw uses one Binding Grenade.${g.bonus ? ` Lv.${g.level} adds +${+(g.bonus * 100).toFixed(1)}% catch chance.` : " Lv.1 adds no extra catch chance."} Pack of ${GRENADE_PACK}.`,
+    price: g.packPrice,
+    grants: { grenades: { [g.level]: GRENADE_PACK } },
+    maxQty: 20,
+    bonus: g.bonus,
+    color: g.color,
+    icon: g.icon,
+    webOnly: true,
+    aliases: g.level === 1 ? ["grenade", "grenades", "grenade1", "grenades1", "bindinggrenade", "bindinggrenades", "bg", "bg1", "lv1"] : [`grenade${g.level}`, `grenades${g.level}`, `bg${g.level}`, `lv${g.level}`, `bindinggrenade${g.level}`],
+  })),
   ...GLOVES.map((g) => ({
     id: g.id + "gloves",
     kind: "gloves",
@@ -67,6 +83,9 @@ function applyGrants(p, grants, qty) {
       p.soup_until = Math.max(now, p.soup_until || 0) + SOUP.durationMs * val * qty; got.push({ kind: "soup", until: p.soup_until });
     } else if (kind === "gloves") {
       p.gloves = [val]; p.glove_left = GLOVES.find((g) => g.id === val).catches; got.push({ kind: "gloves", glove: val }); // one pair at a time: replaces the old pair, no refund
+    } else if (kind === "grenades") {
+      p.grenades = p.grenades || {};
+      for (const [lvl, n] of Object.entries(val)) { p.grenades[lvl] = (Number(p.grenades[lvl]) || 0) + n * qty; got.push({ kind: "grenades", level: Number(lvl), n: n * qty }); }
     } else if (kind === "starchrom") {
       p.starchrom += val * qty; got.push({ kind: "starchrom", n: val * qty });
     } else {
@@ -98,7 +117,7 @@ function purchase(p, itemId, qty) {
   require("./db").addSpent(cost);
   applyGrants(p, item.grants, qty);
   // BREAKING NEWS on the 24/7 stream: who bought what, in the stream they're playing in
-  const what = item.kind === "gloves" ? item.name : item.kind === "soup" ? `${qty > 1 ? `${qty} bowls of ` : "a bowl of "}${item.name}` : `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
+  const what = item.kind === "grenades" ? `${qty * GRENADE_PACK} Lv.${item.level} Binding Grenades` : item.kind === "gloves" ? item.name : item.kind === "soup" ? `${qty > 1 ? `${qty} bowls of ` : "a bowl of "}${item.name}` : `${qty} ${item.name}${qty > 1 ? "s" : ""}`;
   try { require("./db").logPurchase(p.user_id, p.display, p.last_channel, what); } catch {}
   return { ok: true, item, qty, cost, replaced };
 }
@@ -108,6 +127,6 @@ function purchase(p, itemId, qty) {
 // extension zip, so a new item with a new picture needs no new Twitch extension version / review.
 // (The Twitch console's "Allowlist for Image Domains" includes deviationhunt.ohwikiguide.com for this.)
 const iconUrl = (icon) => (!icon || /^https?:\/\//.test(icon) ? icon : `${require("./config").BASE_URL.replace(/\/$/, "")}/panel/${icon}`);
-const catalog = () => ITEMS.map(({ id, kind, glove, name, desc, price, maxQty, icon, bonus, rarity, color }) => ({ id, kind: kind || "item", glove, name, desc, price, maxQty, icon: iconUrl(icon), bonus, rarity, color }));
+const catalog = () => ITEMS.filter((i) => !i.webOnly).map(({ id, kind, glove, name, desc, price, maxQty, icon, bonus, rarity, color }) => ({ id, kind: kind || "item", glove, name, desc, price, maxQty, icon: iconUrl(icon), bonus, rarity, color }));
 
 module.exports = { ITEMS, find, purchase, catalog, unitCap, podsUsed };
