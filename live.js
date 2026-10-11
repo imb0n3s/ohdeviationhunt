@@ -26,7 +26,6 @@ const shopSlides = () => {
     { title: "Gloves", sub: "catch bonus, wear out", items: I.filter((i) => i.kind === "gloves").map(row) },
   ];
 };
-const isOwner = (name) => String(name).toLowerCase() === "imbon3s";
 const db = require("./db");
 const data = require("./data");
 const overlay = require("./overlay");
@@ -71,10 +70,10 @@ function liveData(pool, ch) {
       const v = d?.variants.find((x) => x.name === r.variant);
       return { id: r.id, who: r.display, name: d?.name || r.deviation, variant: `${v?.kind === "skin" ? "Skin" : "Variation"}: ${r.variant}`, rating: `${r.power}/${r.mood}`, chan: r.chan, login: r.login };
     }),
-    // imbon3s (the game's owner) is left off both lists (B 2026-10-08)
-    metas: db.leaderboard(6, "all").filter((r) => !isOwner(r.display)).slice(0, 5).map((r) => ({ name: r.display, species: r.species, total: r.total })),
+    // imbon3s is on both lists again (B 2026-10-11)
+    metas: db.leaderboard(5, "all").map((r) => ({ name: r.display, species: r.species, total: r.total })),
     // most deviations collected in total (every catch, duplicates and scrapped ones too)
-    most: db.mostCaught(6).filter((r) => !isOwner(r.display)).slice(0, 5).map((r) => ({ name: r.display, total: r.total })),
+    most: db.mostCaught(5).map((r) => ({ name: r.display, total: r.total })),
     streams: db.topStreams(5).map((c) => ({ name: c.display_name, catches: c.catches })),
     totalDevs: data.all().length,
     // the Shop takes a turn in the leaderboard box, with how much Starchrom has been spent in total (B 2026-10-08)
