@@ -120,6 +120,16 @@ async function main() {
       }, 45000);
     }
   } catch (e) { console.error("[grant]", e.message); }
+  // Timed chat message on the 24/7 stream (B 2026-10-10): every 15 min while the bot's own channel is live.
+  // Change the text without a code change: setting "timer:msg" (empty = off).
+  const TIMER_DEFAULT = "💣 NEW: Binding Grenades! Every !secure throw now needs 1 Binding Grenade + an empty Securement Pod. Everyone starts with 15 Lv.1 and gets +1 Lv.1 every hour. Shop (packs of 5): Lv.1 (+0%) 200 Starchrom · Lv.3 (+2.5%) 750 · Lv.5 (+5%) 1,500. Buy with !buy grenade / !buy grenade3 / !buy grenade5 or at deviationhunt.ohwikiguide.com/me. !secure throws your best grenade; !secure 1, 3 or 5 picks the level.";
+  setInterval(() => {
+    try {
+      const ch = db.getBotAccount()?.user_id;
+      const msg = db.getSetting("timer:msg") ?? TIMER_DEFAULT;
+      if (ch && msg && spawns.live.has(ch)) pool.send(ch, msg);
+    } catch (e) { console.error("[timer]", e.message); }
+  }, 15 * 60 * 1000).unref();
   setInterval(() => {
     try {
       for (const [ch, msg] of unitNotices()) pool.send(ch, msg);
