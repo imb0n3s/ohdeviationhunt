@@ -494,7 +494,7 @@ function topPage() {
   // top streams = channels where the most deviations have been secured; everyone (streamers included) is in the top 100
   const streams = db.topStreams(10);
   const streamTable = streams.length
-    ? `<div class="card"><table><tr><th>#</th><th>Stream</th><th>Deviations secured</th><th>Spawns</th></tr>${streams.map((c, i) => `<tr><td>${i + 1}</td><td><a href="https://twitch.tv/${esc(c.login)}" target="_blank" rel="noopener">${esc(c.display_name)}</a></td><td>${fmt(c.catches)}</td><td>${fmt(c.spawns)}</td></tr>`).join("")}</table></div>`
+    ? `<div class="card"><table><tr><th>#</th><th>Stream</th><th>Deviations secured*</th><th>Spawns</th></tr>${streams.map((c, i) => `<tr><td>${i + 1}</td><td><a href="https://twitch.tv/${esc(c.login)}" target="_blank" rel="noopener">${esc(c.display_name)}</a></td><td>${fmt(c.catches)}</td><td>${fmt(c.spawns)}</td></tr>`).join("")}</table></div><p class="muted" style="font-size:.85em;margin-top:6px">* Everyone in chat throws at the same deviation, and more than one viewer can secure it — each viewer who catches it counts once. That's why a stream with a busy chat can have more deviations secured than spawns.</p>`
     : `<p>No deviations secured yet.</p>`;
   // ranked by deviations caught in total, duplicates included (B 2026-10-08), then species collected
   // imbon3s is back in the Top 100 (B 2026-10-11; was left off 2026-10-08)
