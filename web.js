@@ -622,6 +622,18 @@ function createApp(pool) {
   app.get("/health", (req, res) => res.json({ ok: true, channels: pool.channelCount, botSetUp: !!db.getBotAccount(), data: data.info() }));
   // every player login (public anyway via /u/<login>) — used to keep the Twitch panel tester allowlist in sync
   app.get("/api/players", (req, res) => res.json(db.q.playerLogins.all().map((r) => r.login)));
+  // Top Streams audit (B 2026-10-11): counters vs. the spawn log vs. the specimens actually caught there
+  app.get("/api/streams-audit", (req, res) => {
+    const R = db.raw;
+    res.set("Cache-Control", "no-store").json(db.topStreams(15).map((c) => {
+      const id = R.prepare(`SELECT broadcaster_id FROM channels WHERE login=?`).get(c.login).broadcaster_id;
+      const log = R.prepare(`SELECT COUNT(*) AS spawns, COALESCE(SUM(caught),0) AS caught, COALESCE(SUM(attempts),0) AS throws, COALESCE(MAX(caught),0) AS maxCaught,
+        SUM(CASE WHEN caught>1 THEN 1 ELSE 0 END) AS multi, MIN(ts) AS first FROM spawn_log WHERE broadcaster_id=?`).get(id);
+      const spec = R.prepare(`SELECT COUNT(*) AS n, COUNT(DISTINCT user_id) AS players FROM specimens WHERE channel=?`).get(id);
+      const scr = R.prepare(`SELECT COUNT(*) AS n FROM scrapped WHERE channel=?`).get(id).n;
+      return { stream: c.display_name, counter: { spawns: c.spawns, caught: c.catches }, spawnLog: log, specimens: spec.n + scr, catchers: spec.players };
+    }));
+  });
   app.get("/api/stats", (req, res) => res.json({ channels: db.countChannels(), players: db.countPlayers(), catches: db.totalCatches(), spawns: db.totalSpawns(), starchromSpent: db.starchromSpent() }));
 
   const cookie = (state) => `dh_state=${state}; Path=/auth; HttpOnly; SameSite=Lax; Max-Age=600${cfg.BASE_URL.startsWith("https") ? "; Secure" : ""}`;
