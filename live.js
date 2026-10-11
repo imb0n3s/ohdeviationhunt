@@ -15,10 +15,10 @@ const shopRows = (withCmd) => {
 };
 // the 24/7 Shop turn is three slides (B 2026-10-10): Securement (units + Capture Soup), Binding Grenades, Gloves
 const shopSlides = () => {
-  const I = require("./shop").ITEMS, row = (i) => ({ name: i.kind === "grenades" ? `Binding Grenade Lv.${i.level}` : i.name, price: i.price, icon: "/panel/" + i.icon,
+  const I = require("./shop").ITEMS, row = (i) => ({ name: i.kind === "grenades" ? `Binding Grenade Lv.${i.level} (+${+(i.bonus * 100).toFixed(1)}%)` : i.name, price: i.price, icon: "/panel/" + i.icon,
     note: i.kind === "gloves" ? `+${Math.round(i.bonus * 100)}% · ${GLOVES.find((g) => g.id === i.glove).catches} catches · !buy ${i.glove}`
       : i.kind === "soup" ? `+${+(i.bonus * 100).toFixed(1)}% for 1 hour · !buy soup`
-      : i.kind === "grenades" ? `${i.bonus ? `+${+(i.bonus * 100).toFixed(1)}%` : "no bonus"} · pack of ${GRENADE_PACK} · !buy grenade${i.level === 1 ? "" : i.level}`
+      : i.kind === "grenades" ? `pack of ${GRENADE_PACK} · !buy grenade${i.level === 1 ? "" : i.level}`
       : "holds 1 deviation · !buy 3" });
   return [
     { title: "Securement", sub: "units + Capture Soup", items: I.filter((i) => !i.kind || i.kind === "soup").map(row) },
