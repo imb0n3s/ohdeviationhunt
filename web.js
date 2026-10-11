@@ -9,7 +9,7 @@ const twitch = require("./twitch");
 const data = require("./data");
 const game = require("./game");
 const traits = require("./traits");
-const { TIERS, UNITS, VARIANT, ECONOMY, GLOVES, rarityOf } = require("./rarity");
+const { TIERS, UNITS, VARIANT, ECONOMY, GLOVES, GRENADES, rarityOf } = require("./rarity");
 
 // ---------- signed OAuth state ----------
 function sign(d) {
@@ -111,7 +111,7 @@ h2 .sub{font-size:.8rem;color:var(--muted);font-weight:600;margin-left:6px}
 .vk{font-size:.68rem;font-weight:700;margin-top:6px;color:#fbbf24;text-transform:uppercase;letter-spacing:.04em}.vk.skin{color:#f0abfc}
 .dev .vn{font-size:.75rem;font-weight:700;color:#fde68a;margin-top:2px}.dev.skin .vn{color:#f5d0fe}
 table{width:100%;border-collapse:collapse}td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-weight:600}
-.bar{height:8px;background:#0b1016;border-radius:99px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:var(--accent)}
+.tbar{position:relative;height:28px;background:#0b1016;border:1px solid #1f2a36;border-radius:99px;overflow:hidden;margin:10px 0}.tbar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#0ea5e9,#38bdf8);opacity:.55}.tbar span{position:relative;display:block;line-height:28px;text-align:center;font-size:.9em;color:#e6edf3;font-weight:600}.tbar.off span{color:var(--muted);font-weight:400}.bar{height:8px;background:#0b1016;border-radius:99px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:var(--accent)}
 form.find{display:flex;gap:8px;margin:8px 0}form.find input{flex:1;min-width:0;padding:11px 12px;border-radius:9px;border:1px solid var(--line);background:#0b1016;color:var(--text);font-size:1rem}
 form.find button{padding:0 18px;border-radius:9px;border:0;background:var(--accent);color:#fff;font-weight:600}
 footer{margin-top:48px;color:var(--muted);font-size:.9em}footer a{color:var(--muted)}a{color:var(--accent)}
@@ -399,7 +399,6 @@ function collectionPage(p, viewer, msg) {
   }
   const all = data.all();
   const totalOf = (kind) => all.reduce((s, d) => s + d.variants.filter((v) => v.kind === kind).length, 0);
-  const pct = all.length ? Math.round((c.species / all.length) * 100) : 0;
   const live = game.loadPlayer(p.user_id, p.login, p.display);
   const units = live.units;
   const cardFor = (d) => {
@@ -431,8 +430,15 @@ ${slots(sp)}${sp.variant ? `<div class="bv">best: ${esc(sp.variant)}</div>` : ""
   const cards = sections(all, cardFor);
   return page(`${p.display}'s Securement Pods`, `
 <h1>${esc(p.display)}'s Securement Pods</h1>${msg && msg.scrap && !msg.dev ? `<div class="snote err">${esc(msg.text)}</div>` : ""}
-<div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variations}/${totalOf("variation")}</b>variations</div><div class="stat"><b style="color:#f0abfc">${c.skins}/${totalOf("skin")}</b>skins</div><div class="stat"><b>${game.podsUsed(live)}/${game.unitCap(live)}</b>Securement Pods<br>${fmt(Object.values(live.units || {}).reduce((a, n) => a + (n || 0), 0))} Empty Securement Pods</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
-<div class="bar"><i style="width:${pct}%"></i></div>
+<div class="stats"><div class="stat"><b>${c.species}/${all.length}</b>deviations</div><div class="stat"><b>${c.variations}/${totalOf("variation")}</b>variations</div><div class="stat"><b style="color:#f0abfc">${c.skins}/${totalOf("skin")}</b>skins</div><div class="stat"><b>${game.podsUsed(live)}/${game.unitCap(live)}</b>Securement Pods<br>${fmt(Object.values(live.units || {}).reduce((a, n) => a + (n || 0), 0))} Empty Securement Pods</div><div class="stat"><b>${fmt(game.grenadeTotal(live))}</b>Binding Grenades<br>${GRENADES.map((g) => `<span style="color:${g.color}">Lv.${g.level}</span> ×${fmt(game.grenadeCount(live, g.level))}`).join("<br>")}</div><div class="stat"><b>${fmt(p.starchrom)}</b>Starchrom</div></div>
+${!owner ? "" : (() => { // hourly reward timer (only on your own page) (B 2026-10-11: the bar is a timer, labelled so it isn't mistaken for a scroll bar)
+  const hs = game.hourlyStatus(live);
+  if (hs.state !== "running") return `<div class="tbar off"><span>⏱ Hourly reward timer: off — type <kbd>!hourly</kbd> in the live stream you're watching to start it</span></div>`;
+  return `<div class="tbar" data-at="${hs.at}" data-len="${3600000}"><i style="width:${Math.max(0, Math.min(100, 100 - ((hs.at - Date.now()) / 36000)))}%"></i><span>⏱ Next hourly reward in <b class="tleft">${game.nextUnitIn(live)}</b></span></div>
+<script>(function(){const t=document.querySelector(".tbar[data-at]");if(!t)return;const at=+t.dataset.at,len=+t.dataset.len,i=t.querySelector("i"),l=t.querySelector(".tleft");
+function f(){const ms=at-Date.now();if(ms<=0){l.textContent="any moment now";i.style.width="100%";return;}const m=Math.floor(ms/60000),s=Math.floor(ms/1000)%60;l.textContent=m+"m "+String(s).padStart(2,"0")+"s";i.style.width=(100-ms/len*100).toFixed(2)+"%";}
+f();setInterval(f,1000);})();</script>`;
+})()}
 ${owner ? `<p class="snote ok" style="text-align:left">♻️ Have duplicates? Click the red <b>Scrap extras</b> button at the bottom of any card marked ×2 or more to scrap the copies you don't want (${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit each). <a href="/#scrap">How scrapping works</a></p>` : ""}<p>Each card shows your top specimen — your best skin, else your best variation, else your best one: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
 <div id="shop">${webShop(p, live, viewer, msg)}</div>
 <p>Empty Securement Units: <b>${units.standard || 0}</b> · 💣 Binding Grenades: <b>${esc(game.grenadeText(live))}</b> · Securement Pods used: <b>${game.podsUsed(live)}/${game.unitCap(live)}</b> (caught + empty)${(() => { const g = game.bestGlove(live); return g ? ` · 🧤 <b style="color:${g.color}">${esc(g.name)}</b> (+${Math.round(g.bonus * 100)}% catch, ${live.glove_left} catch${live.glove_left === 1 ? "" : "es"} left)` : ""; })()} · next free unit: ${game.nextUnitIn(live)} (1 every hour while you're in a live stream, after today's <kbd>!daily</kbd>)</p>
