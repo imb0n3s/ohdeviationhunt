@@ -311,7 +311,7 @@ ${obsLinksHtml(viewer)}
 <p><b>Turn the spawn sound off:</b> add <code>?sound=0</code> to the end of your OBS Source link (Browser source → Properties → URL), or mute the source in your OBS Audio Mixer. Quieter instead: <code>?volume=40</code> (0–100) or lower its slider in the Audio Mixer.</p>
 <p><b>Streaming together (Shared Chat)?</b> If only your channel runs ${esc(cfg.BOT_NAME)}, viewers in your partner's chat can play in your game, and the bot's messages show in both chats. If both channels run it, each game only counts what's typed in its own chat, so one <kbd>!secure</kbd> is one throw, in the channel where it was typed.</p>
 <p><b>Leaving:</b> <kbd>!hunt leave</kbd> in your chat (or Remove it above). Everyone keeps their Securement Pods.</p>
-<p style="margin-bottom:0">Questions? Ask in the <a href="https://twitch.tv/${esc(botName)}">24/7 channel</a> or on <a href="${esc(cfg.WIKI_BASE)}/Deviation_Hunt">the wiki page</a>.</p>
+<p style="margin-bottom:0">Questions? Ask in our <a href="https://discord.gg/FZtkXeGeUA" target="_blank" rel="noopener">Discord</a> or on <a href="${esc(cfg.WIKI_BASE)}/Deviation_Hunt">the wiki page</a>.</p>
 </div>`);
 }
 
@@ -335,23 +335,6 @@ ${c.html}${c.total > 12 ? `<p><a href="/channels">See all ${c.total} channels �
 
 <h2>What It Looks Like</h2>
 ${chatExamples(botName)}
-
-<h2 id="scrap">How to Scrap Extra Deviations</h2>
-<div class="card">
-<p style="margin-top:0">Caught the same deviation more than once? Keep the best one and scrap the rest. Each scrap gives you <b>${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit</b> and frees up a Securement Pod. You always keep at least one of every deviation, so you can't scrap your last one. Variations and skins can be scrapped too, but only if you pick them.</p>
-<div class="howto"><div><h3>On This Website</h3><ol>
-<li>Open <a href="/me">My Securement Pods</a> (top of the page) and <b>Sign in with Twitch</b>. The Scrap buttons only show on your own page while you're signed in.</li>
-<li>Find the deviation you have extras of (the <b>×2</b>, <b>×3</b>… in the corner).</li>
-<li>Click the red <b>Scrap extras</b> button at the bottom of that card (clicking the picture doesn't do anything).</li>
-<li>Every copy you own is listed with its Skill/Activity rating, variation or skin, and traits; your best one is marked <b>Best</b> (a skin beats a variation, a variation beats a normal one, then a Legendary trait such as Upper Hand, then the higher rating, then more traits).</li>
-<li>Click <b>Scrap</b> on the one you don't want and confirm.</li></ol></div>
-<div><h3>In the Twitch Panel</h3><ol>
-<li>Under the stream, open the <b>Securement Pods</b> panel and click <b>Show my Securement Pods</b> (first time only).</li>
-<li>Click the deviation you have extras of.</li>
-<li>Every copy you own is listed with its ratings and traits.</li>
-<li>Click <b>Scrap for ${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit</b> on the one you don't want, then <b>Scrap</b> to confirm.</li></ol></div></div>
-<p>There's no chat command for scrapping — <kbd>!scrap</kbd> just tells you where to go.</p>
-</div>
 
 <h2>For Streamers</h2>
 <div class="card"><p style="margin-top:0">Want Deviation Hunt in your own chat? Setup, the OBS Source (with the spawn alert), every streamer &amp; mod command and all the settings are on one page.</p>
@@ -426,11 +409,31 @@ ${!owner ? "" : (() => { // hourly reward timer (only on your own page) (B 2026-
 function f(){const ms=at-Date.now();if(ms<=0){l.textContent="any moment now";i.style.width="100%";return;}const m=Math.floor(ms/60000),s=Math.floor(ms/1000)%60;l.textContent=m+"m "+String(s).padStart(2,"0")+"s";i.style.width=(100-ms/len*100).toFixed(2)+"%";}
 f();setInterval(f,1000);})();</script>`;
 })()}
-${owner ? `<p class="snote ok" style="text-align:left">♻️ Have duplicates? Click the red <b>Scrap extras</b> button at the bottom of any card marked ×2 or more to scrap the copies you don't want (${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit each). <a href="/#scrap">How scrapping works</a></p>` : ""}<p>Each card shows your top specimen — your best skin, else your best variation, else your best one: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
+${owner ? `<p class="snote ok" style="text-align:left">♻️ Have duplicates? Click the red <b>Scrap extras</b> button at the bottom of any card marked ×2 or more to scrap the copies you don't want (${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit each). <a href="#scrap">How scrapping works</a></p>` : ""}<p>Each card shows your top specimen — your best skin, else your best variation, else your best one: its Skill Rating and Activity Rating (1–5) and its traits (0–3) (hover a trait for what it does).</p>
 <div id="shop">${webShop(p, live, viewer, msg)}</div>
 <p>Empty Securement Units: <b>${units.standard || 0}</b> · 💣 Binding Grenades: <b>${esc(game.grenadeText(live))}</b> · Securement Pods used: <b>${game.podsUsed(live)}/${game.unitCap(live)}</b> (caught + empty)${(() => { const g = game.bestGlove(live); return g ? ` · 🧤 <b style="color:${g.color}">${esc(g.name)}</b> (+${Math.round(g.bonus * 100)}% catch, ${live.glove_left} catch${live.glove_left === 1 ? "" : "es"} left)` : ""; })()} · next free unit: ${game.nextUnitIn(live)} (1 every hour while you're in a live stream, after today's <kbd>!daily</kbd>)</p>
-${cards}`);
+${cards}
+${scrapHelp()}`);
 }
+
+// How to scrap — lives on the Securement Pods pages (moved off the homepage, B 2026-10-12)
+const scrapHelp = () => `<h2 id="scrap">How to Scrap Extra Deviations</h2>
+<div class="card">
+<p style="margin-top:0">Caught the same deviation more than once? Keep the best one and scrap the rest. Each scrap gives you <b>${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit</b> and frees up a Securement Pod. You always keep at least one of every deviation, so you can't scrap your last one. Variations and skins can be scrapped too, but only if you pick them.</p>
+<div class="howto"><div><h3>On This Website</h3><ol>
+<li>Open <a href="/me">My Securement Pods</a> (top of the page) and <b>Sign in with Twitch</b>. The Scrap buttons only show on your own page while you're signed in.</li>
+<li>Find the deviation you have extras of (the <b>×2</b>, <b>×3</b>… in the corner).</li>
+<li>Click the red <b>Scrap extras</b> button at the bottom of that card (clicking the picture doesn't do anything).</li>
+<li>Every copy you own is listed with its Skill/Activity rating, variation or skin, and traits; your best one is marked <b>Best</b> (a skin beats a variation, a variation beats a normal one, then a Legendary trait such as Upper Hand, then the higher rating, then more traits).</li>
+<li>Click <b>Scrap</b> on the one you don't want and confirm.</li></ol></div>
+<div><h3>In the Twitch Panel</h3><ol>
+<li>Under the stream, open the <b>Securement Pods</b> panel and click <b>Show my Securement Pods</b> (first time only).</li>
+<li>Click the deviation you have extras of.</li>
+<li>Every copy you own is listed with its ratings and traits.</li>
+<li>Click <b>Scrap for ${fmt(ECONOMY.destroyValue)} Starchrom + ${ECONOMY.destroyUnits} Securement Unit</b> on the one you don't want, then <b>Scrap</b> to confirm.</li></ol></div></div>
+<p>There's no chat command for scrapping — <kbd>!scrap</kbd> just tells you where to go.</p>
+</div>
+`;
 
 // ---------- shop on your own collection page ----------
 const IMG_BASE = "https://raw.githubusercontent.com/imb0n3s/ohdeviationhunt/main/ext/";
