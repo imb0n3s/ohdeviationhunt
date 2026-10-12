@@ -70,8 +70,8 @@
 - 24/7 stream: /live/<login> page (live.js) + streamer/ (Docker: Xvfb+Chromium+ffmpeg). See docs/live-stream.md. The bot's
   own channel is auto-added as a game channel (index.js) and hidden from Top Streams (TOP_STREAMS_HIDE; imbon3s IS shown there, B 2026-10-09). It is "always on"
   (Spawns.alwaysOn): spawns keep coming with a quiet chat (B 2026-10-06 "keep it up"); setting alwayson:<bid>=on does the same elsewhere.
-  Ticker: Legendaries caught on OTHER streams in the last 3 min turn it into a flashing BREAKING NEWS line (who, deviation + variant,
-  Skill/Activity, which stream; live.js breakingQ; B 2026-10-08), then it goes back to LIVE NOW. Shop and Bits purchases on ANY stream
+  Ticker: Legendaries (variants/skins) AND perfect 5/5 catches on ANY stream (24/7 included) flash a BREAKING NEWS line that crosses
+  ONCE (who, deviation + variant, Skill/Activity, which stream; live.js breakingQ; B 2026-10-08, one-shot + 5/5 since B 2026-10-11). Shop and Bits purchases on ANY stream
   show there too, but cross the bar only ONCE (one-shot pass, then gone; purchase_log, logged in shop.purchase +
   /ext/bits/complete; who, what, which stream; B 2026-10-09).
   A channel going live with the game gets the same one-shot BREAKING NEWS pass: "🔴 NOW LIVE: X just went live with Deviation Hunt"

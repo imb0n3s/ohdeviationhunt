@@ -40,7 +40,7 @@ const recentQ = db.raw.prepare(`SELECT s.deviation, s.variant, s.power, s.mood, 
 const BREAKING_MS = 3 * 60 * 1000;
 const breakingQ = db.raw.prepare(`SELECT s.id, s.deviation, s.variant, s.power, s.mood, s.caught_at, p.display, c.display_name AS chan, c.login
   FROM specimens s JOIN players p ON p.user_id=s.user_id JOIN channels c ON c.broadcaster_id=s.channel
-  WHERE s.variant<>'' AND s.channel<>? AND s.caught_at>=? ORDER BY s.caught_at DESC LIMIT 6`);
+  WHERE (s.variant<>'' OR (s.power=5 AND s.mood=5)) AND s.caught_at>=? ORDER BY s.caught_at DESC LIMIT 10`);
 
 function liveData(pool, ch) {
   const sp = pool?.spawns;
@@ -65,10 +65,10 @@ function liveData(pool, ch) {
     idleChat,
     recent,
     buys: db.recentPurchases(now - BREAKING_MS).map((r) => ({ id: "b" + r.id, who: r.display, what: r.what, chan: r.chan, login: r.login })),
-    breaking: breakingQ.all(bid, now - BREAKING_MS).map((r) => {
+    breaking: breakingQ.all(now - BREAKING_MS).map((r) => {
       const d = data.get(r.deviation);
       const v = d?.variants.find((x) => x.name === r.variant);
-      return { id: r.id, who: r.display, name: d?.name || r.deviation, variant: `${v?.kind === "skin" ? "Skin" : "Variation"}: ${r.variant}`, rating: `${r.power}/${r.mood}`, chan: r.chan, login: r.login };
+      return { id: "s" + r.id, who: r.display, name: d?.name || r.deviation, variant: r.variant ? `${v?.kind === "skin" ? "Skin" : "Variation"}: ${r.variant}` : "", rating: `${r.power}/${r.mood}`, chan: r.chan, login: r.login };
     }),
     // imbon3s is on both lists again (B 2026-10-11)
     metas: db.leaderboard(5, "all").map((r) => ({ name: r.display, species: r.species, total: r.total })),
@@ -200,21 +200,23 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   let st=null;
   // ticker: scroll at a steady speed; rebuild only when the text changes
   let tickHtml="",x=0,runW=0,last=performance.now();
-  let seenNews=null;
+
   // Shop purchases go across the ticker ONCE (B 2026-10-09): a one-shot pass that starts at the right edge and
   // ends when it has scrolled off the left, then they're never shown again. Legendary news repeats for 3 minutes.
   let doneBuys=null, oneShot=null;
   // someone going live with the game: a one-shot BREAKING NEWS "NOW LIVE" pass too (B 2026-10-11), once per broadcast
-  let doneLive=null;
+  let doneLive=null; let doneNews=null;
   const liveKey=(c)=>"live:"+c.login+":"+(c.since||0);
   const goLiveHtml=(c)=>'<span class="it bn">🔴 NOW LIVE: <b>'+esc(c.name)+'</b> just went live with Deviation Hunt'+(c.game?' <span class="v">· '+esc(c.game)+'</span>':'')+' — come catch deviations!<span class="m">twitch.tv/'+esc(c.login)+'</span></span>';
   const buyHtml=(n)=>'<span class="it bn">🛒 <b>@'+esc(n.who)+'</b> bought <span class="v">'+esc(n.what)+'</span>'+(n.chan?'on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span>':'<span class="m">on the website</span>')+'</span>';
-  const legendHtml=(n)=>'<span class="it bn">🌟 <b>@'+esc(n.who)+'</b> secured a LEGENDARY <span class="v">✨ '+esc(n.name)+' ('+esc(n.variant)+')</span><span class="c">'+esc(n.rating)+'</span>on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span></span>';
+  const legendHtml=(n)=>'<span class="it bn">🌟 <b>@'+esc(n.who)+'</b> secured '+(n.variant?'a LEGENDARY <span class="v">✨ '+esc(n.name)+' ('+esc(n.variant)+')</span>':'a PERFECT <span class="v">'+esc(n.name)+'</span>')+'<span class="c">'+esc(n.rating)+(n.rating==="5/5"?' ⭐':'')+'</span>on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span></span>';
   function flash(){ const tk=document.getElementById("ticker"); tk.classList.remove("flash"); void tk.offsetWidth; tk.classList.add("flash"); }
   function setLabel(news){ const tk=document.getElementById("ticker"); tk.classList.toggle("news",news); document.getElementById("tlab").textContent=news?"BREAKING NEWS":"LIVE NOW"; }
   function setTicker(){
     const buys=st.buys||[];
     if(doneBuys===null) doneBuys=new Set(buys.map((b)=>b.id)); // purchases from before this page loaded aren't replayed
+    const news=st.breaking||[];
+    if(doneNews===null) doneNews=new Set(news.map((n)=>n.id));
     const lives=st.liveNow||[];
     if(doneLive===null) doneLive=new Set(lives.map(liveKey));      // streams already live when the page loaded aren't announced
     if(oneShot) return;                                       // a one-shot item is crossing the bar right now
@@ -226,19 +228,21 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
       x=run.parentNode.clientWidth; runW=0; run.style.transform="translateX("+x+"px)";
       return;
     }
+    // Legendaries (variants/skins) and perfect 5/5 catches on any stream: one pass each (B 2026-10-11)
+    const newNews=news.filter((n)=>!doneNews.has(n.id)).reverse();
+    if(newNews.length){
+      oneShot={ids:[],news:newNews.map((n)=>n.id)}; setLabel(true); flash(); tickHtml="";
+      const run=document.getElementById("run"); run.innerHTML=newNews.map(legendHtml).join('<span class="sep">🌟</span>');
+      x=run.parentNode.clientWidth; runW=0; run.style.transform="translateX("+x+"px)";
+      return;
+    }
     if(fresh.length){
       oneShot={ids:fresh.map((b)=>b.id)}; setLabel(true); flash(); tickHtml="";
       const run=document.getElementById("run"); run.innerHTML=fresh.map(buyHtml).join('<span class="sep">🛒</span>');
       x=run.parentNode.clientWidth; runW=0; run.style.transform="translateX("+x+"px)";
       return;
     }
-    const news=st.breaking||[];
-    // BREAKING NEWS while someone on another stream has just secured a Legendary (B 2026-10-08)
-    setLabel(news.length>0);
-    const ids=news.map((n)=>n.id).join(",");
-    if(seenNews!==null&&news.some((n)=>seenNews.indexOf(","+n.id+",")<0)) flash();
-    seenNews=","+ids+",";
-    if(news.length) return runTicker(news.map(legendHtml).join('<span class="sep">🌟</span>')+'<span class="sep">🌟</span>');
+    setLabel(false);
     const it=(st.liveNow||[]).map((c)=>'<span class="it">🔴 <b>'+esc(c.name)+'</b><span class="c">'+c.total.toLocaleString()+' deviation'+(c.total===1?'':'s')+' caught</span><span class="m">twitch.tv/'+esc(c.login)+'</span></span>');
     // only the channels live with the game right now (B 2026-10-08)
     const parts=it.length?it:['<span class="it"><span class="m">No other channels are live with the game right now</span></span>'];
@@ -255,7 +259,7 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     const dt=Math.min(100,t-last); last=t; const run=document.getElementById("run");
     if(oneShot){
       x-=dt*0.09; run.style.transform="translateX("+x.toFixed(1)+"px)";
-      if(x < -run.scrollWidth){ oneShot.ids.forEach((id)=>doneBuys.add(id)); (oneShot.live||[]).forEach((k)=>doneLive.add(k)); oneShot=null; if(st) setTicker(); }
+      if(x < -run.scrollWidth){ oneShot.ids.forEach((id)=>doneBuys.add(id)); (oneShot.live||[]).forEach((k)=>doneLive.add(k)); (oneShot.news||[]).forEach((k)=>doneNews.add(k)); oneShot=null; if(st) setTicker(); }
     } else if(runW){ x-=dt*0.09; if(-x>=runW)x+=runW; run.style.transform="translateX("+x.toFixed(1)+"px)"; }
     requestAnimationFrame(frame);
   }
