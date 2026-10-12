@@ -19,14 +19,14 @@ play("3", "CH"); backdate("3", 3 * H);                   // playing but no !dail
 assert.equal(game.unitNotices().length, 0);               // under an hour
 backdate("1", H + 60e3); backdate("2", H + 60e3);
 let n = game.unitNotices(); console.log(n);
-assert.deepEqual(n, [["CH", "🎁 Hourly gift (+1 Securement Unit, +1 Binding Grenade, +15 Starchrom): @Luna now 7 units · 315 Starchrom | @Bob now 7 units · 315 Starchrom 🎁"]]);
+assert.deepEqual(n, [["CH", "🎁 Hourly gift (+1 Securement Unit, +1 Binding Grenade, +25 Starchrom): @Luna now 7 units · 325 Starchrom | @Bob now 7 units · 325 Starchrom 🎁"]]);
 const u1 = units("1");
 const sc1 = game.loadPlayer("1").starchrom;
-// pods full: the hour still pays 15 Starchrom, no unit
+// pods full: the hour still pays 25 Starchrom, no unit
 { const p = game.loadPlayer("2"); p.extra_cap = -(game.unitCap(p) - game.podsUsed(p)); game.savePlayer(p);
   const sc = p.starchrom, u = p.units.standard; backdate("2", H + 60e3); play("1", "CH");
-  n = game.unitNotices(); assert.match(n[0][1], /^🎁 @Bob acquired an hourly Binding Grenade and 15 Starchrom! \(free units stop at 75 Securement Pods — !buy more with Starchrom\) You now have \d+ Lv\.1 grenades and [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1);
-  assert.equal(game.loadPlayer("2").starchrom, sc + 15); assert.equal(units("2"), u);
+  n = game.unitNotices(); assert.match(n[0][1], /^🎁 @Bob acquired an hourly Binding Grenade and 25 Starchrom! \(free units stop at 75 Securement Pods — !buy more with Starchrom\) You now have \d+ Lv\.1 grenades and [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1);
+  assert.equal(game.loadPlayer("2").starchrom, sc + 25); assert.equal(units("2"), u);
   const q = game.loadPlayer("2"); q.extra_cap = 0; game.savePlayer(q); }
 
 // Luna moves to another stream: her perks belong to CH's stream, so nothing until she types !hourly in CH2 (B 2026-10-07)
@@ -38,8 +38,8 @@ assert.match(game.timerCheck("1", "luna", "Luna"), /isn't on in this stream — 
 assert.match(game.hourly("1", "luna", "Luna", "CH2"), /Hourly perks on for this stream/);   // switched over: fresh hour
 backdate("1", H + 60e3);
 n = game.unitNotices(); console.log(n);
-assert.match(n[0][1], /^🎁 @Luna acquired an hourly Securement Unit, a Binding Grenade and 15 Starchrom! You now have \d+ Securement Units, \d+ Lv\.1 grenades and [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1); assert.equal(n[0][0], "CH2");
-assert.equal(units("1"), u1 + 1); assert.equal(game.loadPlayer("1").starchrom, sc1 + 15);
+assert.match(n[0][1], /^🎁 @Luna acquired an hourly Securement Unit, a Binding Grenade and 25 Starchrom! You now have \d+ Securement Units, \d+ Lv\.1 grenades and [\d,]+ Starchrom\. 🎁$/); assert.equal(n.length, 1); assert.equal(n[0][0], "CH2");
+assert.equal(units("1"), u1 + 1); assert.equal(game.loadPlayer("1").starchrom, sc1 + 25);
 
 // back in CH: her perks are on CH2's stream now, so CH pays nothing until !hourly there
 play("1", "CH"); backdate("1", H + 60e3);
@@ -81,7 +81,7 @@ console.log("hourly unit checks passed");
   game.loadPlayer("4", "nina", "Nina"); play("4", "CH");
   assert.equal(game.hourlyStatus(game.loadPlayer("4")).state, "needs_daily");
   assert.match(game.hourly("4", "nina", "Nina", "CH"), /Hourly perks on for this stream/);
-  assert.match(game.hourly("4", "nina", "Nina", "CH"), /already on for this stream — next free Securement Unit \+ 15 Starchrom in 60m/);
+  assert.match(game.hourly("4", "nina", "Nina", "CH"), /already on for this stream — next free Securement Unit \+ 25 Starchrom in 60m/);
   assert.equal(game.hourlyStatus(game.loadPlayer("4")).state, "running");
   backdate("4", H + 60e3); const u4 = units("4");
   assert.deepEqual(game.unitNotices().map((x) => x[0]), ["CH"]); assert.equal(units("4"), u4 + 1);
@@ -113,7 +113,7 @@ console.log("hourly unit checks passed");
 
 // !timercheck
 { streams = { CH: "k1" };
-  assert.match(game.timerCheck("7", "zed", "Zed"), /next free Securement Unit \+ 15 Starchrom arrives in 60m/);
+  assert.match(game.timerCheck("7", "zed", "Zed"), /next free Securement Unit \+ 25 Starchrom arrives in 60m/);
   assert.match(game.timerCheck("10", "idle", "Idle"), /isn't on in this stream — type !hourly here/);
   streams = {}; assert.match(game.timerCheck("7", "zed", "Zed"), /isn't on in this stream/);
   console.log("!timercheck checks passed"); }
@@ -123,7 +123,7 @@ console.log("hourly unit checks passed");
   game.loadPlayer("11", "sauce", "Sauce"); play("11", "CH"); game.startHourly("11", "sauce", "Sauce", "CH");
   backdate("11", 40 * 60e3);                                  // 40 min into the hour in CH
   play("11", "CH2"); assert.equal(game.startHourly("11", "sauce", "Sauce", "CH2"), true);
-  assert.match(game.HOURLY_ON_TEXT("11"), /moved to this stream — next free Securement Unit \+ 15 Starchrom in 20m/);
+  assert.match(game.HOURLY_ON_TEXT("11"), /moved to this stream — next free Securement Unit \+ 25 Starchrom in 20m/);
   backdate("11", 21 * 60e3); const u = units("11");
   const n = game.unitNotices(); assert.deepEqual(n.map((x) => x[0]), ["CH2"]); assert.equal(units("11"), u + 1);
   console.log("stream-hopping carry-over check passed"); }

@@ -82,7 +82,7 @@ const ECONOMY = {
   starterGrenades: 15,      // Level 1 Binding Grenades every player starts with (existing players got them too)
   hourlyGrenades: 1,        // Level 1 Binding Grenades with every hourly gift
   starterUnits: { standard: 5 },
-  hourlyStarchrom: 15,      // Starchrom that comes with each hourly unit (paid even when your pods are full)
+  hourlyStarchrom: 25,      // Starchrom that comes with each hourly unit (paid even when your pods are full)
   hourlyUnits: 1,            // free Securement Units every hour, only while the stream you did !daily in is live (no cap)
   daily: { starchrom: 100, units: { standard: 1 } },
   dailyResetTz: "America/Chicago", // !daily resets at midnight in this time zone
