@@ -64,7 +64,8 @@
     never mention the extra time).
   - OBS Source cards scale to fill the whole browser source (600×600 recommended).
   - Best specimen order: skin > variation > Legendary trait (Upper Hand, Power Rewind 2) > Skill+Activity > traits.
-  - Leaderboard: Top Streams (most deviations secured per channel) above one Top 100 with a Streamer tag.
+  - Leaderboard (/top) has 3 tabs (B 2026-10-12): Top Streams · Metas — Top 100 (viewers only, NO streamers) · Top Streamers
+    (everyone whose channel runs the game). Hash links #streams / #metas / #streamers.
   - Homepage stats: Channels · Metas · Deviations Secured · Deviations Attempted (all !secure throws) · Deviations ·
     Starchrom spent (capitalized).
 - 24/7 stream: /live/<login> page (live.js) + streamer/ (Docker: Xvfb+Chromium+ffmpeg). See docs/live-stream.md. The bot's

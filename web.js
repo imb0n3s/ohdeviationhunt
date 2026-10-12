@@ -502,16 +502,25 @@ function topPage() {
   const streamTable = streams.length
     ? `<div class="card"><table><tr><th>#</th><th>Stream</th><th>Deviations secured*</th><th>Spawns</th></tr>${streams.map((c, i) => `<tr><td>${i + 1}</td><td><a href="https://twitch.tv/${esc(c.login)}" target="_blank" rel="noopener">${esc(c.display_name)}</a></td><td>${fmt(c.catches)}</td><td>${fmt(c.spawns)}</td></tr>`).join("")}</table></div><p class="muted" style="font-size:.85em;margin-top:6px">* Everyone in chat throws at the same deviation, and more than one viewer can secure it — each viewer who catches it counts once. That's why a stream with a busy chat can have more deviations secured than spawns.</p>`
     : `<p>No deviations secured yet.</p>`;
-  // ranked by deviations caught in total, duplicates included (B 2026-10-08), then species collected
-  // imbon3s is back in the Top 100 (B 2026-10-11; was left off 2026-10-08)
-  const rows = db.leaderboard(100000, "all").sort((a, b) => b.total - a.total || b.species - a.species || b.variants - a.variants).slice(0, 100);
-  const tag = `<span style="display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#9146ff;color:#fff;font-size:.72rem;font-weight:700;vertical-align:middle">Streamer</span>`;
-  const metaTable = rows.length
-    ? `<div class="card"><table><tr><th>#</th><th>Meta</th><th>Caught</th><th>Deviations</th><th>Variants</th></tr>${rows.map((r, i) => `<tr><td>${i + 1}</td><td><a href="/u/${esc(r.login)}">${esc(r.display)}</a>${r.streamer ? tag : ""}</td><td><b>${fmt(r.total)}</b></td><td>${r.species}/${data.all().length}</td><td>${r.variants}/${data.all().reduce((n, d) => n + d.variants.length, 0)}</td></tr>`).join("")}</table></div>`
+  // ranked by deviations caught in total, duplicates included (B 2026-10-08), then species collected.
+  // Streamers (channels running the game) have their own tab, Top Streamers; the Top 100 is viewers only (B 2026-10-12)
+  const nDev = data.all().length, nVar = data.all().reduce((n, d) => n + d.variants.length, 0);
+  const ranked = (who) => db.leaderboard(100000, who).sort((a, b) => b.total - a.total || b.species - a.species || b.variants - a.variants).slice(0, 100);
+  const table = (rows, label) => rows.length
+    ? `<div class="card"><table><tr><th>#</th><th>${label}</th><th>Caught</th><th>Deviations</th><th>Variants</th></tr>${rows.map((r, i) => `<tr><td>${i + 1}</td><td><a href="/u/${esc(r.login)}">${esc(r.display)}</a></td><td><b>${fmt(r.total)}</b></td><td>${r.species}/${nDev}</td><td>${r.variants}/${nVar}</td></tr>`).join("")}</table></div>`
     : `<p>No one here yet.</p>`;
+  const tabs = [
+    ["streams", "🎥 Top Streams", `<p>The streams where viewers have secured the most deviations.</p>${streamTable}`],
+    ["metas", "🏆 Metas — Top 100", `<p>Ranked by how many deviations each Meta has caught (duplicates count). Streamers are on the Top Streamers tab.</p>${table(ranked("viewers"), "Meta")}`],
+    ["streamers", "⭐ Top Streamers", `<p>Streamers running Deviation Hunt on their channel, ranked by how many deviations they've caught themselves (duplicates count).</p>${table(ranked("streamers"), "Streamer")}`],
+  ];
   return page("Leaderboard", `<h1>Leaderboard</h1>
-<h2>🎥 Top Streams</h2><p>The streams where viewers have secured the most deviations.</p>${streamTable}
-<h2>🏆 Metas — Top 100</h2><p>Ranked by how many deviations each Meta has caught (duplicates count). Streamers running Deviation Hunt are tagged.</p>${metaTable}`);
+<style>.lbtabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 16px}.lbtabs a{padding:9px 16px;border-radius:999px;background:var(--card);border:1px solid #2a3644;color:var(--muted);font-weight:700;text-decoration:none}.lbtabs a.on{background:var(--accent);border-color:var(--accent);color:#04121c}.lbtab{display:none}.lbtab.on{display:block}</style>
+<div class="lbtabs">${tabs.map(([id, t], k) => `<a href="#${id}" data-t="${id}"${k === 0 ? ' class="on"' : ""}>${t}</a>`).join("")}</div>
+${tabs.map(([id, t, body], k) => `<section class="lbtab${k === 0 ? " on" : ""}" id="tab-${id}"><h2>${t}</h2>${body}</section>`).join("\n")}
+<script>(function(){function show(id){if(!document.getElementById("tab-"+id))return;document.querySelectorAll(".lbtab").forEach(function(s){s.classList.toggle("on",s.id==="tab-"+id)});document.querySelectorAll(".lbtabs a").forEach(function(a){a.classList.toggle("on",a.dataset.t===id)});}
+document.querySelectorAll(".lbtabs a").forEach(function(a){a.addEventListener("click",function(e){e.preventDefault();show(a.dataset.t);history.replaceState(null,"","#"+a.dataset.t);});});
+show((location.hash||"#streams").slice(1));})();</script>`);
 }
 
 function createApp(pool) {
