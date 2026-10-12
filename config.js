@@ -12,6 +12,8 @@ const cfg = {
   TWITCH_CLIENT_ID: req("TWITCH_CLIENT_ID"),
   TWITCH_CLIENT_SECRET: req("TWITCH_CLIENT_SECRET"),
   ADMIN_KEY: req("ADMIN_KEY"),
+  // Twitch logins that can see every trade and reverse them on /trade/admin (comma separated)
+  OWNER_LOGINS: (process.env.OWNER_LOGINS || "imbon3s").toLowerCase().split(/[\s,]+/).filter(Boolean),
   SESSION_SECRET: process.env.SESSION_SECRET || req("ADMIN_KEY"),
   DATA_DIR: process.env.DATA_DIR || "./data",
   BOT_NAME: process.env.BOT_NAME || "Deviation Hunt",

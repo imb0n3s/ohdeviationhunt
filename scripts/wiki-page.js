@@ -121,6 +121,14 @@ ${table(["Command", "Effect"], [
 ])}
 `));
 
+out.push(box("Trading", "Swap deviations with other players", `
+Trade deviations one-to-one on the website. Sign in with Twitch, open another player's Securement Pods page and click '''Trade with …''', or go to '''Trades''' in the site menu.
+* Offer '''up to 5''' of your deviations for '''up to 5''' of theirs. You can have 5 offers waiting at a time; an offer expires after '''3 days'''.
+* They '''accept''' or '''decline''' on their Trades page; you can '''cancel''' an offer you sent.
+* On accept everything is checked again (you both still own every specimen and have Securement Pod room) and the swap happens all at once, or not at all.
+* A traded deviation keeps its Skill and Activity Rating, its traits and its Variation or Skin. Every trade is saved in your '''Trade Log'''.
+`));
+
 out.push(box("Shop", "Securement Units, Binding Grenades, Capture Soup & Gloves", `
 Buy with ${cmd("!buy")} in chat, in the Securement Pods panel's '''Shop''' tab, or on your own collection page (signed in with Twitch). Buying gloves in the panel or on the website is announced in the chat of the live stream you're playing in.
 ${table(["Item", "Description", "Price"], [

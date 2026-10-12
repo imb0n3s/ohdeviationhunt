@@ -90,7 +90,7 @@
   threw !secure catches it 100% (donated, never threw = spent); not filled = still spent, NO refunds (B 2026-10-08), but each donor adds +1.75% catch chance for every donor who throws
   (ECONOMY.legendaryPoolPerDonor; Spawns.poolBonus). ECONOMY.legendaryPool*, Spawns.donate.
 - !hunt spawn is always random (B 2026-10-06 removed picking a deviation/variation/skin; data.findWithVariant is unused).
-- Trading (website, one-to-one) is built on branch `trading` (NOT merged/live; B 2026-10-04 "don't publish yet"). To launch: merge trading into main and push.
+- Trading (website, one-to-one) is LIVE since 2026-10-12 (B: "Turn on trading, don't add bits yet") — merged from branch `trading` into main. trade.js; /trade, /trade/new, /trade/log, /trade/admin; nav "Trades"; homepage + wiki have a Trading section.
 - Hourly perks (B 2026-10-07): belong to ONE stream — switched on by !hourly, the first !secure, or !daily in that live
   stream (players.hourly_stream). Another channel: !hourly or !secure there moves them and the timer carries over (no restart; B 2026-10-08). Next broadcast needs !hourly again. !timercheck / !hourlycheck (mods). The panel zip still says "Type !daily…" — B: leave the panel/extension review alone, don't re-upload for this.
 - Gloves wear out + scrap value (B 2026-10-08): scrapping a deviation = 300 Starchrom (ECONOMY.destroyValue). Savior Gloves last 30
@@ -114,3 +114,6 @@
 - Deviation data source (2026-10-10): the wiki page moved from Deviation_Main_Page to "Deviation" (the old title is a redirect);
   config DEVIATION_PAGE defaults to "Deviation" and data.js follows #REDIRECTs. New wiki variations/skins join the game on the
   next refresh (6h) or deploy. Added that way: Mini Wonder skin "Collapse Meowster" (B 2026-10-10).
+  Trading has a full per-player Trade Log (/trade/log, snapshots of each specimen as traded) and an owner page
+  /trade/admin (Twitch logins in env OWNER_LOGINS, default imbon3s) that can Reverse an accepted trade while every
+  specimen is still with whoever received it.

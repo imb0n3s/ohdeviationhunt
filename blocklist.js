@@ -40,6 +40,7 @@ function purge() {
     db.tx(() => {
       for (const t of ["players", "catches", "specimens", "scrapped", "daily_claims", "bits_tx"]) R.prepare(`DELETE FROM ${t} WHERE user_id=?`).run(id);
       R.prepare(`DELETE FROM channels WHERE broadcaster_id=?`).run(id);
+      try { R.prepare(`DELETE FROM trades WHERE from_user=? OR to_user=?`).run(id, id); } catch { /* trades table not created yet */ }
       R.prepare(`DELETE FROM spawn_log WHERE broadcaster_id=?`).run(id);
       R.prepare(`DELETE FROM active_spawns WHERE broadcaster_id=?`).run(id);
       R.prepare(`DELETE FROM settings WHERE key LIKE ?`).run(`%:${id}`);

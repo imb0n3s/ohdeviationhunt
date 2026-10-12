@@ -111,6 +111,21 @@ Only the broadcaster and moderators can use these.
 
 <div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
 <div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
+<span style="color:#0ea5e9; font-weight:800;">Trading</span>
+<span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Swap deviations with other players</span>
+</div>
+<div style="padding:14px 20px 18px; border-top:1px solid #1f2a35; color:#cfd6df; line-height:1.7;">
+Trade deviations one-to-one on the website. Sign in with Twitch, open another player's Securement Pods page and click '''Trade with …''', or go to '''Trades''' in the site menu.
+* Offer '''up to 5''' of your deviations for '''up to 5''' of theirs. You can have 5 offers waiting at a time; an offer expires after '''3 days'''.
+* They '''accept''' or '''decline''' on their Trades page; you can '''cancel''' an offer you sent.
+* On accept everything is checked again (you both still own every specimen and have Securement Pod room) and the swap happens all at once, or not at all.
+* A traded deviation keeps its Skill and Activity Rating, its traits and its Variation or Skin. Every trade is saved in your '''Trade Log'''.
+</div>
+</div>
+
+
+<div class="pn-box" style="background:#0d1319; border:1px solid #1f2a35; border-radius:14px; overflow:hidden; margin-bottom:14px;">
+<div style="display:flex; align-items:center; gap:14px; padding:16px 18px;">
 <span style="color:#0ea5e9; font-weight:800;">Shop</span>
 <span style="font-weight:700; color:#e6edf3; font-size:16px; flex:1;">Securement Units, Binding Grenades, Capture Soup & Gloves</span>
 </div>
