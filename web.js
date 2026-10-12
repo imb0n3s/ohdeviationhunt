@@ -514,7 +514,7 @@ function topPage() {
 <style>.lbpair{display:grid;grid-template-columns:1fr 1fr;column-gap:18px;align-items:start;grid-template-areas:"h1 h2" "p1 p2" "t1 t2"}.lbpair h2,.lbpair p{margin-bottom:10px}.lbpair .card{padding:10px 12px}.lbpair th,.lbpair td{padding:8px 6px}@media(max-width:900px){.lbpair{grid-template-columns:1fr;grid-template-areas:"h1" "p1" "t1" "h2" "p2" "t2"}}</style>
 <h2>🎥 Top Streams</h2><p>The streams where viewers have secured the most deviations.</p>${streamTable}
 <div class="lbpair"><h2 style="grid-area:h1">🏆 Metas — Top 100</h2><p style="grid-area:p1">Ranked by how many deviations each Meta has caught (duplicates count).</p><div style="grid-area:t1">${table(ranked("viewers"), "Meta")}</div>
-<h2 style="grid-area:h2">⭐ Top Streamers</h2><p style="grid-area:p2">Streamers running Deviation Hunt, ranked the same way.</p><div style="grid-area:t2">${table(ranked("streamers"), "Streamer")}</div></div>`);
+<h2 style="grid-area:h2">⭐ Top Streamers</h2><p style="grid-area:p2">Ranked by how many deviations each Streamer has caught (duplicates count).</p><div style="grid-area:t2">${table(ranked("streamers"), "Streamer")}</div></div>`);
 }
 
 function createApp(pool) {
