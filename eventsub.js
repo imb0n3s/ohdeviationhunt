@@ -85,10 +85,22 @@ class Conduit {
       if (isReconnect) { const old = this.ws; this.ws = ws; try { old.close(); } catch {} }
       else {
         // Point the conduit's single shard at this socket. Subscriptions survive across sessions.
-        try {
-          await twitch.helix("PATCH", "/eventsub/conduits/shards", { as: "app", body: { conduit_id: this.conduitId, shards: [{ id: "0", transport: { method: "websocket", session_id: this.sessionId } }] } });
-          console.log(`[eventsub] shard attached, ${this.subs.size} channels live`);
-        } catch (e) { console.error("[eventsub] shard update failed:", e.message); }
+        // Retried (B 2026-10-12: after a redeploy chat went silent — if this PATCH fails once, no chat reaches the bot
+        // until the next restart). Twitch can also answer 202 with an error per shard, so check that too.
+        let attached = false;
+        for (let tries = 1; tries <= 6 && !attached && ws === this.ws; tries++) {
+          try {
+            const r = await twitch.helix("PATCH", "/eventsub/conduits/shards", { as: "app", body: { conduit_id: this.conduitId, shards: [{ id: "0", transport: { method: "websocket", session_id: this.sessionId } }] } });
+            const err = (r && r.errors && r.errors[0]) || null;
+            if (err) throw new Error(`${err.code || ""} ${err.message || JSON.stringify(err)}`.trim());
+            attached = true;
+            console.log(`[eventsub] shard attached, ${this.subs.size} channels live`);
+          } catch (e) {
+            console.error(`[eventsub] shard update failed (try ${tries}/6):`, e.message);
+            await new Promise((res) => setTimeout(res, 3000 * tries));
+          }
+        }
+        if (!attached && ws === this.ws) { console.error("[eventsub] shard never attached — reconnecting the socket"); try { ws.terminate(); } catch {} }
       }
       this._resolveReady?.();
       return;
