@@ -77,6 +77,7 @@
   /ext/bits/complete; who, what, which stream; B 2026-10-09).
   A channel going live with the game gets the same one-shot BREAKING NEWS pass: "🔴 NOW LIVE: X just went live with Deviation Hunt"
   (once per broadcast, keyed login+startedAt; streams already live when the page loads aren't announced; B 2026-10-11).
+  Accepted trades (not reversed) also get a one-shot BREAKING NEWS pass: "🤝 TRADE: @A traded X (+N more) to @B for Y" (live.js recentTrades; B 2026-10-12).
   Leaderboard box rotates every 7.5s (B 2026-10-09), one view at a time: Collection Champions (x/61, ⭐ when they have all) -> Most Collected (top 5 by total caught)
   -> Top Streams (top 5) -> Shop as 3 slides: Securement (units + Capture Soup) -> Binding Grenades -> Gloves (flashes in, shows total Starchrom spent; B 2026-10-09/10). imbon3s is back on every list (website Top 100 + 24/7 lists, B 2026-10-11).
   OBS progress bar (B 2026-10-10): <obs link>/bar (overlay.js barPage; demo at /obs-source/demo/bar) — see-through bar filling from

@@ -42,6 +42,22 @@ const breakingQ = db.raw.prepare(`SELECT s.id, s.deviation, s.variant, s.power, 
   FROM specimens s JOIN players p ON p.user_id=s.user_id JOIN channels c ON c.broadcaster_id=s.channel
   WHERE (s.variant<>'' OR (s.power=5 AND s.mood=5)) AND s.caught_at>=? ORDER BY s.caught_at DESC LIMIT 10`);
 
+// accepted trades in the last few minutes -> one-shot BREAKING NEWS on the ticker (B 2026-10-12)
+let tradesQ = null;
+function recentTrades(since) {
+  try {
+    if (!tradesQ) tradesQ = db.raw.prepare(`SELECT t.id, t.give_snap, t.get_snap, pf.display AS a, pt.display AS b FROM trades t
+      JOIN players pf ON pf.user_id=t.from_user JOIN players pt ON pt.user_id=t.to_user
+      WHERE t.status='accepted' AND t.reversed_at IS NULL AND t.updated_at>=? ORDER BY t.updated_at DESC LIMIT 6`);
+    const label = (json) => {
+      const list = JSON.parse(json || "[]").filter(Boolean);
+      const one = (x) => { const d = data.get(x.deviation); return (d?.name || x.deviation) + (x.variant ? ` (✨ ${x.variant})` : ""); };
+      return list.length ? one(list[0]) + (list.length > 1 ? ` +${list.length - 1} more` : "") : "";
+    };
+    return tradesQ.all(since).map((r) => ({ id: "t" + r.id, a: r.a, b: r.b, gave: label(r.give_snap), got: label(r.get_snap) }));
+  } catch { return []; } // trades table not there yet
+}
+
 function liveData(pool, ch) {
   const sp = pool?.spawns;
   const bid = ch.broadcaster_id;
@@ -64,6 +80,7 @@ function liveData(pool, ch) {
     nextAt: sp?.nextAt?.get(bid) || null,
     idleChat,
     recent,
+    trades: recentTrades(now - BREAKING_MS),
     buys: db.recentPurchases(now - BREAKING_MS).map((r) => ({ id: "b" + r.id, who: r.display, what: r.what, chan: r.chan, login: r.login })),
     breaking: breakingQ.all(now - BREAKING_MS).map((r) => {
       const d = data.get(r.deviation);
@@ -208,6 +225,8 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
   let doneLive=null; let doneNews=null;
   const liveKey=(c)=>"live:"+c.login+":"+(c.since||0);
   const goLiveHtml=(c)=>'<span class="it bn">🔴 NOW LIVE: <b>'+esc(c.name)+'</b> just went live with Deviation Hunt'+(c.game?' <span class="v">· '+esc(c.game)+'</span>':'')+' — come catch deviations!<span class="m">twitch.tv/'+esc(c.login)+'</span></span>';
+  const tradeHtml=(n)=>'<span class="it bn">🤝 TRADE: <b>@'+esc(n.a)+'</b> traded <span class="v">'+esc(n.gave)+'</span> to <b>@'+esc(n.b)+'</b> for <span class="v">'+esc(n.got)+'</span></span>';
+  let doneTrades=null;
   const buyHtml=(n)=>'<span class="it bn">🛒 <b>@'+esc(n.who)+'</b> bought <span class="v">'+esc(n.what)+'</span>'+(n.chan?'on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span>':'<span class="m">on the website</span>')+'</span>';
   const legendHtml=(n)=>'<span class="it bn">🌟 <b>@'+esc(n.who)+'</b> secured '+(n.variant?'a LEGENDARY <span class="v">✨ '+esc(n.name)+' ('+esc(n.variant)+')</span>':'a PERFECT <span class="v">'+esc(n.name)+'</span>')+'<span class="c">'+esc(n.rating)+(n.rating==="5/5"?' ⭐':'')+'</span>on <b>'+esc(n.chan)+'</b><span class="m">twitch.tv/'+esc(n.login)+'</span></span>';
   function flash(){ const tk=document.getElementById("ticker"); tk.classList.remove("flash"); void tk.offsetWidth; tk.classList.add("flash"); }
@@ -217,6 +236,8 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     if(doneBuys===null) doneBuys=new Set(buys.map((b)=>b.id)); // purchases from before this page loaded aren't replayed
     const news=st.breaking||[];
     if(doneNews===null) doneNews=new Set(news.map((n)=>n.id));
+    const trades=st.trades||[];
+    if(doneTrades===null) doneTrades=new Set(trades.map((n)=>n.id));
     const lives=st.liveNow||[];
     if(doneLive===null) doneLive=new Set(lives.map(liveKey));      // streams already live when the page loaded aren't announced
     if(oneShot) return;                                       // a one-shot item is crossing the bar right now
@@ -233,6 +254,13 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     if(newNews.length){
       oneShot={ids:[],news:newNews.map((n)=>n.id)}; setLabel(true); flash(); tickHtml="";
       const run=document.getElementById("run"); run.innerHTML=newNews.map(legendHtml).join('<span class="sep">🌟</span>');
+      x=run.parentNode.clientWidth; runW=0; run.style.transform="translateX("+x+"px)";
+      return;
+    }
+    const newTrades=trades.filter((n)=>!doneTrades.has(n.id)).reverse();
+    if(newTrades.length){
+      oneShot={ids:[],trades:newTrades.map((n)=>n.id)}; setLabel(true); flash(); tickHtml="";
+      const run=document.getElementById("run"); run.innerHTML=newTrades.map(tradeHtml).join('<span class="sep">🤝</span>');
       x=run.parentNode.clientWidth; runW=0; run.style.transform="translateX("+x+"px)";
       return;
     }
@@ -259,7 +287,7 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     const dt=Math.min(100,t-last); last=t; const run=document.getElementById("run");
     if(oneShot){
       x-=dt*0.09; run.style.transform="translateX("+x.toFixed(1)+"px)";
-      if(x < -run.scrollWidth){ oneShot.ids.forEach((id)=>doneBuys.add(id)); (oneShot.live||[]).forEach((k)=>doneLive.add(k)); (oneShot.news||[]).forEach((k)=>doneNews.add(k)); oneShot=null; if(st) setTicker(); }
+      if(x < -run.scrollWidth){ oneShot.ids.forEach((id)=>doneBuys.add(id)); (oneShot.live||[]).forEach((k)=>doneLive.add(k)); (oneShot.news||[]).forEach((k)=>doneNews.add(k)); (oneShot.trades||[]).forEach((k)=>doneTrades.add(k)); oneShot=null; if(st) setTicker(); }
     } else if(runW){ x-=dt*0.09; if(-x>=runW)x+=runW; run.style.transform="translateX("+x.toFixed(1)+"px)"; }
     requestAnimationFrame(frame);
   }
