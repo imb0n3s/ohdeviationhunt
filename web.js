@@ -41,7 +41,7 @@ const fmt = (n) => Number(n).toLocaleString("en-US");
 function page(title, body) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title === cfg.BOT_NAME ? "Deviation Hunt — the Once Human deviation-catching game for Twitch chat" : `${title} · Deviation Hunt`)}</title>
-<meta name="description" content="Deviation Hunt (OH Deviation Hunt): catch Once Human deviations in Twitch chat with !secure. Collect all 61, find Legendary variations and skins, climb the leaderboard, and add the free game to your own stream.">
+<meta name="description" content="Deviation Hunt (OH Deviation Hunt): catch Once Human deviations in Twitch chat with !secure. Collect every deviation, find Legendary variations and skins, climb the leaderboard, and add the free game to your own stream.">
 <meta property="og:title" content="Deviation Hunt — catch Once Human deviations in Twitch chat"><meta property="og:type" content="website">
 <meta property="og:description" content="A free Twitch chat game: deviations appear while the stream is live, type !secure to catch them and build your collection."><meta property="og:site_name" content="Deviation Hunt">
 <style>

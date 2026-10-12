@@ -17,7 +17,7 @@ const BOT = "ohdeviationhunt";
 const SC = "Starchrom";
 const pct = (x) => `${Math.round(x * 1000) / 10}%`;
 const fmt = (n) => Number(n).toLocaleString("en-US");
-const file = (img) => decodeURIComponent(String(img).split("/").pop());
+const file = (img) => decodeURIComponent(String(img).split("?")[0].split("/").pop());
 
 // ---------- building blocks in the wiki's own style ----------
 const box = (tag, title, body, right = "") => `

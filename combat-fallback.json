@@ -260,7 +260,13 @@
    "Way of Winter: Psi",
    "Monolith: N/A"
   ],
-  "variants": []
+  "variants": [
+   {
+    "name": "Vacation",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/2/2c/Deviation_Director_Fox_-_Vacation.png"
+   }
+  ]
  },
  {
   "id": "discoball",
@@ -347,6 +353,20 @@
    "Manibus: Securement Units",
    "Way of Winter: Securement Units",
    "Monolith: Arachsiam"
+  ],
+  "variants": []
+ },
+ {
+  "id": "duet",
+  "name": "Duet",
+  "category": "territory",
+  "rarity": "uncommon",
+  "img": "https://ohwikiguide.com/Special:FilePath/Deviation_Duet.png?width=600",
+  "fn": "TBD",
+  "drops": [
+   "Manibus: TBD",
+   "Way of Winter: TBD",
+   "Monolith: TBD"
   ],
   "variants": []
  },
@@ -601,6 +621,11 @@
     "name": "Infrasonic Illusion",
     "kind": "variation",
     "img": "https://ohwikiguide.com/images/9/97/Deviation_Gingerbread_House_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Oceanic Cottage",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/5/53/Deviation_Gingerbread_House_-_Oceanic_Cottage.png"
    }
   ]
  },
@@ -696,6 +721,11 @@
     "name": "Byte Heart",
     "kind": "skin",
     "img": "https://ohwikiguide.com/images/a/aa/Deviation_H37_-_Byte_Heart.png"
+   },
+   {
+    "name": "Submarine Attitude",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/a/a8/Deviation_H37_-_Submarine_Attitude.png"
    }
   ]
  },
@@ -1328,6 +1358,11 @@
     "name": "Aberrant Progeny",
     "kind": "variation",
     "img": "https://ohwikiguide.com/images/c/c2/Deviation_Rebecca_-_Aberrant_Progeny.png"
+   },
+   {
+    "name": "Chaos",
+    "kind": "variation",
+    "img": "https://ohwikiguide.com/Special:FilePath/Deviation_Rebecca_-_Chaos.png?width=600"
    }
   ]
  },
@@ -1348,6 +1383,11 @@
     "name": "Wandering Witch",
     "kind": "variation",
     "img": "https://ohwikiguide.com/images/8/80/Deviation_Shattered_Maiden_-_Wandering_Witch.png"
+   },
+   {
+    "name": "Sailor Suit",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/c/ce/Deviation_Shattered_Maiden_-_Sailor_Suit.png"
    }
   ]
  },
@@ -1373,6 +1413,11 @@
     "name": "Infrasonic Illusion",
     "kind": "variation",
     "img": "https://ohwikiguide.com/images/c/ca/Deviation_Snow_Globe_-_Infrasonic_Illusion.png"
+   },
+   {
+    "name": "Shipwreck Treasure",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/6/6b/Deviation_Snow_Globe_-_Shipwreck_Treasure.png"
    }
   ]
  },
@@ -1442,6 +1487,11 @@
     "name": "White Cliff Remnants",
     "kind": "variation",
     "img": "https://ohwikiguide.com/images/b/b6/Deviation_Space_Turner_-_White_Cliff_Remnants.png"
+   },
+   {
+    "name": "Water Cube",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/e/ee/Deviation_Space_Turner_-_Water_Cube.png"
    }
   ]
  },
@@ -1612,6 +1662,11 @@
     "name": "Abyssal Whale Dream",
     "kind": "skin",
     "img": "https://ohwikiguide.com/images/3/3b/Whale_Pup_Abyssal_Whale_Dream.png"
+   },
+   {
+    "name": "Don't Get Wet",
+    "kind": "skin",
+    "img": "https://ohwikiguide.com/images/a/ae/Deviation_Whalepup_-_Don%27t_Get_Wet.png"
    }
   ]
  },

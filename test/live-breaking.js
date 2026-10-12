@@ -12,11 +12,11 @@ const assert = require("assert");
   const add = (variant, chan, at) => db.q.addSpecimen.run({ user_id: "P", deviation: d.id, variant, power: 5, mood: 4, t1: null, t1_level: null, t2: null, t3: null, caught_at: at, channel: chan });
   add(v.name, "OTHER", Date.now());            // shows
   add("", "OTHER", Date.now());                 // normal catch: no
-  add(v.name, "BOT", Date.now());               // caught on the 24/7 stream itself: no
+  add(v.name, "BOT", Date.now() - 1000);        // caught on the 24/7 stream itself: shows too (B 2026-10-11)
   add(v.name, "OTHER", Date.now() - 10 * 60e3); // too old: no
   const ch = db.getChannelByLogin("ohdeviationhunt");
   const st = live.liveData({ spawns: null }, ch);
-  assert.equal(st.breaking.length, 1);
+  assert.equal(st.breaking.length, 2);
   assert.deepEqual({ ...st.breaking[0], id: 0 }, { id: 0, who: "MetaRyder", name: d.name, variant: "Variation: " + v.name, rating: "5/4", chan: "luna_raventhorn", login: "luna_raventhorn" });
   // a shop purchase shows too (any stream), with the stream the buyer is playing in
   db.q.touchActive.run("OTHER", Date.now(), null, "P");
@@ -30,6 +30,6 @@ const assert = require("assert");
     await p.goto(`http://127.0.0.1:${srv.address().port}/live/ohdeviationhunt`); await p.waitForTimeout(3000);
     await p.screenshot({ path: process.argv[3], clip: { x: 0, y: 960, width: 1920, height: 120 } }); console.log(await p.evaluate(() => document.getElementById("run").textContent.slice(0, 260))); await b.close(); srv.close();
   }
-  console.log("breaking news: only Legendaries from other streams in the last 3 minutes ✓");
+  console.log("breaking news: Legendaries and 5/5s from any stream in the last 3 minutes ✓");
   process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });
