@@ -1634,7 +1634,7 @@
      "minLevel": null,
      "maxLevel": null,
      "effects": [
-      "When the Extradimensional Cat in the territory is active, this Deviation might yield an extra Lightweight item during production."
+      "Territory Deviations gain +10% Movement Speed"
      ],
      "fuse": "Leopard"
     },
