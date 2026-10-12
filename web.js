@@ -413,7 +413,7 @@ ${owner ? `<p class="snote ok" style="text-align:left">♻️ Have duplicates? C
 <div id="shop">${webShop(p, live, viewer, msg)}</div>
 <p>Empty Securement Units: <b>${units.standard || 0}</b> · 💣 Binding Grenades: <b>${esc(game.grenadeText(live))}</b> · Securement Pods used: <b>${game.podsUsed(live)}/${game.unitCap(live)}</b> (caught + empty)${(() => { const g = game.bestGlove(live); return g ? ` · 🧤 <b style="color:${g.color}">${esc(g.name)}</b> (+${Math.round(g.bonus * 100)}% catch, ${live.glove_left} catch${live.glove_left === 1 ? "" : "es"} left)` : ""; })()} · next free unit: ${game.nextUnitIn(live)} (1 every hour while you're in a live stream, after today's <kbd>!daily</kbd>)</p>
 ${cards}
-${scrapHelp()}`);
+${owner ? scrapHelp() : ""}`);
 }
 
 // How to scrap — lives on the Securement Pods pages (moved off the homepage, B 2026-10-12)
