@@ -46,6 +46,14 @@ async function main() {
   const spawns = new Spawns((bid, text) => pool.send(bid, text));
   pool.spawns = spawns;
   pool.onChat = makeHandler(pool, spawns);
+  // streamer removed the game on Twitch's side -> off Where to Play + leaderboards immediately (B 2026-10-13)
+  pool.onRemoved = (bid, why) => {
+    const c = db.getChannel(bid);
+    if (!c || !c.enabled) return;
+    db.removeChannel(bid);
+    try { spawns.setLive(bid, false); } catch {}
+    console.log(`[channels] ${c.login} removed the game (${why}) — taken off Where to Play and the leaderboards`);
+  };
   spawns.restore();
 
   // The bot's own channel (OHDeviationHunt) is a game channel too, so its 24/7 stream (/live/<bot login>)
@@ -96,6 +104,7 @@ async function main() {
   pool.refreshLive();
   setInterval(pool.refreshLive, cfg.LIVE_POLL_SECONDS * 1000).unref();
   setInterval(() => spawns.tick(), 15 * 1000).unref();
+  setInterval(() => pool.recheck().catch((e) => console.error("[eventsub] recheck:", e.message)), 10 * 60 * 1000).unref();
   // hourly free Securement Units (+ chat notice) for people who did !daily in a live stream
   const { unitNotices, setStreamLookup, refundAllMisses, setAnnouncer } = require("./game");
   setAnnouncer((ch, text) => pool.send(ch, text));

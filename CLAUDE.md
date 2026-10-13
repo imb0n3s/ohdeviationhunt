@@ -90,6 +90,10 @@
 - Legendary pool (B 2026-10-08): !donate up to 750 Starchrom per viewer while a shown Legendary is loose; at 10,000 every donor who
   threw !secure catches it 100% (donated, never threw = spent); not filled = still spent, NO refunds (B 2026-10-08), but each donor adds +1.75% catch chance for every donor who throws
   (ECONOMY.legendaryPoolPerDonor; Spawns.poolBonus). ECONOMY.legendaryPool*, Spawns.donate.
+- Removing the game (B 2026-10-13): besides !hunt leave / !leave / website Remove, a Twitch-side removal (EventSub revocation
+  authorization_revoked / user_removed / moderator_removed, or a 403 NEEDS_PERMISSION on startup or the 10-min pool.recheck)
+  disables the channel at once (index.js pool.onRemoved) -> gone from Where to Play, Top Streams, Top Streamers, 24/7 lists.
+  Safety: >3 refusals in one pass = our auth problem, nothing is removed (eventsub.js dropDenied).
 - !hunt spawn is always random (B 2026-10-06 removed picking a deviation/variation/skin; data.findWithVariant is unused).
 - Trading (website, one-to-one) is LIVE since 2026-10-12 (B: "Turn on trading, don't add bits yet") — merged from branch `trading` into main. trade.js; /trade, /trade/new, /trade/log, /trade/admin; nav "Trades"; homepage + wiki have a Trading section.
 - Hourly perks (B 2026-10-07): belong to ONE stream — switched on by !hourly, the first !secure, or !daily in that live

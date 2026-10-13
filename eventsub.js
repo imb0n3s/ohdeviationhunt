@@ -110,8 +110,12 @@ class Conduit {
     if (type === "session_reconnect") return this.connect(msg.payload.session.reconnect_url, true);
     if (type === "revocation") {
       const bid = msg.payload.subscription.condition.broadcaster_user_id;
-      console.warn(`[eventsub] subscription revoked for ${bid}: ${msg.payload.subscription.status}`);
+      const status = msg.payload.subscription.status;
+      console.warn(`[eventsub] subscription revoked for ${bid}: ${status}`);
       this.subs.delete(bid);
+      // the streamer took the game off their Twitch (revoked the app, unmodded/banned the bot, deleted the account):
+      // drop the channel right away so it leaves Where to Play and the leaderboards (B 2026-10-13)
+      if (["authorization_revoked", "user_removed", "moderator_removed"].includes(status)) this.onRemoved?.(bid, status);
       return;
     }
     if (type === "notification") {
@@ -158,11 +162,36 @@ class Conduit {
     if (!bot) return console.log("[eventsub] bot account not set up yet — open /setup?key=... in your browser");
     if (!this.conduitId) await this.init();
     const ids = new Set([bot.user_id, ...db.listEnabledChannels().map((c) => c.broadcaster_id)]);
-    let ok = 0;
+    let ok = 0; const denied = [];
     for (const id of ids) {
-      try { await this.join(id); ok++; } catch (e) { console.error(`[eventsub] join ${id} failed:`, e.message); }
+      try { await this.join(id); ok++; } catch (e) {
+        console.error(`[eventsub] join ${id} failed:`, e.message);
+        if (e.message === "NEEDS_PERMISSION" && id !== bot.user_id) denied.push(id);
+      }
     }
     console.log(`[eventsub] listening in ${ok}/${ids.size} channels`);
+    this.dropDenied(denied, ok);
+  }
+
+  // Every few minutes: any enabled channel we're not listening in gets one more try; if Twitch says the game
+  // no longer has permission there, the streamer removed it — take the channel off the lists.
+  async recheck() {
+    const bot = db.getBotAccount();
+    if (!bot || !this.conduitId) return;
+    const denied = [];
+    for (const c of db.listEnabledChannels()) {
+      if (c.broadcaster_id === bot.user_id || this.subs.has(c.broadcaster_id)) continue;
+      try { await this.join(c.broadcaster_id); console.log(`[eventsub] re-joined ${c.login}`); }
+      catch (e) { if (e.message === "NEEDS_PERMISSION") denied.push(c.broadcaster_id); }
+    }
+    this.dropDenied(denied, this.subs.size);
+  }
+
+  // safety: if Twitch refuses lots of channels at once it's an auth problem on OUR side, not streamers leaving
+  dropDenied(denied, okCount) {
+    if (!denied.length) return;
+    if (denied.length > 3 || okCount === 0) return console.error(`[eventsub] ${denied.length} channels refused at once — not removing them (check the bot/app tokens)`);
+    for (const id of denied) this.onRemoved?.(id, "needs_permission");
   }
 }
 
