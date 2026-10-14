@@ -50,13 +50,14 @@ const ITEMS = [
     webOnly: true,
     aliases: g.level === 1 ? ["grenade", "grenades", "grenade1", "grenades1", "bindinggrenade", "bindinggrenades", "bg", "bg1", "lv1"] : [`grenade${g.level}`, `grenades${g.level}`, `bg${g.level}`, `lv${g.level}`, `bindinggrenade${g.level}`],
   })),
+  // price / desc are getters: glove prices rise by themselves when Bits are switched on (rarity.js setBitsLive)
   ...GLOVES.map((g) => ({
     id: g.id + "gloves",
     kind: "gloves",
     glove: g.id,
     name: g.name,
-    desc: `+${Math.round(g.bonus * 100)}% catch chance on every !secure throw. Lasts ${g.catches} successful catches, then they wear out. You wear one pair at a time — a better pair replaces it (no refund; gloves can't be scrapped).`,
-    price: g.price,
+    get desc() { return `+${Math.round(g.bonus * 100)}% catch chance on every !secure throw. Lasts ${g.catches} successful catches, then they wear out. You wear one pair at a time — a better pair replaces it (no refund; gloves can't be scrapped).`; },
+    get price() { return g.price; },
     grants: { gloves: g.id },
     maxQty: 1,
     bonus: g.bonus,
@@ -129,4 +130,4 @@ function purchase(p, itemId, qty) {
 const iconUrl = (icon) => (!icon || /^https?:\/\//.test(icon) ? icon : `${require("./config").BASE_URL.replace(/\/$/, "")}/panel/${icon}`);
 const catalog = () => ITEMS.filter((i) => !i.webOnly).map(({ id, kind, glove, name, desc, price, maxQty, icon, bonus, rarity, color }) => ({ id, kind: kind || "item", glove, name, desc, price, maxQty, icon: iconUrl(icon), bonus, rarity, color }));
 
-module.exports = { ITEMS, find, purchase, catalog, unitCap, podsUsed };
+module.exports = { ITEMS, find, purchase, catalog, unitCap, podsUsed, iconUrl };

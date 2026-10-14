@@ -24,5 +24,15 @@ const receipt = (tx, userId, sku, amount) => sign({ topic: "bits_transaction_rec
   assert.equal(s, 401); console.log("forged receipt rejected");
   [s, j] = await post(tA, { receipt: receipt("tx6", "A", "pods5", 50) });
   assert.equal(j.credited, true); assert.equal(j.player.unitCap, 255); console.log("capacity block: cap 250 → 255");
+  // Artisan's Touch: no gloves = 1,250 Starchrom; worn gloves = back to full
+  let before = game.loadPlayer("A").starchrom;
+  [s, j] = await post(tA, { receipt: receipt("tx7", "A", "artisan250", 250) });
+  assert.equal(j.credited, true); assert.equal(j.repaired, null); assert.equal(j.player.starchrom, before + 1250); console.log("artisan without gloves → 1,250 Starchrom");
+  const pl = game.loadPlayer("A"); pl.gloves = ["savior"]; pl.glove_left = 3; game.savePlayer(pl);
+  before = game.loadPlayer("A").starchrom;
+  [s, j] = await post(tA, { receipt: receipt("tx8", "A", "artisan250", 250) });
+  assert.equal(j.repaired, "Savior Gloves"); assert.equal(j.player.gloveLeft, 30); assert.equal(j.player.gloveMax, 30); assert.equal(j.player.starchrom, before); console.log("artisan repairs Savior Gloves 3 → 30");
+  [s, j] = await post(tA, { receipt: receipt("tx9", "A", "artisan250", 25) }); assert.equal(j.error, "unknown_product");
+  assert.ok(ext.bagFor("A").bitsPacks.find((x) => x.sku === "artisan250").icon.endsWith("/panel/artisan.png"));
   console.log("all bits checks passed"); srv.close(); process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });

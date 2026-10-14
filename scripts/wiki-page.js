@@ -8,7 +8,8 @@ for (const k of ["TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET", "ADMIN_KEY", "SESSI
 process.env.BASE_URL ||= "https://deviationhunt.ohwikiguide.com";
 const path = require("path");
 const cfg = require("../config");
-const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, SOUP, GRENADES, GRENADE_PACK, rarityOf, isChaos } = require("../rarity");
+const { TIERS, VARIANT, UNITS, ECONOMY, GLOVES, SOUP, GRENADES, GRENADE_PACK, rarityOf, isChaos, setBitsLive, BITS_PACKS } = require("../rarity");
+if (process.env.BITS_LIVE === "1") setBitsLive(true); // wikisync.js passes this once Bits are on (glove prices rise)
 const { RATING_WEIGHTS, SLOT_CHANCE } = require("../traits");
 const devs = require(path.join(__dirname, "..", "combat-fallback.json"));
 
@@ -140,7 +141,14 @@ ${table(["Item", "Description", "Price"], [
 You have up to '''${ECONOMY.unitCap} Securement Pods''' — every deviation you've caught '''and''' every empty Securement Unit takes one. '''Free units''' (hourly and ${cmd("!daily")}) keep coming until you use '''${ECONOMY.freeUnitCap} Pods'''; after that you buy Securement Units with ${SC} (${cmd("!buy <amount>")}), up to ${ECONOMY.unitCap}. Free space by scrapping extra specimens on your collection page or in the Twitch panel.
 
 '''Gloves wear out.''' Each successful catch made wearing them uses one up; when they run out they're gone and you buy a new pair (${GLOVES.map((g) => `${g.name} ${g.catches}`).join(", ")} — the same Starchrom per catch for every pair). Throws that miss don't count. '''You wear one pair of gloves at a time.''' Buying a better pair replaces the one you have — there's '''no refund''' for the old pair, and gloves can't be scrapped. You can't buy a pair weaker than (or the same as) the one you wear. The bonus is added to the catch chance (a ${pct(TIERS.legendary.catch)} Legendary becomes ${pct(TIERS.legendary.catch + GLOVES[GLOVES.length - 1].bonus)} with ${GLOVES[GLOVES.length - 1].name}), still capped at ${pct(ECONOMY.maxCatchChance)}.
-
+${process.env.BITS_LIVE === "1" ? `
+'''Bits Shop (Twitch panel).''' In the Securement Pods panel's Shop tab you can also use Bits (Bits support the streamer whose channel you're in):
+${table(["Item", "What you get", "Bits"], [
+  ...BITS_PACKS.filter((x) => x.starchrom).map((x) => [`'''${fmt(x.starchrom)} ${SC}'''`, "Added to your wallet right away", fmt(x.bits)]),
+  ...BITS_PACKS.filter((x) => x.capacity).map((x) => [`'''+${x.capacity} Securement Pods'''`, "Permanent extra Securement Pod space", fmt(x.bits)]),
+  ...BITS_PACKS.filter((x) => x.repair).map((x) => [`'''${x.name}'''`, `Repairs the gloves you wear back to their full catches (no gloves on: ${fmt(x.bits * 5)} ${SC} instead)`, fmt(x.bits)]),
+])}
+` : ""}
 '''Ways to get Securement Units'''
 ${table(["Source", "Amount"], [
   ["Starting supply", `${ECONOMY.starterUnits.standard} units`],

@@ -789,6 +789,27 @@ function createApp(pool) {
     res.redirect(303, `/trade/admin?m=${r.ok ? "reversed" : r.error}${r.missing ? `&missing=${r.missing.join(",")}` : ""}`);
   });
 
+  // Owner switch for Bits (B 2026-10-14): flips Bits on/off live, no restart. On = packs + Artisan's Touch for everyone
+  // and the higher glove prices; off = only owners see them (for testing). Env BITS_ENABLED=1 forces it on.
+  app.get("/admin/bits", (req, res) => {
+    const v = viewerOf(req);
+    if (!v) return res.redirect("/login?next=/admin/bits");
+    if (!isOwner(v)) return res.status(403).send(page("Not allowed", "<h1>Not allowed</h1>"));
+    const b = require("./bits"), on = b.live();
+    const gl = GLOVES.map((g) => `${esc(g.name)} ${fmt(g.price)} (${g.catches} catches)`).join(" · ");
+    res.set("Cache-Control", "no-store").send(page("Bits switch", `<h1>Bits switch</h1><div class="card"><p>Bits are <b>${on ? "ON for everyone" : "OFF (only owners can test them)"}</b>.</p><p>Glove prices now: ${gl}</p>
+<form method="post" action="/admin/bits"><input type="hidden" name="on" value="${on ? "0" : "1"}"><button class="tbtn" type="submit">${on ? "Switch Bits OFF" : "Switch Bits ON (raises glove prices)"}</button></form>${cfg.BITS_ENABLED ? "<p class=\"muted\">Railway env BITS_ENABLED=1 keeps it on regardless.</p>" : ""}</div>`));
+  });
+  app.post("/admin/bits", express.urlencoded({ extended: false, limit: "1kb" }), (req, res) => {
+    if (!sameSite(req)) return res.status(403).send("forbidden");
+    const v = viewerOf(req);
+    if (!v || !isOwner(v)) return res.status(403).send("forbidden");
+    require("./bits").setLive(req.body.on === "1");
+    console.log(`[bits] switch set by ${v.login}`);
+    require("./wikisync").scheduleWikiSync(1000); // the guide's glove prices change with it
+    res.redirect(303, "/admin/bits");
+  });
+
   // "My Securement Pods": your own page if you're signed in, otherwise sign in with Twitch first
   app.get("/me", (req, res) => {
     const v = viewerOf(req);

@@ -1,6 +1,7 @@
 // index.js — start the web site, the Twitch listener, live-status polling and the spawn loop
 const cfg = require("./config");
 const db = require("./db");
+require("./bits"); // Bits on/off from env or the owner switch; sets the glove prices before anything reads them
 const twitch = require("./twitch");
 const data = require("./data");
 const { Conduit } = require("./eventsub");

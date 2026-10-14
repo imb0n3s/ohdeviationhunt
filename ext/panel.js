@@ -32,7 +32,7 @@
   var timerEl = document.getElementById("timer"), hourly = null, skew = 0, refetchAt = 0;
   function tickTimer() {
     if (!hourly) { timerEl.textContent = ""; timerEl.className = "timer"; return; }
-    if (hourly.state === "needs_daily") { timerEl.textContent = "🎁 Type !daily in a live stream to start free hourly Securement Units"; timerEl.className = "timer idle"; return; }
+    if (hourly.state === "needs_daily") { timerEl.textContent = "🎁 Type !hourly in a live stream to start free hourly Securement Units"; timerEl.className = "timer idle"; return; }
     if (hourly.state === "paused") { timerEl.textContent = "🎁 Free unit timer paused — use a game command in a live stream to resume"; timerEl.className = "timer idle"; return; }
     var left = Math.max(0, Math.ceil((hourly.at - (Date.now() + skew)) / 1000));
     if (left <= 0) {
@@ -88,7 +88,7 @@
     if (view.open) return renderDetail(view.open);
     var s = bag.stats, p = bag.player;
     if (!p || !s.total) {
-      el('<div class="msg"><p>Your Securement Pods are empty.</p><p>When a deviation is spotted in the wild in chat, type <b>!secure</b> to catch it. Get free Securement Units with <b>!daily</b>.</p></div>' + gridHtml());
+      el('<div class="msg"><p>Your Securement Pods are empty.</p><p>When a deviation is spotted in the wild in chat, type <b>!secure</b> to catch it. Get free Securement Units with <b>!hourly</b> and <b>!daily</b>.</p></div>' + gridHtml());
       bindGrid(); return;
     }
     var pct = Math.round(s.unique / s.all * 100);
@@ -247,12 +247,12 @@
         '</div>';
     }).join("");
     html += bitsHtml();
-    html += '<div class="hint">Earn Starchrom by securing deviations in chat and <b>!daily</b>, or scrap extras in the Pods tab. You can also buy in chat with <b>!buy &lt;amount&gt;</b>.</div>';
+    html += '<div class="hint">Earn Starchrom by securing deviations in chat, <b>!hourly</b> and <b>!daily</b>, or scrap extras in the Pods tab. You can also buy in chat with <b>!buy &lt;amount&gt;</b>.</div>';
     el(html);
     Array.prototype.forEach.call(document.querySelectorAll(".bitsbuy"), function (b) {
       b.onclick = function () { buyBits(b.getAttribute("data-sku")); };
     });
-    Array.prototype.forEach.call(document.querySelectorAll(".item:not(.bits) button"), function (b) {
+    Array.prototype.forEach.call(document.querySelectorAll(".item:not(.bits):not(.artisan) button"), function (b) {
       b.onclick = function () {
         var id = b.closest(".item").getAttribute("data-id"), it = findItem(id), q = cart[id] || 1, act = b.getAttribute("data-act");
         if (act === "inc") q = Math.min(it.maxQty, unitRoom(bag.player), q + 1);
@@ -268,13 +268,26 @@
   // ---- Starchrom packs bought with Bits (only shown when Twitch has Bits turned on for this viewer) ----
   var bitsOn = false, bitsProducts = {};
   function bitsHtml() {
-    var packs = (bag.bitsPacks || []).filter(function (x) { return bitsProducts[x.sku]; });
-    if (!bitsOn || !packs.length) return "";
-    return '<div class="sect">Starchrom with Bits</div><div class="item bits"><div class="id">1 Bit = 5 Starchrom · 50 Bits = 5 more Securement Pods (permanent). Bits used here support the streamer.</div><div class="packs">' +
+    var all = (bag.bitsPacks || []).filter(function (x) { return bitsProducts[x.sku]; });
+    var packs = all.filter(function (x) { return !x.repair; }), repair = all.filter(function (x) { return x.repair; })[0];
+    if (!bitsOn || !all.length) return "";
+    return '<div class="sect">Bits Shop</div>' + (repair ? artisanHtml(repair, bag.player) : "") +
+      (packs.length ? '<div class="item bits"><div class="id">1 Bit = 5 Starchrom · 50 Bits = 5 more Securement Pods (permanent). Bits used here support the streamer.</div><div class="packs">' +
       packs.map(function (x) {
         var cost = bitsProducts[x.sku].cost && bitsProducts[x.sku].cost.amount || x.bits;
         return '<button class="btn bitsbuy" data-sku="' + esc(x.sku) + '"' + (busy ? " disabled" : "") + '><b>' + (x.capacity ? "+" + x.capacity : money(x.starchrom)) + '</b> ' + (x.capacity ? "Securement Pod space" : "Starchrom") + '<span>' + cost + ' Bits</span></button>';
-      }).join("") + '</div></div>';
+      }).join("") + '</div></div>' : "");
+  }
+  // Artisan's Touch: repairs the gloves you wear back to full catches (needs gloves on that aren't already full)
+  function artisanHtml(x, p) {
+    var cost = bitsProducts[x.sku].cost && bitsProducts[x.sku].cost.amount || x.bits;
+    var g = p && p.glove ? (bag.shop || []).filter(function (it) { return it.glove === p.glove; })[0] : null;
+    var full = g && p.gloveLeft >= p.gloveMax;
+    var state = !g ? "Put on a pair of gloves first." : full ? esc(g.name) + " are already like new (" + p.gloveLeft + "/" + p.gloveMax + " catches)." : esc(g.name) + ": " + p.gloveLeft + "/" + p.gloveMax + " catches left → back to " + p.gloveMax + ".";
+    return '<div class="item glove artisan" style="--gc:#9fd3e0"><div class="ih"><div class="gicon"><img src="' + esc(x.icon) + '" alt=""></div><div><div class="in">' + esc(x.name) + '</div>' +
+      '<div class="ip">Repairs your gloves · ' + cost + ' Bits</div></div></div>' +
+      '<div class="id">Restores the gloves you wear to their full number of catches. ' + state + '</div>' +
+      '<button class="btn bitsbuy artisanbuy" data-sku="' + esc(x.sku) + '"' + (busy || !g || full ? " disabled" : "") + '>' + (!g ? "No gloves to repair" : full ? "Nothing to repair" : "Repair for " + cost + " Bits") + '</button></div>';
   }
   function buyBits(sku) {
     if (busy) return;
@@ -298,7 +311,7 @@
           busy = false;
           if (res.j.error === "wrong_user") return;
           if (res.j.player) bag.player = res.j.player;
-          notice = res.ok ? { kind: "ok", text: (res.j.capacity ? "+" + res.j.capacity + " Securement Pod space" : "+" + money(res.j.starchrom) + " Starchrom") + " — thanks for the Bits!" } : { kind: "err", text: "Your Bits went through but the Starchrom didn’t arrive yet. Refresh the panel; if it’s still missing, tell the streamer." };
+          notice = res.ok ? { kind: "ok", text: (res.j.repaired ? "🧤 " + res.j.repaired + " repaired — " + ((res.j.player && res.j.player.gloveLeft) || "") + " catches left" : res.j.capacity ? "+" + res.j.capacity + " Securement Pod space" : "+" + money(res.j.starchrom) + " Starchrom") + " — thanks for the Bits!" } : { kind: "err", text: "Your Bits went through but the Starchrom didn’t arrive yet. Refresh the panel; if it’s still missing, tell the streamer." };
           whoLine(); if (view.page === "shop") renderShop();
         })
         .catch(function () { busy = false; notice = { kind: "err", text: "Couldn’t reach the game to add your Starchrom. Refresh the panel in a minute." }; renderShop(); });

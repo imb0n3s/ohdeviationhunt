@@ -9,6 +9,7 @@
 // get their real user id; until then the panel shows a "Share" button.
 const crypto = require("crypto");
 const { BITS_PACKS } = require("./rarity");
+const bits = require("./bits");
 const cfg = require("./config");
 const db = require("./db");
 const data = require("./data");
@@ -43,7 +44,7 @@ function verifyExtJwt(token) {
 }
 
 // balances the panel shows
-const playerInfo = (p) => ({ login: p.login, display: p.display, starchrom: p.starchrom, units: p.units.standard || 0, nextUnitIn: game.nextUnitIn(p), hourly: game.hourlyStatus(p), now: Date.now(), gloves: p.gloves || [], glove: game.bestGlove(p)?.id || null, gloveLeft: game.bestGlove(p) ? p.glove_left : 0, unitCap: game.unitCap(p), podsUsed: game.podsUsed(p), soupMin: game.soupLeftMin(p) });
+const playerInfo = (p) => ({ login: p.login, display: p.display, starchrom: p.starchrom, units: p.units.standard || 0, nextUnitIn: game.nextUnitIn(p), hourly: game.hourlyStatus(p), now: Date.now(), gloves: p.gloves || [], glove: game.bestGlove(p)?.id || null, gloveLeft: game.bestGlove(p) ? p.glove_left : 0, gloveMax: game.bestGlove(p)?.catches || 0, unitCap: game.unitCap(p), podsUsed: game.podsUsed(p), soupMin: game.soupLeftMin(p) });
 
 const specView = (x, d) => ({
   id: x.id, variant: x.variant || null, skill: x.power, activity: x.mood, caughtAt: x.caught_at,
@@ -86,7 +87,7 @@ function bagFor(userId) {
   return {
     player: p ? playerInfo(game.loadPlayer(p.user_id, p.login, p.display)) : null,
     shop: shop.catalog(),
-    bitsPacks: cfg.BITS_ENABLED ? BITS_PACKS : [],
+    bitsPacks: bits.allowedFor(p?.login) ? BITS_PACKS.map((x) => (x.icon ? { ...x, icon: shop.iconUrl(x.icon) } : x)) : [],
     destroyValue: require("./rarity").ECONOMY.destroyValue,
     destroyUnits: require("./rarity").ECONOMY.destroyUnits,
     stats: { unique: summary.species, total: summary.total, variants: summary.variants, all: all.length, allVariants: all.reduce((s, d) => s + d.variants.length, 0),
@@ -163,7 +164,11 @@ function mount(app) {
 
   // Bits purchase: the panel sends Twitch's signed transaction receipt after useBits() completes.
   app.post("/ext/bits/complete", express.json({ limit: "8kb" }), (req, res) => {
-    if (!cfg.BITS_ENABLED) return res.status(403).json({ error: "bits_disabled" });
+    if (!bits.live()) { // still off: only owners may test (Hosted Test purchases are free)
+      let login = null;
+      try { login = db.q.getPlayer.get(auth(req).user_id)?.login; } catch {}
+      if (!bits.isOwnerLogin(login)) return res.status(403).json({ error: "bits_disabled" });
+    }
     try {
       const jwt = auth(req);
       const receipt = verifyExtJwt(req.body?.receipt);
@@ -174,16 +179,24 @@ function mount(app) {
       if (!pack || Number(d.product?.cost?.amount) !== pack.bits) return res.status(400).json({ error: "unknown_product" });
       const row = db.q.getPlayer.get(jwt.user_id);
       if (!row) return res.status(404).json({ error: "no_player" });
-      let credited = false, player;
+      let credited = false, player, starchrom = pack.starchrom || 0, repaired = null;
       db.tx(() => {
         const p = game.loadPlayer(row.user_id, row.login, row.display);
-        credited = db.q.addBitsTx.run(d.transactionId, row.user_id, pack.sku, pack.bits, pack.starchrom || 0, jwt.channel_id || null, Date.now()).changes === 1;
-        if (credited) db.logPurchase(row.user_id, row.display, jwt.channel_id || p.last_channel, pack.capacity ? `+${pack.capacity} Securement Pods with ${pack.bits} Bits` : `${pack.starchrom.toLocaleString("en-US")} Starchrom with ${pack.bits} Bits`);
-        if (credited) { p.starchrom += pack.starchrom || 0; p.extra_cap = (p.extra_cap || 0) + (pack.capacity || 0); game.savePlayer(p); }
+        // Artisan's Touch: repair the worn gloves to full; no gloves on = the Bits' worth in Starchrom (5 per Bit)
+        const g = pack.repair ? game.bestGlove(p) : null;
+        if (pack.repair && !g) starchrom = pack.bits * 5;
+        credited = db.q.addBitsTx.run(d.transactionId, row.user_id, pack.sku, pack.bits, starchrom, jwt.channel_id || null, Date.now()).changes === 1;
+        if (credited) {
+          if (g) { p.glove_left = Math.max(p.glove_left || 0, g.catches); repaired = g.name; }
+          p.starchrom += starchrom; p.extra_cap = (p.extra_cap || 0) + (pack.capacity || 0); game.savePlayer(p);
+          db.logPurchase(row.user_id, row.display, jwt.channel_id || p.last_channel,
+            pack.repair ? `Artisan's Touch ${repaired ? `(repaired ${repaired})` : `(no gloves on: ${starchrom.toLocaleString("en-US")} Starchrom)`} with ${pack.bits} Bits`
+            : pack.capacity ? `+${pack.capacity} Securement Pods with ${pack.bits} Bits` : `${pack.starchrom.toLocaleString("en-US")} Starchrom with ${pack.bits} Bits`);
+        }
         player = playerInfo(p);
       })();
       console.log(`[ext] bits ${credited ? "credited" : "duplicate"}: ${row.login} ${pack.sku} (${pack.bits} bits) tx=${d.transactionId}`);
-      res.json({ ok: true, credited, starchrom: pack.starchrom || 0, capacity: pack.capacity || 0, player });
+      res.json({ ok: true, credited, starchrom, capacity: pack.capacity || 0, repaired, player });
     } catch (e) {
       if (e.needsIdentity) return res.status(403).json({ error: "needs_identity" });
       console.warn(`[ext] bits failed ${e.status || 500}: ${e.message}`);

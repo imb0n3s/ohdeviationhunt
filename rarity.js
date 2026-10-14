@@ -112,22 +112,33 @@ function unitKey() { return "standard"; }
 
 // Gloves: you wear ONE pair at a time. Buying a better pair replaces yours (no refund, no scrapping) and a pair wears out after its catches (below); its bonus is added
 // straight onto every throw's catch chance (still capped at ECONOMY.maxCatchChance).
-// AT BITS LAUNCH (B, 2026-09-30) raise glove prices to match real money at 5 Starchrom/Bit:
-//   Rustic 5,000 ($10) · BBQ 10,000 ($20) · Savior 17,500 ($35). Until then they stay at 3,000 / 7,500 / 10,000.
+// AT BITS LAUNCH (B, 2026-09-30) glove prices rise to match real money at 5 Starchrom/Bit:
+//   Rustic 5,000 ($10) · BBQ 10,000 ($20) · Savior 17,500 ($35). Until then 3,000 / 7,500 / 10,000. Automatic: switching
+//   Bits on (owner page /admin/bits, or env BITS_ENABLED=1) flips GLOVE_DEFS base -> launch with no restart.
 // Capture Soup: +7.5% capture chance for 1 hour after you buy it (another bowl adds another hour). Stacks with gloves.
 const SOUP = { id: "soup", name: "Capture Soup", price: 1000, bonus: 0.075, durationMs: 60 * 60 * 1000, icon: "soup.png" };
 
-const GLOVES = [
-  { id: "rustic", name: "Rustic Gloves", bonus: 0.03, price: 3000, rarity: "Basic",     color: "#4ade80", icon: "rustic.png" },
-  { id: "bbq",    name: "BBQ Gloves",    bonus: 0.05, price: 7500, rarity: "Uncommon",  color: "#c084fc", icon: "bbq.png" },
-  { id: "savior", name: "Savior Gloves", bonus: 0.09, price: 10000, rarity: "Legendary", color: "#fbbf24", icon: "savior.png" },
+// price = today's price; launch = the price once Bits are switched on (bits.js setLive -> setBitsLive). Read through
+// getters so the switch needs no restart; catches follow the price (see below).
+const GLOVE_DEFS = [
+  { id: "rustic", name: "Rustic Gloves", bonus: 0.03, base: 3000,  launch: 5000,  rarity: "Basic",     color: "#4ade80", icon: "rustic.png" },
+  { id: "bbq",    name: "BBQ Gloves",    bonus: 0.05, base: 7500,  launch: 10000, rarity: "Uncommon",  color: "#c084fc", icon: "bbq.png" },
+  { id: "savior", name: "Savior Gloves", bonus: 0.09, base: 10000, launch: 17500, rarity: "Legendary", color: "#fbbf24", icon: "savior.png" },
 ];
 // Gloves wear out (B 2026-10-08): Savior Gloves last 30 successful catches, then you buy a new pair. The others last
 // the same Starchrom-per-catch: catches = price / (Savior price / 30), rounded down — 10,000 / 30 = 333 Starchrom per
 // catch, a bit more than a scrapped deviation (300), so Rustic 3,000 = 9 catches, BBQ 7,500 = 22, Savior 10,000 = 30.
-// Recomputed automatically if the prices change (e.g. at Bits launch). Only catches made wearing the pair count.
+// At Bits prices: Rustic 8, BBQ 17, Savior 30. Only catches made wearing the pair count.
 const SAVIOR_CATCHES = 30;
-for (const g of GLOVES) g.catches = Math.floor((g.price * SAVIOR_CATCHES) / GLOVES[GLOVES.length - 1].price);
+let bitsLive = false;
+const setBitsLive = (on) => { bitsLive = !!on; };
+const isBitsLive = () => bitsLive;
+const GLOVES = GLOVE_DEFS.map((d) => {
+  const g = { ...d };
+  Object.defineProperty(g, "price", { enumerable: true, get: () => (bitsLive ? d.launch : d.base) });
+  Object.defineProperty(g, "catches", { enumerable: true, get: () => Math.floor((g.price * SAVIOR_CATCHES) / GLOVES[GLOVES.length - 1].price) });
+  return g;
+});
 
 // Starchrom bought with Bits in the Twitch panel (5 Bits = 100 Starchrom). Each pack must also exist as a
 // Bits product with the same SKU and Bits amount in the extension's Monetization tab.
@@ -143,6 +154,9 @@ const BITS_PACKS = [
   { sku: "starchrom17500", bits: 3500, starchrom: 17500 },  // = Savior Gloves ($35)
   // raises the most Securement Units you can hold (ECONOMY.unitCap) by 5, permanently
   { sku: "pods5",         bits: 50,  capacity: 5 },
+  // Artisan's Touch (B 2026-10-14): $2.50 — repairs the gloves you wear back to their full catches.
+  // Bought without gloves on = 1,250 Starchrom instead (the Bits' worth), so nothing is ever lost.
+  { sku: "artisan250",    bits: 250, repair: true, name: "Artisan's Touch", icon: "artisan.png" },
 ];
 
-module.exports = { GRENADES, GRENADE_PACK, TIERS, ASSIGN, VARIANT, isChaos, variantRule, UNITS, ECONOMY, GLOVES, SOUP, BITS_PACKS, rarityOf, unitKey };
+module.exports = { setBitsLive, isBitsLive, GRENADES, GRENADE_PACK, TIERS, ASSIGN, VARIANT, isChaos, variantRule, UNITS, ECONOMY, GLOVES, SOUP, BITS_PACKS, rarityOf, unitKey };

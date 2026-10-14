@@ -28,10 +28,18 @@
   back to Hosted Test, reload and confirm), then update docs/tester-allowlist.txt.
   An HOURLY scheduled task ("Deviation Hunt: hourly Twitch tester check", trig_01LiwN3w1y6fy7RZGGNND3XB, 2026-10-04)
   does this automatically via Claude in Chrome; it only opens the console when someone is missing.
+- Bits switch (B 2026-10-14): NO env change / restart needed any more. Owner page /admin/bits (signed in as an OWNER_LOGINS account)
+  flips setting bits:enabled live (bits.js). On = packs for everyone AND the launch glove prices (rarity.js GLOVE_DEFS base->launch
+  getters; catches follow: Rustic 8, BBQ 17, Savior 30) and a wiki re-sync with a Bits Shop table. Off = only owners see/get
+  credit for packs (for testing 0.0.2 in Hosted Test, where Twitch makes Bits free). Env BITS_ENABLED=1 still forces it on.
+  Artisan's Touch (sku artisan250, 250 Bits = $2.50, ext/artisan.png from the wiki's File:Artisans_Touch.png): repairs the worn
+  gloves to full catches; bought with no gloves on = 1,250 Starchrom. Panel only (Bits). Twitch product: artisan250 / 250.
+  Extension: 0.0.1 is RELEASED (everyone sees it). 0.0.2 = Bits + Artisan's Touch, tested from Local/Hosted Test with Testing
+  Base URI = <BASE_URL>/panel/ so testers never get a blank panel.
 - Bits: panel Shop sells Starchrom packs for Bits (rarity.js BITS_PACKS, 1 Bit = 5 Starchrom; receipts verified at
   POST /ext/bits/complete, one credit per transactionId in bits_tx). Hidden until Twitch Bits is on. TO SWITCH ON (after B
   finishes Monetization onboarding): Local Test → Monetization tab → "Bits enabled" → add one product per pack with the
-  SAME sku + Bits amount (starchrom25/5, starchrom125/25, starchrom250/50, starchrom500/100, starchrom2500/500, starchrom5000/1000, starchrom10000/2000, starchrom17500/3500, pods5/50), In Development = No,
+  SAME sku + Bits amount (starchrom25/5, starchrom125/25, starchrom250/50, starchrom500/100, starchrom2500/500, starchrom5000/1000, starchrom10000/2000, starchrom17500/3500, pods5/50, artisan250/250), In Development = No,
   Save All → back to Hosted Test (reload/confirm) → set BITS_ENABLED=1 → RAISE GLOVE PRICES (rarity.js GLOVES:
   Rustic 5,000 = $10, BBQ 10,000 = $20, Savior 17,500 = $35; B 2026-09-30) → add Bits to the wiki page.
   Server kill switch: Bits are refused unless Railway env BITS_ENABLED=1 (unset = off; packs hidden, /ext/bits/complete → 403) —

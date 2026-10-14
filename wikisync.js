@@ -11,7 +11,7 @@ const TITLE = process.env.WIKI_PAGE || "Deviation_Hunt";
 
 function buildText() {
   return new Promise((resolve, reject) => {
-    execFile(process.execPath, [path.join(__dirname, "scripts", "wiki-page.js")], { cwd: __dirname, maxBuffer: 8e6 },
+    execFile(process.execPath, [path.join(__dirname, "scripts", "wiki-page.js")], { cwd: __dirname, maxBuffer: 8e6, env: { ...process.env, BITS_LIVE: require("./rarity").isBitsLive() ? "1" : "" } },
       (err, stdout) => (err ? reject(err) : resolve(stdout)));
   });
 }
