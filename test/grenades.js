@@ -36,7 +36,7 @@ const assert = require("assert");
   assert.equal(game.loadPlayer("A").starchrom, sc); assert.equal(game.loadPlayer("A").units.standard, u);
   await sp.resolve("CH");
   // grenades never reach the Twitch panel's shop
-  assert.ok(!shop.catalog().some((i) => i.kind === "grenades"));
+  assert.equal(shop.catalog().filter((i) => i.kind === "grenades").length, 3);
   assert.ok(shop.ITEMS.filter((i) => i.kind === "grenades").length === 3);
   assert.ok(game.shop().length <= 500);
   console.log("Binding Grenades ✓ (start 15, used per throw, levels +0/+2.5/+5%, !secure N, shop packs, not in panel)");

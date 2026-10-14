@@ -34,7 +34,7 @@ const ITEMS = [
     icon: SOUP.icon,
     aliases: ["soup", "capturesoup", "soups"],
   },
-  // Binding Grenades (B 2026-10-10): packs of 5. webOnly = website + chat, never sent to the Twitch panel (no new extension review)
+  // Binding Grenades (B 2026-10-10): packs of 5. In the Twitch panel too since B 2026-10-14 (the panel builds its Shop from catalog())
   ...GRENADES.map((g) => ({
     id: `grenade${g.level}`,
     kind: "grenades",
@@ -47,7 +47,6 @@ const ITEMS = [
     bonus: g.bonus,
     color: g.color,
     icon: g.icon,
-    webOnly: true,
     aliases: g.level === 1 ? ["grenade", "grenades", "grenade1", "grenades1", "bindinggrenade", "bindinggrenades", "bg", "bg1", "lv1"] : [`grenade${g.level}`, `grenades${g.level}`, `bg${g.level}`, `lv${g.level}`, `bindinggrenade${g.level}`],
   })),
   // price / desc are getters: glove prices rise by themselves when Bits are switched on (rarity.js setBitsLive)
@@ -128,6 +127,6 @@ function purchase(p, itemId, qty) {
 // extension zip, so a new item with a new picture needs no new Twitch extension version / review.
 // (The Twitch console's "Allowlist for Image Domains" includes deviationhunt.ohwikiguide.com for this.)
 const iconUrl = (icon) => (!icon || /^https?:\/\//.test(icon) ? icon : `${require("./config").BASE_URL.replace(/\/$/, "")}/panel/${icon}`);
-const catalog = () => ITEMS.filter((i) => !i.webOnly).map(({ id, kind, glove, name, desc, price, maxQty, icon, bonus, rarity, color }) => ({ id, kind: kind || "item", glove, name, desc, price, maxQty, icon: iconUrl(icon), bonus, rarity, color }));
+const catalog = () => ITEMS.filter((i) => !i.webOnly).map(({ id, kind, glove, level, name, desc, price, maxQty, icon, bonus, rarity, color }) => ({ id, kind: kind || "item", glove, level, name, desc, price, maxQty, icon: iconUrl(icon), bonus, rarity, color }));
 
 module.exports = { ITEMS, find, purchase, catalog, unitCap, podsUsed, iconUrl };

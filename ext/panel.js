@@ -230,9 +230,11 @@
     var html = '<div class="wallet"><div><b>' + money(p.starchrom) + '</b>Starchrom</div><div><b>' + p.units + '</b>empty Securement Units</div><div><b>' + esc(/^\d+m$/.test(p.nextUnitIn || "") ? p.nextUnitIn : (/daily/.test(p.nextUnitIn || "") ? "!daily" : "—")) + '</b>' + (/daily/.test(p.nextUnitIn || "") ? "for free units" : "next free unit") + '</div></div>';
     if (notice) html += '<div class="notice ' + notice.kind + '">' + esc(notice.text) + '</div>';
     var gl = (bag.shop || []).filter(function (it) { return it.kind === "gloves"; });
+    var gr = (bag.shop || []).filter(function (it) { return it.kind === "grenades"; });
     html += (bag.shop || []).map(function (it) {
       if (it.kind === "gloves") return gloveHtml(it, p, it === gl[0]);
       if (it.kind === "soup") return soupHtml(it, p);
+      if (it.kind === "grenades") return grenadeHtml(it, p, it === gr[0]);
       var room = unitRoom(p), lim = Math.min(it.maxQty, room);
       var q = Math.min(cart[it.id] || 1, Math.max(1, lim)), total = q * it.price, afford = p.starchrom >= total;
       var maxAfford = Math.min(lim, Math.floor(p.starchrom / it.price));
@@ -255,9 +257,10 @@
     Array.prototype.forEach.call(document.querySelectorAll(".item:not(.bits):not(.artisan) button"), function (b) {
       b.onclick = function () {
         var id = b.closest(".item").getAttribute("data-id"), it = findItem(id), q = cart[id] || 1, act = b.getAttribute("data-act");
-        if (act === "inc") q = Math.min(it.maxQty, unitRoom(bag.player), q + 1);
+        var room = it.kind === "grenades" ? it.maxQty : unitRoom(bag.player);
+        if (act === "inc") q = Math.min(it.maxQty, room, q + 1);
         if (act === "dec") q = Math.max(1, q - 1);
-        if (act === "set") q = Math.max(1, Math.min(it.maxQty, unitRoom(bag.player), +b.getAttribute("data-n")));
+        if (act === "set") q = Math.max(1, Math.min(it.maxQty, room, +b.getAttribute("data-n")));
         cart[id] = q;
         if (act === "buy") return buy(it, q);
         notice = null; renderShop();
@@ -318,6 +321,22 @@
     });
   }
 
+  // Binding Grenades: packs of 5, every !secure throw uses one. They don't take Securement Pod space.
+  function grenadeHtml(it, p, first) {
+    var q = Math.min(cart[it.id] || 1, it.maxQty), total = q * it.price, afford = p.starchrom >= total;
+    var maxAfford = Math.min(it.maxQty, Math.floor(p.starchrom / it.price));
+    var have = (p.grenades || {})[it.level] || 0;
+    return (first ? '<div class="sect">Binding Grenades</div>' : "") +
+      '<div class="item glove" data-id="' + esc(it.id) + '" style="--gc:' + esc(it.color || "#9fb0c0") + '">' +
+      '<div class="ih"><div class="gicon"><img src="' + esc(it.icon) + '" alt=""></div><div><div class="in">' + esc(it.name) + '</div>' +
+      '<div class="ip">' + (it.bonus ? "+" + +(it.bonus * 100).toFixed(1) + "% catch chance · " : "") + money(it.price) + ' Starchrom per pack · you have ' + have + '</div></div></div>' +
+      '<div class="id">' + esc(it.desc) + '</div>' +
+      '<div class="qty"><button data-act="dec">−</button><span>' + q + '</span><button data-act="inc">+</button>' +
+      [5, 10].map(function (n) { return '<button data-act="set" data-n="' + n + '" class="quick">' + n + '</button>'; }).join("") +
+      (maxAfford > 1 ? '<button data-act="set" data-n="' + maxAfford + '" class="quick">Max</button>' : "") + '</div>' +
+      '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? "Buy " + q + " pack" + (q > 1 ? "s" : "") + " (" + (q * 5) + " grenades) for " + money(total) + " Starchrom" : "Need " + money(total - p.starchrom) + " more Starchrom") + '</button></div>';
+  }
+
   function soupHtml(it, p) {
     var afford = p.starchrom >= it.price, left = p.soupMin || 0;
     return '<div class="item soup" data-id="' + esc(it.id) + '" style="--gc:' + esc(it.color || "#fb923c") + '">' +
@@ -353,7 +372,7 @@
       .then(function (res) {
         busy = false;
         if (res.j.player) bag.player = res.j.player;
-        if (res.ok) { notice = { kind: "ok", text: "Bought " + (it.kind === "gloves" ? it.name : it.kind === "soup" ? "Capture Soup — +" + (it.bonus * 100) + "% for " + ((res.j.player && res.j.player.soupMin) || 60) + " min" : res.j.qty + " " + it.name + (res.j.qty > 1 ? "s" : "")) + " for " + money(res.j.cost) + " Starchrom." }; cart[it.id] = 1; }
+        if (res.ok) { notice = { kind: "ok", text: "Bought " + (it.kind === "gloves" ? it.name : it.kind === "soup" ? "Capture Soup — +" + (it.bonus * 100) + "% for " + ((res.j.player && res.j.player.soupMin) || 60) + " min" : it.kind === "grenades" ? (res.j.qty * 5) + " Lv." + it.level + " Binding Grenades" : res.j.qty + " " + it.name + (res.j.qty > 1 ? "s" : "")) + " for " + money(res.j.cost) + " Starchrom." }; cart[it.id] = 1; }
         else if (res.j.error === "needs_identity") return askIdentity();
         else if (res.j.error === "not_enough") notice = { kind: "err", text: "Not enough Starchrom for that." };
         else if (res.j.error === "full" || res.j.error === "too_many") notice = { kind: "err", text: "That goes over your " + (res.j.player && res.j.player.unitCap || 100) + " Securement Pods (caught + empty)." };
