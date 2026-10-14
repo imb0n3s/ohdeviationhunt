@@ -110,6 +110,7 @@ Only the broadcaster and moderators can use these.
 ${table(["Command", "Effect"], [
   [cmd("!hunt spawn"), "Spawn a random deviation right now."],
   [cmd("!hourlycheck"), "Lists everyone whose hourly timer is running in this channel right now, with minutes until their next free Securement Unit."],
+  [cmd("!streamtop"), `Top 5 catchers in your channel this month and of all time. ${cmd("!streamtop month")} or ${cmd("!streamtop all")} for just one.`],
   [cmd("!hunt interval <minutes>"), `How often deviations appear while you're live (2–120 minutes, default ${cfg.SPAWN_INTERVAL_MIN}).`],
   [cmd("!hunt off") + " / " + cmd("!hunt on"), "Pause or resume spawns. Other commands keep working."],
   [cmd("!hunt status"), "Live status, spawn timer, what's loose, and this channel's spawn/catch totals."],

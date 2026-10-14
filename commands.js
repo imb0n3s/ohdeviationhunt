@@ -162,7 +162,7 @@ function makeHandler(pool, spawns) {
         return reply(`Live: ${spawns.live.has(bid) ? "yes" : "no"} · spawns ${ch.spawns_on ? "on" : "off"} every ~${ch.interval_min || cfg.SPAWN_INTERVAL_MIN}m · ${st ? `${st.name} loose, ${st.secondsLeft}s left, ${st.attempts} throws` : "nothing loose"} · ${ch.spawns} spawns / ${ch.catches} catches here`);
       }
       if (mod && (sub === "obs" || sub === "overlay")) return reply(`OBS Source: in OBS add a Browser source (600×600) with ${require("./overlay").linkFor(bid)} — it shows the deviation and a countdown, and plays a spawn alert — tick "Control audio via OBS" so only your viewers hear it, not you (?sound=0 turns it off). Add ?countdown=1 to the link for a countdown to the next spawn between deviations, and ?demo=1 to preview it while you position it. Progress bar that fills until the next deviation: add /bar to the end of the link.`);
-      if (mod && sub === "help") return reply("Mods: !hunt spawn (spawn now) · !hourlycheck · !hunt interval <min> · !hunt off / on · !hunt status · !hunt obs · !hunt chatdelay <sec> · !hunt spawnchat on/off · !hunt surprise on/off · !hunt leave");
+      if (mod && sub === "help") return reply("Mods: !hunt spawn (spawn now) · !hourlycheck · !streamtop [month|all] · !hunt interval <min> · !hunt off / on · !hunt status · !hunt obs · !hunt chatdelay <sec> · !hunt spawnchat on/off · !hunt surprise on/off · !hunt leave");
       return reply(HELP());
     }
 
@@ -175,6 +175,15 @@ function makeHandler(pool, spawns) {
       const msgs = game.hourlyCheck(bid);
       for (let i = 0; i < msgs.length; i++) await (i ? pool.send(bid, msgs[i]) : reply(msgs[i]));
       return;
+    }
+
+    // ---- mods / broadcaster: top catchers in this channel, this month + all time (B 2026-10-14) ----
+    if (cmd === "!streamtop" || cmd === "!topcatchers") {
+      if (!isModOrOwner(ev)) return;
+      const key = `${bid}:streamtop`;
+      if (Date.now() - (lastReply.get(key) || 0) < 10000) return;
+      lastReply.set(key, Date.now());
+      return reply(game.streamTop(bid, args[0]));
     }
 
     // ---- everything else: light per-user cooldown ----

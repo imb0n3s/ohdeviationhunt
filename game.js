@@ -824,6 +824,31 @@ function todaysLeader(bid, startedAt, display) {
   return `🏆 Today's leader: @${rows[0].display} with ${rows[0].n} deviation${rows[0].n === 1 ? "" : "s"} secured this stream! ${rows.map((r, i) => `${medal[i]} ${r.display} (${r.n})`).join(" · ")}`;
 }
 
+// !streamtop [month|all] (mods/broadcaster, B 2026-10-14): who has secured the most deviations in THIS channel this
+// calendar month (Central time) and of all time. Counts specimens + scrapped, like every other "caught" total.
+function centralMonthStart(now = Date.now()) {
+  const f = new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hourCycle: "h23" });
+  const pt = Object.fromEntries(f.formatToParts(new Date(now)).map((x) => [x.type, +x.value]));
+  const offset = Date.UTC(pt.year, pt.month - 1, pt.day, pt.hour, pt.minute, pt.second) - Math.floor(now / 1000) * 1000; // Central minus UTC
+  return { start: Date.UTC(pt.year, pt.month - 1, 1) - offset, name: new Date(Date.UTC(pt.year, pt.month - 1, 15)).toLocaleString("en-US", { month: "long", timeZone: "UTC" }) };
+}
+function streamTopRows(bid, since, limit = 5) {
+  return db.raw.prepare(`SELECT p.display, COUNT(*) AS n FROM (SELECT user_id, channel, caught_at FROM specimens UNION ALL SELECT user_id, channel, caught_at FROM scrapped) s
+    JOIN players p ON p.user_id=s.user_id
+    WHERE s.channel=? AND s.caught_at>=? GROUP BY s.user_id ORDER BY n DESC, MIN(s.caught_at) ASC LIMIT ?`).all(bid, since, limit);
+}
+function streamTop(bid, which = "") {
+  const medal = ["🥇", "🥈", "🥉", "4.", "5."];
+  const list = (rows) => rows.length ? rows.map((r, i) => `${medal[i]} ${r.display} (${r.n})`).join(" · ") : "nobody yet";
+  const m = centralMonthStart();
+  const w = String(which || "").toLowerCase();
+  const month = `📅 ${m.name}: ${list(streamTopRows(bid, m.start))}`;
+  const all = `🏆 All time: ${list(streamTopRows(bid, 0))}`;
+  if (/^(month|m|monthly)$/.test(w)) return `Top catchers in this stream — ${month}`;
+  if (/^(all|alltime|a|ever)$/.test(w)) return `Top catchers in this stream — ${all}`;
+  return `Top catchers in this stream — ${month} | ${all}`;
+}
+
 function top(baseUrl) {
   const rows = db.leaderboard(5);
   if (!rows.length) return "No one has secured a deviation yet. Be the first!";
@@ -849,4 +874,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { grenadeCount, grenadeText, grenadeTotal, freeRoom, todaysLeader, fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { streamTop, centralMonthStart, grenadeCount, grenadeText, grenadeTotal, freeRoom, todaysLeader, fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
