@@ -21,13 +21,10 @@
   Paths = /*.js, /*.json, /Dockerfile (what the Dockerfile copies), so docs/, scripts/, test/, ext/
   and *.md pushes don't redeploy. A NEW server file outside the repo root would need a new pattern.
   (Negation patterns like !/docs/** broke detection — don't use them.) Batch server changes.
-- Twitch panel testers: while the extension is in Hosted Test, only allowlisted accounts see the panel.
-  B wants EVERY player on the Testing Account Allowlist. Each session: compare
-  https://deviationhunt.ohwikiguide.com/api/players with docs/tester-allowlist.txt, add anyone new in the
-  console (Access tab — only editable in Local Test: move to Local Test, add, Save, reload to verify, move
-  back to Hosted Test, reload and confirm), then update docs/tester-allowlist.txt.
-  An HOURLY scheduled task ("Deviation Hunt: hourly Twitch tester check", trig_01LiwN3w1y6fy7RZGGNND3XB, 2026-10-04)
-  does this automatically via Claude in Chrome; it only opens the console when someone is missing.
+- Twitch panel testers: 0.0.1 is RELEASED, so everyone sees the panel without being on any list. The Testing Account
+  Allowlist only decides who sees a version under test (now 0.0.2). Twitch caps it at 100 accounts: docs/tester-allowlist.txt
+  = streamers + the most active players (2026-10-14). The old hourly tester task (trig_01LiwN3w1y6fy7RZGGNND3XB) is disabled —
+  it moved 0.0.1 to Local Test, which would blank the panel; never re-enable it as written.
 - Bits switch (B 2026-10-14): NO env change / restart needed any more. Owner page /admin/bits (signed in as an OWNER_LOGINS account)
   flips setting bits:enabled live (bits.js). On = packs for everyone AND the launch glove prices (rarity.js GLOVE_DEFS base->launch
   getters; catches follow: Rustic 8, BBQ 17, Savior 30) and a wiki re-sync with a Bits Shop table. Off = only owners see/get
