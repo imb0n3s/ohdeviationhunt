@@ -41,7 +41,7 @@ function makeHandler(pool, spawns) {
     // ---- the bot's own channel: !join / !leave ----
     if (bid === botId() && uid !== botId() && (cmd === "!join" || cmd === "!leave")) {
       if (cmd === "!leave") {
-        db.removeChannel(uid);
+        db.removeChannel(uid, "!leave in the bot's chat");
         await pool.leave(uid);
         return reply(`@${name} left your channel. Come back any time with !join.`);
       }
@@ -52,7 +52,7 @@ function makeHandler(pool, spawns) {
         pool.refreshLive?.();
         return reply(`@${name} joined your channel! Deviations will start appearing while you're live. Mods: !hunt help. Type !leave here to remove me.`);
       } catch (e) {
-        db.removeChannel(uid);
+        db.removeChannel(uid, e.message === "NEEDS_PERMISSION" ? "!join failed: bot needs permission" : "!join failed");
         if (e.message === "NEEDS_PERMISSION") return reply(`@${name} I need permission first: type /mod ${botLogin()} in your chat and !join again, or add me in one click at ${cfg.BASE_URL}`);
         console.error("[join] failed:", e.message);
         return reply(`@${name} couldn't join right now, try again in a minute.`);
@@ -152,7 +152,7 @@ function makeHandler(pool, spawns) {
         return reply(sub === "on" ? "Spawns are back on." : "Spawns paused. !hunt on to resume (commands still work).");
       }
       if (mod && sub === "leave" && bid !== botId()) {
-        db.removeChannel(bid);
+        db.removeChannel(bid, `!hunt leave by ${name}`);
         await pool.leave(bid);
         return reply(`Bye! ${cfg.BOT_NAME} has left this channel. Re-add it any time at ${cfg.BASE_URL}`);
       }

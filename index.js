@@ -51,7 +51,7 @@ async function main() {
   pool.onRemoved = (bid, why) => {
     const c = db.getChannel(bid);
     if (!c || !c.enabled) return;
-    db.removeChannel(bid);
+    db.removeChannel(bid, `removed on Twitch (${why})`);
     try { spawns.setLive(bid, false); } catch {}
     console.log(`[channels] ${c.login} removed the game (${why}) — taken off Where to Play and the leaderboards`);
   };

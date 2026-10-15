@@ -790,6 +790,16 @@ function createApp(pool) {
     res.redirect(303, `/trade/admin?m=${r.ok ? "reversed" : r.error}${r.missing ? `&missing=${r.missing.join(",")}` : ""}`);
   });
 
+  // Owner list of channels that took the game off (B 2026-10-14). Removal time/how recorded since 2026-10-14.
+  app.get("/admin/channels", (req, res) => {
+    const v = viewerOf(req);
+    if (!v) return res.redirect("/login?next=/admin/channels");
+    if (!isOwner(v)) return res.status(403).send(page("Not allowed", "<h1>Not allowed</h1>"));
+    const d = (t) => t ? new Date(t).toLocaleString("en-US", { timeZone: "America/Chicago", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }) : "";
+    const rows = db.listRemovedChannels().map((c) => `<tr><td><a href="https://twitch.tv/${esc(c.login)}" target="_blank" rel="noopener">${esc(c.display_name)}</a></td><td>${c.removed_at ? d(c.removed_at) : '<span class="muted">before Oct 14, 2026</span>'}</td><td>${esc(c.removed_how || "")}</td><td>${d(c.joined_at)}</td><td>${fmt(c.spawns)}</td><td>${fmt(c.catches)}</td></tr>`).join("");
+    res.set("Cache-Control", "no-store").send(page("Removed channels", `<h1>Channels that removed the game</h1><p class="muted">${db.listRemovedChannels().length} channel(s). How/when it was removed is recorded from Oct 14, 2026 on.</p><div class="card"><table><tr><th>Channel</th><th>Removed</th><th>How</th><th>Added</th><th>Spawns</th><th>Caught</th></tr>${rows || '<tr><td colspan="6">None</td></tr>'}</table></div>`));
+  });
+
   // Owner switch for Bits (B 2026-10-14): flips Bits on/off live, no restart. On = packs + Artisan's Touch for everyone
   // and the higher glove prices; off = only owners see them (for testing). Env BITS_ENABLED=1 forces it on.
   app.get("/admin/bits", (req, res) => {
@@ -896,7 +906,7 @@ function createApp(pool) {
         return res.send(simple("Setup complete", `Bot is running as ${user.display_name}`, `Streamers can now add it from <a href="/">the home page</a> or with <code>!join</code> in <a href="https://twitch.tv/${esc(user.login)}">twitch.tv/${esc(user.login)}</a>.`));
       }
       if (state.action === "remove") {
-        db.removeChannel(user.id);
+        db.removeChannel(user.id, "website Remove");
         await pool.leave(user.id);
         return res.send(simple("Removed", `Removed from ${user.display_name}'s channel`, "The game has left your chat. Collections are kept, so you can add it back any time."));
       }

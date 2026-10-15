@@ -92,6 +92,8 @@ CREATE TABLE IF NOT EXISTS spawn_log (
 `);
 
 // migrations for columns added after launch
+try { db.exec(`ALTER TABLE channels ADD COLUMN removed_at INTEGER`); } catch {}
+try { db.exec(`ALTER TABLE channels ADD COLUMN removed_how TEXT`); } catch {}
 try { db.exec(`ALTER TABLE players ADD COLUMN last_unit_at INTEGER NOT NULL DEFAULT 0`); } catch {}
 // existing players start their hourly-unit clock now (no back-pay for the past)
 db.prepare(`UPDATE players SET last_unit_at=? WHERE last_unit_at=0`).run(Date.now());
@@ -144,7 +146,8 @@ const q = {
   upsertChannel: db.prepare(`INSERT INTO channels (broadcaster_id, login, display_name, joined_at, joined_via, enabled)
     VALUES (@broadcaster_id, @login, @display_name, @joined_at, @joined_via, 1)
     ON CONFLICT(broadcaster_id) DO UPDATE SET login=excluded.login, display_name=excluded.display_name, enabled=1`),
-  disableChannel: db.prepare(`UPDATE channels SET enabled=0 WHERE broadcaster_id=?`),
+  disableChannel: db.prepare(`UPDATE channels SET enabled=0, removed_at=?, removed_how=? WHERE broadcaster_id=? AND enabled=1`),
+  listRemoved: db.prepare(`SELECT * FROM channels WHERE enabled=0 ORDER BY COALESCE(removed_at, 0) DESC, joined_at DESC`),
   getChannel: db.prepare(`SELECT * FROM channels WHERE broadcaster_id=?`),
   getChannelByLogin: db.prepare(`SELECT * FROM channels WHERE login=?`),
   listEnabled: db.prepare(`SELECT * FROM channels WHERE enabled=1 ORDER BY joined_at`),
@@ -231,7 +234,8 @@ module.exports = {
   tx: (fn) => db.transaction(fn),
   // channels
   addChannel: (c) => q.upsertChannel.run({ joined_at: Date.now(), ...c }),
-  removeChannel: (id) => q.disableChannel.run(id),
+  removeChannel: (id, how = null) => q.disableChannel.run(Date.now(), how, id),
+  listRemovedChannels: () => q.listRemoved.all(),
   getChannel: (id) => q.getChannel.get(id),
   getChannelByLogin: (login) => q.getChannelByLogin.get(String(login).toLowerCase()),
   listEnabledChannels: () => q.listEnabled.all(),
