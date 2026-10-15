@@ -107,7 +107,7 @@
   successful catches; the others get the same Starchrom per catch: catches = floor(price × 30 / Savior price) → Rustic 9, BBQ 22
   (GLOVES[].catches, computed in rarity.js — it rescales by itself when glove prices rise at Bits launch). Counted in players.glove_left;
   only catches made wearing that pair count; at 0 the pair is removed and the result message says it wore out.
-- Blocked accounts (B 2026-10-09: auravella): blocklist.js. On every start their player, collection, channel, spawn stats and
+- Blocked accounts: blocklist.js (auravella was blocked 2026-10-09, UNBLOCKED by B 2026-10-14 — her old data was already wiped, she starts fresh; nobody is blocked by default now). On every start their player, collection, channel, spawn stats and
   settings are deleted and the bot leaves their chat; their commands are ignored, the website login and the panel refuse them.
   More via Railway env BLOCKED_LOGINS. Other players' catches made in a blocked channel are kept (channel name cleared).
   Channel-only block (B 2026-10-09: nobles_tv): can NEVER add the game to their channel (!join and the website refuse; removed if

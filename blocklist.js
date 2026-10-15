@@ -1,10 +1,10 @@
-// blocklist.js — Twitch accounts banned from Deviation Hunt (B 2026-10-09: auravella).
+// blocklist.js — Twitch accounts banned from Deviation Hunt (auravella 2026-10-09 → unblocked by B 2026-10-14).
 // A blocked account is wiped from the game on every start (player, collection, channel, stats) and can't come back:
 // the bot ignores their chat commands, won't join their channel, and the website / panel refuse them.
 // Add more with the Railway env BLOCKED_LOGINS="name1,name2" (these defaults always stay blocked).
 const db = require("./db");
 
-const DEFAULT = ["auravella"];
+const DEFAULT = []; // auravella unblocked (B 2026-10-14)
 const logins = new Set([...DEFAULT, ...String(process.env.BLOCKED_LOGINS || "").toLowerCase().split(/[\s,]+/).filter(Boolean)]);
 // Channels that may never ADD the game (B 2026-10-09: nobles_tv). They can still play in other streams.
 // More via Railway env NO_CHANNEL_LOGINS="name1,name2".
@@ -17,6 +17,9 @@ function isChannelBlocked(userId, login) {
   return false;
 }
 // Twitch user ids we've seen for them, so a renamed account stays blocked too
+// One-time (B 2026-10-14): auravella was the only blocked account; forget the remembered ids so she can play again.
+// Anyone still blocked via BLOCKED_LOGINS is matched by login again and their id re-learned.
+if (!db.getSetting("unblock:auravella-v1")) { db.q.setSetting.run("blocked:ids", "[]"); db.q.setSetting.run("unblock:auravella-v1", String(Date.now())); }
 const ids = new Set(JSON.parse(db.getSetting("blocked:ids") || "[]"));
 const saveIds = () => db.q.setSetting.run("blocked:ids", JSON.stringify([...ids]));
 
