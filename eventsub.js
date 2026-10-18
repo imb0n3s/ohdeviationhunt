@@ -218,10 +218,33 @@ class Conduit {
       try { await this.join(c.broadcaster_id); ok++; fixed.push(c.login); }
       catch (e) { if (e.message === "NEEDS_PERMISSION") denied.push(c.broadcaster_id); else console.error(`[audit] ${c.login}: ${e.message}`); }
     }
+    // Accounts renamed or gone (B 2026-10-18: trouble_makers_crew showed on Where to Play but its Twitch page was gone):
+    // look every channel up by id; renamed = update the name/link, not found = deleted or suspended -> remove.
+    const renamed = [], goneIds = [];
+    try {
+      const found = new Map();
+      for (let i = 0; i < channels.length; i += 100) {
+        const ids = channels.slice(i, i + 100).map((c) => c.broadcaster_id);
+        const u = new URL("https://x/"); ids.forEach((id) => u.searchParams.append("id", id));
+        const r = await twitch.helix("GET", "/users?" + u.searchParams.toString(), { as: "app" });
+        for (const x of r.data || []) found.set(x.id, x);
+      }
+      if (found.size) for (const c of channels) {
+        const x = found.get(c.broadcaster_id);
+        if (!x) { if (!removedNow.some(([id]) => id === c.broadcaster_id)) goneIds.push(c.broadcaster_id); continue; }
+        if (x.login !== c.login || x.display_name !== c.display_name) {
+          db.raw.prepare(`UPDATE channels SET login=?, display_name=? WHERE broadcaster_id=?`).run(x.login, x.display_name, c.broadcaster_id);
+          db.raw.prepare(`UPDATE players SET login=?, display=? WHERE user_id=?`).run(x.login, x.display_name, c.broadcaster_id);
+          renamed.push(`${c.login} → ${x.login}`);
+        }
+      }
+    } catch (e) { console.error("[audit] user lookup failed:", e.message); }
+    if (goneIds.length > 3) { console.error(`[audit] ${goneIds.length} accounts not found at once — not removing them`); goneIds.length = 0; }
+    for (const id of goneIds) { removedNow.push([id, "account_gone"]); ok = Math.max(0, ok - 1); }
     for (const [id, why] of removedNow) this.onRemoved?.(id, why);
     this.dropDenied(denied, ok);
-    const res = { at: Date.now(), checked: channels.length, ok, resubscribed: fixed, removed: [...removedNow.map(([id]) => id), ...(denied.length > 3 || ok === 0 ? [] : denied)].map((id) => db.getChannel(id)?.login || id), refusedButKept: denied.length > 3 || ok === 0 ? denied.length : 0 };
-    console.log(`[audit] nightly: ${res.ok}/${res.checked} channels still have the bot${fixed.length ? `; re-subscribed ${fixed.join(", ")}` : ""}${res.removed.length ? `; removed ${res.removed.join(", ")}` : ""}`);
+    const res = { at: Date.now(), checked: channels.length, ok, renamed, resubscribed: fixed, removed: [...removedNow.map(([id]) => id), ...(denied.length > 3 || ok === 0 ? [] : denied)].map((id) => db.getChannel(id)?.login || id), refusedButKept: denied.length > 3 || ok === 0 ? denied.length : 0 };
+    console.log(`[audit] nightly: ${res.ok}/${res.checked} channels still have the bot${renamed.length ? `; renamed ${renamed.join(", ")}` : ""}${fixed.length ? `; re-subscribed ${fixed.join(", ")}` : ""}${res.removed.length ? `; removed ${res.removed.join(", ")}` : ""}`);
     return res;
   }
 
