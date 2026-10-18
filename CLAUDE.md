@@ -102,6 +102,8 @@
   authorization_revoked / user_removed / moderator_removed, or a 403 NEEDS_PERMISSION on startup or the 10-min pool.recheck)
   disables the channel at once (index.js pool.onRemoved) -> gone from Where to Play, Top Streams, Top Streamers, 24/7 lists.
   Safety: >3 refusals in one pass = our auth problem, nothing is removed (eventsub.js dropDenied).
+  NIGHTLY AUDIT (B 2026-10-18): 00:00 Central, index.js -> pool.audit() lists the real chat subscriptions on Twitch; missing/disabled
+  ones get one re-subscribe, refused/revoked = channel removed (same as above). Result in setting audit:last, shown on /admin/channels.
 - !hunt spawn is always random (B 2026-10-06 removed picking a deviation/variation/skin; data.findWithVariant is unused).
 - Trading (website, one-to-one) is LIVE since 2026-10-12 (B: "Turn on trading, don't add bits yet") — merged from branch `trading` into main. trade.js; /trade, /trade/new, /trade/log, /trade/admin; nav "Trades"; homepage + wiki have a Trading section.
 - Hourly perks (B 2026-10-07): belong to ONE stream — switched on by !hourly, the first !secure, or !daily in that live

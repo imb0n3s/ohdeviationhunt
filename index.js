@@ -106,6 +106,14 @@ async function main() {
   setInterval(pool.refreshLive, cfg.LIVE_POLL_SECONDS * 1000).unref();
   setInterval(() => spawns.tick(), 15 * 1000).unref();
   setInterval(() => pool.recheck().catch((e) => console.error("[eventsub] recheck:", e.message)), 10 * 60 * 1000).unref();
+  // Every night at 00:00 Central: check with Twitch who still has the bot, drop the rest from Where to Play (B 2026-10-18)
+  const centralDay = () => new Date().toLocaleDateString("en-CA", { timeZone: "America/Chicago" });
+  const centralHour = () => Number(new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour: "numeric", hourCycle: "h23" }));
+  setInterval(async () => {
+    if (centralHour() !== 0 || db.getSetting("audit:day") === centralDay()) return;
+    db.setSetting("audit:day", centralDay());
+    try { const r = await pool.audit(); if (r) db.setSetting("audit:last", JSON.stringify(r)); } catch (e) { console.error("[audit] failed:", e.message); }
+  }, 60 * 1000).unref();
   // hourly free Securement Units (+ chat notice) for people who did !daily in a live stream
   const { unitNotices, setStreamLookup, refundAllMisses, setAnnouncer } = require("./game");
   setAnnouncer((ch, text) => pool.send(ch, text));

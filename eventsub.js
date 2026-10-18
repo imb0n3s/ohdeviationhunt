@@ -187,6 +187,44 @@ class Conduit {
     this.dropDenied(denied, this.subs.size);
   }
 
+  // Nightly audit (B 2026-10-18, 00:00 Central): ask Twitch which chat subscriptions really exist and are enabled.
+  // A channel whose subscription is gone or disabled gets one fresh subscribe; if Twitch refuses (the streamer
+  // removed the bot / revoked the app) it comes off Where to Play and the leaderboards.
+  async audit() {
+    const bot = db.getBotAccount();
+    if (!bot || !this.conduitId) return null;
+    const live = new Map(); // broadcaster -> { id, status }
+    let cursor = null;
+    do {
+      const r = await twitch.helix("GET", "/eventsub/subscriptions", { as: "app", query: { type: "channel.chat.message", ...(cursor ? { after: cursor } : {}) } });
+      for (const s of r.data || []) {
+        const b = s.condition?.broadcaster_user_id;
+        if (!b) continue;
+        const prev = live.get(b);
+        if (!prev || (s.status === "enabled" && prev.status !== "enabled")) live.set(b, { id: s.id, status: s.status });
+      }
+      cursor = r.pagination?.cursor || null;
+    } while (cursor);
+    const channels = db.listEnabledChannels().filter((c) => c.broadcaster_id !== bot.user_id);
+    const denied = [], fixed = [], removedNow = [];
+    let ok = 0;
+    for (const c of channels) {
+      const s = live.get(c.broadcaster_id);
+      if (s && s.status === "enabled") { ok++; if (!this.subs.has(c.broadcaster_id)) this.subs.set(c.broadcaster_id, s.id); continue; }
+      if (s && ["authorization_revoked", "user_removed", "moderator_removed"].includes(s.status)) { removedNow.push([c.broadcaster_id, s.status]); continue; }
+      // missing or broken: drop our record (and the dead subscription) and subscribe again
+      this.subs.delete(c.broadcaster_id);
+      if (s) await twitch.helix("DELETE", "/eventsub/subscriptions", { as: "app", query: { id: s.id } }).catch(() => {});
+      try { await this.join(c.broadcaster_id); ok++; fixed.push(c.login); }
+      catch (e) { if (e.message === "NEEDS_PERMISSION") denied.push(c.broadcaster_id); else console.error(`[audit] ${c.login}: ${e.message}`); }
+    }
+    for (const [id, why] of removedNow) this.onRemoved?.(id, why);
+    this.dropDenied(denied, ok);
+    const res = { at: Date.now(), checked: channels.length, ok, resubscribed: fixed, removed: [...removedNow.map(([id]) => id), ...(denied.length > 3 || ok === 0 ? [] : denied)].map((id) => db.getChannel(id)?.login || id), refusedButKept: denied.length > 3 || ok === 0 ? denied.length : 0 };
+    console.log(`[audit] nightly: ${res.ok}/${res.checked} channels still have the bot${fixed.length ? `; re-subscribed ${fixed.join(", ")}` : ""}${res.removed.length ? `; removed ${res.removed.join(", ")}` : ""}`);
+    return res;
+  }
+
   // safety: if Twitch refuses lots of channels at once it's an auth problem on OUR side, not streamers leaving
   dropDenied(denied, okCount) {
     if (!denied.length) return;
