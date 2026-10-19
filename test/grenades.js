@@ -16,13 +16,13 @@ const assert = require("assert");
   assert.match(sp.attempt("CH", "A", "alice", "Alice"), /Threw a Lv\.1 Binding Grenade .*14 Lv\.1 left/);
   assert.equal(sp.active.get("CH").attempts.get("A").bonus, 0);
   await sp.resolve("CH");
-  // buy Lv.5 (2 packs = 10) on the shop: best grenade is used by default, +5% chance
+  // buy Lv.5 (2 packs = 10) on the shop: plain !secure still uses the LOWEST level first (B 2026-10-19)
   p = game.loadPlayer("A"); assert.ok(shop.purchase(p, "grenade5", 2).ok); game.savePlayer(p);
   assert.equal(game.grenadeCount(game.loadPlayer("A"), 5), 10);
   assert.match(game.buy("A", "alice", "Alice", ["grenade3"]), /bought 5 Lv\.3 Binding Grenades/);
   await sp.spawn("CH", true, { dev, variant: null });
-  assert.match(sp.attempt("CH", "A", "alice", "Alice"), /Lv\.5 Binding Grenade \(\+5%\)/);
-  assert.equal(sp.active.get("CH").attempts.get("A").bonus, 0.05);
+  assert.match(sp.attempt("CH", "A", "alice", "Alice"), /Lv\.1 Binding Grenade at/);
+  assert.equal(sp.active.get("CH").attempts.get("A").bonus, 0);
   await sp.resolve("CH");
   // !secure 1 picks Lv.1; !secure 3 picks Lv.3 (+2.5%)
   await sp.spawn("CH", true, { dev, variant: null });

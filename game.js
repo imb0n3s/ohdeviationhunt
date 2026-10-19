@@ -431,14 +431,14 @@ class Spawns {
     if (p.starchrom < ECONOMY.throwCost) {
       return warn(`@${display} a throw costs ${ECONOMY.throwCost} ${SC} and you have ${fmt(p.starchrom)}. ${dailyReady(userId) ? "Claim !daily for +" + ECONOMY.daily.starchrom + " " + SC + "." : "Catching deviations earns more."}`);
     }
-    // Binding Grenade: the best one you have, or the level you ask for with !secure 1 / 3 / 5 (B 2026-10-10)
+    // Binding Grenade: your LOWEST level first (B 2026-10-19; was the best one), or the level you ask for with !secure 1 / 3 / 5
     const want = parseInt(String(unitWord || "").replace(/\D/g, ""), 10);
     const gren = GRENADES.some((g) => g.level === want)
       ? (grenadeCount(p, want) > 0 ? GRENADES.find((g) => g.level === want) : null)
-      : [...GRENADES].reverse().find((g) => grenadeCount(p, g.level) > 0) || null;
+      : GRENADES.find((g) => grenadeCount(p, g.level) > 0) || null;
     if (!gren) {
       return warn(GRENADES.some((g) => g.level === want) && grenadeTotal(p) > 0
-        ? `@${display} you have no Lv.${want} Binding Grenades (you have ${grenadeText(p)}). Type !secure to throw your best one.`
+        ? `@${display} you have no Lv.${want} Binding Grenades (you have ${grenadeText(p)}). Type !secure to throw your lowest one.`
         : `@${display} you're out of Binding Grenades — every throw needs one. !buy grenade (${GRENADE_PACK} for ${fmt(GRENADES[0].packPrice)} ${SC}), or wait for your free hourly one.`);
     }
     if (!(p.units.standard > 0)) {
@@ -620,7 +620,7 @@ function buy(userId, login, display, args) {
     const old = r.replaced ? ` They replace your ${r.replaced.name}.` : "";
     return `@${display} 🧤 bought ${item.name} for ${fmt(r.cost)} ${SC}! +${Math.round(item.bonus * 100)}% catch chance on every throw for your next ${GLOVES.find((g) => g.id === item.glove).catches} successful catches.${old} You have ${fmt(p.starchrom)} ${SC} left.`;
   }
-  if (item.kind === "grenades") return `@${display} 💣 bought ${label} for ${fmt(r.cost)} ${SC}! You now have Binding Grenades ${grenadeText(p)}. Use a level with !secure ${item.level} (plain !secure throws your best one). ${fmt(p.starchrom)} ${SC} left.`;
+  if (item.kind === "grenades") return `@${display} 💣 bought ${label} for ${fmt(r.cost)} ${SC}! You now have Binding Grenades ${grenadeText(p)}. Use a level with !secure ${item.level} (plain !secure throws your lowest level first). ${fmt(p.starchrom)} ${SC} left.`;
   if (item.kind === "soup") return `@${display} 🍲 bought ${label} for ${fmt(r.cost)} ${SC}! +${SOUP.bonus * 100}% catch chance on every throw for the next ${soupLeftMin(p)} minutes (stacks with gloves). You have ${fmt(p.starchrom)} ${SC} left.`;
   return `@${display} bought ${label} for ${fmt(r.cost)} ${SC} — you now have ${p.units.standard || 0} Securement Units (${podsUsed(p)}/${unitCap(p)} Securement Pods used). ${bagText(p)}`;
 }
