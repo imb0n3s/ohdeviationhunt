@@ -224,7 +224,9 @@
   function renderShop() {
     var p = bag.player;
     if (!p) {
-      el('<div class="msg"><p>You haven’t played yet.</p><p>Type <b>!secure</b> in chat the next time a deviation shows up — you’ll start with 5 Securement Units and 200 Starchrom, then you can shop here.</p></div>');
+      // the Bits Shop still shows before your first catch (buying with Bits signs you up)
+      el('<div class="msg"><p>You haven’t played yet.</p><p>Type <b>!secure</b> in chat the next time a deviation shows up — you’ll start with 5 Securement Units and 200 Starchrom, then you can shop here.</p></div>' + (notice ? '<div class="notice ' + notice.kind + '">' + esc(notice.text) + '</div>' : "") + bitsHtml());
+      Array.prototype.forEach.call(document.querySelectorAll(".bitsbuy"), function (b) { b.onclick = function () { buyBits(b.getAttribute("data-sku")); }; });
       return;
     }
     var html = '<div class="wallet"><div><b>' + money(p.starchrom) + '</b>Starchrom</div><div><b>' + p.units + '</b>empty Securement Units</div><div><b>' + esc(/^\d+m$/.test(p.nextUnitIn || "") ? p.nextUnitIn : (/daily/.test(p.nextUnitIn || "") ? "!daily" : "—")) + '</b>' + (/daily/.test(p.nextUnitIn || "") ? "for free units" : "next free unit") + '</div></div>';
@@ -274,7 +276,7 @@
     var all = (bag.bitsPacks || []).filter(function (x) { return bitsProducts[x.sku]; });
     var packs = all.filter(function (x) { return !x.repair; }), repair = all.filter(function (x) { return x.repair; })[0];
     if (!bitsOn || !all.length) return "";
-    return '<div class="sect">Bits Shop</div>' + (repair ? artisanHtml(repair, bag.player) : "") +
+    return '<div class="sect">Bits Shop</div>' + (repair ? artisanHtml(repair, bag.player || {}) : "") +
       (packs.length ? '<div class="item bits"><div class="id">1 Bit = 5 Starchrom · 50 Bits = 5 more Securement Pods (permanent). Bits used here support the streamer.</div><div class="packs">' +
       packs.map(function (x) {
         var cost = bitsProducts[x.sku].cost && bitsProducts[x.sku].cost.amount || x.bits;
@@ -286,11 +288,12 @@
     var cost = bitsProducts[x.sku].cost && bitsProducts[x.sku].cost.amount || x.bits;
     var g = p && p.glove ? (bag.shop || []).filter(function (it) { return it.glove === p.glove; })[0] : null;
     var full = g && p.gloveLeft >= p.gloveMax;
-    var state = !g ? "Put on a pair of gloves first." : full ? esc(g.name) + " are already like new (" + p.gloveLeft + "/" + p.gloveMax + " catches)." : esc(g.name) + ": " + p.gloveLeft + "/" + p.gloveMax + " catches left → back to " + p.gloveMax + ".";
+    var bonusSc = money(x.bits * 5);
+    var state = !g ? "You aren’t wearing gloves, so it gives you " + bonusSc + " Starchrom instead." : full ? esc(g.name) + " are already like new (" + p.gloveLeft + "/" + p.gloveMax + " catches), so it gives you " + bonusSc + " Starchrom instead." : esc(g.name) + ": " + p.gloveLeft + "/" + p.gloveMax + " catches left → back to " + p.gloveMax + ".";
     return '<div class="item glove artisan" style="--gc:#9fd3e0"><div class="ih"><div class="gicon"><img src="' + esc(x.icon) + '" alt=""></div><div><div class="in">' + esc(x.name) + '</div>' +
       '<div class="ip">Repairs your gloves · ' + cost + ' Bits</div></div></div>' +
       '<div class="id">Restores the gloves you wear to their full number of catches. ' + state + '</div>' +
-      '<button class="btn bitsbuy artisanbuy" data-sku="' + esc(x.sku) + '"' + (busy || !g || full ? " disabled" : "") + '>' + (!g ? "No gloves to repair" : full ? "Nothing to repair" : "Repair for " + cost + " Bits") + '</button></div>';
+      '<button class="btn bitsbuy artisanbuy" data-sku="' + esc(x.sku) + '"' + (busy ? " disabled" : "") + '>' + (!g || full ? "Buy for " + cost + " Bits (+" + bonusSc + " Starchrom)" : "Repair for " + cost + " Bits") + '</button></div>';
   }
   function buyBits(sku) {
     if (busy) return;
@@ -314,7 +317,7 @@
           busy = false;
           if (res.j.error === "wrong_user") return;
           if (res.j.player) bag.player = res.j.player;
-          notice = res.ok ? { kind: "ok", text: (res.j.repaired ? "🧤 " + res.j.repaired + " repaired — " + ((res.j.player && res.j.player.gloveLeft) || "") + " catches left" : res.j.capacity ? "+" + res.j.capacity + " Securement Pod space" : "+" + money(res.j.starchrom) + " Starchrom") + " — thanks for the Bits!" } : { kind: "err", text: "Your Bits went through but the Starchrom didn’t arrive yet. Refresh the panel; if it’s still missing, tell the streamer." };
+          notice = res.ok ? { kind: "ok", text: (res.j.repaired ? "🧤 " + res.j.repaired + " repaired — " + ((res.j.player && res.j.player.gloveLeft) || "") + " catches left" : res.j.artisan ? "Artisan’s Touch: +" + money(res.j.starchrom) + " Starchrom" : res.j.capacity ? "+" + res.j.capacity + " Securement Pod space" : "+" + money(res.j.starchrom) + " Starchrom") + " — thanks for the Bits!" } : { kind: "err", text: "Your Bits went through but the Starchrom didn’t arrive yet. Refresh the panel; if it’s still missing, tell the streamer." };
           whoLine(); if (view.page === "shop") renderShop();
         })
         .catch(function () { busy = false; notice = { kind: "err", text: "Couldn’t reach the game to add your Starchrom. Refresh the panel in a minute." }; renderShop(); });

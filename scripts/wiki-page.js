@@ -147,7 +147,7 @@ ${process.env.BITS_LIVE === "1" ? `
 ${table(["Item", "What you get", "Bits"], [
   ...BITS_PACKS.filter((x) => x.starchrom).map((x) => [`'''${fmt(x.starchrom)} ${SC}'''`, "Added to your wallet right away", fmt(x.bits)]),
   ...BITS_PACKS.filter((x) => x.capacity).map((x) => [`'''+${x.capacity} Securement Pods'''`, "Permanent extra Securement Pod space", fmt(x.bits)]),
-  ...BITS_PACKS.filter((x) => x.repair).map((x) => [`'''${x.name}'''`, `Repairs the gloves you wear back to their full catches (no gloves on: ${fmt(x.bits * 5)} ${SC} instead)`, fmt(x.bits)]),
+  ...BITS_PACKS.filter((x) => x.repair).map((x) => [`'''${x.name}'''`, `Repairs the gloves you wear back to their full catches (no gloves on, or they are already like new: ${fmt(x.bits * 5)} ${SC} instead)`, fmt(x.bits)]),
 ])}
 ` : ""}
 '''Ways to get Securement Units'''

@@ -33,6 +33,14 @@ const receipt = (tx, userId, sku, amount) => sign({ topic: "bits_transaction_rec
   [s, j] = await post(tA, { receipt: receipt("tx8", "A", "artisan250", 250) });
   assert.equal(j.repaired, "Savior Gloves"); assert.equal(j.player.gloveLeft, 30); assert.equal(j.player.gloveMax, 30); assert.equal(j.player.starchrom, before); console.log("artisan repairs Savior Gloves 3 → 30");
   [s, j] = await post(tA, { receipt: receipt("tx9", "A", "artisan250", 25) }); assert.equal(j.error, "unknown_product");
+  before = game.loadPlayer("A").starchrom;
+  [s, j] = await post(tA, { receipt: receipt("tx11", "A", "artisan250", 250) }); // gloves already full -> Starchrom instead
+  assert.equal(j.repaired, null); assert.equal(j.player.starchrom, before + 1250); console.log("artisan on full gloves → 1,250 Starchrom");
   assert.ok(ext.bagFor("A").bitsPacks.find((x) => x.sku === "artisan250").icon.endsWith("/panel/artisan.png"));
+  // a viewer who never played: buying with Bits signs them up (name looked up on Twitch)
+  require("../twitch").helix = async () => ({ data: [{ id: "Z", login: "newbie", display_name: "Newbie" }] });
+  const tZ = sign({ user_id: "Z", channel_id: "1", role: "viewer" });
+  [s, j] = await post(tZ, { receipt: receipt("tx10", "Z", "starchrom25", 5) });
+  assert.equal(j.credited, true); assert.equal(j.player.login, "newbie"); console.log("first-time buyer signed up and credited");
   console.log("all bits checks passed"); srv.close(); process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });
