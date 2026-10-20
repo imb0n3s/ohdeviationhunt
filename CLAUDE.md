@@ -31,6 +31,9 @@
   credit for packs (for testing 0.0.2 in Hosted Test, where Twitch makes Bits free). Env BITS_ENABLED=1 still forces it on.
   Artisan's Touch (sku artisan250, 250 Bits = $2.50, ext/artisan.png from the wiki's File:Artisans_Touch.png): repairs the worn
   gloves to full catches; bought with no gloves on = 1,250 Starchrom. Panel only (Bits). Twitch product: artisan250 / 250.
+  REVIEW MODE (B 2026-10-20, after Twitch put 0.0.2 on hold: "Bits shop tab doesn't show"): /admin/bits second button, setting
+  bits:review — everyone using a Bits-capable panel (0.0.2 only) sees packs and gets credit; glove prices unchanged; 0.0.2 tester
+  list cut to just imbon3s while it's on. Switching Bits live turns review mode off.
   0.0.2 SUBMITTED FOR REVIEW 2026-10-14 23:30 CT (B chose: test purchases are NOT credited during review; review notes say
   the Bits Shop shows only for the owner until release). WHEN APPROVED: Monetization -> set all 10 products In Development = No,
   Release 0.0.2, then B flips /admin/bits ON (raises glove prices, re-syncs the wiki).

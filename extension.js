@@ -164,7 +164,7 @@ function mount(app) {
 
   // Bits purchase: the panel sends Twitch's signed transaction receipt after useBits() completes.
   app.post("/ext/bits/complete", express.json({ limit: "8kb" }), (req, res) => {
-    if (!bits.live()) { // still off: only owners may test (Hosted Test purchases are free)
+    if (!bits.live() && !bits.review()) { // still off: only owners may test (Hosted Test purchases are free)
       let login = null;
       try { login = db.q.getPlayer.get(auth(req).user_id)?.login; } catch {}
       if (!bits.isOwnerLogin(login)) return res.status(403).json({ error: "bits_disabled" });

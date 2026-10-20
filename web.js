@@ -809,12 +809,13 @@ function createApp(pool) {
     const b = require("./bits"), on = b.live();
     const gl = GLOVES.map((g) => `${esc(g.name)} ${fmt(g.price)} (${g.catches} catches)`).join(" · ");
     res.set("Cache-Control", "no-store").send(page("Bits switch", `<h1>Bits switch</h1><div class="card"><p>Bits are <b>${on ? "ON for everyone" : "OFF (only owners can test them)"}</b>.</p><p>Glove prices now: ${gl}</p>
-<form method="post" action="/admin/bits"><input type="hidden" name="on" value="${on ? "0" : "1"}"><button class="tbtn" type="submit">${on ? "Switch Bits OFF" : "Switch Bits ON (raises glove prices)"}</button></form>${cfg.BITS_ENABLED ? "<p class=\"muted\">Railway env BITS_ENABLED=1 keeps it on regardless.</p>" : ""}</div>`));
+<form method="post" action="/admin/bits"><input type="hidden" name="on" value="${on ? "0" : "1"}"><button class="tbtn" type="submit">${on ? "Switch Bits OFF" : "Switch Bits ON (raises glove prices)"}</button></form>${on ? "" : `<hr><p>Review mode is <b>${b.review() ? "ON" : "OFF"}</b>: while ON, anyone using the 0.0.2 panel (Twitch reviewers + accounts on its tester list) sees the Bits Shop and gets what they buy (test Bits are free). Glove prices don't change. Keep 0.0.2's tester list to just you while it's on.</p><form method="post" action="/admin/bits"><input type="hidden" name="review" value="${b.review() ? "0" : "1"}"><button class="tbtn ghost" type="submit">${b.review() ? "Turn review mode OFF" : "Turn review mode ON"}</button></form>`}${cfg.BITS_ENABLED ? "<p class=\"muted\">Railway env BITS_ENABLED=1 keeps it on regardless.</p>" : ""}</div>`));
   });
   app.post("/admin/bits", express.urlencoded({ extended: false, limit: "1kb" }), (req, res) => {
     if (!sameSite(req)) return res.status(403).send("forbidden");
     const v = viewerOf(req);
     if (!v || !isOwner(v)) return res.status(403).send("forbidden");
+    if (req.body.review != null) { require("./bits").setReview(req.body.review === "1"); return res.redirect(303, "/admin/bits"); }
     require("./bits").setLive(req.body.on === "1");
     console.log(`[bits] switch set by ${v.login}`);
     require("./wikisync").scheduleWikiSync(1000); // the guide's glove prices change with it

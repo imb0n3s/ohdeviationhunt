@@ -15,6 +15,10 @@ const ext = require("../extension"), game = require("../game");
   game.loadPlayer("O", "imbon3s", "imbon3s");
   assert.ok(ext.bagFor("O").bitsPacks.length > 0);
   assert.equal(require("../rarity").GLOVES[2].price, 10000);
+  // review mode: everyone gets packs + credit, glove prices unchanged
+  require("../bits").setReview(true);
+  assert.ok(ext.bagFor("A").bitsPacks.length > 0); assert.equal(require("../rarity").GLOVES[2].price, 10000);
+  require("../bits").setReview(false); assert.deepEqual(ext.bagFor("A").bitsPacks, []);
   // the live switch: on = packs for everyone + launch glove prices, no restart
   require("../bits").setLive(true);
   assert.ok(ext.bagFor("A").bitsPacks.length > 0);
