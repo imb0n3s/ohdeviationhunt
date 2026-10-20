@@ -34,7 +34,7 @@
   REVIEW MODE (B 2026-10-20, after Twitch put 0.0.2 on hold: "Bits shop tab doesn't show"): /admin/bits second button, setting
   bits:review — everyone using a Bits-capable panel (0.0.2 only) sees packs and gets credit; glove prices unchanged; 0.0.2 tester
   list cut to just imbon3s while it's on. Switching Bits live turns review mode off.
-  0.0.2 SUBMITTED FOR REVIEW 2026-10-14 23:30 CT (B chose: test purchases are NOT credited during review; review notes say
+  0.0.2 RESUBMITTED 2026-10-20 ~12:30 CT with review mode ON and tester list = imbon3s only (docs/tester-allowlist.txt; the 100-name list is in git history). First submitted 2026-10-14 23:30 CT (B chose: test purchases are NOT credited during review; review notes say
   the Bits Shop shows only for the owner until release). WHEN APPROVED: Monetization -> set all 10 products In Development = No,
   Release 0.0.2, then B flips /admin/bits ON (raises glove prices, re-syncs the wiki).
   Extension: 0.0.1 is RELEASED (everyone sees it). 0.0.2 = Bits + Artisan's Touch, tested from Local/Hosted Test with Testing
