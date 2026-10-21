@@ -647,6 +647,14 @@ function featuredSpecimen(specs, dev) {
 function backfillVariantTraits() {
   let n = 0;
   db.tx(() => {
+    // a NORMAL specimen carrying a variant's own trait is that variant (B 2026-10-21: Rebecca with "Aberrant" = Aberrant Progeny)
+    for (const sp of db.raw.prepare(`SELECT id, deviation, t1, t2 FROM specimens WHERE variant='' AND (t1 IS NOT NULL OR t2 IS NOT NULL)`).all()) {
+      const dev = data.get(sp.deviation);
+      if (!dev || !dev.variants.length) continue;
+      const names = dev.variants.map((v) => v.name);
+      const v = traits.lockedVariant(dev.name, sp.t1, names, dev.category) || traits.lockedVariant(dev.name, sp.t2, names, dev.category);
+      if (v) { db.raw.prepare(`UPDATE specimens SET variant=? WHERE id=?`).run(v, sp.id); n++; }
+    }
     for (const sp of db.q.variantSpecimens.all()) {
       const dev = data.get(sp.deviation);
       if (!dev) continue;

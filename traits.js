@@ -144,6 +144,8 @@ function ownOptions(traitList, variants) {
       let locked = label && variants.some((v) => variantMatches(label, v)) ? label : null;
       // a trait named exactly like one of the deviation's variants (e.g. "Infrasonic Illusion") belongs to that variant
       if (!locked) { const v = variants.find((x) => norm(x) === norm(t.name)); if (v) locked = v; }
+      // a trait whose name starts a variant's name belongs to it too (B 2026-10-21: Rebecca's "Aberrant" = Aberrant Progeny)
+      if (!locked) { const v = variants.find((x) => norm(x).startsWith(norm(t.name)) && norm(t.name).length >= 5); if (v) locked = v; }
       out.push({ key: t.key, label, effect: line, locked });
     }
   }
@@ -190,6 +192,14 @@ function variantTraits(devName, variant, variants = [], cat = "combat") {
   if (pick1) out[1] = pick1.key;
   if (pick2) out[2] = pick2.key;
   return out;
+}
+
+// the variant a trait is locked to for this deviation (or null): a base specimen carrying it is really that variant
+function lockedVariant(devName, key, variants = [], cat = "combat") {
+  if (!T || !key) return null;
+  const a = allowed(devName, cat);
+  const o = [...ownOptions(a.slot1Own, variants), ...ownOptions(a.slot2Own, variants)].find((x) => x.key === key && x.locked);
+  return o ? variants.find((v) => variantMatches(o.locked, v)) || null : null;
 }
 
 function rollSpecimen(devName, variant, variants = [], cat = "combat", legendary = null) {
@@ -255,4 +265,4 @@ const shortTraits = (s, cat) => {
   return t.some(Boolean) ? t.map((x, i) => `Slot ${i + 1}: ${x || "None"}`).join(" · ") : "Traits: none";
 };
 
-module.exports = { nameOf, variantTraits, LEGENDARY_KEYS, refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, rollLegendary, LEGENDARY_CHANCE, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS, SLOT_CHANCE };
+module.exports = { lockedVariant, nameOf, variantTraits, LEGENDARY_KEYS, refresh, parse, allowed, ownOptions, variantMatches, rollSpecimen, rollLegendary, LEGENDARY_CHANCE, traitName, traitEffect, shortTraits, info: () => ({ source, loaded: !!T }), RATING_WEIGHTS, SLOT_CHANCE };

@@ -75,6 +75,8 @@
     never mention the extra time).
   - OBS Source cards scale to fill the whole browser source (600×600 recommended).
   - Best specimen order: skin > variation > Legendary trait (Upper Hand, Power Rewind 2) > Skill+Activity > traits.
+  - Rebecca's "Aberrant" trait = the Aberrant Progeny variation (B 2026-10-21): traits.js locks an own trait whose name starts a variant's
+    name to that variant; backfillVariantTraits promotes normal specimens carrying it and fills variant ones missing it (every start + 6h).
   - Leaderboard (/top), B 2026-10-12: Top Streams on top, then Metas — Top 100 (viewers only, NO streamers) with Top Streamers
     (everyone whose channel runs the game) right NEXT to it, side by side. No tabs (B didn't want them).
   - Homepage stats: Channels · Metas · Deviations Secured · Deviations Attempted (all !secure throws) · Deviations ·
