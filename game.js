@@ -744,22 +744,22 @@ function unitNotices(now = Date.now()) {
     if (!byChannel.has(ch)) byChannel.set(ch, []);
     byChannel.get(ch).push({ name: `@${p.display}`, got, units: p.units.standard || 0, gren: grenadeCount(p, 1), starchrom: p.starchrom });
   }
-  // one player:  "🎁 @luna acquired an hourly Securement Unit and 15 Starchrom! You now have 8 Securement Units and 1,240 Starchrom. 🎁"
-  // several at once: "🎁 Hourly gift (+1 Securement Unit, +15 Starchrom): @luna now 8 units · 1,240 Starchrom | @bob now 3 units · 95 Starchrom 🎁"
+  // kept short (B 2026-10-22): just what they got
+  // one player:  "🎁 @luna acquired an hourly Securement Unit, a Binding Grenade and 25 Starchrom!"
+  // several at once: "🎁 Hourly gift (+1 Securement Unit, +1 Binding Grenade, +25 Starchrom): @luna, @bob (no unit) 🎁"
   const sc = `${ECONOMY.hourlyStarchrom} ${SC}`;
-  const unitsTxt = (n) => `${fmt(n)} Securement Unit${n === 1 ? "" : "s"}`;
   const one = (x) => x.got
-    ? `🎁 ${x.name} acquired ${x.got === 1 ? "an hourly Securement Unit" : `${x.got} hourly Securement Units`}, a Binding Grenade and ${sc}! You now have ${unitsTxt(x.units)}, ${fmt(x.gren)} Lv.1 grenades and ${fmt(x.starchrom)} ${SC}. 🎁`
-    : `🎁 ${x.name} acquired an hourly Binding Grenade and ${sc}! (free units stop at ${ECONOMY.freeUnitCap} Securement Pods — !buy more with ${SC}) You now have ${fmt(x.gren)} Lv.1 grenades and ${fmt(x.starchrom)} ${SC}. 🎁`;
-  const short = (x) => `${x.name} now ${fmt(x.units)} unit${x.units === 1 ? "" : "s"} · ${fmt(x.starchrom)} ${SC}${x.got ? "" : ` (${ECONOMY.freeUnitCap}+ pods, no free unit)`}`;
+    ? `🎁 ${x.name} acquired ${x.got === 1 ? "an hourly Securement Unit" : `${x.got} hourly Securement Units`}, a Binding Grenade and ${sc}!`
+    : `🎁 ${x.name} acquired an hourly Binding Grenade and ${sc}!`;
+  const short = (x) => `${x.name}${x.got ? "" : " (no unit)"}`;
   const head = `🎁 Hourly gift (+${ECONOMY.hourlyUnits} Securement Unit, +1 Binding Grenade, +${sc}): `;
   const out = [];
   for (const [ch, list] of byChannel) {
     if (list.length === 1) { out.push([ch, one(list[0])]); continue; }
     let batch = [];
-    const flush = () => { out.push([ch, batch.length === 1 ? one(batch[0]) : head + batch.map(short).join(" | ") + " 🎁"]); batch = []; };
+    const flush = () => { out.push([ch, batch.length === 1 ? one(batch[0]) : head + batch.map(short).join(", ") + " 🎁"]); batch = []; };
     for (const x of list) {
-      if (batch.length && (head + [...batch, x].map(short).join(" | ") + " 🎁").length > 450) flush();
+      if (batch.length && (head + [...batch, x].map(short).join(", ") + " 🎁").length > 450) flush();
       batch.push(x);
     }
     if (batch.length) flush();
