@@ -9,6 +9,9 @@
   root-file change or the wiki won't update. Fallback if the env vars are missing: api.php action=edit from
   B's logged-in browser, text from raw.githubusercontent.com/imb0n3s/ohdeviationhunt/<commit>/docs/Deviation_Hunt.wiki.
 - Pushing to main auto-deploys on Railway.
+- Railway security incident 2026-10-21/22: all secrets rotated by B on 10-22 (TWITCH_CLIENT_SECRET, WIKI_BOT_PASS, EXT_SECRET,
+  ADMIN_KEY, SESSION_SECRET). EXT_SECRET accepts several secrets comma-separated (config.js EXT_SECRETS): when rotating the
+  extension secret, put NEW,OLD in it — Twitch keeps signing viewer tokens with the old one for up to ~1h, or the panel 401s.
 - Twitch extension edits (details, images, zip upload) need the version in Local Test. Afterwards,
   move it back to Hosted Test (the button opens a "Move" confirm dialog — click it), then RELOAD the status page and confirm "Current Status: Hosted Test"
   (the move can silently fail); in Local Test the panel loads from localhost and shows blank.
