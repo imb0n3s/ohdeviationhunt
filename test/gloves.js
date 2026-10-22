@@ -16,7 +16,7 @@ const assert = require("assert");
   assert.equal(game.loadPlayer("G").glove_left, 9);
   const rnd = Math.random;
   const round = async (hit) => { await sp.spawn("CH", true, { dev, variant: null }); const r = sp.attempt("CH", "G", "g", "G"); Math.random = () => (hit ? 0 : 0.999); await sp.resolve("CH"); Math.random = rnd; return r; };
-  assert.match(await round(true), /Rustic Gloves \+3% \(9 catches left\)/);
+  assert.match(await round(true), /🧤 \+3% \(9\)/);
   assert.equal(game.loadPlayer("G").glove_left, 8);
   await round(false); assert.equal(game.loadPlayer("G").glove_left, 8);  // a miss doesn't count
   for (let i = 0; i < 7; i++) await round(true);

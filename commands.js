@@ -76,8 +76,7 @@ function makeHandler(pool, spawns) {
       // any !secure in a live stream also switches on today's hourly perks (B 2026-10-07)
       const started = game.startHourly(uid, login, name, bid);
       if (!started) return reply(r);
-      const note = game.HOURLY_ON_TEXT(uid);
-      return reply(r ? (r.length + note.length < 495 ? `${r} ${note}` : r) : `@${name} ${note}`);
+      return reply(r ? `${r} · ${game.HOURLY_ON_SHORT(uid)}` : `@${name} ${game.HOURLY_ON_TEXT(uid)}`);
     }
 
     // ---- Legendary pool: !donate <amount|max> while a Legendary is loose (B 2026-10-08) ----

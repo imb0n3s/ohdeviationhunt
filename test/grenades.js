@@ -13,7 +13,7 @@ const assert = require("assert");
   p.starchrom = 10000; game.savePlayer(p);
   // plain !secure uses Lv.1 (the best she has)
   await sp.spawn("CH", true, { dev, variant: null });
-  assert.match(sp.attempt("CH", "A", "alice", "Alice"), /Threw a Lv\.1 Binding Grenade .*14 Lv\.1 left/);
+  assert.match(sp.attempt("CH", "A", "alice", "Alice"), /Lv\.1 grenade thrown · 💣 14 Lv\.1 left · 📦 \d+ Pods? left/);
   assert.equal(sp.active.get("CH").attempts.get("A").bonus, 0);
   await sp.resolve("CH");
   // buy Lv.5 (2 packs = 10) on the shop: plain !secure still uses the LOWEST level first (B 2026-10-19)
@@ -21,12 +21,12 @@ const assert = require("assert");
   assert.equal(game.grenadeCount(game.loadPlayer("A"), 5), 10);
   assert.match(game.buy("A", "alice", "Alice", ["grenade3"]), /bought 5 Lv\.3 Binding Grenades/);
   await sp.spawn("CH", true, { dev, variant: null });
-  assert.match(sp.attempt("CH", "A", "alice", "Alice"), /Lv\.1 Binding Grenade at/);
+  assert.match(sp.attempt("CH", "A", "alice", "Alice"), /Lv\.1 grenade thrown ·/);
   assert.equal(sp.active.get("CH").attempts.get("A").bonus, 0);
   await sp.resolve("CH");
   // !secure 1 picks Lv.1; !secure 3 picks Lv.3 (+2.5%)
   await sp.spawn("CH", true, { dev, variant: null });
-  assert.match(sp.attempt("CH", "A", "alice", "Alice", "3"), /Lv\.3 Binding Grenade \(\+2\.5%\)/);
+  assert.match(sp.attempt("CH", "A", "alice", "Alice", "3"), /Lv\.3 grenade thrown \(\+2\.5%\)/);
   assert.equal(sp.active.get("CH").attempts.get("A").bonus, 0.025);
   await sp.resolve("CH");
   // out of grenades -> can't throw (nothing spent)

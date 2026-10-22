@@ -59,6 +59,12 @@ function startHourly(userId, login, display, bid) {
   db.q.setHourlyOn.run(now, carry ? row.last_unit_at : now, stream, userId);
   return true;
 }
+// one-liner for the !secure reply (B 2026-10-21: throw replies kept short)
+const HOURLY_ON_SHORT = (userId) => {
+  const row = userId && db.q.getPlayer.get(userId);
+  const mins = row ? Math.max(1, Math.ceil(((row.last_unit_at || Date.now()) + HOUR - Date.now()) / 60000)) : 60;
+  return `⏰ Hourly perks on here (next in ${mins}m)`;
+};
 const HOURLY_ON_TEXT = (userId) => {
   const row = userId && db.q.getPlayer.get(userId);
   const mins = row ? Math.max(1, Math.ceil(((row.last_unit_at || Date.now()) + HOUR - Date.now()) / 60000)) : 60;
@@ -455,7 +461,8 @@ class Spawns {
     s.attempts.set(userId, { login, display, unit, isNew: p.isNew, glove: glove ? glove.id : null, grenade: gren.level, bonus: (glove ? glove.bonus : 0) + (soupMin ? SOUP.bonus : 0) + gren.bonus });
     this.persist(bid);
     const left = p.units[unit];
-    const throwTxt = `🎯 Threw a Lv.${gren.level} Binding Grenade${gren.bonus ? ` (+${+(gren.bonus * 100).toFixed(1)}%)` : ""} at the ${spawnName(s, bid)} (−${ECONOMY.throwCost} ${SC}, Left: ${fmt(p.starchrom)}; ${grenadeCount(p, gren.level)} Lv.${gren.level} left). You'll have ${left} Securement Pod${left === 1 ? "" : "s"} left if you capture it.${glove ? ` 🧤 ${glove.name} +${Math.round(glove.bonus * 100)}% (${p.glove_left} catch${p.glove_left === 1 ? "" : "es"} left)` : ""}${soupMin ? ` 🍲 Capture Soup +${SOUP.bonus * 100}% (${soupMin}m left)` : ""}`;
+    // short on purpose (B 2026-10-21): what was thrown, grenades + Securement Pods left, active perks
+    const throwTxt = `🎯 Lv.${gren.level} grenade thrown${gren.bonus ? ` (+${+(gren.bonus * 100).toFixed(1)}%)` : ""} · 💣 ${grenadeCount(p, gren.level)} Lv.${gren.level} left · 📦 ${left} Pod${left === 1 ? "" : "s"} left${glove ? ` · 🧤 +${Math.round(glove.bonus * 100)}% (${p.glove_left})` : ""}${soupMin ? ` · 🍲 +${SOUP.bonus * 100}% (${soupMin}m)` : ""}`;
     if (p.isNew) return `@${display} welcome, Meta! You started with ${ECONOMY.starterUnits.standard} Securement Units, ${ECONOMY.starterGrenades} Binding Grenades and ${ECONOMY.starterStarchrom} ${SC}. ${throwTxt} Type !daily for more, plus 1 free unit every hour this stream.`;
     return `@${display} ${throwTxt}`;
   }
@@ -882,4 +889,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { streamTop, centralMonthStart, grenadeCount, grenadeText, grenadeTotal, freeRoom, todaysLeader, fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { HOURLY_ON_SHORT, streamTop, centralMonthStart, grenadeCount, grenadeText, grenadeTotal, freeRoom, todaysLeader, fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
