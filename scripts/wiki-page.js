@@ -98,7 +98,7 @@ out.push(box("Chat", "List of All Commands", table(["Command", "Effect"], [
   [cmd("!hourly"), `Turn on hourly perks for the stream you\'re in: ${ECONOMY.hourlyUnits} free Securement Unit (up to ${ECONOMY.freeUnitCap} Securement Pods) + ${ECONOMY.hourlyStarchrom} ${SC} every hour while you\'re there. Your first ${cmd("!secure")} or ${cmd("!daily")} in that stream turns them on too. \'\'\'One stream at a time\'\'\' — in another channel they move over when you type ${cmd("!hourly")} or ${cmd("!secure")} there, and your timer keeps going; the next broadcast needs ${cmd("!hourly")} again. Typed again in the same stream, it shows when the next one arrives.`],
   [cmd("!timercheck"), `When your next free hourly Securement Unit (+${ECONOMY.hourlyStarchrom} ${SC}) arrives, or how to start/resume your timer. Also ${cmd("!timer")}.`],
   [cmd("!pods [name]"), `Your collection count (unique deviations, variations and skins, counted separately) and a link to your collection page. Add a name to see someone else's. Also ${cmd("!pod")}.`],
-  [cmd("!traits <deviation>"), `Skill Rating, Activity Rating and all three traits of your top specimen of that deviation (best skin, else best variation, else best). Also ${cmd("!stats")}.`],
+  [cmd("!traits <deviation>"), `Catch results in chat don't show ratings — type ${cmd("!stats")} on its own for the one you just caught. With a name: Skill Rating, Activity Rating and all three traits of your top specimen of that deviation (best skin, else best variation, else best). Also ${cmd("!stats")}.`],
   [cmd("!dev <deviation>"), `Info about a deviation: what it does, its variations and skins, and a wiki link.`],
   [cmd("!hunttop"), `Top collectors across every channel. Also ${cmd("!leaderboard")}.`],
   [cmd("!todaysleader"), `Who has secured the most deviations in the current stream (top 5).`],
@@ -195,7 +195,7 @@ ${Object.keys(TIERS).filter((k) => byTier[k]).map((k) => `\n<div style="margin-t
 
 out.push(box("Shiny", "Variations & Skins", `
 Variations and skins are Deviation Hunt's shinies. Chat and the streamer's OBS Source name them as soon as they appear — unless the streamer turned on surprise mode (!hunt surprise on), where they look like the normal deviation until the result reveals what it really was:
-${code(`🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Grumpy Bulb — it was a ✨ Variation: Violet Robe (Legendary)! — a 3/4 by @metabones! 🔒 +${TIERS.legendary.reward} ${SC} each.`)}
+${code(`🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Grumpy Bulb — it was a ✨ Variation: Violet Robe (Legendary)! — @metabones! 🔒 +${TIERS.legendary.reward} ${SC} each.`)}
 
 * Each variation and skin is its own entry in your Securement Pods, and the first one of each earns the +${ECONOMY.newSpeciesBonus} new-entry bonus.
 * Your collection page and the Twitch panel count '''Variations''' and '''Skins''' separately (their own totals and their own lists on each deviation). Caught variations glow '''<span style="color:#fbbf24;">gold</span>''' and caught skins glow '''<span style="color:#f472b6;">pink</span>''', showing the variant's picture.

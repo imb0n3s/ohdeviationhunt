@@ -512,7 +512,7 @@ class Spawns {
           p.starchrom += got + (had ? 0 : ECONOMY.newSpeciesBonus);
           if (!had) firsts.push(a.display);
           if (v) { legendWins.push(a.display); legendReward = got; }
-          caught.push(`a ${ratingTag(sp)} by @${a.display}`);
+          caught.push(`@${a.display}`); // no rating in chat (B 2026-10-24): !stats / !traits shows it, the OBS card too
           winners.push({ name: a.display, rating: ratingTag(sp) });
           // gloves wear out: a successful catch made wearing them uses one up
           if (a.glove && p.gloves.includes(a.glove) && p.glove_left > 0 && --p.glove_left === 0) {
@@ -545,7 +545,7 @@ class Spawns {
     }
     msg += poolNote;
     if (wornOut.length) msg += ` 🧤 ${list(wornOut, 6)} wore out — !buy a new pair.`;
-    msg += caught.length ? ` | !traits ${s.dev.id} for traits` : ` | !pods to see your collection`;
+    msg += caught.length ? ` | !stats to see what you got` : ` | !pods to see your collection`;
     return this.sendResult(bid, prefix + msg);
   }
 

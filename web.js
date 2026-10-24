@@ -145,7 +145,7 @@ function chatExamples(botName) {
       line("viewer42", "!secure"), thr("viewer42", "Grumpy Bulb", 480, 7),
       line("metabones", "!secure"), thr("metabones", "Grumpy Bulb", 2310, 23, glove),
       line("nightowl", "!secure"), thr("nightowl", "Grumpy Bulb", 95, 2),
-      bot(`⭐ SECURED! ⭐ Grumpy Bulb — a 3/2 by @metabones, a 5/5 ⭐ by @viewer42! 🔒 +${rew(rarityOf("Grumpy Bulb"))} Starchrom each. 📖 New entry for viewer42 (+${ECONOMY.newSpeciesBonus}). It broke free from nightowl. | !traits grumpybulb for traits`),
+      bot(`⭐ SECURED! ⭐ Grumpy Bulb — @metabones, @viewer42! 🔒 +${rew(rarityOf("Grumpy Bulb"))} Starchrom each. 📖 New entry for viewer42 (+${ECONOMY.newSpeciesBonus}). It broke free from nightowl. | !stats to see what you got`),
     ]),
     ex("Nobody Catches It", `If every throw misses, it gets away. You only lose the ${T} Starchrom for the throw — your Securement Pod stays empty for next time.`, [
       spawn("Lonewolf Whisper"),
@@ -156,12 +156,12 @@ function chatExamples(botName) {
     ex("A Variation or Skin Appears", `Chat (and the streamer's OBS Source) names a Variation or Skin as soon as it appears. They're always Legendary — harder to catch, worth ${rew("legendary")} Starchrom.`, [
       bot(`👀 A 🌟 LEGENDARY Grumpy Bulb (✨ Variation: Violet Robe) has been spotted in the wild! Type !secure within ${W}s to catch it.`),
       line("viewer42", "!secure"), thr("viewer42", "Grumpy Bulb (✨ Variation: Violet Robe)", 470, 6),
-      bot(`🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Grumpy Bulb (✨ Variation: Violet Robe) — a 4/4 by @viewer42! 🔒 +${rew("legendary")} Starchrom each. 📖 New entry for viewer42 (+${ECONOMY.newSpeciesBonus}). | !traits grumpybulb for traits`),
+      bot(`🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Grumpy Bulb (✨ Variation: Violet Robe) — @viewer42! 🔒 +${rew("legendary")} Starchrom each. 📖 New entry for viewer42 (+${ECONOMY.newSpeciesBonus}). | !stats to see what you got`),
     ]),
     ex("Surprise Mode: It Was a Variation or Skin", `If the streamer turned on surprise mode (<kbd>!hunt surprise on</kbd>), chat and the OBS Source show the normal deviation, and only the result tells you it was secretly a Variation or Skin.`, [
       spawn("Lonewolf Whisper"),
       line("metabones", "!secure"), thr("metabones", "Lonewolf Whisper", 2300, 23, glove),
-      bot(`🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Lonewolf Whisper — it was a ✨ Variation: Lunar Oracle (Legendary)! — a 4/4 by @metabones! 🔒 +${rew("legendary")} Starchrom each. 📖 New entry for metabones (+${ECONOMY.newSpeciesBonus}). | !traits lonewolfwhisper for traits`),
+      bot(`🌟🌟🌟🌟🌟 LEGENDARY SECURED! 🌟🌟🌟🌟🌟 Lonewolf Whisper — it was a ✨ Variation: Lunar Oracle (Legendary)! — @metabones! 🔒 +${rew("legendary")} Starchrom each. 📖 New entry for metabones (+${ECONOMY.newSpeciesBonus}). | !stats to see what you got`),
     ]),
   ].join("\n");
 }
