@@ -585,12 +585,12 @@ function daily(userId, login, display, bid) {
   const p = loadPlayer(userId, login, display);
   if (!dailyReady(userId)) {
     const n = db.q.countDaily.get(userId).n;
-    return `@${display} you already claimed today's !daily (${fmt(n)} check-in${n === 1 ? "" : "s"} so far) — it resets at midnight Central (in ${untilReset()}).${hourlyOn(p) ? ` Next free Securement Unit in ${nextUnitIn(p)}.` : ""}`;
+    return `@${display} you already claimed today's !daily (#${fmt(n)}) — next one in ${untilReset()}.`;
   }
   p.last_daily = Date.now();
   p.starchrom += ECONOMY.daily.starchrom;
   const got = [];
-  for (const [k, n0] of Object.entries(ECONOMY.daily.units)) { const n = Math.min(n0, freeRoom(p)); if (!n) { got.push(`no Securement Unit (free units stop at ${ECONOMY.freeUnitCap} Securement Pods — !buy more with ${SC}, up to ${unitCap(p)})`); continue; } p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
+  for (const [k, n0] of Object.entries(ECONOMY.daily.units)) { const n = Math.min(n0, freeRoom(p)); if (!n) { got.push(`no unit (over ${ECONOMY.freeUnitCap} Pods)`); continue; } p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
   db.tx(() => {
     savePlayer(p);
     db.q.addDaily.run(userId, stream, bid, Date.now());
@@ -598,7 +598,8 @@ function daily(userId, login, display, bid) {
   })();
   startHourly(userId, login, display, bid); // !daily also turns hourly perks on for this stream (keeps a clock already running here)
   const checkins = db.q.countDaily.get(userId).n;
-  return `@${display} ✅ Check-in #${fmt(checkins)}! 📦 Daily supply drop: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}! Hourly perks are on for this stream too: 1 free Securement Unit + ${ECONOMY.hourlyStarchrom} ${SC} every hour while you're here (in another channel, type !hourly there). ${bagText(p)}`;
+  // kept to one line (B 2026-10-24: "1 or 2 sentences max")
+  return `@${display} ✅ Check-in #${fmt(checkins)}: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")} · ⏰ Hourly perks on here · 💰 ${fmt(p.starchrom)} ${SC}`;
 }
 
 function shop() {

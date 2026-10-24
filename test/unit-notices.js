@@ -63,7 +63,7 @@ assert.match(game.nextUnitIn(game.loadPlayer("2")), /^(59|60)m$/);
 assert.match(game.daily("1", "luna", "Luna", "CH2"), /already claimed today's !daily/);
 assert.equal(game.nextUnitIn(game.loadPlayer("3")), "once you type !hourly in the live stream you're watching");
 raw.prepare("UPDATE daily_claims SET at = at - 86400000").run();          // next day
-assert.match(game.daily("1", "luna", "Luna", "CH2"), /Daily supply drop/);
+assert.match(game.daily("1", "luna", "Luna", "CH2"), /Check-in #\d+: \+\d+ Starchrom/);
 streams = {};
 assert.match(game.daily("2", "bob", "Bob", "CH"), /only works while the stream is live/);
 console.log("hourly unit checks passed");
