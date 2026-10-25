@@ -113,6 +113,8 @@
   NIGHTLY AUDIT (B 2026-10-18): 00:00 Central, index.js -> pool.audit() lists the real chat subscriptions on Twitch; missing/disabled
   ones get one re-subscribe, refused/revoked = channel removed (same as above). Result in setting audit:last, shown on /admin/channels.
 - !hunt spawn is always random (B 2026-10-06 removed picking a deviation/variation/skin; data.findWithVariant is unused).
+  EXCEPTION (B 2026-10-24): owner page /admin/nextspawn sets EVERY channel's next spawn (once per channel, 3h window; setting nextspawn,
+  game.takeForcedNext). Seeded once on deploy with Extradimensional Cat — Luminous Night Cat (index.js, setting nextspawn:seed).
 - Trading (website, one-to-one) is LIVE since 2026-10-12 (B: "Turn on trading, don't add bits yet") — merged from branch `trading` into main. trade.js; /trade, /trade/new, /trade/log, /trade/admin; nav "Trades"; homepage + wiki have a Trading section.
 - Hourly perks (B 2026-10-07): belong to ONE stream — switched on by !hourly, the first !secure, or !daily in that live
   stream (players.hourly_stream). Another channel: !hourly or !secure there moves them and the timer carries over (no restart; B 2026-10-08). Next broadcast needs !hourly again. !timercheck / !hourlycheck (mods). The panel zip still says "Type !daily…" — B: leave the panel/extension review alone, don't re-upload for this.

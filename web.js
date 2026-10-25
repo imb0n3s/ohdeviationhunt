@@ -822,6 +822,28 @@ function createApp(pool) {
     res.redirect(303, "/admin/bits");
   });
 
+  // Owner: make every channel's NEXT spawn one deviation / variation / skin (B 2026-10-24)
+  app.get("/admin/nextspawn", (req, res) => {
+    const v = viewerOf(req);
+    if (!v) return res.redirect("/login?next=/admin/nextspawn");
+    if (!isOwner(v)) return res.status(403).send(page("Not allowed", "<h1>Not allowed</h1>"));
+    const f = game.forcedNext();
+    const cur = f ? `<p>Set: <b>${esc(data.get(f.dev)?.name || f.dev)}${f.variant ? ` — ${esc(f.variant)}` : ""}</b> · used in ${f.done.length} channel${f.done.length === 1 ? "" : "s"} so far · ends ${new Date(f.until).toLocaleTimeString("en-US", { timeZone: "America/Chicago", hour: "numeric", minute: "2-digit" })} Central</p><form method="post" action="/admin/nextspawn"><input type="hidden" name="dev" value=""><button class="tbtn ghost" type="submit">Clear</button></form>` : "<p>Nothing set — spawns are random.</p>";
+    const opts = data.all().slice().sort((a, b) => a.name.localeCompare(b.name)).flatMap((d) => [`<option value="${esc(d.id)}|">${esc(d.name)}</option>`, ...d.variants.map((x) => `<option value="${esc(d.id)}|${esc(x.name)}">${esc(d.name)} — ${esc(x.name)} (${x.kind})</option>`)]).join("");
+    res.set("Cache-Control", "no-store").send(page("Next spawn", `<h1>Next spawn for everyone</h1><div class="card">${cur}<hr><p>Every channel's next spawn (within 3 hours) will be:</p><form method="post" action="/admin/nextspawn"><select name="pick">${opts}</select> <button class="tbtn" type="submit">Set</button></form></div>`));
+  });
+  app.post("/admin/nextspawn", express.urlencoded({ extended: false, limit: "2kb" }), (req, res) => {
+    if (!sameSite(req)) return res.status(403).send("forbidden");
+    const v = viewerOf(req);
+    if (!v || !isOwner(v)) return res.status(403).send("forbidden");
+    try {
+      const [dev, variant] = String(req.body.pick ?? req.body.dev ?? "").split("|");
+      game.setForcedNext(dev || null, variant || null);
+      console.log(`[nextspawn] ${v.login} set ${dev || "(cleared)"} ${variant || ""}`);
+    } catch (e) { return res.status(400).send(esc(e.message)); }
+    res.redirect(303, "/admin/nextspawn");
+  });
+
   // "My Securement Pods": your own page if you're signed in, otherwise sign in with Twitch first
   app.get("/me", (req, res) => {
     const v = viewerOf(req);

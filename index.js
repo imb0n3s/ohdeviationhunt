@@ -17,6 +17,8 @@ async function main() {
   app.listen(cfg.PORT, () => console.log(`[web] ${cfg.BOT_NAME} on ${cfg.BASE_URL} (port ${cfg.PORT})`));
 
   await data.start();
+  // one-time (B 2026-10-24 19:15): every channel's next spawn = Extradimensional Cat — Luminous Night Cat
+  try { if (db.getSetting("nextspawn:seed") !== "lnc-2026-10-24") { require("./game").setForcedNext("extradimensionalcat", "Luminous Night Cat"); db.setSetting("nextspawn:seed", "lnc-2026-10-24"); } } catch (e) { console.error("[nextspawn] seed", e.message); }
   const traits = require("./traits");
   await traits.refresh();
   const variantBackfill = () => { try { const n = require("./game").backfillVariantTraits(); if (n) console.log(`[traits] gave ${n} variant specimen(s) their variant trait`); const d = require("./game").fixDuplicateTraits(); if (d) console.log(`[traits] re-rolled slot 3 on ${d} specimen(s) that repeated a trait`); } catch (e) { console.error("[traits] backfill:", e.message); } };

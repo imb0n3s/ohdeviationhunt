@@ -179,6 +179,32 @@ function rollSpawn() {
   return { dev, variant }; // the variant stays secret until the result is posted
 }
 
+// Owner "next spawn for everyone" (B 2026-10-24): setting nextspawn = {dev, variant, until, done:[bids]} —
+// every channel's NEXT spawn (before `until`) is that deviation/variant, once per channel. Set on /admin/nextspawn.
+const NEXT_KEY = "nextspawn";
+function forcedNext() {
+  try { const f = JSON.parse(db.getSetting(NEXT_KEY) || "null"); return f && f.until > Date.now() ? f : null; } catch { return null; }
+}
+function setForcedNext(devId, variantName, hours = 3) {
+  if (!devId) { db.setSetting(NEXT_KEY, ""); return null; }
+  const dev = data.get(devId);
+  if (!dev) throw new Error("no such deviation");
+  const v = variantName ? dev.variants.find((x) => x.name === variantName) : null;
+  if (variantName && !v) throw new Error("no such variation/skin");
+  const f = { dev: dev.id, variant: v ? v.name : null, until: Date.now() + hours * 3600 * 1000, done: [] };
+  db.setSetting(NEXT_KEY, JSON.stringify(f));
+  return f;
+}
+function takeForcedNext(bid) {
+  const f = forcedNext();
+  if (!f || f.done.includes(String(bid))) return null;
+  const dev = data.get(f.dev);
+  if (!dev) return null;
+  f.done.push(String(bid));
+  db.setSetting(NEXT_KEY, JSON.stringify(f));
+  return { dev, variant: f.variant ? dev.variants.find((x) => x.name === f.variant) || null : null };
+}
+
 // a random Legendary (variation/skin/Chaos), weighted like natural spawns — for imbon3s's "!spawn legendary"
 function rollLegendarySpawn() {
   const opts = [];
@@ -350,7 +376,7 @@ class Spawns {
     if (cfg.PAUSED) return { error: "paused" };
     if (this.active.has(bid)) return { error: "already" };
     // pick: a deviation, or { dev, variant } from !hunt spawn <deviation> <variation/skin>
-    const s = pick ? (pick.dev ? { dev: pick.dev, variant: pick.variant || null } : { dev: pick, variant: null }) : rollSpawn();
+    const s = pick ? (pick.dev ? { dev: pick.dev, variant: pick.variant || null } : { dev: pick, variant: null }) : (takeForcedNext(bid) || rollSpawn());
     if (s) s.legendary = traits.rollLegendary(s.dev.name, s.dev.category); // hidden 1-in-400 Legendary trait, never announced
     if (!s) return { error: "nodata" };
     s.attempts = new Map();
@@ -890,4 +916,4 @@ function refundAllMisses(key, alreadyRefunded = {}) {
   return out;
 }
 
-module.exports = { HOURLY_ON_SHORT, streamTop, centralMonthStart, grenadeCount, grenadeText, grenadeTotal, freeRoom, todaysLeader, fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
+module.exports = { forcedNext, setForcedNext, HOURLY_ON_SHORT, streamTop, centralMonthStart, grenadeCount, grenadeText, grenadeTotal, freeRoom, todaysLeader, fixDuplicateTraits, rollLegendarySpawn, timerCheck, hourlyCheck, hourly, startHourly, HOURLY_ON_TEXT, specimenOrder, featuredSpecimen, backfillVariantTraits, soupLeftMin, announcePurchase, setAnnouncer, starchromText, unitCap, unitRoom, podsUsed, bestGlove, refundAllMisses, hourlyStatus, setStreamLookup, unitNotices, destroySpecimen, savePlayer, nextUnitIn, specimenText, ratingTag, Spawns, daily, shop, buy, inventory, dex, info, top, collectionSummary, loadPlayer, rollSpawn, catchChance, rewardFor, unitsText };
