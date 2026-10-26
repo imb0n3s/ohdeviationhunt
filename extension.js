@@ -122,7 +122,24 @@ function mount(app) {
   });
 
   // every chat command, for the panel's Commands tab (public — no sign-in needed)
-  app.get("/ext/commands", (req, res) => { res.set("Cache-Control", "public, max-age=300"); res.json(require("./cmdlist").commandSections()); });
+  // Twitch review rule 4.5 (B 2026-10-26): the panel must be self-contained — no website addresses or "link" wording
+  const panelText = (t) => String(t || "")
+    .replace(/, plus a link to your collection page/, "")
+    .replace(/^The leaderboard link\./, "Shows the top players.")
+    .replace(/ Setup, the OBS Source and the spawn alert: see For Streamers \([^)]*\)\./, "")
+    .replace(/Type it in the bot's chat \(twitch\.tv\/ohdeviationhunt\) to add Deviation Hunt to your channel, or use Add to my channel on [^.]+\.[a-z.]+\./, "Type it in the ohdeviationhunt chat to add Deviation Hunt to your channel.")
+    .replace(/\s*\(?(https?:\/\/)?[a-z0-9.-]*ohwikiguide\.com[^\s)]*\)?/gi, "");
+  app.get("/ext/commands", (req, res) => {
+    res.set("Cache-Control", "public, max-age=300");
+    res.json(require("./cmdlist").commandSections().map((s) => ({ ...s, note: s.note ? panelText(s.note) : s.note, rows: s.rows.map(([c, t]) => [c, panelText(t)]) })));
+  });
+  // the Bits Shop for viewers who haven't shared their Twitch identity yet (Twitch review 2026-10-26: "We could not see the Bits shop")
+  app.get("/ext/bitsshop", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    let login = null;
+    try { const jwt = verifyExtJwt((req.headers.authorization || "").replace(/^Bearer\s+/i, "")); if (jwt.user_id) login = db.q.getPlayer.get(jwt.user_id)?.login; } catch {}
+    res.json({ bitsPacks: bits.allowedFor(login) ? BITS_PACKS.map((x) => (x.icon ? { ...x, icon: shop.iconUrl(x.icon) } : x)) : [] });
+  });
 
   app.get("/ext/bag", (req, res) => {
     try {
@@ -170,11 +187,15 @@ function mount(app) {
       if (!bits.isOwnerLogin(login)) return res.status(403).json({ error: "bits_disabled" });
     }
     try {
-      const jwt = auth(req);
+      // the viewer's panel token proves the request comes from our panel; the Twitch-signed receipt names the buyer,
+      // so buying works before "Show my Securement Pods" (sharing identity) too (Twitch review 2026-10-26)
+      const ptok = verifyExtJwt((req.headers.authorization || "").replace(/^Bearer\s+/i, ""));
       const receipt = verifyExtJwt(req.body?.receipt);
       const d = receipt.data || {};
-      if (receipt.topic !== "bits_transaction_receipt" || !d.transactionId) return res.status(400).json({ error: "bad_receipt" });
-      if (String(d.userId) !== String(jwt.user_id)) return res.status(403).json({ error: "wrong_user" });
+      if (receipt.topic !== "bits_transaction_receipt" || !d.transactionId || !d.userId) return res.status(400).json({ error: "bad_receipt" });
+      if (ptok.user_id && String(d.userId) !== String(ptok.user_id)) return res.status(403).json({ error: "wrong_user" });
+      if (require("./blocklist").isBlocked(d.userId)) return res.status(403).json({ error: "blocked" });
+      const jwt = { user_id: String(d.userId), channel_id: ptok.channel_id };
       const pack = BITS_PACKS.find((x) => x.sku === d.product?.sku);
       if (!pack || Number(d.product?.cost?.amount) !== pack.bits) return res.status(400).json({ error: "unknown_product" });
       let row = db.q.getPlayer.get(jwt.user_id);

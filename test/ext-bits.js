@@ -37,6 +37,15 @@ const receipt = (tx, userId, sku, amount) => sign({ topic: "bits_transaction_rec
   [s, j] = await post(tA, { receipt: receipt("tx11", "A", "artisan250", 250) }); // gloves already full -> Starchrom instead
   assert.equal(j.repaired, null); assert.equal(j.player.starchrom, before + 1250); console.log("artisan on full gloves → 1,250 Starchrom");
   assert.ok(ext.bagFor("A").bitsPacks.find((x) => x.sku === "artisan250").icon.endsWith("/panel/artisan.png"));
+  // no identity shared (opaque id only): the signed receipt names the buyer (Twitch review 2026-10-26)
+  const tAnon = sign({ opaque_user_id: "UabcA", channel_id: "1", role: "viewer" });
+  before = game.loadPlayer("A").starchrom;
+  [s, j] = await post(tAnon, { receipt: receipt("tx12", "A", "starchrom25", 5) });
+  assert.equal(j.credited, true); assert.equal(j.player.starchrom, before + 25); console.log("Bits without sharing identity → credited to the receipt's buyer");
+  const shopRes = await (await fetch(base + "/ext/bitsshop", { headers: { Authorization: "Bearer " + tAnon } })).json();
+  assert.ok(shopRes.bitsPacks.some((x) => x.sku === "artisan250")); console.log("Bits Shop list served before identity");
+  const cmds = JSON.stringify(await (await fetch(base + "/ext/commands")).json());
+  assert.ok(!/ohwikiguide|https?:|collection page|leaderboard link/i.test(cmds), cmds.match(/.{60}(ohwikiguide|https?:|collection page|leaderboard link).{20}/i)?.[0]); console.log("panel commands have no website links");
   // a viewer who never played: buying with Bits signs them up (name looked up on Twitch)
   require("../twitch").helix = async () => ({ data: [{ id: "Z", login: "newbie", display_name: "Newbie" }] });
   const tZ = sign({ user_id: "Z", channel_id: "1", role: "viewer" });

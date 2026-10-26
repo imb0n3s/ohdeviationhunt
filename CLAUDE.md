@@ -40,6 +40,10 @@
   0.0.2 RESUBMITTED 2026-10-20 ~12:30 CT with review mode ON and tester list = imbon3s only (docs/tester-allowlist.txt; the 100-name list is in git history). First submitted 2026-10-14 23:30 CT (B chose: test purchases are NOT credited during review; review notes say
   the Bits Shop shows only for the owner until release). WHEN APPROVED: Monetization -> set all 10 products In Development = No,
   Release 0.0.2, then B flips /admin/bits ON (raises glove prices, re-syncs the wiki).
+  2nd REJECTION 2026-10-26 (1.3 "could not see the Bits shop" + 4.5 links to deviationhunt.ohwikiguide.com): panel now has its own
+  "Bits" tab that works BEFORE "Show my Securement Pods" (GET /ext/bitsshop; /ext/bits/complete credits the buyer named in the
+  Twitch-signed receipt, no identity needed) and shows an explanation when Twitch says Bits are off on the channel; ALL website links
+  removed from the panel (no "open my collection", no URLs; /ext/commands strips them server-side). Keep the panel link-free.
   Extension: 0.0.1 is RELEASED (everyone sees it). 0.0.2 = Bits + Artisan's Touch, tested from Local/Hosted Test with Testing
   Base URI = <BASE_URL>/panel/ so testers never get a blank panel.
 - Bits: panel Shop sells Starchrom packs for Bits (rarity.js BITS_PACKS, 1 Bit = 5 Starchrom; receipts verified at

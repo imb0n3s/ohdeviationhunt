@@ -14,17 +14,24 @@
     fetch(API + "/ext/bag", { headers: { Authorization: "Bearer " + token } })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; }); })
       .then(function (j) {
-        if (j.needsIdentity) return askIdentity(j.botLogin);
-        bag = j; render();
+        if (j.needsIdentity) { noId = true; loadBitsShop(); return view.page === "bits" ? renderBits() : view.page === "cmds" ? renderCommands() : askIdentity(j.botLogin); }
+        noId = false; bag = j; render();
       })
       .catch(function () { el('<div class="msg">Couldn’t load your Securement Pods right now. Try again in a minute.</div>'); });
   }
 
+  // viewers who haven't shared their Twitch identity yet still get the Bits Shop (Twitch review 2026-10-26)
+  var noId = false, preBits = null;
+  function loadBitsShop() {
+    fetch(API + "/ext/bitsshop", { headers: { Authorization: "Bearer " + token } }).then(function (r) { return r.json(); })
+      .then(function (j) { preBits = j.bitsPacks || []; if (view.page === "bits") renderBits(); }).catch(function () {});
+  }
   function askIdentity(botLogin) {
     who.textContent = "";
     el('<div class="msg"><p>See every deviation you’ve secured — on any channel running Deviation Hunt.</p>' +
        '<p>Twitch needs you to share your username with this panel once.</p>' +
-       '<button class="btn" id="share">Show my Securement Pods</button></div>');
+       '<button class="btn" id="share">Show my Securement Pods</button>' +
+       '<p class="hint">💎 Want Starchrom, more Securement Pods or a glove repair? Open the <b>Bits</b> tab.</p></div>');
     document.getElementById("share").onclick = function () { window.Twitch.ext.actions.requestIdShare(); };
   }
 
@@ -51,16 +58,16 @@
     hourly = p && p.hourly || null;
     if (p && p.now) skew = p.now - Date.now();
     tickTimer();
-    var mp = document.getElementById("mypage");
-    if (mp) { if (p && bag.page) { mp.href = bag.page; mp.hidden = false; } else mp.hidden = true; }
     who.textContent = p ? p.display + " · " + p.starchrom.toLocaleString() + " Starchrom · " + p.units + " Securement Unit" + (p.units === 1 ? "" : "s") : "";
   }
 
   function setPage(page) {
     view.page = page; view.open = null; notice = null;
     Array.prototype.forEach.call(document.querySelectorAll(".pages button"), function (b) { b.className = b.getAttribute("data-page") === page ? "on" : ""; });
-    document.getElementById("title").textContent = page === "shop" ? "Shop" : page === "cmds" ? "Commands" : "Securement Pods";
+    document.getElementById("title").textContent = page === "shop" ? "Shop" : page === "bits" ? "Bits Shop" : page === "cmds" ? "Commands" : "Securement Pods";
     if (page === "cmds") return renderCommands();
+    if (page === "bits") return renderBits();
+    if (noId) return askIdentity();
     if (bag) render();
     window.scrollTo(0, 0);
   }
@@ -78,11 +85,12 @@
     el(commands.map(function (s) {
       return '<div class="sect">' + esc(s.title) + '</div>' + (s.note ? '<div class="hint">' + esc(s.note) + '</div>' : "") +
         '<div class="cmdlist">' + s.rows.map(function (r) { return '<div class="cmd"><kbd>' + esc(r[0]) + '</kbd><div>' + kbd(r[1]) + '</div></div>'; }).join("") + '</div>';
-    }).join("") + '<div class="hint">Full list: deviationhunt.ohwikiguide.com/commands</div>');
+    }).join(""));
   }
 
   function render() {
     if (view.page === "cmds") return renderCommands();
+    if (view.page === "bits") { whoLine(); return renderBits(); }
     whoLine();
     if (view.page === "shop") return renderShop();
     if (view.open) return renderDetail(view.open);
@@ -96,8 +104,7 @@
        '<div class="stat"><b>' + (s.variations || 0) + '<small>/' + (s.allVariations || 0) + '</small></b>variations</div>' +
        '<div class="stat skin"><b>' + (s.skins || 0) + '<small>/' + (s.allSkins || 0) + '</small></b>skins</div>' +
        (bag.player && bag.player.unitCap ? '<div class="stat"><b>' + bag.player.podsUsed + '<small>/' + bag.player.unitCap + '</small></b>pods · ' + (bag.player.units || 0) + ' open</div></div>' : '<div class="stat"><b>' + s.total + '</b>secured</div></div>') +
-       '<div class="bar"><i id="barfill"></i></div>' + gridHtml() +
-       (bag.page ? '<footer><a href="' + esc(bag.page) + '" target="_blank" rel="noopener">Open my full collection ↗</a></footer>' : ""));
+       '<div class="bar"><i id="barfill"></i></div>' + gridHtml());
     document.getElementById("barfill").style.width = pct + "%"; // set via CSSOM (Twitch CSP blocks inline styles)
     bindGrid();
   }
@@ -272,11 +279,14 @@
 
   // ---- Starchrom packs bought with Bits (only shown when Twitch has Bits turned on for this viewer) ----
   var bitsOn = false, bitsProducts = {};
-  function bitsHtml() {
-    var all = (bag.bitsPacks || []).filter(function (x) { return bitsProducts[x.sku]; });
+  function bitsList() { return (bag && bag.bitsPacks) || preBits || []; }
+  function bitsHtml(full) {
+    var list = bitsList();
+    var all = list.filter(function (x) { return bitsProducts[x.sku]; });
     var packs = all.filter(function (x) { return !x.repair; }), repair = all.filter(function (x) { return x.repair; })[0];
-    if (!bitsOn || !all.length) return "";
-    return '<div class="sect">Bits Shop</div>' + (repair ? artisanHtml(repair, bag.player || {}) : "") +
+    if (!list.length) return full ? '<div class="msg"><p>💎 The Bits Shop isn’t open yet.</p></div>' : "";
+    if (!bitsOn || !all.length) return full ? '<div class="sect">Bits Shop</div><div class="msg"><p>Bits can’t be used on this channel right now' + (bitsOn ? " (loading products…)" : " — the streamer’s channel needs Bits turned on (Twitch Affiliate or Partner)") + '.</p><p>Here you can buy Starchrom (1 Bit = 5 Starchrom), +5 permanent Securement Pod space for 50 Bits, and Artisan’s Touch (250 Bits) to repair your gloves.</p></div>' : "";
+    return '<div class="sect">Bits Shop</div>' + (repair ? artisanHtml(repair, (bag && bag.player) || {}) : "") +
       (packs.length ? '<div class="item bits"><div class="id">1 Bit = 5 Starchrom · 50 Bits = 5 more Securement Pods (permanent). Bits used here support the streamer.</div><div class="packs">' +
       packs.map(function (x) {
         var cost = bitsProducts[x.sku].cost && bitsProducts[x.sku].cost.amount || x.bits;
@@ -286,7 +296,7 @@
   // Artisan's Touch: repairs the gloves you wear back to full catches (needs gloves on that aren't already full)
   function artisanHtml(x, p) {
     var cost = bitsProducts[x.sku].cost && bitsProducts[x.sku].cost.amount || x.bits;
-    var g = p && p.glove ? (bag.shop || []).filter(function (it) { return it.glove === p.glove; })[0] : null;
+    var g = p && p.glove && bag ? (bag.shop || []).filter(function (it) { return it.glove === p.glove; })[0] : null;
     var full = g && p.gloveLeft >= p.gloveMax;
     var bonusSc = money(x.bits * 5);
     var state = !g ? "You aren’t wearing gloves, so it gives you " + bonusSc + " Starchrom instead." : full ? esc(g.name) + " are already like new (" + p.gloveLeft + "/" + p.gloveMax + " catches), so it gives you " + bonusSc + " Starchrom instead." : esc(g.name) + ": " + p.gloveLeft + "/" + p.gloveMax + " catches left → back to " + p.gloveMax + ".";
@@ -295,32 +305,40 @@
       '<div class="id">Restores the gloves you wear to their full number of catches. ' + state + '</div>' +
       '<button class="btn bitsbuy artisanbuy" data-sku="' + esc(x.sku) + '"' + (busy ? " disabled" : "") + '>' + (!g || full ? "Buy for " + cost + " Bits (+" + bonusSc + " Starchrom)" : "Repair for " + cost + " Bits") + '</button></div>';
   }
+  function renderBits() {
+    var html = (notice ? '<div class="notice ' + notice.kind + '">' + esc(notice.text) + '</div>' : "") + bitsHtml(true) +
+      '<div class="hint">Your purchase is added to your Securement Pods on every channel running Deviation Hunt.</div>';
+    el(html);
+    Array.prototype.forEach.call(document.querySelectorAll(".bitsbuy"), function (b) { b.onclick = function () { buyBits(b.getAttribute("data-sku")); }; });
+  }
+  function rerender() { if (view.page === "bits") return renderBits(); if (view.page === "shop" && bag) return renderShop(); }
   function buyBits(sku) {
     if (busy) return;
-    busy = true; notice = null; renderShop();
+    busy = true; notice = null; rerender();
     window.Twitch.ext.bits.useBits(sku);
   }
   function initBits() {
     var ext = window.Twitch.ext;
     if (!ext.features || !ext.bits) return;
     bitsOn = !!ext.features.isBitsEnabled;
-    if (ext.features.onChanged) ext.features.onChanged(function () { bitsOn = !!ext.features.isBitsEnabled; if (bag && view.page === "shop") renderShop(); });
+    if (ext.features.onChanged) ext.features.onChanged(function () { bitsOn = !!ext.features.isBitsEnabled; rerender(); });
     ext.bits.getProducts().then(function (ps) {
       (ps || []).forEach(function (p) { bitsProducts[p.sku] = p; });
-      if (bag && view.page === "shop") renderShop();
+      rerender();
     }).catch(function () {});
-    ext.bits.onTransactionCancelled(function () { busy = false; if (view.page === "shop") renderShop(); });
+    ext.bits.onTransactionCancelled(function () { busy = false; rerender(); });
     ext.bits.onTransactionComplete(function (tx) {
       fetch(API + "/ext/bits/complete", { method: "POST", headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" }, body: JSON.stringify({ receipt: tx.transactionReceipt }) })
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
         .then(function (res) {
           busy = false;
           if (res.j.error === "wrong_user") return;
-          if (res.j.player) bag.player = res.j.player;
+          if (res.j.player && bag) bag.player = res.j.player;
           notice = res.ok ? { kind: "ok", text: (res.j.repaired ? "🧤 " + res.j.repaired + " repaired — " + ((res.j.player && res.j.player.gloveLeft) || "") + " catches left" : res.j.artisan ? "Artisan’s Touch: +" + money(res.j.starchrom) + " Starchrom" : res.j.capacity ? "+" + res.j.capacity + " Securement Pod space" : "+" + money(res.j.starchrom) + " Starchrom") + " — thanks for the Bits!" } : { kind: "err", text: "Your Bits went through but the Starchrom didn’t arrive yet. Refresh the panel; if it’s still missing, tell the streamer." };
-          whoLine(); if (view.page === "shop") renderShop();
+          if (bag) whoLine(); rerender();
+          if (!bag) load();
         })
-        .catch(function () { busy = false; notice = { kind: "err", text: "Couldn’t reach the game to add your Starchrom. Refresh the panel in a minute." }; renderShop(); });
+        .catch(function () { busy = false; notice = { kind: "err", text: "Couldn’t reach the game to add your Starchrom. Refresh the panel in a minute." }; rerender(); });
     });
   }
 
