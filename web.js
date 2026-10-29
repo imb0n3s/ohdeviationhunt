@@ -931,7 +931,7 @@ function createApp(pool) {
         db.saveBotAccount({ user_id: user.id, login: user.login, access_token: tok.access_token, refresh_token: tok.refresh_token, expires_at: Date.now() + tok.expires_in * 1000 });
         db.addChannel({ broadcaster_id: user.id, login: user.login, display_name: user.display_name, joined_via: "web" });
         await pool.join(user.id).catch((e) => console.error("[setup] join own channel failed:", e.message));
-        if (!wasSetUp) await pool.joinAllFromDb();
+        await pool.joinAllFromDb().catch((e) => console.error("[setup] rejoin failed:", e.message)); // always reconnect every channel (B 2026-10-29)
         return res.send(simple("Setup complete", `Bot is running as ${user.display_name}`, `Streamers can now add it from <a href="/">the home page</a> or with <code>!join</code> in <a href="https://twitch.tv/${esc(user.login)}">twitch.tv/${esc(user.login)}</a>.`));
       }
       if (state.action === "remove") {
