@@ -853,7 +853,7 @@ function createApp(pool) {
   });
 
   app.get("/login", (req, res) => {
-    const next = /^\/(u\/[a-z0-9_]{1,40}|me|streamers|trade|trade\/log|trade\/admin)$/i.test(String(req.query.next || "")) ? req.query.next : "/";
+    const next = /^\/(u\/[a-z0-9_]{1,40}|me|streamers|trade|trade\/log|trade\/admin|setup)$/i.test(String(req.query.next || "")) ? req.query.next : "/";
     const state = sign({ purpose: "viewer", next, nonce: crypto.randomBytes(8).toString("hex"), ts: Date.now() });
     // after a sign-out, make Twitch ask which account (force_verify shows "Not you?"); otherwise Twitch silently
     // signs you straight back in as whoever is logged in to twitch.tv in that browser (B 2026-10-11, phone)
@@ -894,7 +894,13 @@ function createApp(pool) {
   });
 
   app.get("/setup", (req, res) => {
-    if (req.query.key !== cfg.ADMIN_KEY) return res.status(403).send(simple("Forbidden", "Forbidden", "Add ?key=YOUR_ADMIN_KEY to the URL."));
+    // no key needed when signed in on this site as an owner (imbon3s) or as the bot account itself (B 2026-10-29)
+    const v = viewerOf(req);
+    const okViewer = v && (isOwner(v) || String(v.login).toLowerCase() === String(db.getBotAccount()?.login || "").toLowerCase());
+    if (req.query.key !== cfg.ADMIN_KEY && !okViewer) {
+      if (!v) return res.redirect("/login?next=/setup");
+      return res.status(403).send(simple("Forbidden", "Not allowed", `Signed in as <b>${esc(v.login)}</b>. Sign in as imbon3s or the bot account (<a href="/logout">sign out</a>).`));
+    }
     const state = sign({ purpose: "bot", nonce: crypto.randomBytes(8).toString("hex"), ts: Date.now() });
     res.setHeader("Set-Cookie", cookie(state));
     const cur = db.getBotAccount();
@@ -918,7 +924,7 @@ function createApp(pool) {
         const hasPlayer = !!db.q.getPlayer.get(user.id);
         // back to where they came from: /me, /streamers, the trades page, or someone else's page (e.g. "Sign in to trade with X")
         const otherPage = /^\/u\/[a-z0-9_]{1,40}$/i.test(state.next || "") && state.next.toLowerCase() !== `/u/${user.login}`;
-        return res.redirect(state.next === "/me" ? "/me" : state.next === "/streamers" ? "/streamers#obs-links" : /^\/trade(\/log|\/admin)?$/.test(state.next || "") ? state.next : otherPage ? state.next : hasPlayer ? `/u/${encodeURIComponent(user.login)}#shop` : (state.next || "/"));
+        return res.redirect(state.next === "/me" ? "/me" : state.next === "/streamers" ? "/streamers#obs-links" : /^\/(trade(\/log|\/admin)?|setup)$/.test(state.next || "") ? state.next : otherPage ? state.next : hasPlayer ? `/u/${encodeURIComponent(user.login)}#shop` : (state.next || "/"));
       }
       if (state.purpose === "bot") {
         const wasSetUp = !!db.getBotAccount();
