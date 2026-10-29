@@ -53,11 +53,21 @@ async function main() {
   pool.onRemoved = (bid, why) => {
     const c = db.getChannel(bid);
     if (!c || !c.enabled) return;
+    if (bid === db.getBotAccount()?.user_id) return console.error(`[channels] the bot's own channel lost its chat subscription (${why}) — kept; redo /setup as the bot account if chat is silent`);
     db.removeChannel(bid, `removed on Twitch (${why})`);
     try { spawns.setLive(bid, false); } catch {}
     console.log(`[channels] ${c.login} removed the game (${why}) — taken off Where to Play and the leaderboards`);
   };
   spawns.restore();
+
+  // One-time repair (B 2026-10-29 "Why is the 24/7 down"): every channel, the 24/7 one included, was taken off at once
+  // as "removed on Twitch" — our bot authorization was revoked, the streamers never left. Put them all back.
+  if (!db.getSetting("restore:2026-10-29")) {
+    const since = Date.parse("2026-10-29T05:00:00Z");
+    const r = db.raw.prepare(`UPDATE channels SET enabled=1, removed_at=NULL, removed_how=NULL WHERE enabled=0 AND removed_at>=? AND removed_how LIKE 'removed on Twitch (%'`).run(since);
+    db.setSetting("restore:2026-10-29", String(r.changes));
+    console.log(`[channels] restored ${r.changes} channels wrongly removed on 2026-10-29`);
+  }
 
   // The bot's own channel (OHDeviationHunt) is a game channel too, so its 24/7 stream (/live/<bot login>)
   // gets spawns. Set BOT_CHANNEL_GAME=0 to turn that off.

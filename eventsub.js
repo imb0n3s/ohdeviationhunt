@@ -115,7 +115,17 @@ class Conduit {
       this.subs.delete(bid);
       // the streamer took the game off their Twitch (revoked the app, unmodded/banned the bot, deleted the account):
       // drop the channel right away so it leaves Where to Play and the leaderboards (B 2026-10-13)
-      if (["authorization_revoked", "user_removed", "moderator_removed"].includes(status)) this.onRemoved?.(bid, status);
+      // SAFETY (B 2026-10-29: every channel vanished at once): a burst of revocations means OUR bot/app
+      // authorization was revoked, not streamers leaving — collect them for 20s and only remove a few.
+      if (["authorization_revoked", "user_removed", "moderator_removed"].includes(status)) {
+        (this.revokeQ ||= []).push([bid, status]);
+        clearTimeout(this.revokeT);
+        this.revokeT = setTimeout(() => {
+          const q = this.revokeQ; this.revokeQ = [];
+          if (q.length > 3) return console.error(`[eventsub] ${q.length} subscriptions revoked at once — NOT removing channels (bot/app authorization problem: redo /setup as the bot account)`);
+          for (const [id, why] of q) this.onRemoved?.(id, why);
+        }, 20000);
+      }
       return;
     }
     if (type === "notification") {
@@ -241,6 +251,7 @@ class Conduit {
     } catch (e) { console.error("[audit] user lookup failed:", e.message); }
     if (goneIds.length > 3) { console.error(`[audit] ${goneIds.length} accounts not found at once — not removing them`); goneIds.length = 0; }
     for (const id of goneIds) { removedNow.push([id, "account_gone"]); ok = Math.max(0, ok - 1); }
+    if (removedNow.length > 3) { console.error(`[audit] ${removedNow.length} channels look removed at once — not removing them (auth problem on our side?)`); removedNow.length = 0; }
     for (const [id, why] of removedNow) this.onRemoved?.(id, why);
     this.dropDenied(denied, ok);
     const res = { at: Date.now(), checked: channels.length, ok, renamed, resubscribed: fixed, removed: [...removedNow.map(([id]) => id), ...(denied.length > 3 || ok === 0 ? [] : denied)].map((id) => db.getChannel(id)?.login || id), refusedButKept: denied.length > 3 || ok === 0 ? denied.length : 0 };
