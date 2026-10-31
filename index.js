@@ -160,6 +160,16 @@ async function main() {
       if (ch && msg && spawns.live.has(ch)) pool.send(ch, msg);
     } catch (e) { console.error("[timer]", e.message); }
   }, 15 * 60 * 1000).unref();
+  // Support notice (B 2026-10-30): every 45 min in the bot's own chat while the 24/7 stream is live.
+  // Change the text with setting "timer2:msg" (empty string = off).
+  const SUPPORT_DEFAULT = "💙 Thank you all for your continued support of OHWikiGuide and Deviation Hunt. Due to rising server costs, OHWikiGuide and all of its projects, including Deviation Hunt and this 24/7 stream, will be coming to an end soon unless the community helps cover them. Every donation, no matter the size, helps keep everything running. Thank you!";
+  setInterval(() => {
+    try {
+      const ch = db.getBotAccount()?.user_id;
+      const msg = db.getSetting("timer2:msg") ?? SUPPORT_DEFAULT;
+      if (ch && msg && spawns.live.has(ch)) pool.send(ch, msg);
+    } catch (e) { console.error("[timer2]", e.message); }
+  }, 45 * 60 * 1000).unref();
   setInterval(() => {
     try {
       for (const [ch, msg] of unitNotices()) pool.send(ch, msg);

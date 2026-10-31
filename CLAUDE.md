@@ -138,6 +138,7 @@
   (default {"1":15} = every player starts with 15 Lv.1). Hourly gives +1 Lv.1 (ECONOMY.hourlyGrenades). !secure uses the LOWEST level owned first (B 2026-10-19; was best);
   !secure 1/3/5 picks a level. Sold on the website shop, chat (!buy grenade / grenade3 / grenade5) and obs-shop — NOT the panel
   — and in the Twitch panel since B 2026-10-14 (served by the server, so the released 0.0.1 panel shows them too; 0.0.2 has a proper Binding Grenades section). Pictures: ext/grenade1/3/5.png.
+- Support notice (B 2026-10-30): index.js posts SUPPORT_DEFAULT (server costs / donations) in the bot's own chat every 45 min while live; setting "timer2:msg" overrides (empty = off).
 - 24/7 chat timer (B 2026-10-10): index.js posts TIMER_DEFAULT (the Binding Grenades message) in the bot's own chat every 15 min
   while that channel is live. Override the text with setting "timer:msg" (empty string = off).
 - Deviation data source (2026-10-10): the wiki page moved from Deviation_Main_Page to "Deviation" (the old title is a redirect);
