@@ -138,3 +138,4 @@ footer a { color:var(--accent); font-size:12px; }
 .btn.artisanbuy { width:100%; margin-top:8px; font-size:13px; }
 .item.artisan .gicon img { object-fit:cover; }
 .pages button.bitstab:not(.on) { color:#bf94ff; }
+.ver { text-align:center; font-size:10px; color:var(--muted); opacity:.7; padding:6px 0 8px; }
