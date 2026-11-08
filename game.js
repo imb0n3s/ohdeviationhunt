@@ -617,6 +617,17 @@ function daily(userId, login, display, bid) {
   p.starchrom += ECONOMY.daily.starchrom;
   const got = [];
   for (const [k, n0] of Object.entries(ECONOMY.daily.units)) { const n = Math.min(n0, freeRoom(p)); if (!n) { got.push(`no unit (over ${ECONOMY.freeUnitCap} Pods)`); continue; } p.units[k] = (p.units[k] || 0) + n; got.push(`${n} ${UNITS[k].label}${n === 1 ? "" : "s"}`); }
+  // bonus prizes (B 2026-11-07), each its own roll
+  const bonus = [];
+  if (Math.random() < (ECONOMY.daily.soupChance || 0)) {
+    p.soup_until = Math.max(Date.now(), p.soup_until || 0) + SOUP.durationMs;
+    bonus.push(`🍲 a bowl of Capture Soup (+${SOUP.bonus * 100}% for 1 hour)`);
+  }
+  if (Math.random() < (ECONOMY.daily.grenade3Chance || 0)) {
+    p.grenades = p.grenades || {};
+    p.grenades["3"] = (p.grenades["3"] || 0) + 1;
+    bonus.push("💣 a Lv.3 Binding Grenade");
+  }
   db.tx(() => {
     savePlayer(p);
     db.q.addDaily.run(userId, stream, bid, Date.now());
@@ -625,7 +636,7 @@ function daily(userId, login, display, bid) {
   startHourly(userId, login, display, bid); // !daily also turns hourly perks on for this stream (keeps a clock already running here)
   const checkins = db.q.countDaily.get(userId).n;
   // kept to one line (B 2026-10-24: "1 or 2 sentences max")
-  return `@${display} ✅ Check-in #${fmt(checkins)}: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")} · ⏰ Hourly perks on here · 💰 ${fmt(p.starchrom)} ${SC}`;
+  return `@${display} ✅ Check-in #${fmt(checkins)}: +${ECONOMY.daily.starchrom} ${SC} and ${got.join(", ")}${bonus.length ? ` · 🎉 BONUS: ${bonus.join(" + ")}` : ""} · ⏰ Hourly perks on here · 💰 ${fmt(p.starchrom)} ${SC}`;
 }
 
 function shop() {

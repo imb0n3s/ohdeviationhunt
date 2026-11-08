@@ -84,7 +84,8 @@ const ECONOMY = {
   starterUnits: { standard: 5 },
   hourlyStarchrom: 25,      // Starchrom that comes with each hourly unit (paid even when your pods are full)
   hourlyUnits: 1,            // free Securement Units every hour, only while the stream you did !daily in is live (no cap)
-  daily: { starchrom: 100, units: { standard: 1 } },
+  // bonus prizes, each rolled on its own (B 2026-11-07): 5% a bowl of Capture Soup (1 hour), 10% a Lv.3 Binding Grenade
+  daily: { starchrom: 100, units: { standard: 1 }, soupChance: 0.05, grenade3Chance: 0.10 },
   dailyResetTz: "America/Chicago", // !daily resets at midnight in this time zone
   newSpeciesBonus: 100,   // first time you secure a deviation (or a new variant of it)
   unitCap: 250,           // most Securement Pods a player can fill (+ players.extra_cap from Bits) — B 2026-10-10 (was 100)
