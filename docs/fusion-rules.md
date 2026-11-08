@@ -19,8 +19,10 @@ Status: COMING SOON (not built). Placeholder page: /fusion. Can't be fused: Vari
 - **Outside (2):** returned after the fusion, but with **0 fuse chances** left (can't be fused again).
 - **The new fused deviation:** has **1 fuse chance** left.
 
+## Decided (B 2026-11-08)
+- Every deviation (existing and new catches) comes with **1 fusion chance**.
+- Fusing costs **500 Starchrom**. **Website only** (Fusion page) — not chat, not the panel.
+
 ## Open questions (waiting on B)
-- Every existing deviation starts with how many fuse chances (1?).
-- New deviation's Skill/Activity ratings and traits: rolled fresh, inherited, or a mix?
-- Middle slot matching BOTH parents (one of each): who wins?
-- Cost to fuse (Starchrom?) and where it happens (website, chat, panel)?
+- New deviation's Skill/Activity ratings and traits — B: "I'll get into this more".
+- Middle has a match for BOTH parents (e.g. outside Rebecca + Buzzy Bee, middle Rebecca + Buzzy Bee): which wins?
