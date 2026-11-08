@@ -6,6 +6,22 @@ Status: COMING SOON (not built). Placeholder page: /fusion. Can't be fused: Vari
 - **2 outside** deviations = the parents. Both required.
 - **Up to 3 middle** deviations (optional).
 
+## Variations/skins that CAN be fused (B 2026-11-08)
+Only with the **same kind of deviation** they are on (e.g. a Penguin Hope Mr. Wish only fuses with another Mr. Wish).
+All other Variations and Chaos can't be fused. List kept in docs/site/fusion.json (`allowedVariants`).
+- **Butterfly Emissary:** Ancient Scroll, Glistening Blue, Starry Night
+- **Festering Gel:** Marine Star, Milk Sugar, Spring Rose
+- **Grumpy Bulb:** Violet Robe
+- **Invincible Sun:** Malevolent Sun
+- **Lonewolf Whisper:** Bursting Magma, Distant Tears
+- **Mr. Wish:** Penguin Hope, Wish Chefosaurus Rex, Mr Wishmonmon
+- **Snowsprite:** Springs Return
+- **Voodoo Doll:** Thorny Wedding, Fluffy Curse
+- **Whalepup:** Abyssal Whale Dream, Don't Get Wet
+- **ZapCam:** Fools Memory
+
+(Bursting Magma also exists on By-the-Wind and Mini Wonder — B listed it for Lonewolf Whisper only.)
+
 ## Timing
 - A fusion takes **5 minutes** to complete.
 

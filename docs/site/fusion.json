@@ -1,0 +1,86 @@
+{
+  "title": "Deviation Fusion",
+  "badge": "Coming soon",
+  "blurb": "Fuse your deviations into something new. Stay tuned!",
+  "excluded": [
+    {
+      "name": "Variations",
+      "note": "any ✨ Variation, except the ones listed below"
+    },
+    {
+      "name": "Chaos",
+      "note": "Chaos deviations"
+    }
+  ],
+  "allowedVariants": [
+    {
+      "deviation": "Butterfly Emissary",
+      "variants": [
+        "Ancient Scroll",
+        "Glistening Blue",
+        "Starry Night"
+      ]
+    },
+    {
+      "deviation": "Festering Gel",
+      "variants": [
+        "Marine Star",
+        "Milk Sugar",
+        "Spring Rose"
+      ]
+    },
+    {
+      "deviation": "Grumpy Bulb",
+      "variants": [
+        "Violet Robe"
+      ]
+    },
+    {
+      "deviation": "Invincible Sun",
+      "variants": [
+        "Malevolent Sun"
+      ]
+    },
+    {
+      "deviation": "Lonewolf Whisper",
+      "variants": [
+        "Bursting Magma",
+        "Distant Tears"
+      ]
+    },
+    {
+      "deviation": "Mr. Wish",
+      "variants": [
+        "Penguin Hope",
+        "Wish Chefosaurus Rex",
+        "Mr Wishmonmon"
+      ]
+    },
+    {
+      "deviation": "Snowsprite",
+      "variants": [
+        "Springs Return"
+      ]
+    },
+    {
+      "deviation": "Voodoo Doll",
+      "variants": [
+        "Thorny Wedding",
+        "Fluffy Curse"
+      ]
+    },
+    {
+      "deviation": "Whalepup",
+      "variants": [
+        "Abyssal Whale Dream",
+        "Don't Get Wet"
+      ]
+    },
+    {
+      "deviation": "ZapCam",
+      "variants": [
+        "Fools Memory"
+      ]
+    }
+  ]
+}
