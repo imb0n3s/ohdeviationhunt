@@ -13,6 +13,9 @@ Status: COMING SOON (not built). Placeholder page: /fusion. Can't be fused: Vari
 - Default: **50/50** between the two outside parents.
 - If any **middle** deviation is the **same deviation as one of the parents**, the result is **100% that parent**
   (e.g. outside Rebecca + X, middle Rebecca → the result is Rebecca, whatever the other middle ones are).
+- Only middle deviations that match a parent count; any other middle deviation just gets used up.
+- Middle matches BOTH parents: the parent with **more copies in the middle** wins (2 Rebecca + 1 Buzzy Bee → Rebecca).
+  A tie (1 + 1) goes back to 50/50 (assumed — B to confirm).
 
 ## What happens to the deviations used
 - **Middle (up to 3):** all consumed, lost forever, never returned.
@@ -25,4 +28,3 @@ Status: COMING SOON (not built). Placeholder page: /fusion. Can't be fused: Vari
 
 ## Open questions (waiting on B)
 - New deviation's Skill/Activity ratings and traits — B: "I'll get into this more".
-- Middle has a match for BOTH parents (e.g. outside Rebecca + Buzzy Bee, middle Rebecca + Buzzy Bee): which wins?
