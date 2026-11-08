@@ -118,7 +118,7 @@ form.find button{padding:0 18px;border-radius:9px;border:0;background:var(--acce
 footer{margin-top:48px;color:var(--muted);font-size:.9em}footer a{color:var(--muted)}a{color:var(--accent)}
 nav{display:flex;gap:18px;margin-bottom:24px;flex-wrap:wrap}nav a.me{color:var(--accent);font-weight:700}nav a{color:var(--muted);text-decoration:none;font-weight:600}nav a:hover{color:var(--text)}
 .tradebar{margin:.2em 0 1em}.tbtn{display:inline-block;padding:9px 16px;border-radius:10px;background:#0ea5e9;color:#04121c;font-weight:800;text-decoration:none}.tbtn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-</style></head><body><main><nav><a href="/">${esc(cfg.BOT_NAME)}</a><a href="/streamers">For Streamers</a><a href="/commands">Commands</a><a href="/dex">All Deviations</a><a href="/channels">Where to Play</a><a href="/top">Leaderboard</a><a href="/trade">Trades</a><a href="/me" class="me">My Securement Pods</a><a href="${esc(cfg.WIKI_BASE)}">OHWikiGuide</a><a href="https://discord.gg/FZtkXeGeUA" target="_blank" rel="noopener">Discord</a></nav>${body}
+</style></head><body><main><nav><a href="/">${esc(cfg.BOT_NAME)}</a><a href="/streamers">For Streamers</a><a href="/commands">Commands</a><a href="/dex">All Deviations</a><a href="/channels">Where to Play</a><a href="/top">Leaderboard</a><a href="/trade">Trades</a><a href="/fusion">Fusion</a><a href="/me" class="me">My Securement Pods</a><a href="${esc(cfg.WIKI_BASE)}">OHWikiGuide</a><a href="https://discord.gg/FZtkXeGeUA" target="_blank" rel="noopener">Discord</a></nav>${body}
 <footer>Deviation data from <a href="${esc(cfg.WIKI_BASE)}/Deviation_Main_Page">ohwikiguide.com</a> · <a href="${esc(cfg.TERMS_URL)}">Terms</a> · <a href="${esc(cfg.PRIVACY_URL)}">Privacy</a>${cfg.DISCORD_URL ? ` · <a href="${esc(cfg.DISCORD_URL)}">Discord</a>` : ""} · Fan-made, not affiliated with Starry Studio / NetEase.</footer></main></body></html>`;
 }
 const simple = (title, heading, text, extra = "") => page(title, `<h1>${esc(heading)}</h1><p>${text}</p>${extra}<p><a href="/">&larr; Back</a></p>`);
@@ -733,6 +733,9 @@ function createApp(pool) {
   // ---- trading ----
   const sameSite = (req) => { const o = req.get("origin") || req.get("referer") || ""; return !o || o.startsWith(cfg.BASE_URL); };
   const tradeMsg = (code) => (code === "sent" ? { ok: true, text: "Trade offer sent!" } : code === "accepted" ? { ok: true, text: "Trade done! Check your Securement Pods." } : code === "declined" ? { ok: true, text: "Trade declined." } : code === "cancelled" ? { ok: true, text: "Offer cancelled." } : code === "reversed" ? { ok: true, text: "Trade reversed — everything is back with who had it before." } : code ? { ok: false, text: tradeMod.ERR[code] || "Something went wrong." } : null);
+  // Fusion placeholder (B 2026-11-08): coming soon, big picture of the fusion machine (ext/fusion.png)
+  app.get("/fusion", (req, res) => res.send(page("Fusion", `<style>.fuse{text-align:center;padding:12px 0 24px}.fuse img{width:100%;max-width:720px;height:auto;display:block;margin:0 auto;filter:drop-shadow(0 12px 40px rgba(14,165,233,.35))}.fuse .soon{display:inline-block;margin-top:18px;padding:10px 26px;border-radius:999px;background:linear-gradient(90deg,#0ea5e9,#a855f7);color:#fff;font-size:28px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.fuse p{color:var(--muted);font-size:17px;margin-top:14px}</style>
+<div class="fuse"><h1>Deviation Fusion</h1><img src="/panel/fusion.png" alt="Deviation fusion machine"><div class="soon">Coming soon</div><p>Fuse your deviations into something new. Stay tuned!</p></div>`)));
   app.get("/trade", (req, res) => {
     const v = viewerOf(req);
     if (!v) return res.redirect("/login?next=/trade");
