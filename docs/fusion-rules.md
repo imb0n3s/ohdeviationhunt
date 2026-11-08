@@ -26,5 +26,10 @@ Status: COMING SOON (not built). Placeholder page: /fusion. Can't be fused: Vari
 - Every deviation (existing and new catches) comes with **1 fusion chance**.
 - Fusing costs **500 Starchrom**. **Website only** (Fusion page) — not chat, not the panel.
 
+## Skill / Activity of the new deviation (B 2026-11-08)
+- Each rating separately: take one parent's number at random (50/50), then randomly −1, same, or +1, kept within 1–5.
+  So the result is always within ±1 of the parents' numbers (parents 3/4 and 4/2 → Skill 2–5, Activity 1–5).
+- **Two 5/5 parents:** the result is 5/5 except a **0.05% (1 in 2,000)** chance it comes out lower (one or both ratings 4).
+
 ## Open questions (waiting on B)
-- New deviation's Skill/Activity ratings and traits — B: "I'll get into this more".
+- Traits of the new deviation.
