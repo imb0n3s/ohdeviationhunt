@@ -734,14 +734,28 @@ function createApp(pool) {
   const sameSite = (req) => { const o = req.get("origin") || req.get("referer") || ""; return !o || o.startsWith(cfg.BASE_URL); };
   const tradeMsg = (code) => (code === "sent" ? { ok: true, text: "Trade offer sent!" } : code === "accepted" ? { ok: true, text: "Trade done! Check your Securement Pods." } : code === "declined" ? { ok: true, text: "Trade declined." } : code === "cancelled" ? { ok: true, text: "Offer cancelled." } : code === "reversed" ? { ok: true, text: "Trade reversed — everything is back with who had it before." } : code ? { ok: false, text: tradeMod.ERR[code] || "Something went wrong." } : null);
   // Fusion placeholder (B 2026-11-08): coming soon, big picture of the fusion machine (ext/fusion.png)
-  // Deviations that can't be fused (B 2026-11-08) — add more here as B names them; the page lists them
-  const FUSION_EXCLUDED = [
-    { name: "Variations", note: "any ✨ Variation of a deviation" },
-    { name: "Chaos", note: "Chaos deviations" },
-  ];
-  app.get("/fusion", (req, res) => res.send(page("Fusion", `<style>.fuse{text-align:center;padding:12px 0 24px}.fuse img{width:100%;max-width:720px;height:auto;display:block;margin:0 auto;filter:drop-shadow(0 12px 40px rgba(14,165,233,.35))}.fuse .soon{display:inline-block;margin-top:18px;padding:10px 26px;border-radius:999px;background:linear-gradient(90deg,#0ea5e9,#a855f7);color:#fff;font-size:28px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.fuse p{color:var(--muted);font-size:17px;margin-top:14px}</style>
-<div class="fuse"><h1>Deviation Fusion</h1><img src="/panel/fusion.png" alt="Deviation fusion machine"><div class="soon">Coming soon</div><p>Fuse your deviations into something new. Stay tuned!</p></div>
-<div class="card" style="max-width:520px;margin:8px auto 0"><h2 style="margin-top:0">🚫 Can't be fused</h2><ul style="margin:0;padding-left:20px">${FUSION_EXCLUDED.map((x) => `<li><b>${esc(x.name)}</b>${x.note ? ` <span class="muted">— ${esc(x.note)}</span>` : ""}</li>`).join("")}</ul></div>`)));
+  // Fusion page (B 2026-11-08). Its text and the "Can't be fused" list live in docs/site/fusion.json and are read
+  // from GitHub at request time (cached 2 min), so editing them is a docs-only push: NO deploy, the bot never restarts
+  // (B: "This has nothing to do with the bot so this shouldn't effect the bot at all").
+  const FUSION_FALLBACK = { title: "Deviation Fusion", badge: "Coming soon", blurb: "Fuse your deviations into something new. Stay tuned!", excluded: [{ name: "Variations", note: "any ✨ Variation of a deviation" }, { name: "Chaos", note: "Chaos deviations" }] };
+  let fusionCache = { at: 0, data: FUSION_FALLBACK };
+  async function fusionData() {
+    if (Date.now() - fusionCache.at < 120000) return fusionCache.data;
+    try {
+      const r = await fetch("https://raw.githubusercontent.com/imb0n3s/ohdeviationhunt/main/docs/site/fusion.json", { signal: AbortSignal.timeout(4000) });
+      if (r.ok) fusionCache = { at: Date.now(), data: { ...FUSION_FALLBACK, ...(await r.json()) } };
+      else fusionCache.at = Date.now();
+    } catch { fusionCache.at = Date.now(); }
+    return fusionCache.data;
+  }
+  app.get("/fusion", async (req, res) => {
+    const f = await fusionData();
+    const img = f.image || "https://raw.githubusercontent.com/imb0n3s/ohdeviationhunt/main/ext/fusion.png";
+    res.send(page("Fusion", `<style>.fuse{text-align:center;padding:12px 0 24px}.fuse img{width:100%;max-width:720px;height:auto;display:block;margin:0 auto;filter:drop-shadow(0 12px 40px rgba(14,165,233,.35))}.fuse .soon{display:inline-block;margin-top:18px;padding:10px 26px;border-radius:999px;background:linear-gradient(90deg,#0ea5e9,#a855f7);color:#fff;font-size:28px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.fuse p{color:var(--muted);font-size:17px;margin-top:14px}</style>
+<div class="fuse"><h1>${esc(f.title)}</h1><img src="${esc(img)}" alt="Deviation fusion machine">${f.badge ? `<div class="soon">${esc(f.badge)}</div>` : ""}${f.blurb ? `<p>${esc(f.blurb)}</p>` : ""}</div>
+${(f.excluded || []).length ? `<div class="card" style="max-width:520px;margin:8px auto 0"><h2 style="margin-top:0">🚫 Can't be fused</h2><ul style="margin:0;padding-left:20px">${f.excluded.map((x) => `<li><b>${esc(x.name)}</b>${x.note ? ` <span class="muted">— ${esc(x.note)}</span>` : ""}</li>`).join("")}</ul></div>` : ""}
+${(f.allowedVariants || []).length ? `<div class="card" style="max-width:520px;margin:12px auto 0"><h2 style="margin-top:0">✅ Variations that can be fused</h2><p class="muted" style="margin-top:0">Only with the same kind of deviation they are on.</p><ul style="margin:0;padding-left:20px">${f.allowedVariants.map((x) => `<li><b>${esc(x.deviation)}:</b> ${x.variants.map(esc).join(", ")}</li>`).join("")}</ul></div>` : ""}`));
+  });
   app.get("/trade", (req, res) => {
     const v = viewerOf(req);
     if (!v) return res.redirect("/login?next=/trade");
