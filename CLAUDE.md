@@ -44,6 +44,7 @@
   "Bits" tab that works BEFORE "Show my Securement Pods" (GET /ext/bitsshop; /ext/bits/complete credits the buyer named in the
   Twitch-signed receipt, no identity needed) and shows an explanation when Twitch says Bits are off on the channel; ALL website links
   removed from the panel (no "open my collection", no URLs; /ext/commands strips them server-side). Keep the panel link-free.
+  3rd/4th REJECTIONS (11-02: reviewer saw 0.0.1, description; 11-09: rule 6.5): NEVER use buy/purchase/spend/support/donation/currency wording or "1 Bit = N" rates for Bits, in the panel, the description or the review notes — Bits "unlock" digital items. /ext/commands rewrites Buy->Get outside `backticks`.
   Extension: 0.0.1 is RELEASED (everyone sees it). 0.0.2 = Bits + Artisan's Touch, tested from Local/Hosted Test with Testing
   Base URI = <BASE_URL>/panel/ so testers never get a blank panel.
 - Bits: panel Shop sells Starchrom packs for Bits (rarity.js BITS_PACKS, 1 Bit = 5 Starchrom; receipts verified at

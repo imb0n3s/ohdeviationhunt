@@ -20,7 +20,7 @@
       .catch(function () { el('<div class="msg">Couldn’t load your Securement Pods right now. Try again in a minute.</div>'); });
   }
 
-  // viewers who haven't shared their Twitch identity yet still get the Bits Shop (Twitch review 2026-10-26)
+  // viewers who haven't shared their Twitch identity yet still get the Bits tab (Twitch review 2026-10-26)
   var noId = false, preBits = null;
   function loadBitsShop() {
     fetch(API + "/ext/bitsshop", { headers: { Authorization: "Bearer " + token } }).then(function (r) { return r.json(); })
@@ -64,7 +64,7 @@
   function setPage(page) {
     view.page = page; view.open = null; notice = null;
     Array.prototype.forEach.call(document.querySelectorAll(".pages button"), function (b) { b.className = b.getAttribute("data-page") === page ? "on" : ""; });
-    document.getElementById("title").textContent = page === "shop" ? "Shop" : page === "bits" ? "Bits Shop" : page === "cmds" ? "Commands" : "Securement Pods";
+    document.getElementById("title").textContent = page === "shop" ? "Shop" : page === "bits" ? "Bits" : page === "cmds" ? "Commands" : "Securement Pods";
     if (page === "cmds") return renderCommands();
     if (page === "bits") return renderBits();
     if (noId) return askIdentity();
@@ -254,11 +254,11 @@
         [5, 10].map(function (n) { return '<button data-act="set" data-n="' + n + '" class="quick">' + n + '</button>'; }).join("") +
         (maxAfford > 1 ? '<button data-act="set" data-n="' + maxAfford + '" class="quick">Max</button>' : "") + '</div>' +
         (room < 1 ? '<button class="btn buy" disabled>Securement Pods full (' + p.podsUsed + '/' + p.unitCap + ')</button>' :
-        '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? "Buy " + q + " for " + money(total) + " Starchrom" : "Need " + money(total - p.starchrom) + " more Starchrom") + '</button>') +
+        '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Working…" : afford ? "Get " + q + " for " + money(total) + " Starchrom" : "Need " + money(total - p.starchrom) + " more Starchrom") + '</button>') +
         '</div>';
     }).join("");
     html += bitsHtml();
-    html += '<div class="hint">Earn Starchrom by securing deviations in chat, <b>!hourly</b> and <b>!daily</b>, or scrap extras in the Pods tab. You can also buy in chat with <b>!buy &lt;amount&gt;</b>.</div>';
+    html += '<div class="hint">Earn Starchrom by securing deviations in chat, <b>!hourly</b> and <b>!daily</b>, or scrap extras in the Pods tab. Chat command: <b>!buy &lt;amount&gt;</b>.</div>';
     el(html);
     Array.prototype.forEach.call(document.querySelectorAll(".bitsbuy"), function (b) {
       b.onclick = function () { buyBits(b.getAttribute("data-sku")); };
@@ -284,10 +284,10 @@
     var list = bitsList();
     var all = list.filter(function (x) { return bitsProducts[x.sku]; });
     var packs = all.filter(function (x) { return !x.repair; }), repair = all.filter(function (x) { return x.repair; })[0];
-    if (!list.length) return full ? '<div class="msg"><p>💎 The Bits Shop isn’t open yet.</p></div>' : "";
-    if (!bitsOn || !all.length) return full ? '<div class="sect">Bits Shop</div><div class="msg"><p>Bits can’t be used on this channel right now' + (bitsOn ? " (loading products…)" : " — the streamer’s channel needs Bits turned on (Twitch Affiliate or Partner)") + '.</p><p>Here you can buy Starchrom (1 Bit = 5 Starchrom), +5 permanent Securement Pod space for 50 Bits, and Artisan’s Touch (250 Bits) to repair your gloves.</p></div>' : "";
-    return '<div class="sect">Bits Shop</div>' + (repair ? artisanHtml(repair, (bag && bag.player) || {}) : "") +
-      (packs.length ? '<div class="item bits"><div class="id">1 Bit = 5 Starchrom · 50 Bits = 5 more Securement Pods (permanent). Bits used here support the streamer.</div><div class="packs">' +
+    if (!list.length) return full ? '<div class="msg"><p>💎 Bits items aren’t available yet.</p></div>' : "";
+    if (!bitsOn || !all.length) return full ? '<div class="sect">Unlock with Bits</div><div class="msg"><p>Bits can’t be used on this channel right now' + (bitsOn ? " (loading products…)" : " — the streamer’s channel needs Bits turned on (Twitch Affiliate or Partner)") + '.</p><p>Here you can unlock Starchrom packs, +5 permanent Securement Pod space and Artisan’s Touch, which repairs your gloves.</p></div>' : "";
+    return '<div class="sect">Unlock with Bits</div>' + (repair ? artisanHtml(repair, (bag && bag.player) || {}) : "") +
+      (packs.length ? '<div class="item bits"><div class="id">Starchrom packs for your Securement Pods, or +5 permanent Securement Pod space.</div><div class="packs">' +
       packs.map(function (x) {
         var cost = bitsProducts[x.sku].cost && bitsProducts[x.sku].cost.amount || x.bits;
         return '<button class="btn bitsbuy" data-sku="' + esc(x.sku) + '"' + (busy ? " disabled" : "") + '><b>' + (x.capacity ? "+" + x.capacity : money(x.starchrom)) + '</b> ' + (x.capacity ? "Securement Pod space" : "Starchrom") + '<span>' + cost + ' Bits</span></button>';
@@ -303,11 +303,11 @@
     return '<div class="item glove artisan" style="--gc:#9fd3e0"><div class="ih"><div class="gicon"><img src="' + esc(x.icon) + '" alt=""></div><div><div class="in">' + esc(x.name) + '</div>' +
       '<div class="ip">Repairs your gloves · ' + cost + ' Bits</div></div></div>' +
       '<div class="id">Restores the gloves you wear to their full number of catches. ' + state + '</div>' +
-      '<button class="btn bitsbuy artisanbuy" data-sku="' + esc(x.sku) + '"' + (busy ? " disabled" : "") + '>' + (!g || full ? "Buy for " + cost + " Bits (+" + bonusSc + " Starchrom)" : "Repair for " + cost + " Bits") + '</button></div>';
+      '<button class="btn bitsbuy artisanbuy" data-sku="' + esc(x.sku) + '"' + (busy ? " disabled" : "") + '>' + (!g || full ? "Unlock with " + cost + " Bits (+" + bonusSc + " Starchrom)" : "Repair with " + cost + " Bits") + '</button></div>';
   }
   function renderBits() {
     var html = (notice ? '<div class="notice ' + notice.kind + '">' + esc(notice.text) + '</div>' : "") + bitsHtml(true) +
-      '<div class="hint">Your purchase is added to your Securement Pods on every channel running Deviation Hunt.</div>';
+      '<div class="hint">Everything you unlock goes to your Securement Pods on every channel running Deviation Hunt.</div>';
     el(html);
     Array.prototype.forEach.call(document.querySelectorAll(".bitsbuy"), function (b) { b.onclick = function () { buyBits(b.getAttribute("data-sku")); }; });
   }
@@ -334,7 +334,7 @@
           busy = false;
           if (res.j.error === "wrong_user") return;
           if (res.j.player && bag) bag.player = res.j.player;
-          notice = res.ok ? { kind: "ok", text: (res.j.repaired ? "🧤 " + res.j.repaired + " repaired — " + ((res.j.player && res.j.player.gloveLeft) || "") + " catches left" : res.j.artisan ? "Artisan’s Touch: +" + money(res.j.starchrom) + " Starchrom" : res.j.capacity ? "+" + res.j.capacity + " Securement Pod space" : "+" + money(res.j.starchrom) + " Starchrom") + " — thanks for the Bits!" } : { kind: "err", text: "Your Bits went through but the Starchrom didn’t arrive yet. Refresh the panel; if it’s still missing, tell the streamer." };
+          notice = res.ok ? { kind: "ok", text: (res.j.repaired ? "🧤 " + res.j.repaired + " repaired — " + ((res.j.player && res.j.player.gloveLeft) || "") + " catches left" : res.j.artisan ? "Artisan’s Touch: +" + money(res.j.starchrom) + " Starchrom" : res.j.capacity ? "+" + res.j.capacity + " Securement Pod space" : "+" + money(res.j.starchrom) + " Starchrom") + " added!" } : { kind: "err", text: "That didn’t arrive in your Securement Pods yet. Refresh the panel; if it’s still missing, tell the streamer." };
           if (bag) whoLine(); rerender();
           if (!bag) load();
         })
@@ -355,7 +355,7 @@
       '<div class="qty"><button data-act="dec">−</button><span>' + q + '</span><button data-act="inc">+</button>' +
       [5, 10].map(function (n) { return '<button data-act="set" data-n="' + n + '" class="quick">' + n + '</button>'; }).join("") +
       (maxAfford > 1 ? '<button data-act="set" data-n="' + maxAfford + '" class="quick">Max</button>' : "") + '</div>' +
-      '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? "Buy " + q + " pack" + (q > 1 ? "s" : "") + " (" + (q * 5) + " grenades) for " + money(total) + " Starchrom" : "Need " + money(total - p.starchrom) + " more Starchrom") + '</button></div>';
+      '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Working…" : afford ? "Get " + q + " pack" + (q > 1 ? "s" : "") + " (" + (q * 5) + " grenades) for " + money(total) + " Starchrom" : "Need " + money(total - p.starchrom) + " more Starchrom") + '</button></div>';
   }
 
   function soupHtml(it, p) {
@@ -365,7 +365,7 @@
       '<div class="ip">+' + (it.bonus * 100) + '% catch chance for 1 hour · ' + money(it.price) + ' Starchrom</div></div></div>' +
       '<div class="id">' + esc(it.desc) + '</div>' +
       (left ? '<div class="soupon">🍲 Active — ' + left + ' min left</div>' : "") +
-      '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? (left ? "Add 1 hour for " : "Buy for ") + money(it.price) + " Starchrom" : "Need " + money(it.price - p.starchrom) + " more Starchrom") + '</button></div>';
+      '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Working…" : afford ? (left ? "Add 1 hour for " : "Get for ") + money(it.price) + " Starchrom" : "Need " + money(it.price - p.starchrom) + " more Starchrom") + '</button></div>';
   }
 
   function gloveHtml(it, p, first) {
@@ -373,7 +373,7 @@
     var better = !owned && (bag.shop || []).some(function (g) { return g.kind === "gloves" && g.glove === p.glove && g.bonus > it.bonus; });
     var btn = owned ? '<button class="btn buy owned" disabled>' + (active ? "✓ Owned · active" : "✓ Owned") + '</button>'
       : better ? '<button class="btn buy owned" disabled>You wear better gloves</button>'
-      : '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Buying…" : afford ? "Buy for " + money(it.price) + " Starchrom" : "Need " + money(it.price - p.starchrom) + " more Starchrom") + '</button>';
+      : '<button class="btn buy" data-act="buy"' + (afford && !busy ? "" : " disabled") + '>' + (busy ? "Working…" : afford ? "Get for " + money(it.price) + " Starchrom" : "Need " + money(it.price - p.starchrom) + " more Starchrom") + '</button>';
     return (first ? '<div class="sect">Gloves</div>' : "") +
       '<div class="item glove' + (active ? " active" : "") + '" data-id="' + esc(it.id) + '" style="--gc:' + esc(it.color || "#9fb0c0") + '">' +
       '<div class="ih"><div class="gicon">' + (it.icon ? '<img src="' + esc(it.icon) + '" alt="">' : "🧤") + '</div><div><div class="in">' + esc(it.name) + ' <span class="rar">' + esc(it.rarity || "") + '</span></div>' +
@@ -399,7 +399,7 @@
         else if (res.j.error === "full" || res.j.error === "too_many") notice = { kind: "err", text: "That goes over your " + (res.j.player && res.j.player.unitCap || 100) + " Securement Pods (caught + empty)." };
         else if (res.j.error === "outclassed") notice = { kind: "err", text: "You already wear better gloves." };
         else if (res.j.error === "owned") notice = { kind: "err", text: "You already own " + it.name + "." };
-        else notice = { kind: "err", text: res.j.message || "Couldn’t complete that purchase. Try again." };
+        else notice = { kind: "err", text: res.j.message || "Couldn’t complete that. Try again." };
         render();
       })
       .catch(function () { busy = false; notice = { kind: "err", text: "Couldn’t reach the shop. Try again in a minute." }; render(); });

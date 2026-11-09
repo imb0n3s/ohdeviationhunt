@@ -128,7 +128,9 @@ function mount(app) {
     .replace(/^The leaderboard link\./, "Shows the top players.")
     .replace(/ Setup, the OBS Source and the spawn alert: see For Streamers \([^)]*\)\./, "")
     .replace(/Type it in the bot's chat \(twitch\.tv\/ohdeviationhunt\) to add Deviation Hunt to your channel, or use Add to my channel on [^.]+\.[a-z.]+\./, "Type it in the ohdeviationhunt chat to add Deviation Hunt to your channel.")
-    .replace(/\s*\(?(https?:\/\/)?[a-z0-9.-]*ohwikiguide\.com[^\s)]*\)?/gi, "");
+    .replace(/\s*\(?(https?:\/\/)?[a-z0-9.-]*ohwikiguide\.com[^\s)]*\)?/gi, "")
+    // Twitch rule 6.5 (2026-11-09): no "buy/purchase/spend" wording in the panel; command names in `backticks` stay as they are
+    .split("`").map((part, i) => (i % 2 ? part : part.replace(/\bBuy\b/g, "Get").replace(/\bbuy\b/g, "get").replace(/\bBought\b/g, "Got").replace(/\bspend\b/gi, "use"))).join("`");
   app.get("/ext/commands", (req, res) => {
     res.set("Cache-Control", "public, max-age=300");
     res.json(require("./cmdlist").commandSections().map((s) => ({ ...s, note: s.note ? panelText(s.note) : s.note, rows: s.rows.map(([c, t]) => [c, panelText(t)]) })));
