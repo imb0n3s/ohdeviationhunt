@@ -901,7 +901,7 @@ ${(f.allowedVariants || []).length ? `<div class="card" style="max-width:520px;m
   });
 
   app.get("/login", (req, res) => {
-    const next = /^\/(u\/[a-z0-9_]{1,40}|me|streamers|trade|trade\/log|trade\/admin|setup)$/i.test(String(req.query.next || "")) ? req.query.next : "/";
+    const next = /^\/(u\/[a-z0-9_]{1,40}|me|streamers|trade|trade\/log|trade\/admin|setup|admin\/[a-z]+)$/i.test(String(req.query.next || "")) ? req.query.next : "/";
     const state = sign({ purpose: "viewer", next, nonce: crypto.randomBytes(8).toString("hex"), ts: Date.now() });
     // after a sign-out, make Twitch ask which account (force_verify shows "Not you?"); otherwise Twitch silently
     // signs you straight back in as whoever is logged in to twitch.tv in that browser (B 2026-10-11, phone)
@@ -972,7 +972,7 @@ ${(f.allowedVariants || []).length ? `<div class="card" style="max-width:520px;m
         const hasPlayer = !!db.q.getPlayer.get(user.id);
         // back to where they came from: /me, /streamers, the trades page, or someone else's page (e.g. "Sign in to trade with X")
         const otherPage = /^\/u\/[a-z0-9_]{1,40}$/i.test(state.next || "") && state.next.toLowerCase() !== `/u/${user.login}`;
-        return res.redirect(state.next === "/me" ? "/me" : state.next === "/streamers" ? "/streamers#obs-links" : /^\/(trade(\/log|\/admin)?|setup)$/.test(state.next || "") ? state.next : otherPage ? state.next : hasPlayer ? `/u/${encodeURIComponent(user.login)}#shop` : (state.next || "/"));
+        return res.redirect(state.next === "/me" ? "/me" : state.next === "/streamers" ? "/streamers#obs-links" : /^\/(trade(\/log|\/admin)?|setup|admin\/[a-z]+)$/.test(state.next || "") ? state.next : otherPage ? state.next : hasPlayer ? `/u/${encodeURIComponent(user.login)}#shop` : (state.next || "/"));
       }
       if (state.purpose === "bot") {
         const wasSetUp = !!db.getBotAccount();
@@ -1011,7 +1011,9 @@ ${(f.allowedVariants || []).length ? `<div class="card" style="max-width:520px;m
 <p>Conduit ${esc(pool.conduitId || "none")} · ${pool.channelCount} subscriptions · data: ${d.count} deviations from ${esc(d.source)} (${d.loadedAt ? new Date(d.loadedAt).toISOString() : "never"}) · <a href="/admin/reload?key=${esc(req.query.key)}">reload wiki data</a></p>`));
   });
   app.get("/admin/reload", async (req, res) => {
-    if (req.query.key !== cfg.ADMIN_KEY) return res.status(403).send("forbidden");
+    // owner signed in on the site (imbon3s) works too, no key needed (B 2026-11-10)
+    const v = viewerOf(req);
+    if (req.query.key !== cfg.ADMIN_KEY && !(v && isOwner(v))) return v ? res.status(403).send("forbidden") : res.redirect("/login?next=/admin/reload");
     await data.refresh();
     res.json(data.info());
   });
