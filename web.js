@@ -846,6 +846,31 @@ ${(f.allowedVariants || []).length ? `<div class="card" style="max-width:520px;m
   });
 
   // Owner: make every channel's NEXT spawn one deviation / variation / skin (B 2026-10-24)
+  // Owner: release a deviation right now in any live channel, as the game itself (B 2026-11-10 "do it as the game")
+  app.get("/admin/spawn", (req, res) => {
+    const v = viewerOf(req);
+    if (!v) return res.redirect("/login?next=/admin/spawn");
+    if (!isOwner(v)) return res.status(403).send(page("Not allowed", "<h1>Not allowed</h1>"));
+    const live = db.listEnabledChannels().filter((c) => pool.spawns.live.has(c.broadcaster_id)).sort((a, b) => a.login.localeCompare(b.login));
+    const msg = req.query.done ? `<p class="notice">${esc(String(req.query.done))}</p>` : "";
+    const rows = live.map((c) => `<tr><td>${esc(c.display_name)}</td><td>${pool.spawns.active.has(c.broadcaster_id) ? "deviation loose" : "—"}</td><td><form method="post" action="/admin/spawn" style="margin:0"><input type="hidden" name="login" value="${esc(c.login)}"><button class="tbtn" type="submit">Spawn now</button></form></td></tr>`).join("");
+    res.set("Cache-Control", "no-store").send(page("Spawn now", `<h1>Spawn a deviation now</h1>${msg}<div class="card"><p>Live channels. Sends a random deviation right away, from the game bot (wakes a quiet chat too).</p><table>${rows || "<tr><td>No channels live.</td></tr>"}</table></div>`));
+  });
+  app.post("/admin/spawn", express.urlencoded({ extended: false, limit: "2kb" }), async (req, res) => {
+    if (!sameSite(req)) return res.status(403).send("forbidden");
+    const v = viewerOf(req);
+    if (!v || !isOwner(v)) return res.status(403).send("forbidden");
+    const c = db.getChannelByLogin?.(String(req.body.login || "").toLowerCase()) || db.listEnabledChannels().find((x) => x.login === String(req.body.login || "").toLowerCase());
+    let done;
+    if (!c) done = "No such channel.";
+    else {
+      pool.spawns.noteChat(c.broadcaster_id);
+      const r = await pool.spawns.spawn(c.broadcaster_id, true).catch((e) => ({ error: e.message }));
+      done = r?.error === "already" ? `${c.display_name}: a deviation is already loose.` : r?.error ? `${c.display_name}: ${r.error}` : `${c.display_name}: deviation released.`;
+      console.log(`[admin] ${v.login} spawned in ${c.login}: ${done}`);
+    }
+    res.redirect(303, "/admin/spawn?done=" + encodeURIComponent(done));
+  });
   app.get("/admin/nextspawn", (req, res) => {
     const v = viewerOf(req);
     if (!v) return res.redirect("/login?next=/admin/nextspawn");
