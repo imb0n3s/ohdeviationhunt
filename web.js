@@ -825,6 +825,33 @@ ${(f.allowedVariants || []).length ? `<div class="card" style="max-width:520px;m
 
   // Owner switch for Bits (B 2026-10-14): flips Bits on/off live, no restart. On = packs + Artisan's Touch for everyone
   // and the higher glove prices; off = only owners see them (for testing). Env BITS_ENABLED=1 forces it on.
+  // Owner-only, private (B 2026-11-10): who's playing and who dropped off. Not linked anywhere, noindex.
+  app.get("/admin/activity", (req, res) => {
+    const v = viewerOf(req);
+    if (!v) return res.redirect("/login?next=/admin/activity");
+    if (!isOwner(v)) return res.status(403).send(page("Not allowed", "<h1>Not allowed</h1>"));
+    const R = db.raw, now = Date.now(), DAY = 864e5, DROP = 14 * DAY, QUIET = 7 * DAY;
+    const lastByChan = new Map(R.prepare(`SELECT channel, MAX(t) t, SUM(n) n FROM (SELECT channel, MAX(caught_at) t, COUNT(*) n FROM specimens GROUP BY channel UNION ALL SELECT channel, MAX(caught_at) t, COUNT(*) n FROM scrapped GROUP BY channel) WHERE channel IS NOT NULL GROUP BY channel`).all().map((r) => [r.channel, r]));
+    const bot = db.getBotAccount()?.user_id;
+    const chans = R.prepare(`SELECT * FROM channels WHERE broadcaster_id != ?`).all(bot || "").map((c) => ({ ...c, last: lastByChan.get(c.broadcaster_id)?.t || 0, n: lastByChan.get(c.broadcaster_id)?.n || 0 }));
+    const lastCatch = new Map(R.prepare(`SELECT user_id, MAX(t) t, SUM(n) n FROM (SELECT user_id, MAX(caught_at) t, COUNT(*) n FROM specimens GROUP BY user_id UNION ALL SELECT user_id, MAX(caught_at) t, COUNT(*) n FROM scrapped GROUP BY user_id) GROUP BY user_id`).all().map((r) => [r.user_id, r]));
+    const players = R.prepare(`SELECT user_id, login, display, created_at, last_active_at FROM players`).all().map((p) => ({ ...p, last: Math.max(p.last_active_at || 0, lastCatch.get(p.user_id)?.t || 0), n: lastCatch.get(p.user_id)?.n || 0 }));
+    const d = (t) => (t ? new Date(t).toLocaleDateString("en-US", { timeZone: "America/Chicago", month: "short", day: "numeric" }) : "never");
+    const ago = (t) => (t ? `${Math.floor((now - t) / DAY)}d ago` : "—");
+    const table = (rows, cols) => rows.length ? `<table><tr>${cols.map((c) => `<th style="text-align:left">${c[0]}</th>`).join("")}</tr>${rows.map((r) => `<tr>${cols.map((c) => `<td>${c[1](r)}</td>`).join("")}</tr>`).join("")}</table>` : "<p class=\"muted\">None.</p>";
+    const chCols = [["Channel", (c) => `<a href="https://twitch.tv/${esc(c.login)}">${esc(c.display_name)}</a>`], ["Added", (c) => d(c.joined_at)], ["Last catch there", (c) => `${d(c.last)} (${ago(c.last)})`], ["Catches", (c) => c.n], ["Status", (c) => c.enabled ? "running" : `removed ${d(c.removed_at)}${c.removed_how ? ` (${esc(c.removed_how)})` : ""}`]];
+    const plCols = [["Player", (p) => `<a href="/u/${esc(p.login)}">${esc(p.display)}</a>`], ["Started", (p) => d(p.created_at)], ["Last played", (p) => `${d(p.last)} (${ago(p.last)})`], ["Caught", (p) => p.n]];
+    const byLast = (a, b) => b.last - a.last;
+    const chActive = chans.filter((c) => c.enabled && now - c.last < QUIET).sort(byLast);
+    const chQuiet = chans.filter((c) => c.enabled && now - c.last >= QUIET && now - c.last < DROP).sort(byLast);
+    const chDropped = chans.filter((c) => !c.enabled || now - c.last >= DROP).sort(byLast);
+    const plActive = players.filter((p) => now - p.last < QUIET).sort(byLast);
+    const plQuiet = players.filter((p) => now - p.last >= QUIET && now - p.last < DROP).sort(byLast);
+    const plDropped = players.filter((p) => now - p.last >= DROP && p.n > 0).sort(byLast);
+    res.set("Cache-Control", "no-store").set("X-Robots-Tag", "noindex").send(page("Activity", `<h1>Who's playing (private)</h1><p class="muted">Owner only. Active = played in the last 7 days · Quiet = 7–14 days · Dropped = 14+ days (or the game was removed).</p>
+<div class="card"><h2>Streamers (${chans.length})</h2><h3>Active (${chActive.length})</h3>${table(chActive, chCols)}<h3>Quiet (${chQuiet.length})</h3>${table(chQuiet, chCols)}<h3>Dropped (${chDropped.length})</h3>${table(chDropped, chCols)}</div>
+<div class="card"><h2>Players (${players.length})</h2><h3>Active (${plActive.length})</h3>${table(plActive, plCols)}<h3>Quiet (${plQuiet.length})</h3>${table(plQuiet, plCols)}<h3>Dropped (${plDropped.length})</h3>${table(plDropped, plCols)}</div>`));
+  });
   app.get("/admin/bits", (req, res) => {
     const v = viewerOf(req);
     if (!v) return res.redirect("/login?next=/admin/bits");
