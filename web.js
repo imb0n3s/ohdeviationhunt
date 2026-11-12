@@ -318,7 +318,7 @@ ${obsLinksHtml(viewer)}
 </div>`);
 }
 
-function landing(pool) {
+function landing(pool, home = {}) {
   const bot = db.getBotAccount();
   const botName = bot?.login || "the bot";
   return page(cfg.BOT_NAME, `
@@ -329,6 +329,7 @@ function landing(pool) {
   <p style="margin-bottom:0">You log in with Twitch once; the bot only gets permission to read and post in your chat.${bot ? ` Prefer chat? Type <kbd>!join</kbd> in <a href="https://twitch.tv/${esc(bot.login)}">twitch.tv/${esc(bot.login)}</a>.` : ""} Then <kbd>/mod ${esc(botName)}</kbd> so it isn't rate-limited.</p>
 </div>
 <div class="stats"><div class="stat"><b>${fmt(channelList(pool).total)}</b>Channels</div><div class="stat"><b>${fmt(db.countPlayers())}</b>Metas</div><div class="stat"><b>${fmt(db.totalCatches())}</b>Deviations Secured</div><div class="stat"><b>${fmt(db.totalAttempts())}</b>Deviations Attempted</div><div class="stat"><b>${data.all().length}</b>Deviations</div><div class="stat"><b>${fmt(db.starchromSpent())}</b>Starchrom spent</div></div>
+${home.youtube && /^[\w-]{11}$/.test(home.youtube) ? `<div class="homevid" style="margin:22px 0 6px">${home.title ? `<h2 style="margin-top:0">${esc(home.title)}</h2>` : ""}<div style="position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;background:#000"><iframe src="https://www.youtube-nocookie.com/embed/${home.youtube}?rel=0" title="${esc(home.title || "Deviation Hunt video")}" style="position:absolute;inset:0;width:100%;height:100%;border:0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>` : ""}
 
 ${(() => { const c = channelList(pool, { limit: 12 }); return `<h2>Where to Play <span class="sub">${c.live} live · ${c.total} channel${c.total === 1 ? "" : "s"}</span></h2>
 <p>Every Twitch channel with ${esc(cfg.BOT_NAME)}. Deviations only show up while a channel is live — your Securement Pods are the same on all of them.</p>
@@ -660,7 +661,17 @@ function createApp(pool) {
   app.use("/panel", express.static(require("path").join(__dirname, "ext"), { maxAge: 0, index: "panel.html" }));
   require("./overlay").mount(app, pool);
   require("./live").mount(app, pool);
-  app.get("/", async (req, res) => { await refreshAvatars(); res.send(landing(pool)); });
+  // homepage video (B 2026-11-12): docs/site/home.json {youtube, title}, read from GitHub raw (2-min cache) — change it with a docs-only push
+  let homeCache = { at: 0, data: { youtube: "Z9S4FLG1Pak", title: "🎬 Watch: Deviation Hunt in 27 seconds" } };
+  async function homeData() {
+    if (Date.now() - homeCache.at < 120000) return homeCache.data;
+    try {
+      const r = await fetch("https://raw.githubusercontent.com/imb0n3s/ohdeviationhunt/main/docs/site/home.json", { signal: AbortSignal.timeout(3000) });
+      homeCache = { at: Date.now(), data: r.ok ? await r.json() : homeCache.data };
+    } catch { homeCache.at = Date.now(); }
+    return homeCache.data;
+  }
+  app.get("/", async (req, res) => { await refreshAvatars(); res.send(landing(pool, await homeData())); });
   app.get("/channels", async (req, res) => { await refreshAvatars(); res.send(channelsPage(pool)); });
   app.get("/dex", (req, res) => res.send(dexPage()));
   app.get("/commands", (req, res) => res.send(commandsPage()));
