@@ -168,10 +168,10 @@ async function main() {
     db.setSetting("title:seed:vetday2026", "1");
   }
   // v2 (B 2026-11-12 "why is there a US before it?"): Windows shows the 🇺🇸 flag emoji as the letters "US" — no flag
-  if (db.getSetting("title:seed:vetday2026c") !== "1") {
+  if (db.getSetting("title:seed:vetday2026d") !== "1") {
     db.setSetting("title:banner", JSON.stringify({ text: "Happy Veterans Day to all that Served", until: Date.parse("2026-11-19T02:58:00Z") }));
     db.setSetting("title:base", "[Trading now Live!] OHDeviation Hunt 24/7 brought to you by OHWIkiGuide.com");
-    db.setSetting("title:seed:vetday2026c", "1");
+    db.setSetting("title:seed:vetday2026d", "1");
   }
   let titleWarned = false;
   const titleTick = async () => {
@@ -185,7 +185,8 @@ async function main() {
       let base = db.getSetting("title:base");
       const prefix = banner?.text ? `${banner.text} | ` : null;
       if (!base) { base = prefix && cur.startsWith(prefix) ? cur.slice(prefix.length) : cur; db.setSetting("title:base", base); }
-      else if (!cur.includes(base)) { base = cur; db.setSetting("title:base", base); } // B changed the title himself: that's the new normal
+      // B changed the title himself: that's the new normal — only learned while NO banner is up (a banner title can be cut off at 140 chars)
+      else if (!active && cur !== base && !(prefix && cur.startsWith(prefix))) { base = cur; db.setSetting("title:base", base); }
       const want = active ? `${prefix}${base}`.slice(0, 140) : base;
       if (banner && !active) db.setSetting("title:banner", "");
       if (want && want !== cur) {
