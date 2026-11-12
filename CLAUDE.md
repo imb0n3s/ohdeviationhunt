@@ -141,6 +141,7 @@
   — and in the Twitch panel since B 2026-10-14 (served by the server, so the released 0.0.1 panel shows them too; 0.0.2 has a proper Binding Grenades section). Pictures: ext/grenade1/3/5.png.
 - Fusion (B 2026-11-08): /fusion is a COMING SOON placeholder (ext/fusion.png = 4K Real-ESRGAN upscale). Page text, "Can't be fused" list and the fusable-variations list (allowedVariants) = docs/site/fusion.json, read from GitHub raw at request time (2-min cache): edit + push docs ONLY, no deploy/restart (B 2026-11-08: website-only changes must not touch the bot). Full rules: docs/fusion-rules.md.
 - !daily bonus prizes (B 2026-11-07): each !daily rolls 5% a bowl of Capture Soup (+1h) and 10% a Lv.3 Binding Grenade, independently (ECONOMY.daily.soupChance / grenade3Chance).
+- 24/7 title banner (B 2026-11-11): setting "title:banner" = {text, until} prefixes the bot channel's Twitch title ("<text> | <normal>"), index.js titleTick every 10 min; normal title kept in "title:base" and restored after "until". Seeded once: Veterans Day until 2026-11-18 20:58 CT. Needs bot scope channel:manage:broadcast (added to BOT_SCOPES 11-11; B must redo /setup as the bot once).
 - Support notice (B 2026-10-30): index.js posts SUPPORT_DEFAULT (server costs / donations) in the bot's own chat every 45 min while live; setting "timer2:msg" overrides (empty = off).
 - 24/7 chat timer (B 2026-10-10): index.js posts TIMER_DEFAULT (the Binding Grenades message) in the bot's own chat every 15 min
   while that channel is live. Override the text with setting "timer:msg" (empty string = off).

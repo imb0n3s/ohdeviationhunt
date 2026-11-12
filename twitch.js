@@ -6,7 +6,8 @@ const OAUTH = "https://id.twitch.tv/oauth2";
 const HELIX = "https://api.twitch.tv/helix";
 
 // Scopes the BOT ACCOUNT grants once (during /setup)
-const BOT_SCOPES = ["user:read:chat", "user:write:chat", "user:bot"];
+// channel:manage:broadcast = the bot can set its own 24/7 stream title (timed title banners, B 2026-11-11)
+const BOT_SCOPES = ["user:read:chat", "user:write:chat", "user:bot", "channel:manage:broadcast"];
 // Scope a STREAMER grants when adding the bot (lets the bot act as a bot in their channel)
 const STREAMER_SCOPES = ["channel:bot"];
 

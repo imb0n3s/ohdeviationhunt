@@ -160,6 +160,40 @@ async function main() {
       if (ch && msg && spawns.live.has(ch)) pool.send(ch, msg);
     } catch (e) { console.error("[timer]", e.message); }
   }, 15 * 60 * 1000).unref();
+  // Timed title banner on the 24/7 stream (B 2026-11-11): setting "title:banner" = {text, until}. While active the bot's
+  // own Twitch title becomes "<text> | <normal title>"; afterwards the normal title (setting "title:base") comes back.
+  // Needs the bot token to have channel:manage:broadcast (redo /setup as the bot once); until then it just logs and waits.
+  if (!db.getSetting("title:seed:vetday2026")) {
+    db.setSetting("title:banner", JSON.stringify({ text: "🇺🇸 Happy Veterans Day to all that Served", until: Date.parse("2026-11-19T02:58:00Z") }));
+    db.setSetting("title:seed:vetday2026", "1");
+  }
+  let titleWarned = false;
+  const titleTick = async () => {
+    try {
+      const bid = db.getBotAccount()?.user_id;
+      if (!bid) return;
+      const cur = (await twitch.helix("GET", "/channels", { query: { broadcaster_id: bid } }))?.data?.[0]?.title || "";
+      let banner = null;
+      try { banner = JSON.parse(db.getSetting("title:banner") || "null"); } catch {}
+      const active = banner && banner.text && banner.until > Date.now();
+      let base = db.getSetting("title:base");
+      const prefix = banner?.text ? `${banner.text} | ` : null;
+      if (!base) { base = prefix && cur.startsWith(prefix) ? cur.slice(prefix.length) : cur; db.setSetting("title:base", base); }
+      else if (!(prefix && cur.startsWith(prefix)) && cur !== base) { base = cur; db.setSetting("title:base", base); } // B changed the title himself: that's the new normal
+      const want = active ? `${prefix}${base}`.slice(0, 140) : base;
+      if (banner && !active) db.setSetting("title:banner", "");
+      if (want && want !== cur) {
+        await twitch.helix("PATCH", "/channels", { query: { broadcaster_id: bid }, body: { title: want } });
+        console.log(`[title] 24/7 title -> ${want}`);
+      }
+    } catch (e) {
+      if (!titleWarned) console.warn(`[title] can't set the 24/7 title yet (${e.status || e.message}) — redo /setup as the bot to grant channel:manage:broadcast`);
+      titleWarned = true;
+    }
+  };
+  setTimeout(titleTick, 20000).unref?.();
+  setInterval(titleTick, 10 * 60 * 1000).unref();
+
   // Support notice (B 2026-10-30): every 45 min in the bot's own chat while the 24/7 stream is live.
   // Change the text with setting "timer2:msg" (empty string = off).
   const SUPPORT_DEFAULT = "💙 Thank you all for your continued support of OHWikiGuide and Deviation Hunt. Due to rising server costs, OHWikiGuide and all of its projects, including Deviation Hunt and this 24/7 stream, will be coming to an end soon unless the community helps cover them. Every donation, no matter the size, helps keep everything running. Thank you!";
