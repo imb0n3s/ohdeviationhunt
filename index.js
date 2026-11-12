@@ -167,6 +167,12 @@ async function main() {
     db.setSetting("title:banner", JSON.stringify({ text: "🇺🇸 Happy Veterans Day to all that Served", until: Date.parse("2026-11-19T02:58:00Z") }));
     db.setSetting("title:seed:vetday2026", "1");
   }
+  // v2 (B 2026-11-12 "why is there a US before it?"): Windows shows the 🇺🇸 flag emoji as the letters "US" — no flag
+  if (!db.getSetting("title:seed:vetday2026b")) {
+    db.setSetting("title:banner", JSON.stringify({ text: "Happy Veterans Day to all that Served", until: Date.parse("2026-11-19T02:58:00Z") }));
+    db.setSetting("title:base", "[Trading now Live!] OHDeviation Hunt 24/7 brought to you by OHWIkiGuide.com");
+    db.setSetting("title:seed:vetday2026b", "1");
+  }
   let titleWarned = false;
   const titleTick = async () => {
     try {
