@@ -151,3 +151,6 @@
   Trading has a full per-player Trade Log (/trade/log, snapshots of each specimen as traded) and an owner page
   /trade/admin (Twitch logins in env OWNER_LOGINS, default imbon3s) that can Reverse an accepted trade while every
   specimen is still with whoever received it.
+- Homepage video (B 2026-11-12): YouTube embed between the stats and Where to Play = docs/site/home.json {youtube: <11-char id>, title}
+  (read from GitHub raw, 2-min cache; empty youtube = hidden). Change it with a docs-only push, no deploy. Current: Bits showcase
+  https://youtu.be/Z9S4FLG1Pak (27s, source docs/media/Deviation_Hunt_Bits_Showcase.mp4), pinned comment -> twitch.tv/imbon3s.
