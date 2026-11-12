@@ -97,6 +97,7 @@ code,kbd{background:#0b1016;padding:2px 7px;border-radius:5px;color:#c9e7ff;font
 .chan img{width:44px;height:44px;border-radius:50%;flex:none;background:var(--line)}.chan.live img{box-shadow:0 0 0 2px #ef4444}
 .ci{min-width:0}.cn{font-weight:700}.cs{color:var(--muted);font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lv{background:#ef4444;color:#fff;font-size:.65rem;font-weight:800;border-radius:4px;padding:1px 5px;vertical-align:middle;margin-left:4px}
+.vw{color:#fca5a5;font-size:.75rem;font-weight:700;vertical-align:middle;margin-left:4px;white-space:nowrap}
 h2 .sub{font-size:.8rem;color:var(--muted);font-weight:600;margin-left:6px}
 .tr{list-style:none;margin:0;padding:0}.tr li{padding:2px 0;border-top:1px solid var(--line);color:var(--text);cursor:help}.tr li b{display:inline-block;width:16px;color:var(--accent)}.tr li.empty{color:var(--muted);font-style:italic;cursor:default}
 .bv{font-size:.7rem;color:var(--muted);text-align:center;margin-top:2px}
@@ -197,7 +198,7 @@ function channelList(pool, { limit } = {}) {
   if (!list.length) return { html: `<p>No channels yet — be the first to add it!</p>`, total: 0, live: 0 };
   const html = `<div class="chans">${shown.map((c) => `<a class="chan${c.isLive ? " live" : ""}" href="https://twitch.tv/${esc(c.login)}" target="_blank" rel="noopener">
 <img src="${esc(avatars.get(c.broadcaster_id) || "")}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
-<div class="ci"><div class="cn">${esc(c.display_name)}${c.isLive ? ` <span class="lv">LIVE</span>` : ""}${c.isBot ? ` <span class="lv" style="background:#0e7490">24/7</span>` : ""}</div>
+<div class="ci"><div class="cn">${esc(c.display_name)}${c.isLive ? ` <span class="lv">LIVE</span>${c.info && c.info.viewers != null ? ` <span class="vw" title="watching now">👁 ${fmt(c.info.viewers)}</span>` : ""}` : ""}${c.isBot ? ` <span class="lv" style="background:#0e7490">24/7</span>` : ""}</div>
 <div class="cs">${fmt(c.catches)} Deviation${c.catches === 1 ? "" : "s"} Secured here</div></div></a>`).join("")}</div>`;
   return { html, total: list.length, live: list.filter((c) => c.isLive).length };
 }
