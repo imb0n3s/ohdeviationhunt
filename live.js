@@ -25,7 +25,7 @@ const shopSlides = () => {
     { title: "Binding Grenades", sub: "1 per throw", items: I.filter((i) => i.kind === "grenades").map(row) },
     { title: "Gloves", sub: "catch bonus, wear out", items: I.filter((i) => i.kind === "gloves").map(row) },
     // Bits slide (B 2026-11-12): Artisan's Touch only for now; unlocked from the Bits tab of the Twitch panel
-    { title: "Bits", sub: "Twitch panel · Bits tab", items: require("./rarity").BITS_PACKS.filter((p) => p.repair)
+    { title: "Bits", sub: "Twitch panel · Bits tab", noSpent: true, items: require("./rarity").BITS_PACKS.filter((p) => p.repair)
       .map((p) => ({ name: p.name, priceText: `${p.bits.toLocaleString("en-US")} Bits`, icon: "/panel/" + p.icon, note: "repairs your worn gloves to full catches" })) },
   ];
 };
@@ -208,7 +208,7 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     <div class="rk" id="metav"><h2 class="stencil">Collection Champions <small>⭐ = all ${data.all().length}</small></h2><div id="metas"></div></div>
     <div class="rk off" id="mostv"><h2 class="stencil">Most Collected <small>deviations caught in total</small></h2><div id="most"></div></div>
     <div class="rk off" id="streamv"><h2 class="stencil">Top Streams <small>deviations secured</small></h2><div id="streams"></div></div>
-    <div class="shopv off" id="shopv"><h2 class="stencil"><span id="shopt">🛒 Shop</span> <small id="shops">!buy in chat</small></h2><div class="spent">🔥 <b id="spent">0</b> Starchrom spent so far</div><div class="sgrid" id="sgrid"></div></div></div></div>
+    <div class="shopv off" id="shopv"><h2 class="stencil"><span id="shopt">🛒 Shop</span> <small id="shops">!buy in chat</small></h2><div class="spent" id="spentbar">🔥 <b id="spent">0</b> Starchrom spent so far</div><div class="sgrid" id="sgrid"></div></div></div></div>
 </div>
 <div id="ticker"><div class="lab"><i></i><span id="tlab">LIVE NOW</span></div><div class="win"><div class="run" id="run"></div></div></div>
 
@@ -306,7 +306,10 @@ footer{position:absolute;left:48px;right:48px;bottom:20px;height:0}
     const sgEl=document.getElementById("sgrid"), big=SL.reduce((m,x,k)=>x.items.length>SL[m].items.length?k:m,0), slI=shopI>=0&&SL[shopI]?shopI:(sgEl.dataset.h?-1:big);
     if(slI>=0&&SL[slI]){ const sl=SL[slI];
       document.getElementById("shopt").textContent="🛒 Shop · "+sl.title; document.getElementById("shops").textContent=sl.sub;
-      const sg=sl.items.map((i)=>'<div class="si"><img src="'+esc(i.icon)+'" alt=""><div><div class="nm">'+esc(i.name)+'</div><div class="pr">'+(i.priceText?esc(i.priceText):Number(i.price).toLocaleString()+' Starchrom')+'</div><div class="nt">'+esc(i.note)+'</div></div></div>').join(""); if(sgEl.dataset.h!==sg){sgEl.dataset.h=sg;sgEl.innerHTML=sg;} if(slI===big&&shopI<0&&!sgEl.style.minHeight) sgEl.style.minHeight=sgEl.offsetHeight+"px"; }
+      const sg=sl.items.map((i)=>'<div class="si"><img src="'+esc(i.icon)+'" alt=""><div><div class="nm">'+esc(i.name)+'</div><div class="pr">'+(i.priceText?esc(i.priceText):Number(i.price).toLocaleString()+' Starchrom')+'</div><div class="nt">'+esc(i.note)+'</div></div></div>').join(""); if(sgEl.dataset.h!==sg){sgEl.dataset.h=sg;sgEl.innerHTML=sg;} if(slI===big&&shopI<0&&!sgEl.dataset.mh){ sgEl.dataset.mh=sgEl.offsetHeight; sgEl.style.minHeight=sgEl.offsetHeight+"px"; } }
+    // the Bits slide has no "Starchrom spent" bar (B 2026-11-12); the grid takes its space so the card keeps its size
+    const sb=document.getElementById("spentbar"), noSp=shopI>=0&&SL[shopI]&&SL[shopI].noSpent;
+    if(sgEl.dataset.mh){ if(noSp&&sb.style.display!=="none"){ const h=sb.offsetHeight+parseFloat(getComputedStyle(sb).marginTop)+parseFloat(getComputedStyle(sb).marginBottom); sb.style.display="none"; sgEl.style.minHeight=(+sgEl.dataset.mh+h)+"px"; } else if(!noSp&&sb.style.display==="none"){ sb.style.display=""; sgEl.style.minHeight=sgEl.dataset.mh+"px"; } }
     // Collection Champions: how many of the deviations they have (x/61); a ⭐ once they have them all (B 2026-10-09)
     document.getElementById("metas").innerHTML=st.metas.map((m,i)=>'<div class="rr s"><span class="n">'+(i+1)+'.</span><b>'+(m.species>=st.totalDevs?'⭐ ':'')+esc(m.name)+'</b><span class="a">'+m.species+'/'+st.totalDevs+'</span></div>').join("");
     document.getElementById("most").innerHTML=(st.most||[]).map((m,i)=>'<div class="rr s"><span class="n">'+(i+1)+'.</span><b>'+esc(m.name)+'</b><span class="a">'+Number(m.total).toLocaleString()+'</span></div>').join("")||'<div class="rr s"><span class="n"></span><b>—</b></div>';
