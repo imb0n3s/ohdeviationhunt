@@ -18,6 +18,7 @@ function setReview(on) { db.setSetting("bits:review", on ? "on" : "off"); consol
 const allowedFor = (login) => live() || review() || isOwnerLogin(login);
 function sync() { rarity.setBitsLive(live()); return live(); }
 function setLive(on) {
+  if (on && !live()) db.setSetting("bits:enabledAt", String(Date.now()));
   db.setSetting("bits:enabled", on ? "on" : "off");
   if (on) db.setSetting("bits:review", "off");
   const now = sync();

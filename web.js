@@ -864,6 +864,21 @@ ${(f.allowedVariants || []).length ? `<div class="card" style="max-width:520px;m
 <div class="card"><h2>Streamers (${chans.length})</h2><h3>Active (${chActive.length})</h3>${table(chActive, chCols)}<h3>Quiet (${chQuiet.length})</h3>${table(chQuiet, chCols)}<h3>Dropped (${chDropped.length})</h3>${table(chDropped, chCols)}</div>
 <div class="card"><h2>Players (${players.length})</h2><h3>Active (${plActive.length})</h3>${table(plActive, plCols)}<h3>Quiet (${plQuiet.length})</h3>${table(plQuiet, plCols)}<h3>Dropped (${plDropped.length})</h3>${table(plDropped, plCols)}</div>`));
   });
+  // Bits used (B 2026-11-18): every credited Bits receipt (bits_tx). Owner accounts' rows are marked as tests.
+  function bitsReport() {
+    const R = db.raw, ownerIds = new Set(R.prepare(`SELECT user_id FROM players WHERE lower(login) IN (${cfg.OWNER_LOGINS.map(() => "?").join(",") || "''"})`).all(...cfg.OWNER_LOGINS).map((r) => r.user_id));
+    const rows = R.prepare(`SELECT t.*, p.display, p.login, c.display_name AS chan FROM bits_tx t LEFT JOIN players p ON p.user_id=t.user_id LEFT JOIN channels c ON c.broadcaster_id=t.channel ORDER BY t.at DESC`).all();
+    const since = +(db.getSetting("bits:enabledAt") || 0);
+    const real = rows.filter((r) => !ownerIds.has(r.user_id)), after = since ? real.filter((r) => r.at >= since) : real;
+    const sum = (a) => a.reduce((n, r) => n + r.bits, 0), buyers = (a) => new Set(a.map((r) => r.user_id)).size;
+    const bySku = {}; for (const r of real) { const k = bySku[r.sku] || (bySku[r.sku] = { n: 0, bits: 0 }); k.n++; k.bits += r.bits; }
+    const when = (t) => new Date(t).toLocaleString("en-US", { timeZone: "America/Chicago", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+    return `<div class="card"><h2>Bits used</h2>
+<p><b>${fmt(sum(real))} Bits</b> from ${fmt(real.length)} unlock${real.length === 1 ? "" : "s"} by ${fmt(buyers(real))} viewer${buyers(real) === 1 ? "" : "s"} (owner test unlocks not counted: ${fmt(rows.length - real.length)}, ${fmt(sum(rows) - sum(real))} Bits).</p>
+${since ? `<p>Since Bits were switched ON (${when(since)} CT): <b>${fmt(sum(after))} Bits</b> · ${fmt(after.length)} unlocks.</p>` : ""}
+${Object.keys(bySku).length ? `<p>${Object.entries(bySku).sort((a, b) => b[1].bits - a[1].bits).map(([k, v]) => `${esc(k)}: ${fmt(v.n)}× = ${fmt(v.bits)} Bits`).join(" · ")}</p>` : ""}
+<table><tr><th>When (CT)</th><th>Who</th><th>Item</th><th>Bits</th><th>Channel</th></tr>${rows.slice(0, 100).map((r) => `<tr><td>${when(r.at)}</td><td>${esc(r.display || r.login || r.user_id)}${ownerIds.has(r.user_id) ? " <span class=\"muted\">(test)</span>" : ""}</td><td>${esc(r.sku)}</td><td>${fmt(r.bits)}</td><td>${esc(r.chan || "")}</td></tr>`).join("") || `<tr><td colspan="5" class="muted">No Bits used yet.</td></tr>`}</table></div>`;
+  }
   app.get("/admin/bits", (req, res) => {
     const v = viewerOf(req);
     if (!v) return res.redirect("/login?next=/admin/bits");
@@ -871,7 +886,7 @@ ${(f.allowedVariants || []).length ? `<div class="card" style="max-width:520px;m
     const b = require("./bits"), on = b.live();
     const gl = GLOVES.map((g) => `${esc(g.name)} ${fmt(g.price)} (${g.catches} catches)`).join(" · ");
     res.set("Cache-Control", "no-store").send(page("Bits switch", `<h1>Bits switch</h1><div class="card"><p>Bits are <b>${on ? "ON for everyone" : "OFF (only owners can test them)"}</b>.</p><p>Glove prices now: ${gl}</p>
-<form method="post" action="/admin/bits"><input type="hidden" name="on" value="${on ? "0" : "1"}"><button class="tbtn" type="submit">${on ? "Switch Bits OFF" : "Switch Bits ON (raises glove prices)"}</button></form>${on ? "" : `<hr><p>Review mode is <b>${b.review() ? "ON" : "OFF"}</b>: while ON, anyone using the 0.0.2 panel (Twitch reviewers + accounts on its tester list) sees the Bits Shop and gets what they buy (test Bits are free). Glove prices don't change. Keep 0.0.2's tester list to just you while it's on.</p><form method="post" action="/admin/bits"><input type="hidden" name="review" value="${b.review() ? "0" : "1"}"><button class="tbtn ghost" type="submit">${b.review() ? "Turn review mode OFF" : "Turn review mode ON"}</button></form>`}${cfg.BITS_ENABLED ? "<p class=\"muted\">Railway env BITS_ENABLED=1 keeps it on regardless.</p>" : ""}</div>`));
+<form method="post" action="/admin/bits"><input type="hidden" name="on" value="${on ? "0" : "1"}"><button class="tbtn" type="submit">${on ? "Switch Bits OFF" : "Switch Bits ON (raises glove prices)"}</button></form>${on ? "" : `<hr><p>Review mode is <b>${b.review() ? "ON" : "OFF"}</b>: while ON, anyone using the 0.0.2 panel (Twitch reviewers + accounts on its tester list) sees the Bits Shop and gets what they buy (test Bits are free). Glove prices don't change. Keep 0.0.2's tester list to just you while it's on.</p><form method="post" action="/admin/bits"><input type="hidden" name="review" value="${b.review() ? "0" : "1"}"><button class="tbtn ghost" type="submit">${b.review() ? "Turn review mode OFF" : "Turn review mode ON"}</button></form>`}${cfg.BITS_ENABLED ? "<p class=\"muted\">Railway env BITS_ENABLED=1 keeps it on regardless.</p>" : ""}</div>${bitsReport()}`));
   });
   app.post("/admin/bits", express.urlencoded({ extended: false, limit: "1kb" }), (req, res) => {
     if (!sameSite(req)) return res.status(403).send("forbidden");
