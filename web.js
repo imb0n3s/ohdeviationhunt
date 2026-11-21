@@ -901,16 +901,25 @@ ${Object.keys(bySku).length ? `<p>${Object.entries(bySku).sort((a, b) => b[1].bi
 
   // Owner: make every channel's NEXT spawn one deviation / variation / skin (B 2026-10-24)
   // Owner: release a deviation right now in any live channel, as the game itself (B 2026-11-10 "do it as the game")
+  const looseText = (bid) => { const a = pool.spawns.active.get(bid); return a ? `${a.dev?.name || "?"}${a.variant ? ` — ${a.variant.name} (${a.variant.kind})` : ""}${a.endsAt ? ` · ${Math.max(0, Math.ceil((a.endsAt - Date.now()) / 1000))}s left` : ""}` : "—"; };
+  app.get("/admin/spawn/status", (req, res) => {
+    const v = viewerOf(req);
+    if (!v || !isOwner(v)) return res.status(403).json({});
+    const live = db.listEnabledChannels().filter((c) => pool.spawns.live.has(c.broadcaster_id));
+    res.set("Cache-Control", "no-store").json({ live: live.map((c) => c.broadcaster_id), status: Object.fromEntries(live.map((c) => [c.broadcaster_id, looseText(c.broadcaster_id)])) });
+  });
   app.get("/admin/spawn", (req, res) => {
     const v = viewerOf(req);
     if (!v) return res.redirect("/login?next=/admin/spawn");
     if (!isOwner(v)) return res.status(403).send(page("Not allowed", "<h1>Not allowed</h1>"));
     const live = db.listEnabledChannels().filter((c) => pool.spawns.live.has(c.broadcaster_id)).sort((a, b) => a.login.localeCompare(b.login));
     const msg = req.query.done ? `<p class="notice">${esc(String(req.query.done))}</p>` : "";
+    // which deviation is loose (B 2026-11-20), refreshed every 5s by the page
     // dropdown after Spawn now (B 2026-11-20): Random, or a specific deviation / variation / skin
     const devOpts = data.all().slice().sort((a, b) => a.name.localeCompare(b.name)).flatMap((d) => [`<option value="${esc(d.id)}|">${esc(d.name)}</option>`, ...d.variants.map((x) => `<option value="${esc(d.id)}|${esc(x.name)}">${esc(d.name)} — ${esc(x.name)} (${x.kind})</option>`)]).join("");
-    const rows = live.map((c) => `<tr><td>${esc(c.display_name)}</td><td>${pool.spawns.active.has(c.broadcaster_id) ? "deviation loose" : "—"}</td><td><form method="post" action="/admin/spawn" style="margin:0"><input type="hidden" name="login" value="${esc(c.login)}"><button class="tbtn" type="submit">Spawn now</button> <select name="pick" aria-label="Which deviation" style="margin-left:8px;max-width:340px"><option value="">Random</option>${devOpts}</select></form></td></tr>`).join("");
-    res.set("Cache-Control", "no-store").send(page("Spawn now", `<h1>Spawn a deviation now</h1>${msg}<div class="card"><p>Live channels. Sends a deviation right away, from the game bot (wakes a quiet chat too). Leave the list on Random, or pick a deviation, variation or skin first.</p><table>${rows || "<tr><td>No channels live.</td></tr>"}</table></div>`));
+    const rows = live.map((c) => `<tr><td>${esc(c.display_name)}</td><td class="spst" data-bid="${esc(c.broadcaster_id)}">${esc(looseText(c.broadcaster_id))}</td><td><form method="post" action="/admin/spawn" style="margin:0"><input type="hidden" name="login" value="${esc(c.login)}"><button class="tbtn" type="submit">Spawn now</button> <select name="pick" aria-label="Which deviation" style="margin-left:8px;max-width:340px"><option value="">Random</option>${devOpts}</select></form></td></tr>`).join("");
+    res.set("Cache-Control", "no-store").send(page("Spawn now", `<h1>Spawn a deviation now</h1>${msg}<div class="card"><p>Live channels. Sends a deviation right away, from the game bot (wakes a quiet chat too). Leave the list on Random, or pick a deviation, variation or skin first.</p><table>${rows || "<tr><td>No channels live.</td></tr>"}</table><p class="muted" id="spupd" style="font-size:.85em">Updates every 5 seconds.</p></div>
+<script>(function(){const ids=[...document.querySelectorAll(".spst")].map(e=>e.dataset.bid).sort().join(",");setInterval(async()=>{try{const r=await fetch("/admin/spawn/status",{cache:"no-store"});if(!r.ok)return;const d=await r.json();if(d.live.slice().sort().join(",")!==ids&&!document.activeElement.matches("select")){location.href="/admin/spawn";return;}document.querySelectorAll(".spst").forEach(e=>{e.textContent=d.status[e.dataset.bid]??"(not live)";});}catch(e){}},5000);})();</script>`));
   });
   app.post("/admin/spawn", express.urlencoded({ extended: false, limit: "2kb" }), async (req, res) => {
     if (!sameSite(req)) return res.status(403).send("forbidden");
