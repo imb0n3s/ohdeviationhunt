@@ -907,8 +907,10 @@ ${Object.keys(bySku).length ? `<p>${Object.entries(bySku).sort((a, b) => b[1].bi
     if (!isOwner(v)) return res.status(403).send(page("Not allowed", "<h1>Not allowed</h1>"));
     const live = db.listEnabledChannels().filter((c) => pool.spawns.live.has(c.broadcaster_id)).sort((a, b) => a.login.localeCompare(b.login));
     const msg = req.query.done ? `<p class="notice">${esc(String(req.query.done))}</p>` : "";
-    const rows = live.map((c) => `<tr><td>${esc(c.display_name)}</td><td>${pool.spawns.active.has(c.broadcaster_id) ? "deviation loose" : "—"}</td><td><form method="post" action="/admin/spawn" style="margin:0"><input type="hidden" name="login" value="${esc(c.login)}"><button class="tbtn" type="submit">Spawn now</button></form></td></tr>`).join("");
-    res.set("Cache-Control", "no-store").send(page("Spawn now", `<h1>Spawn a deviation now</h1>${msg}<div class="card"><p>Live channels. Sends a random deviation right away, from the game bot (wakes a quiet chat too).</p><table>${rows || "<tr><td>No channels live.</td></tr>"}</table></div>`));
+    // dropdown after Spawn now (B 2026-11-20): Random, or a specific deviation / variation / skin
+    const devOpts = data.all().slice().sort((a, b) => a.name.localeCompare(b.name)).flatMap((d) => [`<option value="${esc(d.id)}|">${esc(d.name)}</option>`, ...d.variants.map((x) => `<option value="${esc(d.id)}|${esc(x.name)}">${esc(d.name)} — ${esc(x.name)} (${x.kind})</option>`)]).join("");
+    const rows = live.map((c) => `<tr><td>${esc(c.display_name)}</td><td>${pool.spawns.active.has(c.broadcaster_id) ? "deviation loose" : "—"}</td><td><form method="post" action="/admin/spawn" style="margin:0"><input type="hidden" name="login" value="${esc(c.login)}"><button class="tbtn" type="submit">Spawn now</button> <select name="pick" aria-label="Which deviation" style="margin-left:8px;max-width:340px"><option value="">Random</option>${devOpts}</select></form></td></tr>`).join("");
+    res.set("Cache-Control", "no-store").send(page("Spawn now", `<h1>Spawn a deviation now</h1>${msg}<div class="card"><p>Live channels. Sends a deviation right away, from the game bot (wakes a quiet chat too). Leave the list on Random, or pick a deviation, variation or skin first.</p><table>${rows || "<tr><td>No channels live.</td></tr>"}</table></div>`));
   });
   app.post("/admin/spawn", express.urlencoded({ extended: false, limit: "2kb" }), async (req, res) => {
     if (!sameSite(req)) return res.status(403).send("forbidden");
@@ -919,8 +921,11 @@ ${Object.keys(bySku).length ? `<p>${Object.entries(bySku).sort((a, b) => b[1].bi
     if (!c) done = "No such channel.";
     else {
       pool.spawns.noteChat(c.broadcaster_id);
-      const r = await pool.spawns.spawn(c.broadcaster_id, true).catch((e) => ({ error: e.message }));
-      done = r?.error === "already" ? `${c.display_name}: a deviation is already loose.` : r?.error ? `${c.display_name}: ${r.error}` : `${c.display_name}: deviation released.`;
+      const [devId, varName] = String(req.body.pick || "").split("|");
+      const dev = devId ? data.get(devId) : null, variant = dev && varName ? dev.variants.find((x) => x.name === varName) || null : null;
+      const r = (devId && !dev) || (varName && !variant) ? { error: "that deviation isn't in the game" }
+        : await pool.spawns.spawn(c.broadcaster_id, true, dev ? { dev, variant } : null).catch((e) => ({ error: e.message }));
+      done = r?.error === "already" ? `${c.display_name}: a deviation is already loose.` : r?.error ? `${c.display_name}: ${r.error}` : `${c.display_name}: ${dev ? `${dev.name}${variant ? ` — ${variant.name}` : ""}` : "random deviation"} released.`;
       console.log(`[admin] ${v.login} spawned in ${c.login}: ${done}`);
     }
     res.redirect(303, "/admin/spawn?done=" + encodeURIComponent(done));
