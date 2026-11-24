@@ -55,7 +55,7 @@ All other Variations and Chaos can't be fused. List kept in docs/site/fusion.jso
 - If **both parents** have the same trait: **100%** — it goes to the new deviation.
 - Each slot has its own % chance to change the effect of each trait (the % for each slot: not given yet).
 - Same trait slot during fusing: another deviation with the **same** trait in that slot adds **+10%** (to the 60%);
-  a **different** trait in that slot takes **−10%** off the 60%. Using a **blank** deviation also adds **+10%**. If both parents have the same trait it's **100%** on its own — no middle one needed.
+  a **different** trait in that slot takes **−10%** off the 60%. Using a **blank** deviation (a clean deviation with no traits) also adds **+10%**. If both parents have the same trait it's **100%** on its own — no middle one needed.
 - Traits stay in their own type: **territory** traits only go on territory deviations, **combat** on combat, **crafting** on crafting.
   They can't swap onto another type.
 - Same with traits made for a specific **skin or variation**: they can't swap onto one they aren't already on. They only stay
