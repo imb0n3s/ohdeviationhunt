@@ -47,6 +47,10 @@ All other Variations and Chaos can't be fused. List kept in docs/site/fusion.jso
 - **Sales tax** collected on top, based on where the buyer is located (Stripe Tax).
 - **Unlimited fusions** while subscribed, but every fusion **still costs 500 Starchrom**.
 - **Refunds: within 24 hours of buying.**
+- Stripe (LIVE, account OHWikiGuide, 2026-11-24): product "Unlimited Fusion Package" prod_Vgpgy0y55SLXjo, price
+  price_1UfS19F3l4Jo3nSDMngmglwC ($9.99 USD / month, lookup key `fusion_monthly`). Tax settings: "Include tax in prices" = No
+  (tax added on top). Still to do: Stripe Tax registrations (B), Customer Portal, webhook /stripe/webhook (when the code exists),
+  Railway env STRIPE_SECRET_KEY + STRIPE_WEBHOOK_SECRET (B).
 
 ## Skill / Activity of the new deviation (B 2026-11-08)
 - Each rating separately: take one parent's number at random (50/50), then randomly −1, same, or +1, kept within 1–5.
