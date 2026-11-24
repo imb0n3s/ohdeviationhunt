@@ -53,4 +53,5 @@ All other Variations and Chaos can't be fused. List kept in docs/site/fusion.jso
 ## Traits of the new deviation (B 2026-11-24)
 - If only one deviation has a trait: **60% chance** the trait goes over to the new deviation.
 - If **both parents** have the same trait: **100%** — it goes to the new deviation.
+- Each slot has its own % chance to change the effect of each trait (the % for each slot: not given yet).
 - Nothing else about traits decided yet — B is going through this slowly, one rule at a time. Don't assume the rest.
