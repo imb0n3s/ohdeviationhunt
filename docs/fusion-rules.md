@@ -47,5 +47,15 @@ All other Variations and Chaos can't be fused. List kept in docs/site/fusion.jso
   So the result is always within ±1 of the parents' numbers (parents 3/4 and 4/2 → Skill 2–5, Activity 1–5).
 - **Two 5/5 parents:** the result is 5/5 except a **0.05% (1 in 2,000)** chance it comes out lower (one or both ratings 4).
 
+## Fusion board (B 2026-11-24)
+- While a fusion runs there is a **board** that shows what's going on: the 2 outside parents and the up-to-3 middle
+  deviations in their slots, the 5-minute countdown, which parent is favoured (50/50, or 100% when a middle one matches),
+  the Skill/Activity ranges, the trait odds, and then the new deviation revealed when it finishes.
+
+## Traits of the new deviation (B 2026-11-24)
+- A trait that **only one** of the deviations has: **60% chance** it carries over to the new deviation.
+
 ## Open questions (waiting on B)
-- Traits of the new deviation.
+- A trait that **both** parents have: always carried over, or its own chance?
+- Do the **middle** deviations' traits count too, or only the 2 outside parents?
+- Middle matches both parents 1 + 1 (tie): 50/50 assumed.
