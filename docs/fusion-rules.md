@@ -42,6 +42,12 @@ All other Variations and Chaos can't be fused. List kept in docs/site/fusion.jso
 - Every deviation (existing and new catches) comes with **1 fusion chance**.
 - Fusing costs **500 Starchrom**. **Website only** (Fusion page) — not chat, not the panel.
 
+## Monthly subscription (B 2026-11-24) — NOT BUILT YET (shown on /fusion as "Coming Soon")
+- **$9.99 USD per month**: Unlimited Fusion Package, through B's Stripe (website only, never in the Twitch panel).
+- **Sales tax** collected on top, based on where the buyer is located (Stripe Tax).
+- **Unlimited fusions** while subscribed, but every fusion **still costs 500 Starchrom**.
+- **Refunds: within 24 hours of buying.**
+
 ## Skill / Activity of the new deviation (B 2026-11-08)
 - Each rating separately: take one parent's number at random (50/50), then randomly −1, same, or +1, kept within 1–5.
   So the result is always within ±1 of the parents' numbers (parents 3/4 and 4/2 → Skill 2–5, Activity 1–5).
