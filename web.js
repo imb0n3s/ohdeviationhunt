@@ -453,13 +453,19 @@ const SHOP_MSG = {
   not_enough: "Not enough Starchrom for that.", owned: "You already own those gloves.", outclassed: "You already wear better gloves.",
   stripe_paid: "Thanks! Your 3 Artisan's Touch are being added — refresh in a few seconds if you don't see them yet.", stripe_cancel: "Payment cancelled — nothing was charged.", stripe_err: "Couldn't start the card payment. Try again in a minute.", artisan_none: "You don't have an Artisan's Touch to use.", bad_qty: "Pick an amount between 1 and 100.", full: "Your Securement Pods are full.", too_many: "That would go over your Securement Pod limit.", unknown_item: "That item isn't sold here.", signin: "Sign in with Twitch as the owner of this page to shop.",
 };
+// Paid with real money (card through Stripe) — its own box under the Starchrom shop, so money items never mix with
+// Starchrom items (B 2026-11-25). Website only, never in the Twitch panel. Add future card items here.
+function paidBox(p, live) {
+  const items = [artisanCard(p, live)].filter(Boolean).join("");
+  return items ? `<div class="card shopbox" id="store"><div class="shophead"><b>💳 Store</b><span>Paid by card through Stripe · sales tax added where it applies</span></div><div class="shopgrid">${items}</div></div>` : "";
+}
 // Artisan's Touch ×3 for $2.99, paid by card through Stripe — website only, never in the Twitch panel (B 2026-11-25)
 function artisanCard(p, live) {
   const stripe = require("./stripe");
   if (!stripe.enabled()) return "";
   const have = stripe.artisanLeft(p.user_id), g = game.bestGlove(live), worn = g && (live.glove_left || 0) < g.catches;
   const use = have ? `<form method="post" action="/u/${esc(p.login)}/artisan/use" style="display:inline"><button>Use one${worn ? ` (repair ${esc(g.name)})` : ` (+${fmt(stripe.ARTISAN_STARCHROM)} Starchrom)`}</button></form>` : "";
-  return `<div class="si glove" style="--gc:#f59e0b"><img src="${IMG_BASE}artisan.png" alt=""><div class="sb"><div class="sn">Artisan's Touch ×3 <span class="rar">$2.99</span></div><div class="sd">Each one repairs your worn gloves to their full number of catches. Not wearing gloves, or they're like new? That one gives ${fmt(stripe.ARTISAN_STARCHROM)} Starchrom instead. Paid by card through Stripe, sales tax added where it applies · <b>you have ${have}</b></div><form method="post" action="/u/${esc(p.login)}/artisan/checkout" style="display:inline"><button>Buy 3 for $2.99</button></form> ${use}</div></div>`;
+  return `<div class="si glove" style="--gc:#f59e0b"><img src="${IMG_BASE}artisan.png" alt=""><div class="sb"><div class="sn">Artisan's Touch ×3 <span class="rar">$2.99</span></div><div class="sd">Each one repairs your worn gloves to their full number of catches. Not wearing gloves, or they're like new? That one gives ${fmt(stripe.ARTISAN_STARCHROM)} Starchrom instead · <b>you have ${have}</b></div><form method="post" action="/u/${esc(p.login)}/artisan/checkout" style="display:inline"><button>Buy 3 for $2.99</button></form> ${use}</div></div>`;
 }
 
 function webShop(p, live, viewer, msg) {
@@ -488,8 +494,8 @@ function webShop(p, live, viewer, msg) {
     const room = game.unitRoom(live), max = Math.max(0, Math.min(it.maxQty, room, Math.floor(live.starchrom / it.price)));
     if (!room) return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div><button disabled>Securement Pods full (${game.podsUsed(live)}/${game.unitCap(live)})</button></div></div>`;
     return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div>${form(it, `<input type="number" name="qty" min="1" max="${Math.min(it.maxQty, room)}" value="1"><button ${live.starchrom < it.price ? "disabled" : ""}>${live.starchrom < it.price ? `Need ${fmt(it.price - live.starchrom)} more` : "Buy"}</button> <span class="muted">you can buy ${max} (${game.podsUsed(live)}/${game.unitCap(live)} pods used)</span>`)}</div></div>`;
-  }).join("") + artisanCard(p, live);
-  return `<div class="card shopbox">${note}<div class="shophead"><b>🛒 Shop</b><span>${fmt(live.starchrom)} Starchrom · ${live.units.standard || 0} Securement Units</span><span class="muted">Signed in as ${esc(viewer.login)} · <a href="/logout?next=${encodeURIComponent("/u/" + p.login)}">sign out</a></span></div><div class="shopgrid">${items}</div></div>`;
+  }).join("");
+  return `<div class="card shopbox">${note}<div class="shophead"><b>🛒 Shop</b><span>${fmt(live.starchrom)} Starchrom · ${live.units.standard || 0} Securement Units</span><span class="muted">Signed in as ${esc(viewer.login)} · <a href="/logout?next=${encodeURIComponent("/u/" + p.login)}">sign out</a></span></div><div class="shopgrid">${items}</div></div>` + paidBox(p, live);
 }
 
 function commandsPage() {
