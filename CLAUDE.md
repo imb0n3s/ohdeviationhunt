@@ -154,3 +154,10 @@
 - Homepage video (B 2026-11-12): YouTube embed between the stats and Where to Play = docs/site/home.json {youtube: <11-char id>, title}
   (read from GitHub raw, 2-min cache; empty youtube = hidden). Change it with a docs-only push, no deploy. Current: Bits showcase
   https://youtu.be/Z9S4FLG1Pak (27s, source docs/media/Deviation_Hunt_Bits_Showcase.mp4), pinned comment -> twitch.tv/imbon3s.
+- Stripe (B 2026-11-25), WEBSITE ONLY — never in the Twitch panel (the panel only takes Bits): stripe.js. "Artisan's Touch ×3" for $2.99
+  (Stripe live product prod_Vh9fcgCZvQp27c, price lookup key artisan3_web) on the owner's Securement Pods shop (/u/<login>): Buy ->
+  Stripe Checkout (automatic sales tax on top; STRIPE_AUTOMATIC_TAX=0 turns it off) -> webhook POST /stripe/webhook
+  (checkout.session.completed / async_payment_succeeded, signature checked, one credit per session in stripe_tx) -> +3
+  players.artisan_left; "Use one" repairs worn gloves to full or gives 1,250 Starchrom. Hidden until Railway env STRIPE_SECRET_KEY
+  (restricted key: Checkout Sessions write + Prices read) and STRIPE_WEBHOOK_SECRET are set. Fusion monthly package
+  ($9.99, lookup key fusion_monthly, prod_Vgpgy0y55SLXjo) is set up in Stripe but NOT built yet (docs/fusion-rules.md).

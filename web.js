@@ -451,8 +451,17 @@ const scrapHelp = () => `<h2 id="scrap">How to Scrap Extra Deviations</h2>
 const IMG_BASE = "https://raw.githubusercontent.com/imb0n3s/ohdeviationhunt/main/ext/";
 const SHOP_MSG = {
   not_enough: "Not enough Starchrom for that.", owned: "You already own those gloves.", outclassed: "You already wear better gloves.",
-  bad_qty: "Pick an amount between 1 and 100.", full: "Your Securement Pods are full.", too_many: "That would go over your Securement Pod limit.", unknown_item: "That item isn't sold here.", signin: "Sign in with Twitch as the owner of this page to shop.",
+  stripe_paid: "Thanks! Your 3 Artisan's Touch are being added — refresh in a few seconds if you don't see them yet.", stripe_cancel: "Payment cancelled — nothing was charged.", stripe_err: "Couldn't start the card payment. Try again in a minute.", artisan_none: "You don't have an Artisan's Touch to use.", bad_qty: "Pick an amount between 1 and 100.", full: "Your Securement Pods are full.", too_many: "That would go over your Securement Pod limit.", unknown_item: "That item isn't sold here.", signin: "Sign in with Twitch as the owner of this page to shop.",
 };
+// Artisan's Touch ×3 for $2.99, paid by card through Stripe — website only, never in the Twitch panel (B 2026-11-25)
+function artisanCard(p, live) {
+  const stripe = require("./stripe");
+  if (!stripe.enabled()) return "";
+  const have = stripe.artisanLeft(p.user_id), g = game.bestGlove(live), worn = g && (live.glove_left || 0) < g.catches;
+  const use = have ? `<form method="post" action="/u/${esc(p.login)}/artisan/use" style="display:inline"><button>Use one${worn ? ` (repair ${esc(g.name)})` : ` (+${fmt(stripe.ARTISAN_STARCHROM)} Starchrom)`}</button></form>` : "";
+  return `<div class="si glove" style="--gc:#f59e0b"><img src="${IMG_BASE}artisan.png" alt=""><div class="sb"><div class="sn">Artisan's Touch ×3 <span class="rar">$2.99</span></div><div class="sd">Each one repairs your worn gloves to their full number of catches. Not wearing gloves, or they're like new? That one gives ${fmt(stripe.ARTISAN_STARCHROM)} Starchrom instead. Paid by card through Stripe, sales tax added where it applies · <b>you have ${have}</b></div><form method="post" action="/u/${esc(p.login)}/artisan/checkout" style="display:inline"><button>Buy 3 for $2.99</button></form> ${use}</div></div>`;
+}
+
 function webShop(p, live, viewer, msg) {
   const note = msg && !msg.scrap ? `<div class="note ${msg.ok ? "ok" : "err"}">${esc(msg.text)}</div>` : "";
   if (!viewer) return `<div class="card shopbox">${note}<b>🛒 Shop</b> — is this your page? <a class="btn sm" href="/login?next=${encodeURIComponent("/u/" + p.login)}">Sign in with Twitch</a> to spend your Starchrom on Securement Units and Gloves. <span class="muted">(Only confirms who you are — no permissions.)</span></div>`;
@@ -479,7 +488,7 @@ function webShop(p, live, viewer, msg) {
     const room = game.unitRoom(live), max = Math.max(0, Math.min(it.maxQty, room, Math.floor(live.starchrom / it.price)));
     if (!room) return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div><button disabled>Securement Pods full (${game.podsUsed(live)}/${game.unitCap(live)})</button></div></div>`;
     return `<div class="si"><img src="${IMG_BASE}${esc(it.icon)}" alt=""><div class="sb"><div class="sn">${esc(it.name)}</div><div class="sd">${esc(it.desc)} · ${fmt(it.price)} Starchrom each</div>${form(it, `<input type="number" name="qty" min="1" max="${Math.min(it.maxQty, room)}" value="1"><button ${live.starchrom < it.price ? "disabled" : ""}>${live.starchrom < it.price ? `Need ${fmt(it.price - live.starchrom)} more` : "Buy"}</button> <span class="muted">you can buy ${max} (${game.podsUsed(live)}/${game.unitCap(live)} pods used)</span>`)}</div></div>`;
-  }).join("");
+  }).join("") + artisanCard(p, live);
   return `<div class="card shopbox">${note}<div class="shophead"><b>🛒 Shop</b><span>${fmt(live.starchrom)} Starchrom · ${live.units.standard || 0} Securement Units</span><span class="muted">Signed in as ${esc(viewer.login)} · <a href="/logout?next=${encodeURIComponent("/u/" + p.login)}">sign out</a></span></div><div class="shopgrid">${items}</div></div>`;
 }
 
@@ -691,6 +700,9 @@ function createApp(pool) {
     const code = String(req.query.shop || "");
     let msg = null;
     if (code.startsWith("ok:")) { const [, id, n] = code.split(":"); const it = shop.find(id); if (it) msg = { ok: true, text: `Bought ${it.kind === "grenades" ? `${Number(n) * 5} Lv.${it.level} Binding Grenades` : it.kind === "gloves" ? it.name : it.kind === "soup" ? `Capture Soup — +${it.bonus * 100}% catch chance for the next hour` : `${n} ${it.name}${Number(n) > 1 ? "s" : ""}`}!` }; }
+    else if (code.startsWith("artisan_ok:")) msg = { ok: true, text: `Artisan's Touch used — your ${code.slice(11)} are repaired to full catches!` };
+    else if (code.startsWith("artisan_sc:")) msg = { ok: true, text: `Artisan's Touch used — nothing to repair, so you got ${fmt(Number(code.slice(11)) || 0)} Starchrom.` };
+    else if (code === "stripe_paid" || code === "stripe_cancel") msg = { ok: code === "stripe_paid", text: SHOP_MSG[code] };
     else if (SHOP_MSG[code]) msg = { ok: false, text: SHOP_MSG[code] };
     const sc = String(req.query.scrap || "");
     if (sc) {
@@ -722,6 +734,37 @@ function createApp(pool) {
     console.log(`[web] ${row.login} bought ${r.qty}x ${r.item.id} for ${r.cost}`);
     try { game.announcePurchase(row.user_id, r.item, r.qty); } catch (e) { console.warn("[web] announce failed:", e.message); }
     back(`ok:${r.item.id}:${r.qty}`);
+  });
+
+  // Stripe (website only, B 2026-11-25): Artisan's Touch ×3 checkout, using one, and Stripe's webhook
+  app.post("/u/:login/artisan/:action(checkout|use)", express.urlencoded({ extended: false, limit: "1kb" }), async (req, res) => {
+    const login = String(req.params.login).toLowerCase();
+    const back = (code) => res.set("Cache-Control", "no-store").redirect(303, `/u/${encodeURIComponent(login)}?shop=${encodeURIComponent(code)}&t=${Date.now().toString(36)}#shop`);
+    const origin = req.get("origin") || req.get("referer") || "";
+    if (origin && !origin.startsWith(cfg.BASE_URL)) return res.status(403).send("forbidden");
+    const viewer = viewerOf(req), row = db.q.getPlayerByLogin.get(login);
+    if (!row) return res.status(404).send("not found");
+    if (!viewer || viewer.uid !== row.user_id) return back("signin");
+    const stripe = require("./stripe");
+    if (!stripe.enabled()) return back("unknown_item");
+    if (req.params.action === "use") {
+      const r = stripe.useArtisan(row);
+      if (!r.ok) return back(r.error);
+      console.log(`[stripe] ${row.login} used Artisan's Touch: ${r.repaired || r.starchrom + " Starchrom"}`);
+      return back(r.repaired ? `artisan_ok:${r.repaired}` : `artisan_sc:${r.starchrom}`);
+    }
+    try { res.redirect(303, await stripe.checkoutUrl("artisan3", row, cfg.BASE_URL)); }
+    catch (e) { console.warn(`[stripe] checkout failed for ${row.login}: ${e.message}`); back("stripe_err"); }
+  });
+  app.post("/stripe/webhook", express.raw({ type: "*/*", limit: "256kb" }), (req, res) => {
+    const stripe = require("./stripe");
+    const ev = stripe.verify(req.body.toString("utf8"), req.get("stripe-signature"));
+    if (!ev) return res.status(400).send("bad signature");
+    if (ev.type === "checkout.session.completed" || ev.type === "checkout.session.async_payment_succeeded") {
+      try { const r = stripe.credit(ev.data.object); console.log(`[stripe] ${ev.type} ${ev.data.object.id}:`, JSON.stringify(r)); }
+      catch (e) { console.error("[stripe] credit failed:", e.message); return res.status(500).send("retry"); }
+    }
+    res.json({ received: true });
   });
 
   // scrap one of your own specimens from your collection page (signed-in owner only; same-site posts only)
